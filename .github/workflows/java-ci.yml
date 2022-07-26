@@ -9,10 +9,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: JDK 16 Install
+      - name: JDK 17 Install
         uses: actions/setup-java@v2
         with:
-          java-version: '16'
+          java-version: '17'
           distribution: 'adopt'
           cache: gradle
 
