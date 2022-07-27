@@ -1,5 +1,11 @@
 package honeyroasted.jype.concrete;
 
+import honeyroasted.jype.Type;
+import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.system.Constraint;
+
+import java.util.function.Function;
+
 public class TypeArray implements TypeConcrete {
     private TypeConcrete element;
 
@@ -27,8 +33,28 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
+    public void lock() {
+        this.element.lock();
+    }
+
+    @Override
+    public <T extends Type> T map(Function<Type, Type> mapper) {
+        return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
+    }
+
+    @Override
     public boolean isArray() {
         return true;
     }
 
+    @Override
+    public Constraint assignabilityTo(TypeConcrete other) {
+        if (other instanceof TypeArray arr) {
+            return this.element().assignabilityTo(arr.element());
+        } else if (other instanceof TypeClass otherClass) {
+            //TODO some checks
+        }
+
+        return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
+    }
 }

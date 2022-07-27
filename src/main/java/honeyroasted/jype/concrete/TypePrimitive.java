@@ -1,24 +1,61 @@
 package honeyroasted.jype.concrete;
 
+import honeyroasted.jype.Namespace;
+import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.system.Constraint;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class TypePrimitive implements TypeConcrete {
     public static final TypePrimitive BOOLEAN = new TypePrimitive(boolean.class, "Z");
     public static final TypePrimitive BYTE = new TypePrimitive(byte.class, "B");
-    public static final TypePrimitive CHAR = new TypePrimitive(char.class, "C");
     public static final TypePrimitive SHORT = new TypePrimitive(short.class, "S");
+    public static final TypePrimitive CHAR = new TypePrimitive(char.class, "C");
     public static final TypePrimitive INT = new TypePrimitive(int.class, "I");
     public static final TypePrimitive LONG = new TypePrimitive(long.class, "J");
     public static final TypePrimitive FLOAT = new TypePrimitive(float.class, "F");
     public static final TypePrimitive DOUBLE = new TypePrimitive(double.class, "D");
 
+    public static final Set<TypePrimitive> ALL = Set.of(BOOLEAN, BYTE, SHORT, CHAR, INT, LONG, FLOAT, DOUBLE);
+
+    private static final Map<TypePrimitive, Namespace> PRIM_TO_BOX = Map.of(
+            BOOLEAN, Namespace.of(Boolean.class),
+            BYTE, Namespace.of(Byte.class),
+            SHORT, Namespace.of(Short.class),
+            CHAR, Namespace.of(Character.class),
+            INT, Namespace.of(Integer.class),
+            LONG, Namespace.of(Long.class),
+            FLOAT, Namespace.of(Float.class),
+            DOUBLE, Namespace.of(Double.class)
+    );
+
+    private static final Map<Namespace, TypePrimitive> BOX_TO_PRIM = reverse(PRIM_TO_BOX);
+
     private Class<?> reflectionClass;
     private String descriptor;
 
-    public TypePrimitive(Class<?> reflectionClass, String descriptor) {
+    private TypePrimitive(Class<?> reflectionClass, String descriptor) {
         this.reflectionClass = reflectionClass;
         this.descriptor = descriptor;
+    }
+
+    public Namespace box() {
+        return PRIM_TO_BOX.get(this);
+    }
+
+    public static Optional<TypePrimitive> unbox(Namespace namespace) {
+        return Optional.ofNullable(BOX_TO_PRIM.get(namespace));
+    }
+
+    public Class<?> reflectionClass() {
+        return this.reflectionClass;
+    }
+
+    public String descriptor() {
+        return this.descriptor;
     }
 
     @Override
@@ -27,7 +64,7 @@ public class TypePrimitive implements TypeConcrete {
     }
 
     private static final Map<String, Set<String>> PRIM_SUPERS = Map.of(
-            "Z", Set.of(),
+            "Z", Set.of("Z"),
             "B", Set.of("B", "S", "C", "I", "J", "F", "D"),
             "S", Set.of("S", "C", "I", "J", "F", "D"),
             "C", Set.of("C", "S", "I", "J", "F", "D"),
@@ -37,4 +74,24 @@ public class TypePrimitive implements TypeConcrete {
             "D", Set.of("D")
     );
 
+    @Override
+    public Constraint assignabilityTo(TypeConcrete other) {
+        if (other instanceof TypePrimitive prim) {
+            return PRIM_SUPERS.get(this.descriptor).contains(prim.descriptor) ?
+                    Constraint.TRUE : Constraint.FALSE;
+        } else if (other instanceof TypeClass otherClass) {
+            Optional<TypePrimitive> unbox = unbox(otherClass.declaration().namespace());
+            if (unbox.isPresent()) {
+                return assignabilityTo(unbox.get());
+            }
+        }
+
+        return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
+    }
+
+    private static <K, V> Map<K, V> reverse(Map<V, K> map) {
+        Map<K, V> result = new HashMap<>();
+        map.forEach((key, val) -> result.put(val, key));
+        return Map.copyOf(result);
+    }
 }

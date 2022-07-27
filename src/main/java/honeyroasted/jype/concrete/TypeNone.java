@@ -1,8 +1,10 @@
 package honeyroasted.jype.concrete;
 
+import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.system.Constraint;
+
 public class TypeNone implements TypeConcrete {
     public static final TypeNone VOID = new TypeNone("void", "V");
-    public static final TypeNone UNKNOWN = new TypeNone("unknown", "V");
     public static final TypeNone NONE = new TypeNone("none", "V");
 
     private String name;
@@ -13,4 +15,8 @@ public class TypeNone implements TypeConcrete {
         this.descriptor = descriptor;
     }
 
+    @Override
+    public Constraint assignabilityTo(TypeConcrete other) {
+        return Constraint.FALSE;
+    }
 }
