@@ -6,6 +6,7 @@ import honeyroasted.jype.system.Constraint;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -92,6 +93,21 @@ public class TypePrimitive implements TypeConcrete {
     @Override
     public String toString() {
         return this.reflectionClass.getSimpleName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypePrimitive that = (TypePrimitive) o;
+
+        return Objects.equals(descriptor, that.descriptor);
+    }
+
+    @Override
+    public int hashCode() {
+        return descriptor != null ? descriptor.hashCode() : 0;
     }
 
     private static <K, V> Map<K, V> reverse(Map<V, K> map) {

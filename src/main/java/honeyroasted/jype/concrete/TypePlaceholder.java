@@ -17,4 +17,5 @@ public class TypePlaceholder implements TypeConcrete {
     public String identity() {
         return Integer.toHexString(System.identityHashCode(this));
     }
+
 }

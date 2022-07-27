@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -150,5 +151,24 @@ public class TypeClass implements TypeConcrete {
         return this.declaration.namespace() +
                 (this.arguments.isEmpty() ? "" :
                         "<" + this.arguments.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")) + ">");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeClass typeClass = (TypeClass) o;
+
+        if (!Objects.equals(declaration, typeClass.declaration))
+            return false;
+        return Objects.equals(arguments, typeClass.arguments);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = declaration != null ? declaration.hashCode() : 0;
+        result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
+        return result;
     }
 }

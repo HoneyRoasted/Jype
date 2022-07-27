@@ -13,7 +13,7 @@ public interface TypeConcrete extends Type {
     Constraint assignabilityTo(TypeConcrete other);
 
     default boolean isAssignableTo(TypeConcrete other) {
-        return assignabilityTo(other).forceResolve().equals(Constraint.TRUE);
+        return assignabilityTo(other).forceResolve() instanceof Constraint.True;
     }
 
     static Constraint defaultTests(TypeConcrete self, TypeConcrete other, Constraint def) {

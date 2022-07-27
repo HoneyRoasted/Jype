@@ -6,6 +6,7 @@ import honeyroasted.jype.system.Constraint;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,5 +67,20 @@ public class TypeOr implements TypeConcrete {
     @Override
     public String toString() {
         return this.types.stream().map(TypeConcrete::toString).collect(Collectors.joining(" | "));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeOr typeOr = (TypeOr) o;
+
+        return Objects.equals(types, typeOr.types);
+    }
+
+    @Override
+    public int hashCode() {
+        return types != null ? types.hashCode() : 0;
     }
 }

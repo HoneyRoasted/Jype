@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -68,14 +69,6 @@ public class TypeDeclaration implements Type {
     }
 
     @Override
-    public String toString() {
-        return this.namespace.name() + (this.parameters.isEmpty() ? "" :
-                "<" + this.parameters.stream().map(Type::toString).collect(Collectors.joining(", ")) + ">") +
-                (this.parents.isEmpty() ? "" :
-                " extends " + this.parents.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")));
-    }
-
-    @Override
     public <T extends Type> T map(Function<Type, Type> mapper) {
         return (T) mapper.apply(new TypeDeclaration(this.namespace, this.parameters.stream().map(t -> (TypeParameter) t.map(mapper)).toList(),
                 this.parents));
@@ -107,4 +100,31 @@ public class TypeDeclaration implements Type {
         return this.parents;
     }
 
+    @Override
+    public String toString() {
+        return this.namespace.name() + (this.parameters.isEmpty() ? "" :
+                "<" + this.parameters.stream().map(Type::toString).collect(Collectors.joining(", ")) + ">") +
+                (this.parents.isEmpty() ? "" :
+                        " extends " + this.parents.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeDeclaration that = (TypeDeclaration) o;
+
+        if (!Objects.equals(namespace, that.namespace)) return false;
+        if (!Objects.equals(parameters, that.parameters)) return false;
+        return Objects.equals(parents, that.parents);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = namespace != null ? namespace.hashCode() : 0;
+        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
+        result = 31 * result + (parents != null ? parents.hashCode() : 0);
+        return result;
+    }
 }

@@ -4,6 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.Constraint;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class TypeOut implements TypeConcrete {
@@ -35,5 +36,20 @@ public class TypeOut implements TypeConcrete {
     @Override
     public String toString() {
         return "? extends " + this.bound;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeOut typeOut = (TypeOut) o;
+
+        return Objects.equals(bound, typeOut.bound);
+    }
+
+    @Override
+    public int hashCode() {
+        return bound != null ? bound.hashCode() : 0;
     }
 }

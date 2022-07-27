@@ -4,6 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.Constraint;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 public class TypeArray implements TypeConcrete {
@@ -50,6 +51,21 @@ public class TypeArray implements TypeConcrete {
     @Override
     public String toString() {
         return this.element + "[]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeArray array = (TypeArray) o;
+
+        return Objects.equals(element, array.element);
+    }
+
+    @Override
+    public int hashCode() {
+        return element != null ? element.hashCode() : 0;
     }
 
     @Override

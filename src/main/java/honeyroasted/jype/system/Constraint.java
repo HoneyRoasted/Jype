@@ -92,9 +92,9 @@ public interface Constraint {
         @Override
         public Constraint simplify() {
             List<Constraint> simple = this.constraints.stream().map(Constraint::simplify).toList();
-            if (simple.stream().anyMatch(c -> c.equals(Constraint.FALSE))) {
+            if (simple.stream().anyMatch(c -> c instanceof False)) {
                 return Constraint.FALSE;
-            } else if (simple.stream().allMatch(c -> c.equals(Constraint.TRUE))) {
+            } else if (simple.stream().allMatch(c -> c instanceof True)) {
                 return Constraint.TRUE;
             } else if (simple.size() == 1) {
                 return simple.get(0);
@@ -106,9 +106,9 @@ public interface Constraint {
         @Override
         public Constraint forceResolve() {
             List<Constraint> resolved = this.constraints.stream().map(Constraint::forceResolve).toList();
-            if (resolved.stream().anyMatch(c -> c.equals(Constraint.FALSE))) {
+            if (resolved.stream().anyMatch(c -> c instanceof False)) {
                 return Constraint.FALSE;
-            } else if (resolved.stream().allMatch(c -> c.equals(Constraint.TRUE))) {
+            } else if (resolved.stream().allMatch(c -> c instanceof True)) {
                 return Constraint.TRUE;
             } else if (resolved.size() == 1) {
                 return resolved.get(0);
@@ -145,9 +145,9 @@ public interface Constraint {
         @Override
         public Constraint simplify() {
             List<Constraint> simple = this.constraints.stream().map(Constraint::simplify).toList();
-            if (simple.stream().anyMatch(c -> c.equals(Constraint.TRUE))) {
+            if (simple.stream().anyMatch(c -> c instanceof True)) {
                 return Constraint.TRUE;
-            } else if (simple.stream().allMatch(c -> c.equals(Constraint.FALSE))) {
+            } else if (simple.stream().allMatch(c -> c instanceof False)) {
                 return Constraint.FALSE;
             } else if (simple.size() == 1) {
                 return simple.get(0);
@@ -159,9 +159,9 @@ public interface Constraint {
         @Override
         public Constraint forceResolve() {
             List<Constraint> resolved = this.constraints.stream().map(Constraint::forceResolve).toList();
-            if (resolved.stream().anyMatch(c -> c.equals(Constraint.TRUE))) {
+            if (resolved.stream().anyMatch(c -> c instanceof True)) {
                 return Constraint.TRUE;
-            } else if (resolved.stream().allMatch(c -> c.equals(Constraint.FALSE))) {
+            } else if (resolved.stream().allMatch(c -> c instanceof False)) {
                 return Constraint.FALSE;
             } else if (resolved.size() == 1) {
                 return resolved.get(0);
