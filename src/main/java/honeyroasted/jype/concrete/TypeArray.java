@@ -48,6 +48,11 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
+    public String toString() {
+        return this.element + "[]";
+    }
+
+    @Override
     public Constraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypeArray arr) {
             return this.element().assignabilityTo(arr.element());

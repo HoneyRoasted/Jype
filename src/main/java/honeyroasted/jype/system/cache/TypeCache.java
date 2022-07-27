@@ -10,4 +10,10 @@ public interface TypeCache {
 
     boolean has(String name, Class<? extends Type> clazz);
 
+    <T extends Type> T get(java.lang.reflect.Type reflect, Class<T> clazz);
+
+    TypeCache cache(java.lang.reflect.Type reflect, Type type);
+
+    boolean has(java.lang.reflect.Type reflect, Class<? extends Type> clazz);
+
 }

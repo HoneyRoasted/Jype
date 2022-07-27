@@ -7,6 +7,7 @@ import honeyroasted.jype.system.Constraint;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TypeOr implements TypeConcrete {
     private List<TypeConcrete> types;
@@ -60,5 +61,10 @@ public class TypeOr implements TypeConcrete {
     @Override
     public Constraint assignabilityTo(TypeConcrete other) {
         return new Constraint.And(this.types.stream().map(t -> t.assignabilityTo(other)).toList());
+    }
+
+    @Override
+    public String toString() {
+        return this.types.stream().map(TypeConcrete::toString).collect(Collectors.joining(" | "));
     }
 }

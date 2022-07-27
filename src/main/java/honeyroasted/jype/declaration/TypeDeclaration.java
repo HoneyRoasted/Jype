@@ -6,11 +6,13 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.concrete.TypeClass;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TypeDeclaration implements Type {
     private Namespace namespace;
@@ -66,9 +68,31 @@ public class TypeDeclaration implements Type {
     }
 
     @Override
+    public String toString() {
+        return this.namespace.name() + (this.parameters.isEmpty() ? "" :
+                "<" + this.parameters.stream().map(Type::toString).collect(Collectors.joining(", ")) + ">") +
+                (this.parents.isEmpty() ? "" :
+                " extends " + this.parents.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")));
+    }
+
+    @Override
     public <T extends Type> T map(Function<Type, Type> mapper) {
         return (T) mapper.apply(new TypeDeclaration(this.namespace, this.parameters.stream().map(t -> (TypeParameter) t.map(mapper)).toList(),
-                this.parents.stream().map(t -> (TypeClass) t.map(mapper)).toList()));
+                this.parents));
+    }
+
+    public TypeClass withArgList(List<TypeConcrete> arguments) {
+        if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
+            TypeClass clazz = new TypeClass(this, arguments);
+            clazz.lock();
+            return clazz;
+        }
+
+        throw new IllegalArgumentException("Expected 0 arguments or " + this.parameters.size() + " argument(s)");
+    }
+
+    public TypeClass withArguments(TypeConcrete... arguments) {
+        return withArgList(Arrays.asList(arguments));
     }
 
     public Namespace namespace() {

@@ -32,4 +32,8 @@ public class TypeOut implements TypeConcrete {
         return this.bound.assignabilityTo(other);
     }
 
+    @Override
+    public String toString() {
+        return "? extends " + this.bound;
+    }
 }

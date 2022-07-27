@@ -19,4 +19,9 @@ public class TypeNone implements TypeConcrete {
     public Constraint assignabilityTo(TypeConcrete other) {
         return Constraint.FALSE;
     }
+
+    @Override
+    public String toString() {
+        return "<" + this.name + ">";
+    }
 }

@@ -30,7 +30,7 @@ public class Namespace {
 
     public static Namespace of(Class<?> clazz) {
         return new Namespace(Arrays.asList(clazz.getPackage().getName().split("\\.")),
-                clazz.getName().replace(clazz.getPackage().getName(), ""));
+                clazz.getName().replace(clazz.getPackage().getName() + ".", ""));
     }
 
     public List<String> path() {
@@ -47,4 +47,8 @@ public class Namespace {
                 this.name;
     }
 
+    @Override
+    public String toString() {
+        return this.name();
+    }
 }

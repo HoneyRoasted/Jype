@@ -6,7 +6,6 @@ import honeyroasted.jype.system.Constraint;
 public class TypeNull implements TypeConcrete {
     public static final TypeNull NULL = new TypeNull();
 
-
     @Override
     public Constraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypePrimitive) {
@@ -14,5 +13,10 @@ public class TypeNull implements TypeConcrete {
         }
 
         return TypeConcrete.defaultTests(this, other, Constraint.TRUE);
+    }
+
+    @Override
+    public String toString() {
+        return "<null>";
     }
 }

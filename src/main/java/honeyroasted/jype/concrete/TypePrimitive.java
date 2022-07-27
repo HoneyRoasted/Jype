@@ -89,6 +89,11 @@ public class TypePrimitive implements TypeConcrete {
         return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
     }
 
+    @Override
+    public String toString() {
+        return this.reflectionClass.getSimpleName();
+    }
+
     private static <K, V> Map<K, V> reverse(Map<V, K> map) {
         Map<K, V> result = new HashMap<>();
         map.forEach((key, val) -> result.put(val, key));

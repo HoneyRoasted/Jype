@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TypeClass implements TypeConcrete {
     private TypeDeclaration declaration;
@@ -121,7 +122,7 @@ public class TypeClass implements TypeConcrete {
                 List<Constraint> constraints = new ArrayList<>();
                 for (int i = 0; i < self.arguments().size(); i++) {
                     TypeConcrete ti = self.arguments().get(i);
-                    TypeConcrete si = self.arguments().get(i);
+                    TypeConcrete si = otherClass.arguments().get(i);
 
                     if (si instanceof TypeOut typeOut) { //? extends X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
@@ -144,4 +145,10 @@ public class TypeClass implements TypeConcrete {
         return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
     }
 
+    @Override
+    public String toString() {
+        return this.declaration.namespace() +
+                (this.arguments.isEmpty() ? "" :
+                        "<" + this.arguments.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")) + ">");
+    }
 }

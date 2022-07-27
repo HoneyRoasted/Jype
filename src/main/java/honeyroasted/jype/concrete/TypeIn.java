@@ -31,4 +31,9 @@ public class TypeIn implements TypeConcrete {
     public Constraint assignabilityTo(TypeConcrete other) {
         return Constraint.FALSE;
     }
+
+    @Override
+    public String toString() {
+        return "? super " + this.bound;
+    }
 }

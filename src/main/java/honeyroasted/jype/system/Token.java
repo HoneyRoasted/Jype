@@ -1,6 +1,5 @@
 package honeyroasted.jype.system;
 
-public class TypeInference {
-
+public abstract class Token<A> {
 
 }

@@ -33,9 +33,7 @@ public interface Type {
 
     default <T extends Type> T resolveVariables(Function<TypeParameter, Type> mapper) {
         return map(t -> {
-            if (t instanceof TypeParameter p) {
-                return mapper.apply(p);
-            } else if (t instanceof TypeParameterReference ref) {
+            if (t instanceof TypeParameterReference ref) {
                 return mapper.apply(ref.variable());
             } else {
                 return t;
