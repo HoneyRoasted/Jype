@@ -1,7 +1,7 @@
 package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
 
@@ -18,8 +18,8 @@ public class TypeNone implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
-        return Constraint.FALSE;
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
+        return TypeConstraint.FALSE;
     }
 
     @Override

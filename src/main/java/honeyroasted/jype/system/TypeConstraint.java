@@ -9,18 +9,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public interface Constraint {
-    Constraint FALSE = new False();
-    Constraint TRUE = new True();
+public interface TypeConstraint {
+    TypeConstraint FALSE = new False();
+    TypeConstraint TRUE = new True();
 
-    class False implements Constraint {
+    class False implements TypeConstraint {
         @Override
-        public Constraint simplify() {
+        public TypeConstraint simplify() {
             return this;
         }
 
         @Override
-        public Constraint forceResolve() {
+        public TypeConstraint forceResolve() {
             return this;
         }
 
@@ -30,14 +30,14 @@ public interface Constraint {
         }
     }
 
-    class True implements Constraint {
+    class True implements TypeConstraint {
         @Override
-        public Constraint simplify() {
+        public TypeConstraint simplify() {
             return this;
         }
 
         @Override
-        public Constraint forceResolve() {
+        public TypeConstraint forceResolve() {
             return this;
         }
 
@@ -47,32 +47,32 @@ public interface Constraint {
         }
     }
 
-    class And implements Constraint {
-        private List<Constraint> constraints;
+    class And implements TypeConstraint {
+        private List<TypeConstraint> constraints;
 
-        public And(List<Constraint> constraints) {
+        public And(List<TypeConstraint> constraints) {
             this.constraints = List.copyOf(constraints);
         }
 
-        public List<Constraint> constraints() {
+        public List<TypeConstraint> constraints() {
             return constraints;
         }
 
         @Override
-        public Constraint and(Constraint... others) {
-            List<Constraint> constraints = new ArrayList<>();
+        public TypeConstraint and(TypeConstraint... others) {
+            List<TypeConstraint> constraints = new ArrayList<>();
             constraints.addAll(this.constraints);
             Collections.addAll(constraints, others);
             return new And(constraints);
         }
 
         @Override
-        public Constraint simplify() {
-            List<Constraint> simple = this.constraints.stream().map(Constraint::simplify).toList();
+        public TypeConstraint simplify() {
+            List<TypeConstraint> simple = this.constraints.stream().map(TypeConstraint::simplify).toList();
             if (simple.stream().anyMatch(c -> c instanceof False)) {
-                return Constraint.FALSE;
+                return TypeConstraint.FALSE;
             } else if (simple.stream().allMatch(c -> c instanceof True)) {
-                return Constraint.TRUE;
+                return TypeConstraint.TRUE;
             } else if (simple.size() == 1) {
                 return simple.get(0);
             }
@@ -81,12 +81,12 @@ public interface Constraint {
         }
 
         @Override
-        public Constraint forceResolve() {
-            List<Constraint> resolved = this.constraints.stream().map(Constraint::forceResolve).toList();
+        public TypeConstraint forceResolve() {
+            List<TypeConstraint> resolved = this.constraints.stream().map(TypeConstraint::forceResolve).toList();
             if (resolved.stream().anyMatch(c -> c instanceof False)) {
-                return Constraint.FALSE;
+                return TypeConstraint.FALSE;
             } else if (resolved.stream().allMatch(c -> c instanceof True)) {
-                return Constraint.TRUE;
+                return TypeConstraint.TRUE;
             } else if (resolved.size() == 1) {
                 return resolved.get(0);
             }
@@ -96,36 +96,36 @@ public interface Constraint {
 
         @Override
         public String toString() {
-            return "(" + this.constraints.stream().map(Constraint::toString).collect(Collectors.joining(" & ")) + ")";
+            return "(" + this.constraints.stream().map(TypeConstraint::toString).collect(Collectors.joining(" & ")) + ")";
         }
     }
 
-    class Or implements Constraint {
-        private List<Constraint> constraints;
+    class Or implements TypeConstraint {
+        private List<TypeConstraint> constraints;
 
-        public Or(List<Constraint> constraints) {
+        public Or(List<TypeConstraint> constraints) {
             this.constraints = List.copyOf(constraints);
         }
 
-        public List<Constraint> constraints() {
+        public List<TypeConstraint> constraints() {
             return constraints;
         }
 
         @Override
-        public Constraint or(Constraint... others) {
-            List<Constraint> constraints = new ArrayList<>();
+        public TypeConstraint or(TypeConstraint... others) {
+            List<TypeConstraint> constraints = new ArrayList<>();
             constraints.addAll(this.constraints);
             Collections.addAll(constraints, others);
             return new Or(constraints);
         }
 
         @Override
-        public Constraint simplify() {
-            List<Constraint> simple = this.constraints.stream().map(Constraint::simplify).toList();
+        public TypeConstraint simplify() {
+            List<TypeConstraint> simple = this.constraints.stream().map(TypeConstraint::simplify).toList();
             if (simple.stream().anyMatch(c -> c instanceof True)) {
-                return Constraint.TRUE;
+                return TypeConstraint.TRUE;
             } else if (simple.stream().allMatch(c -> c instanceof False)) {
-                return Constraint.FALSE;
+                return TypeConstraint.FALSE;
             } else if (simple.size() == 1) {
                 return simple.get(0);
             }
@@ -134,12 +134,12 @@ public interface Constraint {
         }
 
         @Override
-        public Constraint forceResolve() {
-            List<Constraint> resolved = this.constraints.stream().map(Constraint::forceResolve).toList();
+        public TypeConstraint forceResolve() {
+            List<TypeConstraint> resolved = this.constraints.stream().map(TypeConstraint::forceResolve).toList();
             if (resolved.stream().anyMatch(c -> c instanceof True)) {
-                return Constraint.TRUE;
+                return TypeConstraint.TRUE;
             } else if (resolved.stream().allMatch(c -> c instanceof False)) {
-                return Constraint.FALSE;
+                return TypeConstraint.FALSE;
             } else if (resolved.size() == 1) {
                 return resolved.get(0);
             }
@@ -149,19 +149,19 @@ public interface Constraint {
 
         @Override
         public String toString() {
-            return "(" + this.constraints.stream().map(Constraint::toString).collect(Collectors.joining(" | ")) + ")";
+            return "(" + this.constraints.stream().map(TypeConstraint::toString).collect(Collectors.joining(" | ")) + ")";
         }
     }
 
-    record Equal(TypeConcrete left, TypeConcrete right) implements Constraint {
+    record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
         @Override
-        public Constraint simplify() {
+        public TypeConstraint simplify() {
             return this;
         }
 
         @Override
-        public Constraint forceResolve() {
-            return this.left.equals(this.right) ? Constraint.TRUE : Constraint.FALSE;
+        public TypeConstraint forceResolve() {
+            return this.left.equals(this.right) ? TypeConstraint.TRUE : TypeConstraint.FALSE;
         }
 
         @Override
@@ -170,15 +170,15 @@ public interface Constraint {
         }
     }
 
-    record Bound(TypeConcrete subtype, TypeConcrete parent) implements Constraint {
+    record Bound(TypeConcrete subtype, TypeConcrete parent) implements TypeConstraint {
 
         @Override
-        public Constraint simplify() {
+        public TypeConstraint simplify() {
             return this;
         }
 
         @Override
-        public Constraint forceResolve() {
+        public TypeConstraint forceResolve() {
             if (this.subtype instanceof TypeParameterReference ref) {
                 return ref.variable().bound().assignabilityTo(this.parent).forceResolve();
             } else if (this.parent instanceof TypeParameterReference ref) {
@@ -196,22 +196,22 @@ public interface Constraint {
         }
     }
 
-    default Constraint and(Constraint... others) {
-        List<Constraint> constraints = new ArrayList<>();
+    default TypeConstraint and(TypeConstraint... others) {
+        List<TypeConstraint> constraints = new ArrayList<>();
         constraints.add(this);
         Collections.addAll(constraints, others);
         return new And(constraints);
     }
 
-    default Constraint or(Constraint... others) {
-        List<Constraint> constraints = new ArrayList<>();
+    default TypeConstraint or(TypeConstraint... others) {
+        List<TypeConstraint> constraints = new ArrayList<>();
         constraints.add(this);
         Collections.addAll(constraints, others);
         return new Or(constraints);
     }
 
-    Constraint simplify();
+    TypeConstraint simplify();
 
-    Constraint forceResolve();
+    TypeConstraint forceResolve();
 
 }

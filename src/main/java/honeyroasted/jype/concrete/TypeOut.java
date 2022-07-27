@@ -2,7 +2,7 @@ package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -29,7 +29,7 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
         return this.bound.assignabilityTo(other);
     }
 

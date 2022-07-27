@@ -1,5 +1,5 @@
 package honeyroasted.jype.system;
 
-public abstract class Token<A> {
+public abstract class TypeToken<A> {
 
 }

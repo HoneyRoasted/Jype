@@ -1,12 +1,12 @@
 package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 public class TypePlaceholder implements TypeConcrete {
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
-        return new Constraint.Bound(this, other);
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
+        return new TypeConstraint.Bound(this, other);
     }
 
     @Override

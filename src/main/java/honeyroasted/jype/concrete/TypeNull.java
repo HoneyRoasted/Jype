@@ -1,18 +1,18 @@
 package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 public class TypeNull implements TypeConcrete {
     public static final TypeNull NULL = new TypeNull();
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypePrimitive) {
-            return Constraint.FALSE;
+            return TypeConstraint.FALSE;
         }
 
-        return TypeConcrete.defaultTests(this, other, Constraint.TRUE);
+        return TypeConcrete.defaultTests(this, other, TypeConstraint.TRUE);
     }
 
     @Override

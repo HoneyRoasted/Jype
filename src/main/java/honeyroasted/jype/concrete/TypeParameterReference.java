@@ -2,7 +2,7 @@ package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.declaration.TypeParameter;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
 
@@ -18,8 +18,8 @@ public class TypeParameterReference implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
-        return new Constraint.Bound(this, other);
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
+        return new TypeConstraint.Bound(this, other);
     }
 
     @Override

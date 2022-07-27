@@ -2,7 +2,7 @@ package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,8 +59,8 @@ public class TypeAnd implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
-        return new Constraint.Or(this.types.stream().map(t -> t.assignabilityTo(other)).toList());
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
+        return new TypeConstraint.Or(this.types.stream().map(t -> t.assignabilityTo(other)).toList());
     }
 
     @Override

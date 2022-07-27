@@ -2,7 +2,7 @@ package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -69,13 +69,13 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypeArray arr) {
             return this.element().assignabilityTo(arr.element());
         } else if (other instanceof TypeClass otherClass) {
             //TODO some checks
         }
 
-        return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
+        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
     }
 }

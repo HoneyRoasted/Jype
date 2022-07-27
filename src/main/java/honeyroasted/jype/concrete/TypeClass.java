@@ -4,7 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.declaration.TypeDeclaration;
 import honeyroasted.jype.declaration.TypeParameter;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -97,7 +97,7 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
             Optional<TypePrimitive> unbox = TypePrimitive.unbox(this.declaration.namespace());
             if (unbox.isPresent()) {
@@ -111,16 +111,16 @@ public class TypeClass implements TypeConcrete {
                 if (parent.isPresent()) {
                     self = parent.get();
                 } else {
-                    return Constraint.FALSE;
+                    return TypeConstraint.FALSE;
                 }
             }
 
             if (self.arguments().isEmpty() || otherClass.arguments().isEmpty()) {
-                return Constraint.TRUE; //Unchecked conversion
+                return TypeConstraint.TRUE; //Unchecked conversion
             } else if (self.arguments().size() != otherClass.arguments().size()) {
-                return Constraint.FALSE;
+                return TypeConstraint.FALSE;
             } else {
-                List<Constraint> constraints = new ArrayList<>();
+                List<TypeConstraint> constraints = new ArrayList<>();
                 for (int i = 0; i < self.arguments().size(); i++) {
                     TypeConcrete ti = self.arguments().get(i);
                     TypeConcrete si = otherClass.arguments().get(i);
@@ -136,14 +136,14 @@ public class TypeClass implements TypeConcrete {
                         constraints.add(ti.assignabilityTo(bound)
                                 .and(typeIn.bound().assignabilityTo(ti)));
                     } else {
-                        constraints.add(new Constraint.Equal(ti, si));
+                        constraints.add(new TypeConstraint.Equal(ti, si));
                     }
                 }
-                return new Constraint.And(constraints);
+                return new TypeConstraint.And(constraints);
             }
         }
 
-        return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
+        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
     }
 
     @Override

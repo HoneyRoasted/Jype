@@ -17,6 +17,7 @@ import honeyroasted.jype.declaration.TypeDeclaration;
 import honeyroasted.jype.declaration.TypeParameter;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.solver.TypeSolver;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -117,7 +118,7 @@ public class TypeSystem {
         return res;
     }
 
-    public <T extends TypeConcrete> T token(Token token) {
+    public <T extends TypeConcrete> T token(TypeToken token) {
         return of(((ParameterizedType) token.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
     public  <T extends TypeConcrete> T of(java.lang.reflect.Type type) {

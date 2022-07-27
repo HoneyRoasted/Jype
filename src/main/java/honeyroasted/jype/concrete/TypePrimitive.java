@@ -2,7 +2,7 @@ package honeyroasted.jype.concrete;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.Constraint;
+import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,10 +76,10 @@ public class TypePrimitive implements TypeConcrete {
     );
 
     @Override
-    public Constraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
             return PRIM_SUPERS.get(this.descriptor).contains(prim.descriptor) ?
-                    Constraint.TRUE : Constraint.FALSE;
+                    TypeConstraint.TRUE : TypeConstraint.FALSE;
         } else if (other instanceof TypeClass otherClass) {
             Optional<TypePrimitive> unbox = unbox(otherClass.declaration().namespace());
             if (unbox.isPresent()) {
@@ -87,7 +87,7 @@ public class TypePrimitive implements TypeConcrete {
             }
         }
 
-        return TypeConcrete.defaultTests(this, other, Constraint.FALSE);
+        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
     }
 
     @Override
