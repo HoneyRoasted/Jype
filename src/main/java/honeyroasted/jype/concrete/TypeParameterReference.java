@@ -19,7 +19,7 @@ public class TypeParameterReference implements TypeConcrete {
 
     @Override
     public Constraint assignabilityTo(TypeConcrete other) {
-        return new Constraint.BoundedTo(this, other);
+        return new Constraint.Bound(this, other);
     }
 
     @Override

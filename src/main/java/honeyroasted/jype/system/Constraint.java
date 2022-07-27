@@ -12,26 +12,8 @@ import java.util.stream.Collectors;
 public interface Constraint {
     Constraint FALSE = new False();
     Constraint TRUE = new True();
-    Constraint UNKNOWN = new Unknown();
-
-    class Unknown implements Constraint {
-        @Override
-        public Constraint simplify() {
-            return this;
-        }
-
-        @Override
-        public Constraint forceResolve() {
-            return this;
-        }
-    }
 
     class False implements Constraint {
-        @Override
-        public Constraint not() {
-            return TRUE;
-        }
-
         @Override
         public Constraint simplify() {
             return this;
@@ -49,11 +31,6 @@ public interface Constraint {
     }
 
     class True implements Constraint {
-        @Override
-        public Constraint not() {
-            return FALSE;
-        }
-
         @Override
         public Constraint simplify() {
             return this;
@@ -176,39 +153,7 @@ public interface Constraint {
         }
     }
 
-    class Not implements Constraint {
-        private Constraint constraint;
-
-        public Not(Constraint constraint) {
-            this.constraint = constraint;
-        }
-
-        public Constraint constraint() {
-            return constraint;
-        }
-
-        @Override
-        public Constraint not() {
-            return this.constraint;
-        }
-
-        @Override
-        public Constraint simplify() {
-            return this.constraint.simplify().not();
-        }
-
-        @Override
-        public Constraint forceResolve() {
-            return this.constraint.forceResolve().not();
-        }
-
-        @Override
-        public String toString() {
-            return "!" + this.constraint;
-        }
-    }
-
-    record Equal (TypeConcrete left, TypeConcrete right) implements Constraint {
+    record Equal(TypeConcrete left, TypeConcrete right) implements Constraint {
         @Override
         public Constraint simplify() {
             return this;
@@ -225,7 +170,8 @@ public interface Constraint {
         }
     }
 
-    record BoundedTo(TypeParameterReference parameter, TypeConcrete bound) implements Constraint {
+    record Bound(TypeConcrete subtype, TypeConcrete parent) implements Constraint {
+
         @Override
         public Constraint simplify() {
             return this;
@@ -233,63 +179,20 @@ public interface Constraint {
 
         @Override
         public Constraint forceResolve() {
-            return this.parameter.variable().bound().assignabilityTo(this.bound).forceResolve();
+            if (this.subtype instanceof TypeParameterReference ref) {
+                return ref.variable().bound().assignabilityTo(this.parent).forceResolve();
+            } else if (this.parent instanceof TypeParameterReference ref) {
+                return this.subtype.assignabilityTo(ref.variable().bound()).forceResolve();
+            } else if (this.subtype instanceof TypePlaceholder || this.parent instanceof TypePlaceholder) {
+                return this;
+            } else {
+                return this.subtype.assignabilityTo(this.parent).forceResolve();
+            }
         }
 
         @Override
         public String toString() {
-            return "(" + this.parameter + " <: " + bound + ")";
-        }
-    }
-
-    record BoundedFrom(TypeParameterReference parameter, TypeConcrete bound) implements Constraint {
-        @Override
-        public Constraint simplify() {
-            return this;
-        }
-
-        @Override
-        public Constraint forceResolve() {
-            return this.bound.assignabilityTo(this.parameter.variable().bound()).forceResolve();
-        }
-
-        @Override
-        public String toString() {
-            return "(" + this.bound + " <: " + this.parameter + ")";
-        }
-    }
-
-    record InferTo (TypePlaceholder type, TypeConcrete bound) implements Constraint {
-        @Override
-        public Constraint simplify() {
-            return this;
-        }
-
-        @Override
-        public Constraint forceResolve() {
-            return Constraint.UNKNOWN;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + this.type + " <: " + this.bound + ")";
-        }
-    }
-
-    record InferFrom (TypePlaceholder type, TypeConcrete bound) implements Constraint {
-        @Override
-        public Constraint simplify() {
-            return this;
-        }
-
-        @Override
-        public Constraint forceResolve() {
-            return Constraint.UNKNOWN;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + this.bound + " <: " + this.type + ")";
+            return "(" + this.subtype + " <: " + this.parent + ")";
         }
     }
 
@@ -305,10 +208,6 @@ public interface Constraint {
         constraints.add(this);
         Collections.addAll(constraints, others);
         return new Or(constraints);
-    }
-
-    default Constraint not() {
-        return new Not(this);
     }
 
     Constraint simplify();

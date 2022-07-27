@@ -6,7 +6,7 @@ import honeyroasted.jype.system.Constraint;
 public class TypePlaceholder implements TypeConcrete {
     @Override
     public Constraint assignabilityTo(TypeConcrete other) {
-        return new Constraint.InferTo(this, other);
+        return new Constraint.Bound(this, other);
     }
 
     @Override

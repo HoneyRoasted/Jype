@@ -8,7 +8,6 @@ import java.util.List;
 public class TypeSolver {
     private List<Constraint> constraints = new ArrayList<>();
 
-
     public TypeSolver constrain(Constraint constraint) {
         this.constraints.add(constraint);
         return this;

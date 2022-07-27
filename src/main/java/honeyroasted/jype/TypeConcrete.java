@@ -26,9 +26,9 @@ public interface TypeConcrete extends Type {
         } else if (other instanceof TypeIn in) {
              return self.assignabilityTo(in.bound());
          } else if (other instanceof TypePlaceholder inferable) {
-             return new Constraint.InferFrom(inferable, self);
+            return new Constraint.Bound(self, inferable);
          } else if (other instanceof TypeParameterReference ref) {
-             return new Constraint.BoundedFrom(ref, self);
+            return new Constraint.Bound(self, ref);
          }
 
          return def;
