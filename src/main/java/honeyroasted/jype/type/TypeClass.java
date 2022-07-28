@@ -1,9 +1,7 @@
-package honeyroasted.jype.concrete;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.declaration.TypeDeclaration;
-import honeyroasted.jype.declaration.TypeParameter;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
@@ -69,8 +67,8 @@ public class TypeClass implements TypeConcrete {
             TypeClass result = new TypeClass(parent);
             for (TypeConcrete arg : typeParent.arguments()) {
                 result.arguments().add(arg.map(t -> {
-                    if (t instanceof TypeParameterReference ref && this.argument(ref.variable()).isPresent()) {
-                        return this.argument(ref.variable()).get();
+                    if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
+                        return this.argument(ref).get();
                     }
                     return t;
                 }));
@@ -91,8 +89,8 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<Type, Type> mapper) {
-        return (T) mapper.apply(new TypeClass(this.declaration.map(mapper),
+    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(new TypeClass(this.declaration,
                 this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
     }
 

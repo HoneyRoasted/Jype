@@ -1,9 +1,8 @@
-package honeyroasted.jype.declaration;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.concrete.TypeClass;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,12 +65,6 @@ public class TypeDeclaration implements Type {
         this.parameters.forEach(Type::lock);
 
         this.parentMap = new LinkedHashMap<>();
-    }
-
-    @Override
-    public <T extends Type> T map(Function<Type, Type> mapper) {
-        return (T) mapper.apply(new TypeDeclaration(this.namespace, this.parameters.stream().map(t -> (TypeParameter) t.map(mapper)).toList(),
-                this.parents));
     }
 
     public TypeClass withArgList(List<TypeConcrete> arguments) {

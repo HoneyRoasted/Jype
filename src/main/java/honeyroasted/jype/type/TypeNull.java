@@ -1,4 +1,4 @@
-package honeyroasted.jype.concrete;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.TypeConstraint;

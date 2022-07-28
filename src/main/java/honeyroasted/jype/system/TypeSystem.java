@@ -2,19 +2,17 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.concrete.TypeAnd;
-import honeyroasted.jype.concrete.TypeArray;
-import honeyroasted.jype.concrete.TypeClass;
-import honeyroasted.jype.concrete.TypeIn;
-import honeyroasted.jype.concrete.TypePlaceholder;
-import honeyroasted.jype.concrete.TypeNone;
-import honeyroasted.jype.concrete.TypeNull;
-import honeyroasted.jype.concrete.TypeOr;
-import honeyroasted.jype.concrete.TypeOut;
-import honeyroasted.jype.concrete.TypeParameterReference;
-import honeyroasted.jype.concrete.TypePrimitive;
-import honeyroasted.jype.declaration.TypeDeclaration;
-import honeyroasted.jype.declaration.TypeParameter;
+import honeyroasted.jype.type.TypeAnd;
+import honeyroasted.jype.type.TypeArray;
+import honeyroasted.jype.type.TypeClass;
+import honeyroasted.jype.type.TypeIn;
+import honeyroasted.jype.type.TypeNone;
+import honeyroasted.jype.type.TypeNull;
+import honeyroasted.jype.type.TypeOr;
+import honeyroasted.jype.type.TypeOut;
+import honeyroasted.jype.type.TypePrimitive;
+import honeyroasted.jype.type.TypeDeclaration;
+import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeSolver;
@@ -25,6 +23,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class TypeSystem {
     public final TypeNone NONE = TypeNone.NONE;
@@ -82,12 +81,8 @@ public class TypeSystem {
         OBJECT_CLASS = declaration(Object.class);
     }
 
-    public TypeSolver newInference() {
-        return new TypeSolver();
-    }
-
-    public TypePlaceholder newPlaceholder() {
-        return new TypePlaceholder();
+    public TypeSolver newInference(Predicate<honeyroasted.jype.Type> consider) {
+        return new TypeSolver(consider);
     }
 
     public TypeParameter newParameter(String name) {
@@ -175,13 +170,13 @@ public class TypeSystem {
             }
         } else if (type instanceof TypeVariable<?> vtype) {
             if (this.cache.has(vtype, TypeParameter.class)) {
-                return (T) new TypeParameterReference(this.cache.get(vtype, TypeParameter.class));
+                return (T) this.cache.get(vtype, TypeParameter.class);
             } else {
                 TypeParameter parameter = new TypeParameter(vtype.getName());
                 this.cache.cache(vtype, parameter);
                 parameter.setBound(and(vtype.getBounds()));
                 parameter.lock();
-                return (T) new TypeParameterReference(parameter);
+                return (T) parameter;
             }
         } else if (type instanceof GenericArrayType atype) {
             return (T) new TypeArray(of(atype.getGenericComponentType()));

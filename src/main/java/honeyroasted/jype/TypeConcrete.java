@@ -1,12 +1,10 @@
 package honeyroasted.jype;
 
-import honeyroasted.jype.concrete.TypeAnd;
-import honeyroasted.jype.concrete.TypeIn;
-import honeyroasted.jype.concrete.TypeNone;
-import honeyroasted.jype.concrete.TypePlaceholder;
-import honeyroasted.jype.concrete.TypeOr;
-import honeyroasted.jype.concrete.TypeParameterReference;
+import honeyroasted.jype.type.*;
 import honeyroasted.jype.system.TypeConstraint;
+
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface TypeConcrete extends Type {
 
@@ -14,6 +12,31 @@ public interface TypeConcrete extends Type {
 
     default boolean isAssignableTo(TypeConcrete other) {
         return assignabilityTo(other).forceResolve() instanceof TypeConstraint.True;
+    }
+
+    default <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(this);
+    }
+
+    default void forEach(Consumer<TypeConcrete> consumer) {
+        map(t -> {
+            consumer.accept(t);
+            return t;
+        });
+    }
+
+    default <T extends TypeConcrete> T copy() {
+        return map(Function.identity());
+    }
+
+    default <T extends Type> T resolveVariables(Function<TypeParameter, TypeConcrete> mapper) {
+        return map(t -> {
+            if (t instanceof TypeParameter ref) {
+                return mapper.apply(ref);
+            } else {
+                return t;
+            }
+        });
     }
 
     static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeConstraint def) {
@@ -25,9 +48,7 @@ public interface TypeConcrete extends Type {
             return new TypeConstraint.And(and.types().stream().map(self::assignabilityTo).toList());
         } else if (other instanceof TypeIn in) {
              return self.assignabilityTo(in.bound());
-         } else if (other instanceof TypePlaceholder inferable) {
-            return new TypeConstraint.Bound(self, inferable);
-         } else if (other instanceof TypeParameterReference ref) {
+         } else if (other instanceof TypeParameter ref) {
             return new TypeConstraint.Bound(self, ref);
          }
 

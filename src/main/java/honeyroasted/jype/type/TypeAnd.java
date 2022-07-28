@@ -1,4 +1,4 @@
-package honeyroasted.jype.concrete;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
@@ -27,7 +27,7 @@ public class TypeAnd implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<Type, Type> mapper) {
+    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeAnd(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
     }
 

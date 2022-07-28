@@ -1,4 +1,4 @@
-package honeyroasted.jype.concrete;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;

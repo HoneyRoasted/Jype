@@ -1,4 +1,4 @@
-package honeyroasted.jype.concrete;
+package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
@@ -7,10 +7,10 @@ import honeyroasted.jype.system.TypeConstraint;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class TypeOut implements TypeConcrete {
+public class TypeIn implements TypeConcrete {
     private TypeConcrete bound;
 
-    public TypeOut(TypeConcrete bound) {
+    public TypeIn(TypeConcrete bound) {
         this.bound = bound;
     }
 
@@ -24,18 +24,18 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<Type, Type> mapper) {
-        return (T) mapper.apply(new TypeOut(this.bound.map(mapper)));
+    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(new TypeIn(this.bound.map(mapper)));
     }
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
-        return this.bound.assignabilityTo(other);
+        return TypeConstraint.FALSE;
     }
 
     @Override
     public String toString() {
-        return "? extends " + this.bound;
+        return "? super " + this.bound;
     }
 
     @Override
@@ -43,9 +43,9 @@ public class TypeOut implements TypeConcrete {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TypeOut typeOut = (TypeOut) o;
+        TypeIn typeIn = (TypeIn) o;
 
-        return Objects.equals(bound, typeOut.bound);
+        return Objects.equals(bound, typeIn.bound);
     }
 
     @Override

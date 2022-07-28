@@ -1,8 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.concrete.TypePlaceholder;
-import honeyroasted.jype.concrete.TypeParameterReference;
+import honeyroasted.jype.type.TypeParameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -179,12 +178,10 @@ public interface TypeConstraint {
 
         @Override
         public TypeConstraint forceResolve() {
-            if (this.subtype instanceof TypeParameterReference ref) {
-                return ref.variable().bound().assignabilityTo(this.parent).forceResolve();
-            } else if (this.parent instanceof TypeParameterReference ref) {
-                return this.subtype.assignabilityTo(ref.variable().bound()).forceResolve();
-            } else if (this.subtype instanceof TypePlaceholder || this.parent instanceof TypePlaceholder) {
-                return this;
+            if (this.subtype instanceof TypeParameter ref) {
+                return ref.bound().assignabilityTo(this.parent).forceResolve();
+            } else if (this.parent instanceof TypeParameter ref) {
+                return this.subtype.assignabilityTo(ref.bound()).forceResolve();
             } else {
                 return this.subtype.assignabilityTo(this.parent).forceResolve();
             }
@@ -194,6 +191,14 @@ public interface TypeConstraint {
         public String toString() {
             return "(" + this.subtype + " <: " + this.parent + ")";
         }
+
+        enum Kind {
+            VAR_TO_BOUND,
+            BOUND_TO_VAR,
+            VAR_TO_VAR,
+            BOUND_TO_BOUND
+        }
+
     }
 
     default TypeConstraint and(TypeConstraint... others) {
