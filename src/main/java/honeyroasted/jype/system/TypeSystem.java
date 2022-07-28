@@ -2,6 +2,7 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.system.solver.impl.BruteForceTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
@@ -82,7 +83,7 @@ public class TypeSystem {
     }
 
     public TypeSolver newInference(Predicate<honeyroasted.jype.Type> consider) {
-        return new TypeSolver(consider);
+        return new BruteForceTypeSolver(consider);
     }
 
     public TypeParameter newParameter(String name) {

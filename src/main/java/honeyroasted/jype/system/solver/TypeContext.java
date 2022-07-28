@@ -7,7 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TypeContext {
-    private Map<TypeParameter, TypeConcrete> parameters = new HashMap<>();
+    private Map<TypeParameter, TypeConcrete> parameters;
+
+    public TypeContext(Map<TypeParameter, TypeConcrete> parameters) {
+        this.parameters = parameters;
+    }
+
+    public TypeContext() {
+        this(new HashMap<>());
+    }
 
     public TypeContext put(TypeParameter parameter, TypeConcrete concrete) {
         this.parameters.put(parameter, concrete);

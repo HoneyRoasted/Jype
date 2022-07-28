@@ -192,7 +192,19 @@ public interface TypeConstraint {
             return "(" + this.subtype + " <: " + this.parent + ")";
         }
 
-        enum Kind {
+        public Kind kind() {
+            if (this.subtype instanceof TypeParameter && this.parent instanceof TypeParameter) {
+                return Kind.VAR_TO_VAR;
+            } else if (this.subtype instanceof TypeParameter) {
+                return Kind.VAR_TO_BOUND;
+            } else if (this.parent instanceof TypeParameter) {
+                return Kind.BOUND_TO_VAR;
+            } else {
+                return Kind.BOUND_TO_BOUND;
+            }
+        }
+
+        public enum Kind {
             VAR_TO_BOUND,
             BOUND_TO_VAR,
             VAR_TO_VAR,
