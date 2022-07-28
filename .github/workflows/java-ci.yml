@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew clean test
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew clean build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2

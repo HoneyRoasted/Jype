@@ -42,8 +42,14 @@ task javadocJar(type: Jar) {
     classifier("javadoc")
 }
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.allSource
+
+    classifier("source")
+}
+
 artifacts {
-    archives javadocJar, fatJar
+    archives javadocJar, fatJar, sourceJar
 }
 
 publishing {
@@ -52,6 +58,10 @@ publishing {
             artifactId = rootProject.name
 
             from components.java
+
+            artifact sourceJar
+            artifact javadocJar
+            artifact fatJar
         }
     }
 }
