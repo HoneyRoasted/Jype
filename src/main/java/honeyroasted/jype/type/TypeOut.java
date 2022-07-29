@@ -40,7 +40,7 @@ public class TypeOut implements TypeConcrete {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
             return TypeString.successful("?");
         } else {
-            TypeString bound = this.bound.toSignature(context);
+            TypeString bound = this.bound.toSource(context);
             return bound.successful() ? TypeString.successful("? extends " + bound.value()) : bound;
         }
     }

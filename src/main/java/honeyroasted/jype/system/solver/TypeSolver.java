@@ -9,6 +9,8 @@ public interface TypeSolver {
 
     TypeSolution solve();
 
+    TypeConstraint root();
+
     default TypeSolver constrain(TypeConcrete subtype, TypeConcrete parent) {
         return constrain(new TypeConstraint.Bound(subtype, parent));
     }

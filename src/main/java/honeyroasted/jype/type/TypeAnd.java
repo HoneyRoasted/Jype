@@ -24,9 +24,9 @@ public class TypeAnd implements TypeConcrete {
 
     @Override
     public TypeString toSignature(TypeString.Context context) {
-        Stream<TypeString> stream = this.types.stream().map(t -> t.toSignature(context));
-        return stream.filter(t -> !t.successful()).findFirst().orElseGet(() ->
-                TypeString.successful(stream.map(TypeString::value).collect(Collectors.joining(":"))));
+        List<TypeString> args = this.types.stream().map(t -> t.toSignature(context)).toList();
+        return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(":"))));
     }
 
     @Override
@@ -36,9 +36,9 @@ public class TypeAnd implements TypeConcrete {
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        Stream<TypeString> stream = this.types.stream().map(t -> t.toSignature(context));
-        return stream.filter(t -> !t.successful()).findFirst().orElseGet(() ->
-                TypeString.successful(stream.map(TypeString::value).collect(Collectors.joining(" & "))));
+        List<TypeString> args = this.types.stream().map(t -> t.toSource(context)).toList();
+        return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" & "))));
     }
 
     @Override

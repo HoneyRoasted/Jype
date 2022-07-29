@@ -18,12 +18,26 @@ import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeSolver;
 
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.IntersectionType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.UnionType;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Predicate;
 
 public class TypeSystem {
@@ -119,7 +133,8 @@ public class TypeSystem {
     public <T extends TypeConcrete> T token(TypeToken token) {
         return of(((ParameterizedType) token.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
-    public  <T extends TypeConcrete> T of(java.lang.reflect.Type type) {
+
+    public <T extends TypeConcrete> T of(java.lang.reflect.Type type) {
         if (type instanceof Class clazz) {
             if (clazz.isPrimitive()) {
                 if (clazz == void.class) {
@@ -156,19 +171,11 @@ public class TypeSystem {
                 throw new IllegalArgumentException("Unknown raw type: " + type.getClass().getName());
             }
         } else if (type instanceof WildcardType wtype) {
-            if (this.cache.has(type, TypeIn.class)) {
-                return (T) this.cache.get(type, TypeIn.class);
-            } else if (this.cache.has(type, TypeOut.class)) {
-                return (T) this.cache.get(type, TypeOut.class);
-            }
-
             if (wtype.getLowerBounds().length != 0) {
                 TypeIn typeIn = new TypeIn(and(wtype.getLowerBounds()));
-                this.cache.cache(type, typeIn);
                 return (T) typeIn;
             } else {
                 TypeOut typeOut = new TypeOut(and(wtype.getUpperBounds()));
-                this.cache.cache(type, typeOut);
                 return (T) typeOut;
             }
         } else if (type instanceof TypeVariable<?> vtype) {
@@ -194,6 +201,14 @@ public class TypeSystem {
 
     private TypeConcrete or(Type... array) {
         return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).toList());
+    }
+
+    private TypeConcrete and(List<? extends TypeMirror> bounds, Elements elements) {
+        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).toList());
+    }
+
+    private TypeConcrete or(List<? extends TypeMirror> bounds, Elements elements) {
+        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).toList());
     }
 
     public TypeDeclaration declaration(Class<?> clazz) {
@@ -233,6 +248,126 @@ public class TypeSystem {
             type.lock();
             return type;
         }
+    }
+
+    public <T extends TypeConcrete> T of(TypeMirror type, Elements elements) {
+        if (type.getKind().isPrimitive() && type instanceof PrimitiveType primitiveType) {
+            return (T) switch (primitiveType.getKind()) {
+                case BOOLEAN -> BOOLEAN;
+                case BYTE -> BYTE;
+                case SHORT -> SHORT;
+                case INT -> INT;
+                case LONG -> LONG;
+                case CHAR -> CHAR;
+                case FLOAT -> FLOAT;
+                case DOUBLE -> DOUBLE;
+                default -> throw new IllegalArgumentException("Unknown primitive type: " + primitiveType.getKind());
+            };
+        } else if (type.getKind() == TypeKind.VOID) {
+            return (T) VOID;
+        } else if (type.getKind() == TypeKind.NONE) {
+            return (T) NONE;
+        } else if (type.getKind() == TypeKind.NULL) {
+            return (T) NULL;
+        } else if (type.getKind() == TypeKind.ARRAY && type instanceof ArrayType arrayType) {
+            return (T) new TypeArray(of(arrayType, elements));
+        } else if (type.getKind() == TypeKind.WILDCARD && type instanceof javax.lang.model.type.WildcardType wildcardType) {
+            if (wildcardType.getSuperBound() != null) {
+                return (T) new TypeIn(of(wildcardType.getSuperBound(), elements));
+            } else if (wildcardType.getExtendsBound() != null) {
+                return (T) new TypeOut(of(wildcardType.getExtendsBound(), elements));
+            } else {
+                return (T) new TypeOut(of(Object.class));
+            }
+        } else if (type.getKind() == TypeKind.TYPEVAR && type instanceof javax.lang.model.type.TypeVariable typeVariable) {
+            TypeParameterElement var = (TypeParameterElement) typeVariable.asElement();
+            if (this.cache.has(typeVariable, TypeParameter.class)) {
+                return (T) this.cache.get(typeVariable, TypeParameter.class);
+            } else {
+                TypeParameter parameter = new TypeParameter(var.getSimpleName().toString());
+                this.cache.cache(var.asType(), parameter);
+                parameter.setBound(and(var.getBounds(), elements));
+                parameter.lock();
+                return (T) parameter;
+            }
+        } else if (type.getKind() == TypeKind.UNION && type instanceof UnionType unionType) {
+            return (T) or(unionType.getAlternatives(), elements);
+        } else if (type.getKind() == TypeKind.INTERSECTION && type instanceof IntersectionType intersectionType) {
+            return (T) and(intersectionType.getBounds(), elements);
+        } else if (type.getKind() == TypeKind.DECLARED && type instanceof DeclaredType declared && declared.asElement() instanceof TypeElement) {
+            Namespace namespace = namespace(declared, elements);
+            if (declared.getTypeArguments().isEmpty()) {
+                if (this.cache.has(namespace.name(), TypeClass.class)) {
+                    return (T) this.cache.get(namespace.name(), TypeClass.class);
+                } else {
+                    TypeClass cls = new TypeClass(declaration(declared, elements));
+                    this.cache.cache(namespace.name(), cls);
+                    cls.lock();
+                    return (T) cls;
+                }
+            } else {
+                if (this.cache.has(declared, TypeClass.class)) {
+                    return (T) this.cache.get(declared, TypeClass.class);
+                } else {
+                    TypeClass cls = new TypeClass(declaration(declared, elements));
+                    this.cache.cache(namespace.name(), cls);
+                    for (TypeMirror arg : declared.getTypeArguments()) {
+                        cls.arguments().add(of(arg, elements));
+                    }
+                    cls.lock();
+                    return (T) cls;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown type: " + type.getKind() + ", " + type);
+        }
+    }
+
+    public TypeDeclaration declaration(DeclaredType declared, Elements elements) {
+        Element element = declared.asElement();
+        if ((element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.INTERFACE ||
+                element.getKind() == ElementKind.ANNOTATION_TYPE) && element instanceof TypeElement typeElement) {
+
+            Namespace namespace = namespace(declared, elements);
+            if (this.cache.has(namespace.name(), TypeDeclaration.class)) {
+                return this.cache.get(namespace.name(), TypeDeclaration.class);
+            } else {
+                TypeDeclaration type = new TypeDeclaration(namespace);
+                this.cache.cache(namespace.name(), type);
+
+                for (TypeParameterElement var : ((TypeElement) element).getTypeParameters()) {
+                    if (this.cache.has(var.asType(), TypeParameter.class)) {
+                        type.parameters().add(this.cache.get(var.asType(), TypeParameter.class));
+                    } else {
+                        TypeParameter parameter = new TypeParameter(var.getSimpleName().toString());
+                        this.cache.cache(var.asType(), parameter);
+                        parameter.setBound(and(var.getBounds(), elements));
+                        parameter.lock();
+                        type.parameters().add(parameter);
+                    }
+                }
+
+                TypeMirror superclass = typeElement.getSuperclass();
+                if (superclass.getKind() != TypeKind.NONE) {
+                    type.parents().add(of(superclass, elements));
+                } else if (typeElement.getKind() == ElementKind.INTERFACE) {
+                    type.parents().add(of(Object.class));
+                }
+
+                for (TypeMirror inter : typeElement.getInterfaces()) {
+                    type.parents().add(of(inter, elements));
+                }
+
+                type.lock();
+                return type;
+            }
+        } else {
+            throw new IllegalArgumentException("Unknown type: " + declared.getKind() + ", " + declared);
+        }
+    }
+
+    private static Namespace namespace(DeclaredType type, Elements elements) {
+        return Namespace.binary(elements.getBinaryName((TypeElement) type.asElement()).toString());
     }
 
     public TypeCache cache() {

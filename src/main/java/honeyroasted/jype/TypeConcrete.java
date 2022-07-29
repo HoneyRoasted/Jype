@@ -1,5 +1,8 @@
 package honeyroasted.jype;
 
+import honeyroasted.jype.system.solver.TypeSolution;
+import honeyroasted.jype.system.solver.TypeSolver;
+import honeyroasted.jype.system.solver.impl.ForceResolveTypeSolver;
 import honeyroasted.jype.type.*;
 import honeyroasted.jype.system.TypeConstraint;
 
@@ -11,7 +14,10 @@ public interface TypeConcrete extends Type {
     TypeConstraint assignabilityTo(TypeConcrete other);
 
     default boolean isAssignableTo(TypeConcrete other) {
-        return assignabilityTo(other).forceResolve() instanceof TypeConstraint.True;
+        return new ForceResolveTypeSolver()
+                .constrain(this, other)
+                .solve()
+                .successful();
     }
 
     default <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {

@@ -85,13 +85,13 @@ public class TypeClass implements TypeConcrete {
     public TypeString toSignature(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
         if (!this.arguments.isEmpty()) {
-            Stream<TypeString> stream = this.arguments.stream().map(t -> t.toSignature(context));
-            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSignature(context)).toList();
+            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
             }
 
-            sb.append("<").append(stream.map(TypeString::value).collect(Collectors.joining())).append(">");
+            sb.append("<").append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
         }
 
         return TypeString.successful(sb.append(";").toString());
@@ -104,15 +104,15 @@ public class TypeClass implements TypeConcrete {
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
+        StringBuilder sb = new StringBuilder().append(this.declaration.name());
         if (!this.arguments.isEmpty()) {
-            Stream<TypeString> stream = this.arguments.stream().map(t -> t.toSource(context));
-            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSource(context)).toList();
+            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
             }
 
-            sb.append("<").append(stream.map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+            sb.append("<").append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
         }
 
         return TypeString.successful(sb.toString());

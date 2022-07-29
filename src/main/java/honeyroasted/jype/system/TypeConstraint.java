@@ -14,13 +14,8 @@ public interface TypeConstraint {
 
     class False implements TypeConstraint {
         @Override
-        public TypeConstraint simplify() {
-            return this;
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            return this;
+        public TypeConstraint not() {
+            return TRUE;
         }
 
         @Override
@@ -31,13 +26,8 @@ public interface TypeConstraint {
 
     class True implements TypeConstraint {
         @Override
-        public TypeConstraint simplify() {
-            return this;
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            return this;
+        public TypeConstraint not() {
+            return FALSE;
         }
 
         @Override
@@ -66,31 +56,21 @@ public interface TypeConstraint {
         }
 
         @Override
-        public TypeConstraint simplify() {
-            List<TypeConstraint> simple = this.constraints.stream().map(TypeConstraint::simplify).toList();
-            if (simple.stream().anyMatch(c -> c instanceof False)) {
-                return TypeConstraint.FALSE;
-            } else if (simple.stream().allMatch(c -> c instanceof True)) {
-                return TypeConstraint.TRUE;
-            } else if (simple.size() == 1) {
-                return simple.get(0);
+        public TypeConstraint flatten() {
+            List<TypeConstraint> res = new ArrayList<>();
+            this.constraints.stream().map(TypeConstraint::flatten).forEach(t -> {
+                if (t instanceof And and) {
+                    res.addAll(and.constraints());
+                } else {
+                    res.add(t);
+                }
+            });
+
+            if (res.size() == 1) {
+                return res.get(0);
+            } else {
+                return new And(res);
             }
-
-            return new And(simple);
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            List<TypeConstraint> resolved = this.constraints.stream().map(TypeConstraint::forceResolve).toList();
-            if (resolved.stream().anyMatch(c -> c instanceof False)) {
-                return TypeConstraint.FALSE;
-            } else if (resolved.stream().allMatch(c -> c instanceof True)) {
-                return TypeConstraint.TRUE;
-            } else if (resolved.size() == 1) {
-                return resolved.get(0);
-            }
-
-            return new And(resolved);
         }
 
         @Override
@@ -119,31 +99,21 @@ public interface TypeConstraint {
         }
 
         @Override
-        public TypeConstraint simplify() {
-            List<TypeConstraint> simple = this.constraints.stream().map(TypeConstraint::simplify).toList();
-            if (simple.stream().anyMatch(c -> c instanceof True)) {
-                return TypeConstraint.TRUE;
-            } else if (simple.stream().allMatch(c -> c instanceof False)) {
-                return TypeConstraint.FALSE;
-            } else if (simple.size() == 1) {
-                return simple.get(0);
+        public TypeConstraint flatten() {
+            List<TypeConstraint> res = new ArrayList<>();
+            this.constraints.stream().map(TypeConstraint::flatten).forEach(t -> {
+                if (t instanceof Or or) {
+                    res.addAll(or.constraints());
+                } else {
+                    res.add(t);
+                }
+            });
+
+            if (res.size() == 1) {
+                return res.get(0);
+            } else {
+                return new Or(res);
             }
-
-            return new Or(simple);
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            List<TypeConstraint> resolved = this.constraints.stream().map(TypeConstraint::forceResolve).toList();
-            if (resolved.stream().anyMatch(c -> c instanceof True)) {
-                return TypeConstraint.TRUE;
-            } else if (resolved.stream().allMatch(c -> c instanceof False)) {
-                return TypeConstraint.FALSE;
-            } else if (resolved.size() == 1) {
-                return resolved.get(0);
-            }
-
-            return new Or(resolved);
         }
 
         @Override
@@ -154,38 +124,12 @@ public interface TypeConstraint {
 
     record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
         @Override
-        public TypeConstraint simplify() {
-            return this;
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            return this.left.equals(this.right) ? TypeConstraint.TRUE : TypeConstraint.FALSE;
-        }
-
-        @Override
         public String toString() {
             return "(" + this.left + " = " + this.right + ")";
         }
     }
 
     record Bound(TypeConcrete subtype, TypeConcrete parent) implements TypeConstraint {
-
-        @Override
-        public TypeConstraint simplify() {
-            return this;
-        }
-
-        @Override
-        public TypeConstraint forceResolve() {
-            if (this.subtype instanceof TypeParameter ref) {
-                return ref.bound().assignabilityTo(this.parent).forceResolve();
-            } else if (this.parent instanceof TypeParameter ref) {
-                return this.subtype.assignabilityTo(ref.bound()).forceResolve();
-            } else {
-                return this.subtype.assignabilityTo(this.parent).forceResolve();
-            }
-        }
 
         @Override
         public String toString() {
@@ -213,6 +157,24 @@ public interface TypeConstraint {
 
     }
 
+    record Not(TypeConstraint constraint) implements TypeConstraint {
+
+        @Override
+        public TypeConstraint flatten() {
+            return this.constraint.flatten().not();
+        }
+
+        @Override
+        public TypeConstraint not() {
+            return this.constraint;
+        }
+
+        @Override
+        public String toString() {
+            return "!" + this.constraint;
+        }
+    }
+
     default TypeConstraint and(TypeConstraint... others) {
         List<TypeConstraint> constraints = new ArrayList<>();
         constraints.add(this);
@@ -227,8 +189,12 @@ public interface TypeConstraint {
         return new Or(constraints);
     }
 
-    TypeConstraint simplify();
+    default TypeConstraint not() {
+        return new Not(this);
+    }
 
-    TypeConstraint forceResolve();
+    default TypeConstraint flatten() {
+        return this;
+    }
 
 }

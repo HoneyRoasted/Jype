@@ -65,32 +65,32 @@ public class TypeDeclaration implements Type {
             StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
-                Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
-                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+                Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
                 }
-                sb.append(">");
+                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
             }
             return TypeString.successful(sb.append(";").toString());
         } else {
             StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
-                Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
-                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+                Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
                 }
-                sb.append(stream.map(TypeString::value).collect(Collectors.joining())).append(">");
+                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
             }
 
-            Stream<TypeString> stream = this.parents.stream().map(t -> t.toSignature(context));
-            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            List<TypeString> args = this.parents.stream().map(t -> t.toSignature(context)).toList();
+            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
             }
-            sb.append(stream.map(TypeString::value).collect(Collectors.joining()));
+            sb.append(args.stream().map(TypeString::value).collect(Collectors.joining()));
 
             return TypeString.successful(sb.toString());
         }
@@ -108,12 +108,12 @@ public class TypeDeclaration implements Type {
 
         if (!this.parameters.isEmpty()) {
             sb.append("<");
-            Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
-            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
             }
-            sb.append(stream.map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+            sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
         }
 
         if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
@@ -128,12 +128,12 @@ public class TypeDeclaration implements Type {
 
             if (this.parents.size() > 1) {
                 sb.append(" implements ");
-                Stream<TypeString> stream = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE));
-                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
+                Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
                 }
-                sb.append(stream.map(TypeString::value).collect(Collectors.joining(", ")));
+                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", ")));
             }
         }
 

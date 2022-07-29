@@ -47,7 +47,7 @@ public class TypeIn implements TypeConcrete {
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        TypeString bound = this.bound.toSignature(context);
+        TypeString bound = this.bound.toSource(context);
         return bound.successful() ? TypeString.successful("? super " + bound.value()) : bound;
     }
 

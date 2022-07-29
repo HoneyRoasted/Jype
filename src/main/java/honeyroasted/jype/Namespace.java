@@ -25,6 +25,9 @@ public class Namespace {
         this.name = elements[elements.length - 1];
     }
 
+    public static Namespace binary(String binaryName) {
+        return of(binaryName.split("/"));
+    }
     public static Namespace of(String... elements) {
         return new Namespace(elements);
     }

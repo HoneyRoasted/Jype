@@ -88,8 +88,13 @@ public class TypeParameter implements TypeConcrete {
 
     @Override
     public String toString() {
-        return this.name + " extends " + this.bound.toString();
+        return this.name + "-" + identity() + " extends " + this.bound.toString();
     }
+
+    public String identity() {
+        return Integer.toHexString(System.identityHashCode(this));
+    }
+
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
@@ -99,18 +104,9 @@ public class TypeParameter implements TypeConcrete {
     public static class Placeholder extends TypeParameter {
 
         public Placeholder(TypeConcrete bound) {
-            super(bound);
-            this.setName("<typevar #" + identity() + ">");
+            super("#typevar", bound);
         }
 
-        @Override
-        public String toString() {
-            return name();
-        }
-
-        private String identity() {
-            return Integer.toHexString(System.identityHashCode(this));
-        }
     }
 
 }
