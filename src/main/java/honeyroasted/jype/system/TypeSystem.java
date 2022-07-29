@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.function.Predicate;
 
 public class TypeSystem {
+    public static final TypeSystem GLOBAL = new TypeSystem();
+
     public final TypeNone NONE = TypeNone.NONE;
     public final TypeNull NULL = TypeNull.NULL;
 

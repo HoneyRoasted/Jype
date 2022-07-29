@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
@@ -41,6 +42,24 @@ public class TypeArray implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        TypeString element = this.element.toSignature(context);
+        return element.successful() ? TypeString.successful("[" + element.value()) : element;
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        TypeString element = this.element.toDescriptor(context);
+        return element.successful() ? TypeString.successful("[" + element.value()) : element;
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        TypeString element = this.element.toSource(context);
+        return element.successful() ? TypeString.successful(element.value() + "[]") : element;
     }
 
     @Override

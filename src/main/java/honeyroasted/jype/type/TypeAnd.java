@@ -2,12 +2,14 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TypeAnd implements TypeConcrete {
     private List<TypeConcrete> types;
@@ -18,6 +20,25 @@ public class TypeAnd implements TypeConcrete {
 
     public TypeAnd() {
         this(new ArrayList<>());
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        Stream<TypeString> stream = this.types.stream().map(t -> t.toSignature(context));
+        return stream.filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(stream.map(TypeString::value).collect(Collectors.joining(":"))));
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure("TypeAnd", "descriptor");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        Stream<TypeString> stream = this.types.stream().map(t -> t.toSignature(context));
+        return stream.filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(stream.map(TypeString::value).collect(Collectors.joining(" & "))));
     }
 
     @Override

@@ -2,7 +2,9 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -16,6 +18,31 @@ public class TypeOut implements TypeConcrete {
 
     public TypeConcrete bound() {
         return bound;
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+            return TypeString.successful("*");
+        } else {
+            TypeString bound = this.bound.toSignature(context);
+            return bound.successful() ? TypeString.successful("+" + bound.value()) : bound;
+        }
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure("TypeOut", "descriptor");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+            return TypeString.successful("?");
+        } else {
+            TypeString bound = this.bound.toSignature(context);
+            return bound.successful() ? TypeString.successful("? extends " + bound.value()) : bound;
+        }
     }
 
     @Override

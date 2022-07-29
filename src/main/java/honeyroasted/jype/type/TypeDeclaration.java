@@ -3,6 +3,8 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TypeDeclaration implements Type {
     private Namespace namespace;
@@ -57,6 +60,87 @@ public class TypeDeclaration implements Type {
     }
 
     @Override
+    public TypeString toSignature(TypeString.Context context) {
+        if (context == TypeString.Context.CONCRETE) {
+            StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
+            if (!this.parameters.isEmpty()) {
+                sb.append("<");
+                Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
+                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                if (failure.isPresent()) {
+                    return failure.get();
+                }
+                sb.append(">");
+            }
+            return TypeString.successful(sb.append(";").toString());
+        } else {
+            StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
+            if (!this.parameters.isEmpty()) {
+                sb.append("<");
+                Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
+                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                if (failure.isPresent()) {
+                    return failure.get();
+                }
+                sb.append(stream.map(TypeString::value).collect(Collectors.joining())).append(">");
+            }
+
+            Stream<TypeString> stream = this.parents.stream().map(t -> t.toSignature(context));
+            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            if (failure.isPresent()) {
+                return failure.get();
+            }
+            sb.append(stream.map(TypeString::value).collect(Collectors.joining()));
+
+            return TypeString.successful(sb.toString());
+        }
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.successful("L" + this.namespace.internalName() + ";");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.namespace().name());
+
+        if (!this.parameters.isEmpty()) {
+            sb.append("<");
+            Stream<TypeString> stream = this.parameters.stream().map(t -> t.toSignature(context));
+            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            if (failure.isPresent()) {
+                return failure.get();
+            }
+            sb.append(stream.map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+        }
+
+        if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
+            sb.append(" extends ");
+
+            TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
+            if (!superclass.successful()) {
+                return superclass;
+            }
+
+            sb.append(superclass.value());
+
+            if (this.parents.size() > 1) {
+                sb.append(" implements ");
+                Stream<TypeString> stream = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE));
+                Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+                if (failure.isPresent()) {
+                    return failure.get();
+                }
+                sb.append(stream.map(TypeString::value).collect(Collectors.joining(", ")));
+            }
+        }
+
+        return TypeString.successful(sb.toString());
+    }
+
+    @Override
     public void lock() {
         this.parameters = List.copyOf(this.parameters);
         this.parents = List.copyOf(this.parents);
@@ -91,6 +175,14 @@ public class TypeDeclaration implements Type {
 
     public List<TypeClass> parents() {
         return this.parents;
+    }
+
+    public String name() {
+        return this.namespace.name();
+    }
+
+    public String internalName() {
+        return this.namespace.internalName();
     }
 
     @Override

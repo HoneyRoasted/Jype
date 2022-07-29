@@ -1,6 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
@@ -40,5 +41,20 @@ public class TypeNone implements TypeConcrete {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        return toDescriptor(context);
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.successful("V");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        return TypeString.successful("void");
     }
 }

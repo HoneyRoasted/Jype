@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TypeClass implements TypeConcrete {
     private TypeDeclaration declaration;
@@ -77,6 +79,43 @@ public class TypeClass implements TypeConcrete {
             result.lock();
             return result;
         });
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
+        if (!this.arguments.isEmpty()) {
+            Stream<TypeString> stream = this.arguments.stream().map(t -> t.toSignature(context));
+            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            if (failure.isPresent()) {
+                return failure.get();
+            }
+
+            sb.append("<").append(stream.map(TypeString::value).collect(Collectors.joining())).append(">");
+        }
+
+        return TypeString.successful(sb.append(";").toString());
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.successful("L" + this.declaration.namespace().internalName() + ";");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
+        if (!this.arguments.isEmpty()) {
+            Stream<TypeString> stream = this.arguments.stream().map(t -> t.toSource(context));
+            Optional<TypeString> failure = stream.filter(t -> !t.successful()).findFirst();
+            if (failure.isPresent()) {
+                return failure.get();
+            }
+
+            sb.append("<").append(stream.map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+        }
+
+        return TypeString.successful(sb.toString());
     }
 
     @Override

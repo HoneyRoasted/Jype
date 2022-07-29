@@ -1,11 +1,12 @@
 package honeyroasted.jype;
 
-import honeyroasted.jype.type.TypeParameter;
-
-import java.util.function.Consumer;
-import java.util.function.Function;
-
 public interface Type {
+
+    TypeString toSignature(TypeString.Context context);
+
+    TypeString toDescriptor(TypeString.Context context);
+
+    TypeString toSource(TypeString.Context context);
 
     default boolean isArray() {
         return false;

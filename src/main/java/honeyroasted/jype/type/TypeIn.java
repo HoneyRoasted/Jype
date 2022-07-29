@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.Objects;
@@ -31,6 +32,23 @@ public class TypeIn implements TypeConcrete {
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
         return TypeConstraint.FALSE;
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        TypeString bound = this.bound.toSignature(context);
+        return bound.successful() ? TypeString.successful("-" + bound.value()) : bound;
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure("TypeIn", "descriptor");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        TypeString bound = this.bound.toSignature(context);
+        return bound.successful() ? TypeString.successful("? super " + bound.value()) : bound;
     }
 
     @Override

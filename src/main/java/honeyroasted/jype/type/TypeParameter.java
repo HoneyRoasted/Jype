@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.function.Function;
@@ -52,6 +53,31 @@ public class TypeParameter implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeParameter(this.name, this.bound.map(mapper)));
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        if (context == TypeString.Context.CONCRETE) {
+            return TypeString.successful("T" + this.name + ";");
+        } else {
+            TypeString bound = this.bound.toSignature(TypeString.Context.CONCRETE);
+            return bound.successful() ? TypeString.successful(this.name + ":" + bound.value()) : bound;
+        }
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure("TypeParameter", "descriptor");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        if (context == TypeString.Context.CONCRETE) {
+            return TypeString.successful(this.name);
+        } else {
+            TypeString bound = this.bound.toSource(TypeString.Context.CONCRETE);
+            return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value()) : bound;
+        }
     }
 
     @Override

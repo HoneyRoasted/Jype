@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
@@ -19,6 +20,21 @@ public class TypeOr implements TypeConcrete {
 
     public TypeOr() {
         this(new ArrayList<>());
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        return TypeString.failure("TypeOr", "signature");
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure("TypeOr", "descriptor");
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        return TypeString.failure("TypeOr", "source");
     }
 
     @Override

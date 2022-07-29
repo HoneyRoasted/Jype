@@ -48,6 +48,12 @@ public class Namespace {
                 this.name;
     }
 
+    public String internalName() {
+        return String.join("/", this.path) +
+                (this.path.isEmpty() ? "" : "/") +
+                this.name.replace('.', '$');
+    }
+
     @Override
     public String toString() {
         return this.name();

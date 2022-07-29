@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.HashMap;
@@ -114,5 +115,20 @@ public class TypePrimitive implements TypeConcrete {
         Map<K, V> result = new HashMap<>();
         map.forEach((key, val) -> result.put(val, key));
         return Map.copyOf(result);
+    }
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        return toDescriptor(context);
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.successful(this.descriptor);
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        return TypeString.successful(this.reflectionClass.getSimpleName());
     }
 }
