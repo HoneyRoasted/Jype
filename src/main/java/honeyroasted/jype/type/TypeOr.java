@@ -45,7 +45,7 @@ public class TypeOr implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeOr(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
+        return (T) mapper.apply(new TypeOr(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toList())));
     }
 
     public List<TypeConcrete> types() {
@@ -57,8 +57,8 @@ public class TypeOr implements TypeConcrete {
             return TypeNone.VOID;
         } else if (this.types.size() == 1) {
             TypeConcrete type = this.types.get(0);
-            return type instanceof TypeAnd intersection ? intersection.flatten() :
-                    type instanceof TypeOr union ? union.flatten() :
+            return type instanceof TypeAnd ? ((TypeAnd) type).flatten() :
+                    type instanceof TypeOr ? ((TypeOr) type).flatten() :
                             type;
         } else {
             List<TypeConcrete> types = new ArrayList<>();
@@ -68,8 +68,8 @@ public class TypeOr implements TypeConcrete {
     }
 
     private static void flatten(TypeConcrete type, List<TypeConcrete> types) {
-        if (type instanceof TypeOr union) {
-            union.types().forEach(t -> flatten(t, types));
+        if (type instanceof TypeOr) {
+            ((TypeOr) type).types().forEach(t -> flatten(t, types));
         } else {
             types.add(type);
         }
@@ -77,7 +77,7 @@ public class TypeOr implements TypeConcrete {
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
-        return new TypeConstraint.And(this.types.stream().map(t -> t.assignabilityTo(other)).toList());
+        return new TypeConstraint.And(this.types.stream().map(t -> t.assignabilityTo(other)).collect(Collectors.toList()));
     }
 
     @Override

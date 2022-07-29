@@ -27,11 +27,11 @@ public class TypeArray implements TypeConcrete {
     }
 
     public TypeConcrete deepElement() {
-        return this.element instanceof TypeArray arr ? arr.deepElement() : this.element;
+        return this.element instanceof TypeArray ? ((TypeArray) this.element).deepElement() : this.element;
     }
 
     public int depth() {
-        return this.element instanceof TypeArray arr ? arr.depth() + 1 : 1;
+        return this.element instanceof TypeArray ? ((TypeArray) this.element).depth() + 1 : 1;
     }
 
     @Override
@@ -89,9 +89,9 @@ public class TypeArray implements TypeConcrete {
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
-        if (other instanceof TypeArray arr) {
-            return this.element().assignabilityTo(arr.element());
-        } else if (other instanceof TypeClass otherClass) {
+        if (other instanceof TypeArray) {
+            return this.element().assignabilityTo(((TypeArray) other).element());
+        } else if (other instanceof TypeClass) {
             //TODO some checks
         }
 

@@ -65,7 +65,7 @@ public class TypeDeclaration implements Type {
             StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
-                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).collect(Collectors.toList());
                 Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
@@ -77,7 +77,7 @@ public class TypeDeclaration implements Type {
             StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
-                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).collect(Collectors.toList());
                 Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
@@ -85,7 +85,7 @@ public class TypeDeclaration implements Type {
                 sb.append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
             }
 
-            List<TypeString> args = this.parents.stream().map(t -> t.toSignature(context)).toList();
+            List<TypeString> args = this.parents.stream().map(t -> t.toSignature(context)).collect(Collectors.toList());
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -108,7 +108,7 @@ public class TypeDeclaration implements Type {
 
         if (!this.parameters.isEmpty()) {
             sb.append("<");
-            List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
+            List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).collect(Collectors.toList());
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -128,7 +128,7 @@ public class TypeDeclaration implements Type {
 
             if (this.parents.size() > 1) {
                 sb.append(" implements ");
-                List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
+                List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).collect(Collectors.toList());
                 Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();

@@ -8,6 +8,7 @@ import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public interface TypeConcrete extends Type {
 
@@ -37,8 +38,8 @@ public interface TypeConcrete extends Type {
 
     default <T extends Type> T resolveVariables(Function<TypeParameter, TypeConcrete> mapper) {
         return map(t -> {
-            if (t instanceof TypeParameter ref) {
-                return mapper.apply(ref);
+            if (t instanceof TypeParameter) {
+                return mapper.apply((TypeParameter) t);
             } else {
                 return t;
             }
@@ -48,14 +49,14 @@ public interface TypeConcrete extends Type {
     static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeConstraint def) {
         if (other instanceof TypeNone) {
             return TypeConstraint.FALSE;
-        } else if (other instanceof TypeOr or) {
-            return new TypeConstraint.Or(or.types().stream().map(self::assignabilityTo).toList());
-        } else if (other instanceof TypeAnd and) {
-            return new TypeConstraint.And(and.types().stream().map(self::assignabilityTo).toList());
-        } else if (other instanceof TypeIn in) {
-             return self.assignabilityTo(in.bound());
-         } else if (other instanceof TypeParameter ref) {
-            return new TypeConstraint.Bound(self, ref);
+        } else if (other instanceof TypeOr) {
+            return new TypeConstraint.Or(((TypeOr) other).types().stream().map(self::assignabilityTo).collect(Collectors.toList()));
+        } else if (other instanceof TypeAnd) {
+            return new TypeConstraint.And(((TypeAnd) other).types().stream().map(self::assignabilityTo).collect(Collectors.toList()));
+        } else if (other instanceof TypeIn) {
+             return self.assignabilityTo(((TypeIn) other).bound());
+         } else if (other instanceof TypeParameter) {
+            return new TypeConstraint.Bound(self, other);
          }
 
          return def;

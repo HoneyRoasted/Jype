@@ -69,8 +69,8 @@ public class TypeClass implements TypeConcrete {
             TypeClass result = new TypeClass(parent);
             for (TypeConcrete arg : typeParent.arguments()) {
                 result.arguments().add(arg.map(t -> {
-                    if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
-                        return this.argument(ref).get();
+                    if (t instanceof TypeParameter && this.argument((TypeParameter) t).isPresent()) {
+                        return this.argument((TypeParameter) t).get();
                     }
                     return t;
                 }));
@@ -85,7 +85,7 @@ public class TypeClass implements TypeConcrete {
     public TypeString toSignature(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
         if (!this.arguments.isEmpty()) {
-            List<TypeString> args = this.arguments.stream().map(t -> t.toSignature(context)).toList();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSignature(context)).collect(Collectors.toList());
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -106,7 +106,7 @@ public class TypeClass implements TypeConcrete {
     public TypeString toSource(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append(this.declaration.name());
         if (!this.arguments.isEmpty()) {
-            List<TypeString> args = this.arguments.stream().map(t -> t.toSource(context)).toList();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSource(context)).collect(Collectors.toList());
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -130,18 +130,19 @@ public class TypeClass implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeClass(this.declaration,
-                this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
+                this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toList())));
     }
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
-        if (other instanceof TypePrimitive prim) {
+        if (other instanceof TypePrimitive) {
             Optional<TypePrimitive> unbox = TypePrimitive.unbox(this.declaration.namespace());
             if (unbox.isPresent()) {
-                return unbox.get().assignabilityTo(prim);
+                return unbox.get().assignabilityTo(other);
             }
-        } else if (other instanceof TypeClass otherClass) {
+        } else if (other instanceof TypeClass) {
             TypeClass self = this;
+            TypeClass otherClass = (TypeClass) other;
 
             if (!self.declaration().equals(otherClass.declaration())) {
                 Optional<TypeClass> parent = self.parent(otherClass.declaration());
@@ -162,16 +163,16 @@ public class TypeClass implements TypeConcrete {
                     TypeConcrete ti = self.arguments().get(i);
                     TypeConcrete si = otherClass.arguments().get(i);
 
-                    if (si instanceof TypeOut typeOut) { //? extends X
+                    if (si instanceof TypeOut) { //? extends X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
                                 .bound().resolveVariables(t -> otherClass.argument(t).get());
                         constraints.add(ti.assignabilityTo(bound)
-                                .and(ti.assignabilityTo(typeOut.bound())));
-                    } else if (si instanceof TypeIn typeIn) { //? super X
+                                .and(ti.assignabilityTo(((TypeOut) si).bound())));
+                    } else if (si instanceof TypeIn) { //? super X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
                                 .bound().resolveVariables(t -> otherClass.argument(t).get());
                         constraints.add(ti.assignabilityTo(bound)
-                                .and(typeIn.bound().assignabilityTo(ti)));
+                                .and(((TypeIn) si).bound().assignabilityTo(ti)));
                     } else {
                         constraints.add(new TypeConstraint.Equal(ti, si));
                     }

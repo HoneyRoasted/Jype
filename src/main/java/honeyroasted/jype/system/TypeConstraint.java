@@ -59,8 +59,8 @@ public interface TypeConstraint {
         public TypeConstraint flatten() {
             List<TypeConstraint> res = new ArrayList<>();
             this.constraints.stream().map(TypeConstraint::flatten).forEach(t -> {
-                if (t instanceof And and) {
-                    res.addAll(and.constraints());
+                if (t instanceof And) {
+                    res.addAll(((And) t).constraints());
                 } else {
                     res.add(t);
                 }
@@ -102,8 +102,8 @@ public interface TypeConstraint {
         public TypeConstraint flatten() {
             List<TypeConstraint> res = new ArrayList<>();
             this.constraints.stream().map(TypeConstraint::flatten).forEach(t -> {
-                if (t instanceof Or or) {
-                    res.addAll(or.constraints());
+                if (t instanceof Or) {
+                    res.addAll(((Or) t).constraints());
                 } else {
                     res.add(t);
                 }
@@ -122,14 +122,45 @@ public interface TypeConstraint {
         }
     }
 
-    record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
+    class Equal implements TypeConstraint {
+        private TypeConcrete left;
+        private TypeConcrete right;
+
+        public Equal(TypeConcrete left, TypeConcrete right) {
+            this.left = left;
+            this.right = right;
+        }
+
+        public TypeConcrete left() {
+            return this.left;
+        }
+
+        public TypeConcrete right() {
+            return this.right;
+        }
+
         @Override
         public String toString() {
             return "(" + this.left + " = " + this.right + ")";
         }
     }
 
-    record Bound(TypeConcrete subtype, TypeConcrete parent) implements TypeConstraint {
+    class Bound implements TypeConstraint {
+        private TypeConcrete subtype;
+        private TypeConcrete parent;
+
+        public Bound(TypeConcrete subtype, TypeConcrete parent) {
+            this.subtype = subtype;
+            this.parent = parent;
+        }
+
+        public TypeConcrete subtype() {
+            return this.subtype;
+        }
+
+        public TypeConcrete parent() {
+            return this.parent;
+        }
 
         @Override
         public String toString() {
@@ -157,7 +188,16 @@ public interface TypeConstraint {
 
     }
 
-    record Not(TypeConstraint constraint) implements TypeConstraint {
+    class Not implements TypeConstraint {
+        private TypeConstraint constraint;
+
+        public Not(TypeConstraint constraint) {
+            this.constraint = constraint;
+        }
+
+        public TypeConstraint constraint() {
+            return this.constraint;
+        }
 
         @Override
         public TypeConstraint flatten() {

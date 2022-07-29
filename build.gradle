@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = 1.17
-targetCompatibility = 1.17
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
 
 group 'honeyroasted.jype'
 version '0.0.1'

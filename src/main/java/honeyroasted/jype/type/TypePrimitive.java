@@ -78,11 +78,11 @@ public class TypePrimitive implements TypeConcrete {
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other) {
-        if (other instanceof TypePrimitive prim) {
-            return PRIM_SUPERS.get(this.descriptor).contains(prim.descriptor) ?
+        if (other instanceof TypePrimitive) {
+            return PRIM_SUPERS.get(this.descriptor).contains(((TypePrimitive) other).descriptor()) ?
                     TypeConstraint.TRUE : TypeConstraint.FALSE;
-        } else if (other instanceof TypeClass otherClass) {
-            Optional<TypePrimitive> unbox = unbox(otherClass.declaration().namespace());
+        } else if (other instanceof TypeClass) {
+            Optional<TypePrimitive> unbox = unbox(((TypeClass) other).declaration().namespace());
             if (unbox.isPresent()) {
                 return assignabilityTo(unbox.get());
             }
