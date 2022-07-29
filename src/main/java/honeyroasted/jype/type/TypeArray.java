@@ -95,6 +95,6 @@ public class TypeArray implements TypeConcrete {
         }
 
         return TypeConcrete.defaultTests(this, other,
-                TypeSystem.GLOBAL.OBJECT.assignabilityTo(other));
+                () -> TypeSystem.GLOBAL.OBJECT.assignabilityTo(other));
     }
 }

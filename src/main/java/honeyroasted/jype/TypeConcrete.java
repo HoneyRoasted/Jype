@@ -8,6 +8,7 @@ import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public interface TypeConcrete extends Type {
 
@@ -46,6 +47,10 @@ public interface TypeConcrete extends Type {
     }
 
     static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeConstraint def) {
+        return defaultTests(self, other, () -> def);
+    }
+
+    static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, Supplier<TypeConstraint> def) {
         if (other instanceof TypeNone) {
             return TypeConstraint.FALSE;
         } else if (other instanceof TypeOr or) {
@@ -58,7 +63,7 @@ public interface TypeConcrete extends Type {
             return new TypeConstraint.Bound(self, ref);
          }
 
-         return def;
+         return def.get();
     }
 
 }
