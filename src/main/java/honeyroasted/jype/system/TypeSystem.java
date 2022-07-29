@@ -270,7 +270,7 @@ public class TypeSystem {
         } else if (type.getKind() == TypeKind.NULL) {
             return (T) NULL;
         } else if (type.getKind() == TypeKind.ARRAY && type instanceof ArrayType arrayType) {
-            return (T) new TypeArray(of(arrayType, elements));
+            return (T) new TypeArray(of(arrayType.getComponentType(), elements));
         } else if (type.getKind() == TypeKind.WILDCARD && type instanceof javax.lang.model.type.WildcardType wildcardType) {
             if (wildcardType.getSuperBound() != null) {
                 return (T) new TypeIn(of(wildcardType.getSuperBound(), elements));
