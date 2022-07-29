@@ -4,6 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -91,10 +92,9 @@ public class TypeArray implements TypeConcrete {
     public TypeConstraint assignabilityTo(TypeConcrete other) {
         if (other instanceof TypeArray arr) {
             return this.element().assignabilityTo(arr.element());
-        } else if (other instanceof TypeClass otherClass) {
-            //TODO some checks
         }
 
-        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
+        return TypeConcrete.defaultTests(this, other,
+                TypeSystem.GLOBAL.OBJECT.assignabilityTo(other));
     }
 }
