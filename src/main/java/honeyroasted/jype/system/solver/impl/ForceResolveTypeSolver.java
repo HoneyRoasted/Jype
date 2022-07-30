@@ -77,7 +77,9 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     }
 
     private static TypeConstraint forceResolve(TypeConstraint.Bound bound) {
-        if (bound.subtype() instanceof TypeParameter a && bound.parent() instanceof TypeParameter b) {
+        if (bound.subtype().flatten().equals(bound.parent().flatten())) {
+            return TypeConstraint.TRUE;
+        } else if (bound.subtype() instanceof TypeParameter a && bound.parent() instanceof TypeParameter b) {
             return forceResolve(a.bound().assignabilityTo(b.bound()));
         } else if (bound.subtype() instanceof TypeParameter prm) {
             return forceResolve(prm.bound().assignabilityTo(bound.parent()));

@@ -36,11 +36,6 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public void lock() {
-        this.element.lock();
-    }
-
-    @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
     }

@@ -46,7 +46,6 @@ public class TypeAnd implements TypeConcrete {
     @Override
     public void lock() {
         this.types = Set.copyOf(this.types);
-        this.types.forEach(Type::lock);
     }
 
     @Override

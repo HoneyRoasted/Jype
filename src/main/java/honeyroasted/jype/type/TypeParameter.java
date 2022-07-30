@@ -83,12 +83,11 @@ public class TypeParameter implements TypeConcrete {
     @Override
     public void lock() {
         this.mutable = false;
-        this.bound.lock();
     }
 
     @Override
     public String toString() {
-        return this.name + "-" + identity() + " extends " + this.bound.toString();
+        return this.name + "-" + identity();
     }
 
     public String identity() {

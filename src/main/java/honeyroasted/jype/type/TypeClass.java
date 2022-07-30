@@ -126,7 +126,6 @@ public class TypeClass implements TypeConcrete {
     @Override
     public void lock() {
         this.arguments = List.copyOf(this.arguments);
-        this.arguments.forEach(Type::lock);
 
         this.argMap = new LinkedHashMap<>();
         this.parentMap = new LinkedHashMap<>();

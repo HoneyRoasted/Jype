@@ -20,11 +20,6 @@ public class TypeIn implements TypeConcrete {
     }
 
     @Override
-    public void lock() {
-        this.bound.lock();
-    }
-
-    @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeIn(this.bound.map(mapper)));
     }

@@ -51,11 +51,6 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public void lock() {
-        this.bound.lock();
-    }
-
-    @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeOut(this.bound.map(mapper)));
     }

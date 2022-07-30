@@ -25,15 +25,6 @@ task ghpagesJavadocs(type: Javadoc) {
     classpath = configurations.runtimeClasspath
 }
 
-task fatJar(type: Jar) {
-    from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    with jar
-
-    exclude("**/module-info.class")
-
-    classifier("fat")
-}
-
 task javadocJar(type: Jar) {
     from javadoc
 
@@ -47,7 +38,7 @@ task sourceJar(type: Jar) {
 }
 
 artifacts {
-    archives javadocJar, fatJar, sourceJar
+    archives javadocJar, sourceJar
 }
 
 publishing {
@@ -59,7 +50,6 @@ publishing {
 
             artifact sourceJar
             artifact javadocJar
-            artifact fatJar
         }
     }
 }
