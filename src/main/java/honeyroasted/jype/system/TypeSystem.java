@@ -189,19 +189,19 @@ public class TypeSystem {
     }
 
     private TypeConcrete and(Type... array) {
-        return new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toSet()));
+        return new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toUnmodifiableSet()));
     }
 
     private TypeConcrete or(Type... array) {
-        return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toSet()));
+        return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toUnmodifiableSet()));
     }
 
     private TypeConcrete and(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toSet()));
+        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toUnmodifiableSet()));
     }
 
     private TypeConcrete or(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toSet()));
+        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toUnmodifiableSet()));
     }
 
     public TypeDeclaration declaration(Class<?> clazz) {
