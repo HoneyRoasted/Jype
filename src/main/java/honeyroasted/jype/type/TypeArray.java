@@ -46,6 +46,11 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
+    public TypeConcrete flatten() {
+        return new TypeArray(this.element.flatten());
+    }
+
+    @Override
     public TypeString toSignature(TypeString.Context context) {
         TypeString element = this.element.toSignature(context);
         return element.successful() ? TypeString.successful("[" + element.value()) : element;

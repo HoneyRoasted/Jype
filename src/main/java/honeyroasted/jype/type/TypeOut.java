@@ -21,6 +21,11 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
+    public TypeConcrete flatten() {
+        return new TypeOut(this.bound.flatten());
+    }
+
+    @Override
     public TypeString toSignature(TypeString.Context context) {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
             return TypeString.successful("*");

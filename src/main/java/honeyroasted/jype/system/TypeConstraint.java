@@ -6,6 +6,7 @@ import honeyroasted.jype.type.TypeParameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public interface TypeConstraint {
@@ -74,6 +75,34 @@ public interface TypeConstraint {
         }
 
         @Override
+        public TypeConstraint deMorgans() {
+            List<TypeConstraint> res = new ArrayList<>();
+            this.constraints.stream().map(TypeConstraint::deMorgans).forEach(t -> {
+                if (t instanceof And and) {
+                    res.addAll(and.constraints());
+                } else if (t instanceof Or or) {
+                    res.add(new And(or.constraints().stream().map(TypeConstraint::not).toList()).not());
+                } else if (t instanceof Not not && not.constraint() instanceof Or or) {
+                    res.addAll(or.constraints.stream().map(TypeConstraint::not).toList());
+                } else {
+                    res.add(t);
+                }
+            });
+
+            if (res.size() == 1) {
+                return res.get(0);
+            } else {
+                return new And(res);
+            }
+        }
+
+        @Override
+        public void walk(Consumer<TypeConstraint> consumer) {
+            TypeConstraint.super.walk(consumer);
+            this.constraints.forEach(t -> t.walk(consumer));
+        }
+
+        @Override
         public String toString() {
             return "(" + this.constraints.stream().map(TypeConstraint::toString).collect(Collectors.joining(" & ")) + ")";
         }
@@ -114,6 +143,34 @@ public interface TypeConstraint {
             } else {
                 return new Or(res);
             }
+        }
+
+        @Override
+        public TypeConstraint deMorgans() {
+            List<TypeConstraint> res = new ArrayList<>();
+            this.constraints.stream().map(TypeConstraint::deMorgans).forEach(t -> {
+                if (t instanceof Or or) {
+                    res.addAll(or.constraints());
+                } else if (t instanceof And and) {
+                    res.add(new Or(and.constraints().stream().map(TypeConstraint::not).toList()).not());
+                } else if (t instanceof Not not && not.constraint() instanceof And and) {
+                    res.addAll(and.constraints.stream().map(TypeConstraint::not).toList());
+                } else {
+                    res.add(t);
+                }
+            });
+
+            if (res.size() == 1) {
+                return res.get(0);
+            } else {
+                return new Or(res);
+            }
+        }
+
+        @Override
+        public void walk(Consumer<TypeConstraint> consumer) {
+            TypeConstraint.super.walk(consumer);
+            this.constraints.forEach(t -> t.walk(consumer));
         }
 
         @Override
@@ -165,8 +222,19 @@ public interface TypeConstraint {
         }
 
         @Override
+        public TypeConstraint deMorgans() {
+            return this.constraint.deMorgans().not();
+        }
+
+        @Override
         public TypeConstraint not() {
             return this.constraint;
+        }
+
+        @Override
+        public void walk(Consumer<TypeConstraint> consumer) {
+            TypeConstraint.super.walk(consumer);
+            this.constraint.walk(consumer);
         }
 
         @Override
@@ -195,6 +263,14 @@ public interface TypeConstraint {
 
     default TypeConstraint flatten() {
         return this;
+    }
+
+    default TypeConstraint deMorgans() {
+        return this;
+    }
+
+    default void walk(Consumer<TypeConstraint> consumer) {
+        consumer.accept(this);
     }
 
 }

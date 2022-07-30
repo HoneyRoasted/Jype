@@ -73,7 +73,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     }
 
     private static TypeConstraint forceResolve(TypeConstraint.Equal equal) {
-        return equal.left().equals(equal.right()) ? TypeConstraint.TRUE : TypeConstraint.FALSE;
+        return equal.left().flatten().equals(equal.right().flatten()) ? TypeConstraint.TRUE : TypeConstraint.FALSE;
     }
 
     private static TypeConstraint forceResolve(TypeConstraint.Bound bound) {

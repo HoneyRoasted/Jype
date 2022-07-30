@@ -19,7 +19,7 @@ public class TypeParameter implements TypeConcrete {
 
     public TypeParameter(String name, TypeConcrete bound) {
         this.name = name;
-        this.bound = bound;
+        this.bound = bound.flatten();
     }
 
     public TypeParameter(String name) {

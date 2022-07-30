@@ -35,6 +35,11 @@ public class TypeIn implements TypeConcrete {
     }
 
     @Override
+    public TypeConcrete flatten() {
+        return new TypeIn(this.bound.flatten());
+    }
+
+    @Override
     public TypeString toSignature(TypeString.Context context) {
         TypeString bound = this.bound.toSignature(context);
         return bound.successful() ? TypeString.successful("-" + bound.value()) : bound;

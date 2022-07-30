@@ -46,6 +46,10 @@ public interface TypeConcrete extends Type {
         });
     }
 
+    default TypeConcrete flatten() {
+        return this;
+    }
+
     static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeConstraint def) {
         return defaultTests(self, other, () -> def);
     }

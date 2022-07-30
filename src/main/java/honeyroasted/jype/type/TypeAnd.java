@@ -56,26 +56,23 @@ public class TypeAnd implements TypeConcrete {
         return types;
     }
 
+    @Override
     public TypeConcrete flatten() {
-        if (this.types.isEmpty()) {
-            return TypeNone.VOID;
-        } else if (this.types.size() == 1) {
-            TypeConcrete type = this.types.get(0);
-            return type instanceof TypeAnd intersection ? intersection.flatten() :
-                    type instanceof TypeOr union ? union.flatten() :
-                            type;
-        } else {
-            List<TypeConcrete> types = new ArrayList<>();
-            this.types.forEach(t -> flatten(t, types));
-            return new TypeAnd(types);
-        }
-    }
+        List<TypeConcrete> flattened = new ArrayList<>();
+        this.types.stream().map(TypeConcrete::flatten).forEach(t -> {
+            if (t instanceof TypeAnd and) {
+                flattened.addAll(and.types());
+            } else {
+                flattened.add(t);
+            }
+        });
 
-    private static void flatten(TypeConcrete type, List<TypeConcrete> types) {
-        if (type instanceof TypeAnd intersection) {
-            intersection.types().forEach(t -> flatten(t, types));
+        if (flattened.size() == 0) {
+            return TypeNone.VOID;
+        } else if (flattened.size() == 1) {
+            return flattened.get(0);
         } else {
-            types.add(type);
+            return new TypeOr(flattened);
         }
     }
 

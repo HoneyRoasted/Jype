@@ -82,6 +82,11 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
+    public TypeConcrete flatten() {
+        return new TypeClass(this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
+    }
+
+    @Override
     public TypeString toSignature(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
         if (!this.arguments.isEmpty()) {

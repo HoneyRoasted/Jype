@@ -26,4 +26,7 @@ public class TypeContext {
         return this.parameters.get(parameter);
     }
 
+    public Map<TypeParameter, TypeConcrete> parameters() {
+        return parameters;
+    }
 }
