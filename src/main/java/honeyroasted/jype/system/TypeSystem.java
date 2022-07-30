@@ -2,7 +2,6 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.solver.impl.BruteForceTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
@@ -16,7 +15,6 @@ import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.TypeSolver;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -30,7 +28,6 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.UnionType;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -38,7 +35,6 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 
 public class TypeSystem {
     public static final TypeSystem GLOBAL = new TypeSystem();
@@ -96,10 +92,6 @@ public class TypeSystem {
         DOUBLE_BOX = of(Double.class);
         OBJECT = of(Object.class);
         OBJECT_CLASS = declaration(Object.class);
-    }
-
-    public TypeSolver newInference(Predicate<TypeParameter> consider) {
-        return new BruteForceTypeSolver(consider);
     }
 
     public TypeParameter newParameter(String name) {
