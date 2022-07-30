@@ -98,7 +98,7 @@ public class TypeSystem {
         OBJECT_CLASS = declaration(Object.class);
     }
 
-    public TypeSolver newInference(Predicate<honeyroasted.jype.Type> consider) {
+    public TypeSolver newInference(Predicate<TypeParameter> consider) {
         return new BruteForceTypeSolver(consider);
     }
 
