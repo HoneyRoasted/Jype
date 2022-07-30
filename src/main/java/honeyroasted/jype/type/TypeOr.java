@@ -6,20 +6,23 @@ import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class TypeOr implements TypeConcrete {
-    private List<TypeConcrete> types;
+    private Set<TypeConcrete> types;
 
-    public TypeOr(List<TypeConcrete> types) {
+    public TypeOr(Set<TypeConcrete> types) {
         this.types = types;
     }
 
     public TypeOr() {
-        this(new ArrayList<>());
+        this(new LinkedHashSet<>());
     }
 
     @Override
@@ -39,22 +42,22 @@ public class TypeOr implements TypeConcrete {
 
     @Override
     public void lock() {
-        this.types = List.copyOf(this.types);
+        this.types = Set.copyOf(this.types);
         this.types.forEach(Type::lock);
     }
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeOr(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
+        return (T) mapper.apply(new TypeOr(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
     }
 
-    public List<TypeConcrete> types() {
+    public Set<TypeConcrete> types() {
         return types;
     }
 
     @Override
     public TypeConcrete flatten() {
-        List<TypeConcrete> flattened = new ArrayList<>();
+        Set<TypeConcrete> flattened = new HashSet<>();
         this.types.stream().map(TypeConcrete::flatten).forEach(t -> {
             if (t instanceof TypeOr or) {
                 flattened.addAll(or.types());
@@ -66,7 +69,7 @@ public class TypeOr implements TypeConcrete {
         if (flattened.size() == 0) {
             return TypeNone.VOID;
         } else if (flattened.size() == 1) {
-            return flattened.get(0);
+            return flattened.iterator().next();
         } else {
             return new TypeOr(flattened);
         }

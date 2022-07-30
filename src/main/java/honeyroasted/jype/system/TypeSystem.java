@@ -35,6 +35,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TypeSystem {
     public static final TypeSystem GLOBAL = new TypeSystem();
@@ -188,19 +189,19 @@ public class TypeSystem {
     }
 
     private TypeConcrete and(Type... array) {
-        return new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).toList());
+        return new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toSet()));
     }
 
     private TypeConcrete or(Type... array) {
-        return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).toList());
+        return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toSet()));
     }
 
     private TypeConcrete and(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).toList());
+        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toSet()));
     }
 
     private TypeConcrete or(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).toList());
+        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toSet()));
     }
 
     public TypeDeclaration declaration(Class<?> clazz) {
