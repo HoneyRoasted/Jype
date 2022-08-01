@@ -56,11 +56,6 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return this.bound.assignabilityTo(other, system);
-    }
-
-    @Override
     public String toString() {
         return "? extends " + this.bound;
     }

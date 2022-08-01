@@ -5,12 +5,12 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public abstract class AbstractTypeSolver implements TypeSolver {
     protected TypeSystem system;
-    protected List<TypeConstraint> constraints = new ArrayList<>();
+    protected List<TypeConstraint> constraints = Collections.synchronizedList(new ArrayList<>());
 
     public AbstractTypeSolver(TypeSystem system) {
         this.system = system;
@@ -23,11 +23,7 @@ public abstract class AbstractTypeSolver implements TypeSolver {
     }
 
     @Override
-    public TypeConstraint.And root() {
-        return new TypeConstraint.And(this.constraints);
-    }
-
     public List<TypeConstraint> constraints() {
-        return this.constraints;
+        return List.copyOf(this.constraints);
     }
 }

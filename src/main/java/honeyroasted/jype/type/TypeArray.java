@@ -69,16 +69,6 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        if (other instanceof TypeArray arr) {
-            return this.element().assignabilityTo(arr.element(), system);
-        }
-
-        return TypeConcrete.defaultTests(this, other, system,
-                () -> system.OBJECT.assignabilityTo(other, system));
-    }
-
-    @Override
     public String toString() {
         return this.element + "[]";
     }

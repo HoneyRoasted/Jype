@@ -22,19 +22,9 @@ public interface TypeConcrete extends Type {
         return this;
     }
 
-    TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system);
-
     boolean equalsExactly(TypeConcrete other);
 
     int hashCodeExactly();
-
-    default boolean isAssignableTo(TypeConcrete other, TypeSystem system) {
-        return new ForceResolveTypeSolver(system)
-                .constrain(this, other)
-                .solve()
-                .verification()
-                .success();
-    }
 
     default void forEach(Consumer<TypeConcrete> consumer) {
         map(t -> {
@@ -57,11 +47,7 @@ public interface TypeConcrete extends Type {
         });
     }
 
-    static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeSystem system, TypeConstraint def) {
-        return defaultTests(self, other, system, () -> def);
-    }
-
-    static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeSystem system, Supplier<TypeConstraint> def) {
+    /*static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeSystem system, Supplier<TypeConstraint> def) {
         if (other instanceof TypeNone) {
             return TypeConstraint.FALSE;
         } else if (other instanceof TypeOr or) {
@@ -75,6 +61,6 @@ public interface TypeConcrete extends Type {
          }
 
          return def.get();
-    }
+    }*/
 
 }

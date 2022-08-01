@@ -24,15 +24,6 @@ public class TypeNull extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        if (other instanceof TypePrimitive) {
-            return TypeConstraint.FALSE;
-        }
-
-        return TypeConcrete.defaultTests(this, other, system, TypeConstraint.TRUE);
-    }
-
-    @Override
     public String toString() {
         return "<null>";
     }

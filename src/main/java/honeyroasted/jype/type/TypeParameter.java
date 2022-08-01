@@ -91,11 +91,6 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return new TypeConstraint.Bound(this, other);
-    }
-
-    @Override
     public boolean equalsExactly(TypeConcrete other) {
         return this == other;
     }

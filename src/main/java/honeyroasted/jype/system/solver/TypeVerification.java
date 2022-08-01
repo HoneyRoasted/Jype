@@ -83,6 +83,9 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
             return new TypeVerification(this.kind, this.constraint, List.copyOf(this.children), this.success);
         }
 
+        public boolean isSuccessful() {
+            return this.success;
+        }
     }
 
 }

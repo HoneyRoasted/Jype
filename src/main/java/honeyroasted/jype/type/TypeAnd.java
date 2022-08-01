@@ -79,11 +79,6 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return new TypeConstraint.Or(this.types.stream().map(t -> t.assignabilityTo(other, system)).toList());
-    }
-
-    @Override
     public String toString() {
         return this.types.stream().map(TypeConcrete::toString).collect(Collectors.joining(" & "));
     }

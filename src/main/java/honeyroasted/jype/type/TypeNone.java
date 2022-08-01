@@ -35,11 +35,6 @@ public class TypeNone extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return TypeConstraint.FALSE;
-    }
-
-    @Override
     public String toString() {
         return "<" + this.name + ">";
     }

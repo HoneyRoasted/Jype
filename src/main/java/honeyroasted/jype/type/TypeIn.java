@@ -48,12 +48,6 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return TypeConstraint.FALSE;
-    }
-
-
-    @Override
     public String toString() {
         return "? super " + this.bound;
     }

@@ -138,11 +138,6 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return new TypeConstraint.Bound(this, other);
-    }
-
-    @Override
     public String toString() {
         return this.declaration.namespace() +
                 (this.arguments.isEmpty() ? "" :

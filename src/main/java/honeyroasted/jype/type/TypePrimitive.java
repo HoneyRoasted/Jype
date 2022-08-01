@@ -63,17 +63,6 @@ public class TypePrimitive extends AbstractType implements TypeConcrete {
         return this.descriptor;
     }
 
-    private static final Map<String, Set<String>> PRIM_SUPERS = Map.of(
-            "Z", Set.of("Z"),
-            "B", Set.of("B", "S", "C", "I", "J", "F", "D"),
-            "S", Set.of("S", "C", "I", "J", "F", "D"),
-            "C", Set.of("C", "S", "I", "J", "F", "D"),
-            "I", Set.of("I", "J", "F", "D"),
-            "J", Set.of("J", "F", "D"),
-            "F", Set.of("F", "D"),
-            "D", Set.of("D")
-    );
-
     @Override
     public TypeString toSignature(TypeString.Context context) {
         return toDescriptor(context);
@@ -92,22 +81,6 @@ public class TypePrimitive extends AbstractType implements TypeConcrete {
     @Override
     public boolean isPrimitive() {
         return true;
-    }
-
-    @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        if (other instanceof TypePrimitive prim) {
-            return PRIM_SUPERS.get(this.descriptor).contains(prim.descriptor) ?
-                    TypeConstraint.TRUE : TypeConstraint.FALSE;
-        } else if (other instanceof TypeClass otherClass) {
-            Optional<TypePrimitive> unbox = unbox(otherClass.declaration().namespace());
-            if (unbox.isPresent()) {
-                return assignabilityTo(unbox.get(), system);
-            }
-        }
-
-        return new TypeConstraint.Or(List.of(
-                TypeConcrete.defaultTests(this, other, system, TypeConstraint.FALSE)));
     }
 
     @Override
