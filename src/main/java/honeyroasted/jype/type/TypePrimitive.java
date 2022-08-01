@@ -4,12 +4,15 @@ import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 public class TypePrimitive implements TypeConcrete {
     public static final TypePrimitive BOOLEAN = new TypePrimitive(boolean.class, "Z");
@@ -23,18 +26,18 @@ public class TypePrimitive implements TypeConcrete {
 
     public static final Set<TypePrimitive> ALL = Set.of(BOOLEAN, BYTE, SHORT, CHAR, INT, LONG, FLOAT, DOUBLE);
 
-    private static final Map<TypePrimitive, Namespace> PRIM_TO_BOX = Map.of(
-            BOOLEAN, Namespace.of(Boolean.class),
-            BYTE, Namespace.of(Byte.class),
-            SHORT, Namespace.of(Short.class),
-            CHAR, Namespace.of(Character.class),
-            INT, Namespace.of(Integer.class),
-            LONG, Namespace.of(Long.class),
-            FLOAT, Namespace.of(Float.class),
-            DOUBLE, Namespace.of(Double.class)
+    private static final Map<TypePrimitive, Class<?>> PRIM_TO_BOX = Map.of(
+            BOOLEAN, Boolean.class,
+            BYTE, Byte.class,
+            SHORT, Short.class,
+            CHAR, Character.class,
+            INT, Integer.class,
+            LONG, Long.class,
+            FLOAT, Float.class,
+            DOUBLE, Double.class
     );
 
-    private static final Map<Namespace, TypePrimitive> BOX_TO_PRIM = reverse(PRIM_TO_BOX);
+    private static final Map<Namespace, TypePrimitive> BOX_TO_PRIM = reverse(PRIM_TO_BOX, Namespace::of);
 
     private Class<?> reflectionClass;
     private String descriptor;
@@ -44,7 +47,7 @@ public class TypePrimitive implements TypeConcrete {
         this.descriptor = descriptor;
     }
 
-    public Namespace box() {
+    public Class<?> box() {
         return PRIM_TO_BOX.get(this);
     }
 
@@ -77,18 +80,19 @@ public class TypePrimitive implements TypeConcrete {
     );
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         if (other instanceof TypePrimitive prim) {
             return PRIM_SUPERS.get(this.descriptor).contains(prim.descriptor) ?
                     TypeConstraint.TRUE : TypeConstraint.FALSE;
         } else if (other instanceof TypeClass otherClass) {
             Optional<TypePrimitive> unbox = unbox(otherClass.declaration().namespace());
             if (unbox.isPresent()) {
-                return assignabilityTo(unbox.get());
+                return assignabilityTo(unbox.get(), system);
             }
         }
 
-        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
+        return new TypeConstraint.Or(List.of(
+                TypeConcrete.defaultTests(this, other, system, TypeConstraint.FALSE)));
     }
 
     @Override
@@ -111,9 +115,9 @@ public class TypePrimitive implements TypeConcrete {
         return descriptor != null ? descriptor.hashCode() : 0;
     }
 
-    private static <K, V> Map<K, V> reverse(Map<V, K> map) {
-        Map<K, V> result = new HashMap<>();
-        map.forEach((key, val) -> result.put(val, key));
+    private static <K, V, T> Map<T, V> reverse(Map<V, K> map, Function<K, T> keyFunction) {
+        Map<T, V> result = new HashMap<>();
+        map.forEach((key, val) -> result.put(keyFunction.apply(val), key));
         return Map.copyOf(result);
     }
 

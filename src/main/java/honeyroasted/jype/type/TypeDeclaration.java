@@ -145,9 +145,6 @@ public class TypeDeclaration implements Type {
         this.parameters = List.copyOf(this.parameters);
         this.parents = List.copyOf(this.parents);
 
-        this.parents.forEach(Type::lock);
-        this.parameters.forEach(Type::lock);
-
         this.parentMap = new LinkedHashMap<>();
     }
 

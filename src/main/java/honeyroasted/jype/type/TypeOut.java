@@ -56,8 +56,8 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
-        return this.bound.assignabilityTo(other);
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
+        return this.bound.assignabilityTo(other, system);
     }
 
     @Override

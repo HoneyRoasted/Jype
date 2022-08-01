@@ -4,11 +4,10 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -76,8 +75,8 @@ public class TypeOr implements TypeConcrete {
 
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
-        return new TypeConstraint.And(this.types.stream().map(t -> t.assignabilityTo(other)).toList());
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
+        return new TypeConstraint.And(this.types.stream().map(t -> t.assignabilityTo(other, system)).toList());
     }
 
     @Override

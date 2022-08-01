@@ -4,6 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -25,7 +26,7 @@ public class TypeIn implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         return TypeConstraint.FALSE;
     }
 

@@ -1,6 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
 
 import java.util.ArrayList;

@@ -4,6 +4,7 @@ import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -13,7 +14,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TypeClass implements TypeConcrete {
     private TypeDeclaration declaration;
@@ -138,53 +138,8 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
-        if (other instanceof TypePrimitive prim) {
-            Optional<TypePrimitive> unbox = TypePrimitive.unbox(this.declaration.namespace());
-            if (unbox.isPresent()) {
-                return unbox.get().assignabilityTo(prim);
-            }
-        } else if (other instanceof TypeClass otherClass) {
-            TypeClass self = this;
-
-            if (!self.declaration().equals(otherClass.declaration())) {
-                Optional<TypeClass> parent = self.parent(otherClass.declaration());
-                if (parent.isPresent()) {
-                    self = parent.get();
-                } else {
-                    return TypeConstraint.FALSE;
-                }
-            }
-
-            if (self.arguments().isEmpty() || otherClass.arguments().isEmpty()) {
-                return TypeConstraint.TRUE; //Unchecked conversion
-            } else if (self.arguments().size() != otherClass.arguments().size()) {
-                return TypeConstraint.FALSE;
-            } else {
-                List<TypeConstraint> constraints = new ArrayList<>();
-                for (int i = 0; i < self.arguments().size(); i++) {
-                    TypeConcrete ti = self.arguments().get(i);
-                    TypeConcrete si = otherClass.arguments().get(i);
-
-                    if (si instanceof TypeOut typeOut) { //? extends X
-                        TypeConcrete bound = otherClass.declaration().parameters().get(i)
-                                .bound().resolveVariables(t -> otherClass.argument(t).get());
-                        constraints.add(ti.assignabilityTo(bound)
-                                .and(ti.assignabilityTo(typeOut.bound())));
-                    } else if (si instanceof TypeIn typeIn) { //? super X
-                        TypeConcrete bound = otherClass.declaration().parameters().get(i)
-                                .bound().resolveVariables(t -> otherClass.argument(t).get());
-                        constraints.add(ti.assignabilityTo(bound)
-                                .and(typeIn.bound().assignabilityTo(ti)));
-                    } else {
-                        constraints.add(new TypeConstraint.Equal(ti, si));
-                    }
-                }
-                return new TypeConstraint.And(constraints);
-            }
-        }
-
-        return TypeConcrete.defaultTests(this, other, TypeConstraint.FALSE);
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
+        return new TypeConstraint.Bound(this, other);
     }
 
     @Override

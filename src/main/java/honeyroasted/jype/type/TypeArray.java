@@ -89,12 +89,12 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         if (other instanceof TypeArray arr) {
-            return this.element().assignabilityTo(arr.element());
+            return this.element().assignabilityTo(arr.element(), system);
         }
 
-        return TypeConcrete.defaultTests(this, other,
-                () -> TypeSystem.GLOBAL.OBJECT.assignabilityTo(other));
+        return TypeConcrete.defaultTests(this, other, system,
+                () -> system.OBJECT.assignabilityTo(other, system));
     }
 }

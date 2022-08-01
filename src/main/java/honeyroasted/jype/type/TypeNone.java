@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ public class TypeNone implements TypeConcrete {
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other) {
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         return TypeConstraint.FALSE;
     }
 
