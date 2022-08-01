@@ -24,6 +24,10 @@ public interface TypeConcrete extends Type {
 
     TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system);
 
+    boolean equalsExactly(TypeConcrete other);
+
+    int hashCodeExactly();
+
     default boolean isAssignableTo(TypeConcrete other, TypeSystem system) {
         return new ForceResolveTypeSolver(system)
                 .constrain(this, other)

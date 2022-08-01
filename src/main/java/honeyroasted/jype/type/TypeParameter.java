@@ -8,7 +8,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.function.Function;
 
-public class TypeParameter implements TypeConcrete {
+public class TypeParameter extends AbstractType implements TypeConcrete {
     private String name;
     private TypeConcrete bound;
 
@@ -93,6 +93,16 @@ public class TypeParameter implements TypeConcrete {
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         return new TypeConstraint.Bound(this, other);
+    }
+
+    @Override
+    public boolean equalsExactly(TypeConcrete other) {
+        return this == other;
+    }
+
+    @Override
+    public int hashCodeExactly() {
+        return System.identityHashCode(this);
     }
 
     @Override

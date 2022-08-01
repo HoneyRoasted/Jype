@@ -9,7 +9,7 @@ import honeyroasted.jype.system.TypeSystem;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class TypeOut implements TypeConcrete {
+public class TypeOut extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 
     public TypeOut(TypeConcrete bound) {
@@ -66,7 +66,7 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -76,7 +76,7 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return bound != null ? bound.hashCode() : 0;
     }
 }

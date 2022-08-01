@@ -9,7 +9,7 @@ import honeyroasted.jype.system.TypeSystem;
 import java.util.Objects;
 import java.util.function.Function;
 
-public class TypeArray implements TypeConcrete {
+public class TypeArray extends AbstractType implements TypeConcrete {
     private TypeConcrete element;
 
     public TypeArray(TypeConcrete element) {
@@ -84,7 +84,7 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -94,7 +94,7 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return element != null ? element.hashCode() : 0;
     }
 

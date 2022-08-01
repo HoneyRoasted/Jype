@@ -34,6 +34,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -189,19 +190,27 @@ public class TypeSystem {
     }
 
     private TypeConcrete and(Type... array) {
-        return new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toUnmodifiableSet()));
+        TypeAnd and = new TypeAnd(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        and.lock();
+        return and;
     }
 
     private TypeConcrete or(Type... array) {
-        return new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toUnmodifiableSet()));
+        TypeOr or = new TypeOr(Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        or.lock();
+        return or;
     }
 
     private TypeConcrete and(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toUnmodifiableSet()));
+        TypeAnd and = new TypeAnd(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        and.lock();
+        return and;
     }
 
     private TypeConcrete or(List<? extends TypeMirror> bounds, Elements elements) {
-        return new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toUnmodifiableSet()));
+        TypeOr or = new TypeOr(bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        or.lock();
+        return or;
     }
 
     public TypeDeclaration declaration(Class<?> clazz) {

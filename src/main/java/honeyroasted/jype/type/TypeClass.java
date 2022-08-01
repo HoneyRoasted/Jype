@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TypeClass implements TypeConcrete {
+public class TypeClass extends AbstractType implements TypeConcrete {
     private TypeDeclaration declaration;
     private List<TypeConcrete> arguments = new ArrayList<>();
 
@@ -150,7 +150,7 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -162,7 +162,7 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         int result = declaration != null ? declaration.hashCode() : 0;
         result = 31 * result + (arguments != null ? arguments.hashCode() : 0);
         return result;

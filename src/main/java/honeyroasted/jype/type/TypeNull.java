@@ -5,7 +5,7 @@ import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 import honeyroasted.jype.system.TypeSystem;
 
-public class TypeNull implements TypeConcrete {
+public class TypeNull extends AbstractType implements TypeConcrete {
     public static final TypeNull NULL = new TypeNull();
 
     @Override
@@ -38,12 +38,12 @@ public class TypeNull implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equalsExactly(TypeConcrete obj) {
         return obj != null && getClass() == obj.getClass();
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return 0;
     }
 

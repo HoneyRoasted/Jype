@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-public class TypePrimitive implements TypeConcrete {
+public class TypePrimitive extends AbstractType implements TypeConcrete {
     public static final TypePrimitive BOOLEAN = new TypePrimitive(boolean.class, "Z");
     public static final TypePrimitive BYTE = new TypePrimitive(byte.class, "B");
     public static final TypePrimitive SHORT = new TypePrimitive(short.class, "S");
@@ -116,7 +116,7 @@ public class TypePrimitive implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -126,7 +126,7 @@ public class TypePrimitive implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return descriptor != null ? descriptor.hashCode() : 0;
     }
 

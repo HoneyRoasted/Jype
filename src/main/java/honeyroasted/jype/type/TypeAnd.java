@@ -6,6 +6,7 @@ import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeConstraint;
 import honeyroasted.jype.system.TypeSystem;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class TypeAnd implements TypeConcrete {
+public class TypeAnd extends AbstractType implements TypeConcrete {
     private Set<TypeConcrete> types;
 
     public TypeAnd(Set<TypeConcrete> types) {
@@ -49,7 +50,7 @@ public class TypeAnd implements TypeConcrete {
 
     @Override
     public void lock() {
-        this.types = Set.copyOf(this.types);
+        this.types = Collections.unmodifiableSet(new LinkedHashSet<>(this.types));
     }
 
     @Override
@@ -88,7 +89,7 @@ public class TypeAnd implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -98,7 +99,7 @@ public class TypeAnd implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return types != null ? types.hashCode() : 0;
     }
 }

@@ -7,7 +7,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
-public class TypeNone implements TypeConcrete {
+public class TypeNone extends AbstractType implements TypeConcrete {
     public static final TypeNone VOID = new TypeNone("void", "V");
     public static final TypeNone NONE = new TypeNone("none", "V");
 
@@ -45,7 +45,7 @@ public class TypeNone implements TypeConcrete {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -55,7 +55,7 @@ public class TypeNone implements TypeConcrete {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeExactly() {
         return name != null ? name.hashCode() : 0;
     }
 
