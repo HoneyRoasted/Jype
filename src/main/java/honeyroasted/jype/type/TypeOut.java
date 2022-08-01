@@ -21,11 +21,6 @@ public class TypeOut implements TypeConcrete {
     }
 
     @Override
-    public TypeConcrete flatten() {
-        return new TypeOut(this.bound.flatten());
-    }
-
-    @Override
     public TypeString toSignature(TypeString.Context context) {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
             return TypeString.successful("*");
@@ -37,7 +32,7 @@ public class TypeOut implements TypeConcrete {
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.failure("TypeOut", "descriptor");
+        return TypeString.failure(TypeOut.class, TypeString.Target.DESCRIPTOR);
     }
 
     @Override
@@ -53,6 +48,11 @@ public class TypeOut implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeOut(this.bound.map(mapper)));
+    }
+
+    @Override
+    public TypeConcrete flatten() {
+        return new TypeOut(this.bound.flatten());
     }
 
     @Override

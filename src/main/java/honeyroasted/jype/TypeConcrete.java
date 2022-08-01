@@ -5,11 +5,22 @@ import honeyroasted.jype.system.solver.impl.ForceResolveTypeSolver;
 import honeyroasted.jype.type.*;
 import honeyroasted.jype.system.TypeConstraint;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 public interface TypeConcrete extends Type {
+
+    default <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(this);
+    }
+
+    default TypeConcrete flatten() {
+        return this;
+    }
 
     TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system);
 
@@ -17,11 +28,8 @@ public interface TypeConcrete extends Type {
         return new ForceResolveTypeSolver(system)
                 .constrain(this, other)
                 .solve()
-                .successful();
-    }
-
-    default <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(this);
+                .verification()
+                .success();
     }
 
     default void forEach(Consumer<TypeConcrete> consumer) {
@@ -43,10 +51,6 @@ public interface TypeConcrete extends Type {
                 return t;
             }
         });
-    }
-
-    default TypeConcrete flatten() {
-        return this;
     }
 
     static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeSystem system, TypeConstraint def) {

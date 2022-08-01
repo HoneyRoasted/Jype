@@ -16,22 +16,12 @@ public interface TypeConstraint {
 
     class False implements TypeConstraint {
         @Override
-        public TypeConstraint not() {
-            return TRUE;
-        }
-
-        @Override
         public String toString() {
             return "FALSE";
         }
     }
 
     class True implements TypeConstraint {
-        @Override
-        public TypeConstraint not() {
-            return FALSE;
-        }
-
         @Override
         public String toString() {
             return "TRUE";
@@ -63,28 +53,6 @@ public interface TypeConstraint {
             this.constraints.stream().map(TypeConstraint::flatten).forEach(t -> {
                 if (t instanceof And and) {
                     res.addAll(and.constraints());
-                } else {
-                    res.add(t);
-                }
-            });
-
-            if (res.size() == 1) {
-                return res.get(0);
-            } else {
-                return new And(res);
-            }
-        }
-
-        @Override
-        public TypeConstraint deMorgans() {
-            List<TypeConstraint> res = new ArrayList<>();
-            this.constraints.stream().map(TypeConstraint::deMorgans).forEach(t -> {
-                if (t instanceof And and) {
-                    res.addAll(and.constraints());
-                } else if (t instanceof Or or) {
-                    res.add(new And(or.constraints().stream().map(TypeConstraint::not).toList()).not());
-                } else if (t instanceof Not not && not.constraint() instanceof Or or) {
-                    res.addAll(or.constraints.stream().map(TypeConstraint::not).toList());
                 } else {
                     res.add(t);
                 }
@@ -147,28 +115,6 @@ public interface TypeConstraint {
         }
 
         @Override
-        public TypeConstraint deMorgans() {
-            List<TypeConstraint> res = new ArrayList<>();
-            this.constraints.stream().map(TypeConstraint::deMorgans).forEach(t -> {
-                if (t instanceof Or or) {
-                    res.addAll(or.constraints());
-                } else if (t instanceof And and) {
-                    res.add(new Or(and.constraints().stream().map(TypeConstraint::not).toList()).not());
-                } else if (t instanceof Not not && not.constraint() instanceof And and) {
-                    res.addAll(and.constraints.stream().map(TypeConstraint::not).toList());
-                } else {
-                    res.add(t);
-                }
-            });
-
-            if (res.size() == 1) {
-                return res.get(0);
-            } else {
-                return new Or(res);
-            }
-        }
-
-        @Override
         public void walk(Consumer<TypeConstraint> consumer) {
             TypeConstraint.super.walk(consumer);
             this.constraints.forEach(t -> t.walk(consumer));
@@ -215,33 +161,8 @@ public interface TypeConstraint {
 
     }
 
-    record Not(TypeConstraint constraint) implements TypeConstraint {
+    record Throws(TypeConcrete type) implements TypeConstraint {
 
-        @Override
-        public TypeConstraint flatten() {
-            return this.constraint.flatten().not();
-        }
-
-        @Override
-        public TypeConstraint deMorgans() {
-            return this.constraint.deMorgans().not();
-        }
-
-        @Override
-        public TypeConstraint not() {
-            return this.constraint;
-        }
-
-        @Override
-        public void walk(Consumer<TypeConstraint> consumer) {
-            TypeConstraint.super.walk(consumer);
-            this.constraint.walk(consumer);
-        }
-
-        @Override
-        public String toString() {
-            return "!" + this.constraint;
-        }
     }
 
     default TypeConstraint and(TypeConstraint... others) {
@@ -258,15 +179,7 @@ public interface TypeConstraint {
         return new Or(constraints);
     }
 
-    default TypeConstraint not() {
-        return new Not(this);
-    }
-
     default TypeConstraint flatten() {
-        return this;
-    }
-
-    default TypeConstraint deMorgans() {
         return this;
     }
 

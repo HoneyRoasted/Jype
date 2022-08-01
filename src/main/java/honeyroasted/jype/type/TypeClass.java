@@ -82,15 +82,10 @@ public class TypeClass implements TypeConcrete {
     }
 
     @Override
-    public TypeConcrete flatten() {
-        return new TypeClass(this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
-    }
-
-    @Override
     public TypeString toSignature(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append("L").append(this.declaration.internalName());
         if (!this.arguments.isEmpty()) {
-            List<TypeString> args = this.arguments.stream().map(t -> t.toSignature(context)).toList();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -111,7 +106,7 @@ public class TypeClass implements TypeConcrete {
     public TypeString toSource(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append(this.declaration.name());
         if (!this.arguments.isEmpty()) {
-            List<TypeString> args = this.arguments.stream().map(t -> t.toSource(context)).toList();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toSource(TypeString.Context.CONCRETE)).toList();
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -135,6 +130,11 @@ public class TypeClass implements TypeConcrete {
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeClass(this.declaration,
                 this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
+    }
+
+    @Override
+    public TypeConcrete flatten() {
+        return new TypeClass(this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
     }
 
     @Override

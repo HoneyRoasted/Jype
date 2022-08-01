@@ -12,13 +12,19 @@ public interface TypeString {
         return new Successful(value);
     }
 
-    static TypeString failure(String type, String target) {
+    static TypeString failure(Class<?> type, Target target) {
         return new Failure(type, target);
     }
 
     enum Context {
         DECLARATION,
         CONCRETE
+    }
+
+    enum Target {
+        SOURCE,
+        DESCRIPTOR,
+        SIGNATURE
     }
 
     class Successful implements TypeString {
@@ -45,17 +51,17 @@ public interface TypeString {
     }
 
     class Failure implements TypeString {
-        private String type;
-        private String target;
+        private Class<?> type;
+        private Target target;
 
-        public Failure(String type, String target) {
+        public Failure(Class<?> type, Target target) {
             this.type = type;
             this.target = target;
         }
 
         @Override
         public String value() {
-            return null;
+            return toString();
         }
 
         @Override
@@ -63,11 +69,11 @@ public interface TypeString {
             return false;
         }
 
-        public String type() {
+        public Class<?> type() {
             return type;
         }
 
-        public String target() {
+        public Target target() {
             return target;
         }
 

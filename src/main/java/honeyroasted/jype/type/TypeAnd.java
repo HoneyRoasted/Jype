@@ -8,6 +8,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -23,6 +24,10 @@ public class TypeAnd implements TypeConcrete {
         this(new LinkedHashSet<>());
     }
 
+    public Set<TypeConcrete> types() {
+        return types;
+    }
+
     @Override
     public TypeString toSignature(TypeString.Context context) {
         List<TypeString> args = this.types.stream().map(t -> t.toSignature(context)).toList();
@@ -32,7 +37,7 @@ public class TypeAnd implements TypeConcrete {
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.failure("TypeAnd", "descriptor");
+        return TypeString.failure(TypeAnd.class, TypeString.Target.DESCRIPTOR);
     }
 
     @Override
@@ -50,10 +55,6 @@ public class TypeAnd implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeAnd(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
-    }
-
-    public Set<TypeConcrete> types() {
-        return types;
     }
 
     @Override
@@ -84,5 +85,20 @@ public class TypeAnd implements TypeConcrete {
     @Override
     public String toString() {
         return this.types.stream().map(TypeConcrete::toString).collect(Collectors.joining(" & "));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeAnd typeAnd = (TypeAnd) o;
+
+        return Objects.equals(types, typeAnd.types);
+    }
+
+    @Override
+    public int hashCode() {
+        return types != null ? types.hashCode() : 0;
     }
 }

@@ -26,17 +26,17 @@ public class TypeOr implements TypeConcrete {
 
     @Override
     public TypeString toSignature(TypeString.Context context) {
-        return TypeString.failure("TypeOr", "signature");
+        return TypeString.failure(TypeOr.class, TypeString.Target.SIGNATURE);
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.failure("TypeOr", "descriptor");
+        return TypeString.failure(TypeOr.class, TypeString.Target.DESCRIPTOR);
     }
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        return TypeString.failure("TypeOr", "source");
+        return TypeString.failure(TypeOr.class, TypeString.Target.SOURCE);
     }
 
     @Override

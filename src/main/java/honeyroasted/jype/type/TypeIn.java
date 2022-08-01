@@ -21,13 +21,25 @@ public class TypeIn implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeIn(this.bound.map(mapper)));
+    public TypeString toSignature(TypeString.Context context) {
+        TypeString bound = this.bound.toSignature(context);
+        return bound.successful() ? TypeString.successful("-" + bound.value()) : bound;
     }
 
     @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        return TypeConstraint.FALSE;
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.failure(TypeIn.class, TypeString.Target.DESCRIPTOR);
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        TypeString bound = this.bound.toSource(context);
+        return bound.successful() ? TypeString.successful("? super " + bound.value()) : bound;
+    }
+
+    @Override
+    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(new TypeIn(this.bound.map(mapper)));
     }
 
     @Override
@@ -36,21 +48,10 @@ public class TypeIn implements TypeConcrete {
     }
 
     @Override
-    public TypeString toSignature(TypeString.Context context) {
-        TypeString bound = this.bound.toSignature(context);
-        return bound.successful() ? TypeString.successful("-" + bound.value()) : bound;
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
+        return TypeConstraint.FALSE;
     }
 
-    @Override
-    public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.failure("TypeIn", "descriptor");
-    }
-
-    @Override
-    public TypeString toSource(TypeString.Context context) {
-        TypeString bound = this.bound.toSource(context);
-        return bound.successful() ? TypeString.successful("? super " + bound.value()) : bound;
-    }
 
     @Override
     public String toString() {

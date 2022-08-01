@@ -36,13 +36,8 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
-    }
-
-    @Override
-    public TypeConcrete flatten() {
-        return new TypeArray(this.element.flatten());
+    public boolean isArray() {
+        return true;
     }
 
     @Override
@@ -64,8 +59,23 @@ public class TypeArray implements TypeConcrete {
     }
 
     @Override
-    public boolean isArray() {
-        return true;
+    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
+        return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
+    }
+
+    @Override
+    public TypeConcrete flatten() {
+        return new TypeArray(this.element.flatten());
+    }
+
+    @Override
+    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
+        if (other instanceof TypeArray arr) {
+            return this.element().assignabilityTo(arr.element(), system);
+        }
+
+        return TypeConcrete.defaultTests(this, other, system,
+                () -> system.OBJECT.assignabilityTo(other, system));
     }
 
     @Override
@@ -88,13 +98,4 @@ public class TypeArray implements TypeConcrete {
         return element != null ? element.hashCode() : 0;
     }
 
-    @Override
-    public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
-        if (other instanceof TypeArray arr) {
-            return this.element().assignabilityTo(arr.element(), system);
-        }
-
-        return TypeConcrete.defaultTests(this, other, system,
-                () -> system.OBJECT.assignabilityTo(other, system));
-    }
 }

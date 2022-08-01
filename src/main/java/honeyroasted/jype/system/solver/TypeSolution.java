@@ -2,34 +2,28 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeConstraint;
 
-import java.util.List;
+import java.util.Optional;
 
 public class TypeSolution {
     private TypeContext context;
     private TypeConstraint root;
-    private List<TypeConstraint> unverifiable;
-    private boolean successful;
+    private TypeVerification verification;
 
-    public TypeSolution(TypeContext context, TypeConstraint root, List<TypeConstraint> unverifiable, boolean successful) {
+    public TypeSolution(TypeContext context, TypeConstraint root, TypeVerification verification) {
         this.context = context;
         this.root = root;
-        this.unverifiable = unverifiable;
-        this.successful = successful;
+        this.verification = verification;
     }
 
-    public TypeContext context() {
-        return this.context;
-    }
-
-    public boolean successful() {
-        return this.successful;
+    public Optional<TypeContext> context() {
+        return Optional.ofNullable(this.context);
     }
 
     public TypeConstraint root() {
         return this.root;
     }
 
-    public List<TypeConstraint> unverifiable() {
-        return this.unverifiable;
+    public TypeVerification verification() {
+        return this.verification;
     }
 }

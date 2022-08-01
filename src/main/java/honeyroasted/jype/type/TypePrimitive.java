@@ -63,11 +63,6 @@ public class TypePrimitive implements TypeConcrete {
         return this.descriptor;
     }
 
-    @Override
-    public boolean isPrimitive() {
-        return true;
-    }
-
     private static final Map<String, Set<String>> PRIM_SUPERS = Map.of(
             "Z", Set.of("Z"),
             "B", Set.of("B", "S", "C", "I", "J", "F", "D"),
@@ -78,6 +73,26 @@ public class TypePrimitive implements TypeConcrete {
             "F", Set.of("F", "D"),
             "D", Set.of("D")
     );
+
+    @Override
+    public TypeString toSignature(TypeString.Context context) {
+        return toDescriptor(context);
+    }
+
+    @Override
+    public TypeString toDescriptor(TypeString.Context context) {
+        return TypeString.successful(this.descriptor);
+    }
+
+    @Override
+    public TypeString toSource(TypeString.Context context) {
+        return TypeString.successful(this.reflectionClass.getSimpleName());
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return true;
+    }
 
     @Override
     public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
@@ -121,18 +136,4 @@ public class TypePrimitive implements TypeConcrete {
         return Map.copyOf(result);
     }
 
-    @Override
-    public TypeString toSignature(TypeString.Context context) {
-        return toDescriptor(context);
-    }
-
-    @Override
-    public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.successful(this.descriptor);
-    }
-
-    @Override
-    public TypeString toSource(TypeString.Context context) {
-        return TypeString.successful(this.reflectionClass.getSimpleName());
-    }
 }

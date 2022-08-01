@@ -35,6 +35,10 @@ public class TypeParameter implements TypeConcrete {
         return this.bound;
     }
 
+    public String identity() {
+        return Integer.toHexString(System.identityHashCode(this));
+    }
+
     public void setBound(TypeConcrete bound) {
         if (this.mutable) {
             this.bound = bound;
@@ -68,7 +72,7 @@ public class TypeParameter implements TypeConcrete {
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.failure("TypeParameter", "descriptor");
+        return TypeString.failure(TypeParameter.class, TypeString.Target.DESCRIPTOR);
     }
 
     @Override
@@ -87,18 +91,13 @@ public class TypeParameter implements TypeConcrete {
     }
 
     @Override
-    public String toString() {
-        return this.name + "-" + identity();
-    }
-
-    public String identity() {
-        return Integer.toHexString(System.identityHashCode(this));
-    }
-
-
-    @Override
     public TypeConstraint assignabilityTo(TypeConcrete other, TypeSystem system) {
         return new TypeConstraint.Bound(this, other);
+    }
+
+    @Override
+    public String toString() {
+        return this.name + "-" + identity();
     }
 
     public static class Placeholder extends TypeParameter {
@@ -107,6 +106,20 @@ public class TypeParameter implements TypeConcrete {
             super("#typevar", bound);
         }
 
+        @Override
+        public TypeString toSignature(TypeString.Context context) {
+            return TypeString.failure(Placeholder.class, TypeString.Target.SIGNATURE);
+        }
+
+        @Override
+        public TypeString toDescriptor(TypeString.Context context) {
+            return TypeString.failure(Placeholder.class, TypeString.Target.DESCRIPTOR);
+        }
+
+        @Override
+        public TypeString toSource(TypeString.Context context) {
+            return TypeString.failure(Placeholder.class, TypeString.Target.SOURCE);
+        }
     }
 
 }

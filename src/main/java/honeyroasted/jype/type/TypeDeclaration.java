@@ -59,6 +59,40 @@ public class TypeDeclaration implements Type {
                 Optional.of(path) : Optional.empty();
     }
 
+    public TypeClass withArgList(List<TypeConcrete> arguments) {
+        if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
+            TypeClass clazz = new TypeClass(this, arguments);
+            clazz.lock();
+            return clazz;
+        }
+
+        throw new IllegalArgumentException("Expected 0 arguments or " + this.parameters.size() + " argument(s)");
+    }
+
+    public TypeClass withArguments(TypeConcrete... arguments) {
+        return withArgList(Arrays.asList(arguments));
+    }
+
+    public Namespace namespace() {
+        return this.namespace;
+    }
+
+    public List<TypeParameter> parameters() {
+        return this.parameters;
+    }
+
+    public List<TypeClass> parents() {
+        return this.parents;
+    }
+
+    public String name() {
+        return this.namespace.name();
+    }
+
+    public String internalName() {
+        return this.namespace.internalName();
+    }
+
     @Override
     public TypeString toSignature(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
@@ -146,40 +180,6 @@ public class TypeDeclaration implements Type {
         this.parents = List.copyOf(this.parents);
 
         this.parentMap = new LinkedHashMap<>();
-    }
-
-    public TypeClass withArgList(List<TypeConcrete> arguments) {
-        if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
-            TypeClass clazz = new TypeClass(this, arguments);
-            clazz.lock();
-            return clazz;
-        }
-
-        throw new IllegalArgumentException("Expected 0 arguments or " + this.parameters.size() + " argument(s)");
-    }
-
-    public TypeClass withArguments(TypeConcrete... arguments) {
-        return withArgList(Arrays.asList(arguments));
-    }
-
-    public Namespace namespace() {
-        return this.namespace;
-    }
-
-    public List<TypeParameter> parameters() {
-        return this.parameters;
-    }
-
-    public List<TypeClass> parents() {
-        return this.parents;
-    }
-
-    public String name() {
-        return this.namespace.name();
-    }
-
-    public String internalName() {
-        return this.namespace.internalName();
     }
 
     @Override
