@@ -8,9 +8,7 @@ public interface Type {
 
     TypeString toSource(TypeString.Context context);
 
-    default void lock() {
-
-    }
+    default void lock() {}
 
     default boolean isArray() {
         return false;

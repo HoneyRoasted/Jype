@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"honeyroasted.jype"},{"l":"honeyroasted.jype.system"},{"l":"honeyroasted.jype.system.cache"},{"l":"honeyroasted.jype.system.solver"},{"l":"honeyroasted.jype.system.solver.impl"},{"l":"honeyroasted.jype.type"}];updateSearchResults();
