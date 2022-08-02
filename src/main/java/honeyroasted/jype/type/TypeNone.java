@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
-import honeyroasted.jype.system.TypeConstraint;
-import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 

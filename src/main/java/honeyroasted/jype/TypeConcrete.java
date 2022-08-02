@@ -1,16 +1,9 @@
 package honeyroasted.jype;
 
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.solver.impl.ForceResolveTypeSolver;
-import honeyroasted.jype.type.*;
-import honeyroasted.jype.system.TypeConstraint;
+import honeyroasted.jype.type.TypeParameter;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public interface TypeConcrete extends Type {
 
@@ -46,21 +39,5 @@ public interface TypeConcrete extends Type {
             }
         });
     }
-
-    /*static TypeConstraint defaultTests(TypeConcrete self, TypeConcrete other, TypeSystem system, Supplier<TypeConstraint> def) {
-        if (other instanceof TypeNone) {
-            return TypeConstraint.FALSE;
-        } else if (other instanceof TypeOr or) {
-            return new TypeConstraint.Or(or.types().stream().map(t -> self.assignabilityTo(t, system)).toList());
-        } else if (other instanceof TypeAnd and) {
-            return new TypeConstraint.And(and.types().stream().map(t -> self.assignabilityTo(t, system)).toList());
-        } else if (other instanceof TypeIn in) {
-             return self.assignabilityTo(in.bound(), system);
-         } else if (other instanceof TypeParameter ref) {
-            return new TypeConstraint.Bound(self, ref);
-         }
-
-         return def.get();
-    }*/
 
 }

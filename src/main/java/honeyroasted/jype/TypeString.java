@@ -1,7 +1,5 @@
 package honeyroasted.jype;
 
-import java.util.Optional;
-
 public interface TypeString {
 
     String value();

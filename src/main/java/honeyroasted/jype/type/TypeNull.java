@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
-import honeyroasted.jype.system.TypeConstraint;
-import honeyroasted.jype.system.TypeSystem;
 
 public class TypeNull extends AbstractType implements TypeConcrete {
     public static final TypeNull NULL = new TypeNull();

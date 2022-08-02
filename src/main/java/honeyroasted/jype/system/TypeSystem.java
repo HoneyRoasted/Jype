@@ -2,19 +2,19 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.system.cache.SimpleTypeCache;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
+import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeNull;
 import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
-import honeyroasted.jype.type.TypePrimitive;
-import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
-import honeyroasted.jype.system.cache.SimpleTypeCache;
-import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.TypePrimitive;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;

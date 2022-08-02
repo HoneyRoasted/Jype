@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.impl;
 
-import honeyroasted.jype.system.TypeConstraint;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeSolver;
 
 import java.util.ArrayList;

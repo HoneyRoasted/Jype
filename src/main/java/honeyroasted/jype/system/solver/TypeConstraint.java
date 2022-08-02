@@ -1,14 +1,9 @@
-package honeyroasted.jype.system;
+package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public interface TypeConstraint {
     TypeConstraint FALSE = new False();

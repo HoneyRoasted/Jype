@@ -1,7 +1,5 @@
 package honeyroasted.jype.system.solver;
 
-import honeyroasted.jype.system.TypeConstraint;
-
 import java.util.List;
 import java.util.Optional;
 

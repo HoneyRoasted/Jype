@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.impl;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.system.TypeConstraint;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeContext;
 import honeyroasted.jype.system.solver.TypeSolution;
 import honeyroasted.jype.system.solver.TypeVerification;

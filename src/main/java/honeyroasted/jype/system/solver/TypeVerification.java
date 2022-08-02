@@ -1,7 +1,5 @@
 package honeyroasted.jype.system.solver;
 
-import honeyroasted.jype.system.TypeConstraint;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,6 +17,27 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public String buildMessage() {
+        StringBuilder sb = new StringBuilder();
+        buildMessage(sb, 0);
+        return sb.toString();
+    }
+
+    private void buildMessage(StringBuilder sb, int indent) {
+        sb.append("    ".repeat(indent))
+                .append("Verification ").append(kind).append(" ")
+                .append(this.success ? "Succeeded" : "Failed")
+                .append(" on constraint ")
+                .append(this.constraint);
+
+        if (!this.children.isEmpty()) {
+            sb.append(", Caused by:").append(System.lineSeparator());
+            this.children.forEach(t -> t.buildMessage(sb, indent + 1));
+        } else {
+            sb.append(System.lineSeparator());
+        }
     }
 
     public enum Kind {
