@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.HoneyRoasted:JavaType:Version'
+    implementation 'com.github.HoneyRoasted:Jype:Version'
 }
 ```
 Additionally, JavaType is continuously built with [GitHub actions](https://github.com/HoneyRoasted/Jype/actions). You
