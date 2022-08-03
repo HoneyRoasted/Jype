@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -10,13 +11,15 @@ import java.util.function.Function;
 public class TypeArray extends AbstractType implements TypeConcrete {
     private TypeConcrete element;
 
-    public TypeArray(TypeConcrete element) {
+    public TypeArray(TypeSystem system, TypeConcrete element) {
+        super(system);
         this.element = element;
     }
 
-    public TypeArray(TypeConcrete element, int depth) {
+    public TypeArray(TypeSystem system, TypeConcrete element, int depth) {
+        super(system);
         for (int i = 0; i < depth - 1; i++) {
-            element = new TypeArray(element);
+            element = new TypeArray(system, element);
         }
         this.element = element;
     }
@@ -59,12 +62,12 @@ public class TypeArray extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeArray(this.element.map(mapper)));
+        return (T) mapper.apply(new TypeArray(this.typeSystem(), this.element.map(mapper)));
     }
 
     @Override
     public TypeConcrete flatten() {
-        return new TypeArray(this.element.flatten());
+        return new TypeArray(this.typeSystem(), this.element.flatten());
     }
 
     @Override

@@ -24,7 +24,6 @@ import java.util.Set;
 
 public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
-
     public ForceResolveTypeSolver(TypeSystem system) {
         super(system);
     }
@@ -154,7 +153,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                     TypeVerification.failure(constraint);
         } else {
             return TypeVerification.builder()
-                    .children(assignability(this.system.of(self.box()), other),
+                    .children(assignability(this.system.box(self), other),
                             defaultAssignability(constraint, self, other))
                     .or()
                     .build();
@@ -163,7 +162,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
     private TypeVerification assignability(TypeConstraint constraint, TypeClass in, TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
-            Optional<TypePrimitive> unbox = TypePrimitive.unbox(in.declaration().namespace());
+            Optional<TypePrimitive> unbox = this.system.unbox(in);
             if (unbox.isPresent()) {
                 return assignability(unbox.get(), prim);
             }

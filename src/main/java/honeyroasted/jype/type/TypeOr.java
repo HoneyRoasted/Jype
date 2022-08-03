@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,12 +17,13 @@ import java.util.stream.Collectors;
 public class TypeOr extends AbstractType implements TypeConcrete {
     private Set<TypeConcrete> types;
 
-    public TypeOr(Set<TypeConcrete> types) {
+    public TypeOr(TypeSystem system, Set<TypeConcrete> types) {
+        super(system);
         this.types = types;
     }
 
-    public TypeOr() {
-        this(new LinkedHashSet<>());
+    public TypeOr(TypeSystem system) {
+        this(system, new LinkedHashSet<>());
     }
 
     @Override
@@ -53,7 +55,7 @@ public class TypeOr extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeOr(this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
+        return (T) mapper.apply(new TypeOr(this.typeSystem(), this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
     }
 
     public Set<TypeConcrete> types() {
@@ -72,11 +74,11 @@ public class TypeOr extends AbstractType implements TypeConcrete {
         });
 
         if (flattened.size() == 0) {
-            return TypeNone.VOID;
+            return this.typeSystem().VOID;
         } else if (flattened.size() == 1) {
             return flattened.iterator().next();
         } else {
-            return new TypeOr(flattened);
+            return new TypeOr(this.typeSystem(), flattened);
         }
     }
 

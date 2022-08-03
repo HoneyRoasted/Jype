@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 import java.util.function.Function;
@@ -10,7 +11,8 @@ import java.util.function.Function;
 public class TypeIn extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 
-    public TypeIn(TypeConcrete bound) {
+    public TypeIn(TypeSystem system, TypeConcrete bound) {
+        super(system);
         this.bound = bound;
     }
 
@@ -43,12 +45,12 @@ public class TypeIn extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeIn(this.bound.map(mapper)));
+        return (T) mapper.apply(new TypeIn(this.typeSystem(), this.bound.map(mapper)));
     }
 
     @Override
     public TypeConcrete flatten() {
-        return new TypeIn(this.bound.flatten());
+        return new TypeIn(this.typeSystem(), this.bound.flatten());
     }
 
     @Override

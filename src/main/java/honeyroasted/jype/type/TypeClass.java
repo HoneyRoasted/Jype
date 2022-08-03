@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -15,19 +16,21 @@ import java.util.stream.Collectors;
 
 public class TypeClass extends AbstractType implements TypeConcrete {
     private TypeDeclaration declaration;
-    private List<TypeConcrete> arguments = new ArrayList<>();
+    private List<TypeConcrete> arguments;
 
     private Map<TypeParameter, TypeConcrete> argMap = new LinkedHashMap<>();
     private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
 
-    public TypeClass(TypeDeclaration declaration) {
-        this.declaration = declaration;
-    }
-
-    public TypeClass(TypeDeclaration declaration, List<TypeConcrete> arguments) {
+    public TypeClass(TypeSystem system, TypeDeclaration declaration, List<TypeConcrete> arguments) {
+        super(system);
         this.declaration = declaration;
         this.arguments = arguments;
     }
+
+    public TypeClass(TypeSystem system, TypeDeclaration declaration) {
+        this(system, declaration, new ArrayList<>());
+    }
+
 
     public TypeDeclaration declaration() {
         return this.declaration;
@@ -47,24 +50,24 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     public Optional<TypeClass> parent(TypeDeclaration parent) {
-        return this.declaration.pathTo(parent).flatMap(path -> {
+        return Optional.ofNullable(this.parentMap.computeIfAbsent(parent, key -> this.declaration.pathTo(parent).map(path -> {
             TypeClass current = this;
             for (int i = 1; i < path.size(); i++) {
                 Optional<TypeClass> next = current.directParent(path.get(i));
                 if (next.isPresent()) {
                     current = next.get();
                 } else {
-                    return Optional.empty();
+                    return null;
                 }
             }
 
-            return Optional.of(current);
-        });
+            return current;
+        }).orElse(null)));
     }
 
     public Optional<TypeClass> directParent(TypeDeclaration parent) {
         return this.declaration.directParent(parent).map(typeParent -> {
-            TypeClass result = new TypeClass(parent);
+            TypeClass result = new TypeClass(this.typeSystem(), parent);
             for (TypeConcrete arg : typeParent.arguments()) {
                 result.arguments().add(arg.map(t -> {
                     if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
@@ -142,13 +145,13 @@ public class TypeClass extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeClass(this.declaration,
+        return (T) mapper.apply(new TypeClass(this.typeSystem(), this.declaration,
                 this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
     }
 
     @Override
     public TypeConcrete flatten() {
-        return new TypeClass(this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
+        return new TypeClass(this.typeSystem(), this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
     }
 
     @Override

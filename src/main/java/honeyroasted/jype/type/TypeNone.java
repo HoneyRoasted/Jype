@@ -2,17 +2,16 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
 public class TypeNone extends AbstractType implements TypeConcrete {
-    public static final TypeNone VOID = new TypeNone("void", "V");
-    public static final TypeNone NONE = new TypeNone("none", "V");
-
     private String name;
     private String descriptor;
 
-    public TypeNone(String name, String descriptor) {
+    public TypeNone(TypeSystem system, String name, String descriptor) {
+        super(system);
         this.name = name;
         this.descriptor = descriptor;
     }

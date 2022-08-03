@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.system.TypeSystem;
 
 public class TypeParameter extends AbstractType implements TypeConcrete {
     private String name;
@@ -9,16 +10,18 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
 
     private boolean mutable = true;
 
-    public TypeParameter(TypeConcrete bound) {
-        this.bound = bound;
-    }
-
-    public TypeParameter(String name, TypeConcrete bound) {
+    public TypeParameter(TypeSystem system, String name, TypeConcrete bound) {
+        super(system);
         this.name = name;
         this.bound = bound.flatten();
     }
 
-    public TypeParameter(String name) {
+    public TypeParameter(TypeSystem system, TypeConcrete bound) {
+        this(system, "<UNKNOWN_NAME>", bound);
+    }
+
+    public TypeParameter(TypeSystem system, String name) {
+        super(system);
         this.name = name;
     }
 
@@ -107,8 +110,8 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
 
     public static class Placeholder extends TypeParameter {
 
-        public Placeholder(TypeConcrete bound) {
-            super("#typevar", bound);
+        public Placeholder(TypeSystem system, TypeConcrete bound) {
+            super(system, "#typevar", bound);
         }
 
         @Override

@@ -11,7 +11,8 @@ import java.util.function.Function;
 public class TypeOut extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 
-    public TypeOut(TypeConcrete bound) {
+    public TypeOut(TypeSystem system, TypeConcrete bound) {
+        super(system);
         this.bound = bound;
     }
 
@@ -21,7 +22,7 @@ public class TypeOut extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toSignature(TypeString.Context context) {
-        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+        if (this.bound.equals(this.typeSystem().OBJECT)) {
             return TypeString.successful("*", getClass(), TypeString.Target.SIGNATURE);
         } else {
             TypeString bound = this.bound.toSignature(context);
@@ -36,7 +37,7 @@ public class TypeOut extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+        if (this.bound.equals(this.typeSystem().OBJECT)) {
             return TypeString.successful("?", getClass(), TypeString.Target.SOURCE);
         } else {
             TypeString bound = this.bound.toSource(context);
@@ -46,7 +47,7 @@ public class TypeOut extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toReadable(TypeString.Context context) {
-        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+        if (this.bound.equals(this.typeSystem().OBJECT)) {
             return TypeString.successful("?", getClass(), TypeString.Target.SOURCE);
         } else {
             TypeString bound = this.bound.toReadable(context);
@@ -56,12 +57,12 @@ public class TypeOut extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeOut(this.bound.map(mapper)));
+        return (T) mapper.apply(new TypeOut(this.typeSystem(), this.bound.map(mapper)));
     }
 
     @Override
     public TypeConcrete flatten() {
-        return new TypeOut(this.bound.flatten());
+        return new TypeOut(this.typeSystem(), this.bound.flatten());
     }
 
     @Override

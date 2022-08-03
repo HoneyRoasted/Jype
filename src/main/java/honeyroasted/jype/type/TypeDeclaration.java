@@ -16,20 +16,22 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TypeDeclaration implements Type {
+    private TypeSystem typeSystem;
     private Namespace namespace;
     private List<TypeParameter> parameters;
     private List<TypeClass> parents;
 
     private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
 
-    public TypeDeclaration(Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents) {
+    public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents) {
+        this.typeSystem = system;
         this.namespace = namespace;
         this.parameters = parameters;
         this.parents = parents;
     }
 
-    public TypeDeclaration(Namespace namespace) {
-        this(namespace, new ArrayList<>(), new ArrayList<>());
+    public TypeDeclaration(TypeSystem system, Namespace namespace) {
+        this(system, namespace, new ArrayList<>(), new ArrayList<>());
     }
 
     public Optional<TypeClass> directParent(TypeDeclaration parent) {
@@ -59,7 +61,7 @@ public class TypeDeclaration implements Type {
 
     public TypeClass withArgList(List<TypeConcrete> arguments) {
         if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
-            TypeClass clazz = new TypeClass(this, arguments);
+            TypeClass clazz = new TypeClass(this.typeSystem(), this, arguments);
             clazz.lock();
             return clazz;
         }
@@ -217,6 +219,11 @@ public class TypeDeclaration implements Type {
 
             return TypeString.successful(sb.toString(), getClass(), TypeString.Target.READABLE);
         }
+    }
+
+    @Override
+    public TypeSystem typeSystem() {
+        return this.typeSystem;
     }
 
     @Override

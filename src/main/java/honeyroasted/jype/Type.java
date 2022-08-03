@@ -1,5 +1,6 @@
 package honeyroasted.jype;
 
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.TypeAnd;
 
 /**
@@ -54,6 +55,11 @@ public interface Type {
      * @see TypeString.Context
      */
     TypeString toReadable(TypeString.Context context);
+
+    /**
+     * @return The {@link TypeSystem} associated with this {@link Type}
+     */
+    TypeSystem typeSystem();
 
     /**
      * Locks this {@link Type}, making it immutable. Note that this does not necessarily lock the child {@link Type}s
