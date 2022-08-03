@@ -76,13 +76,8 @@ public class TypePrimitive extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
+    public TypeString toReadable(TypeString.Context context) {
         return TypeString.successful(this.reflectionClass.getSimpleName(), getClass(), TypeString.Target.READABLE);
-    }
-
-    @Override
-    public boolean isPrimitive() {
-        return true;
     }
 
     @Override

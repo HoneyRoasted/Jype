@@ -36,8 +36,8 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
-        TypeString bound = this.bound.toString(context);
+    public TypeString toReadable(TypeString.Context context) {
+        TypeString bound = this.bound.toReadable(context);
         return bound.successful() ? TypeString.successful("? super " + bound.value(), getClass(), TypeString.Target.READABLE) : bound;
     }
 

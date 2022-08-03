@@ -87,6 +87,20 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public static enum </span><span class="element-name type-name-label">TypeString.Context</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&gt;</span></div>
+<div class="block">This Enum represents the context under which a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> can be converted to a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a>. A <a href="#DECLARATION"><code>DECLARATION</code></a>
+ context refers to a class declaration or a method declaration. A <a href="#CONCRETE"><code>CONCRETE</code></a> context refers to a
+ use of a type somewhere, such as a type argument or variable type. The most notable difference being that, in a
+ <a href="#DECLARATION"><code>DECLARATION</code></a> context, <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s will report their bounds and <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>s
+ will report their parameters and parents.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="#DECLARATION"><code>DECLARATION</code></a></li>
+<li><a href="#CONCRETE"><code>CONCRETE</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,9 +122,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Enum Constant</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="#CONCRETE" class="member-name-link">CONCRETE</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Represents a CONCRETE context for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> conversion.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="#DECLARATION" class="member-name-link">DECLARATION</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Represents a DECLARATION context for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> conversion.</div>
+</div>
 </div>
 </section>
 </li>
@@ -160,12 +178,14 @@ the order they are declared.</div>
 <section class="detail" id="DECLARATION">
 <h3>DECLARATION</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a></span>&nbsp;<span class="element-name">DECLARATION</span></div>
+<div class="block">Represents a DECLARATION context for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> conversion.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="CONCRETE">
 <h3>CONCRETE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a></span>&nbsp;<span class="element-name">CONCRETE</span></div>
+<div class="block">Represents a CONCRETE context for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> conversion.</div>
 </section>
 </li>
 </ul>

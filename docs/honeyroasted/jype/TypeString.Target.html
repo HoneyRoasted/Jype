@@ -87,6 +87,18 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public static enum </span><span class="element-name type-name-label">TypeString.Target</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html" title="class or interface in java.lang" class="external-link">Enum</a>&lt;<a href="TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a>&gt;</span></div>
+<div class="block">This Enum represents the different types of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representations a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> can have.</div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="#SOURCE"><code>SOURCE</code></a></li>
+<li><a href="#DESCRIPTOR"><code>DESCRIPTOR</code></a></li>
+<li><a href="#SIGNATURE"><code>SIGNATURE</code></a></li>
+<li><a href="#READABLE"><code>READABLE</code></a></li>
+</ul>
+</dd>
+</dl>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,13 +120,23 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Enum Constant</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="#DESCRIPTOR" class="member-name-link">DESCRIPTOR</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be formatted in a Java Virtual
+ Machine Descriptor.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="#READABLE" class="member-name-link">READABLE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> in a human-readable format.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="#SIGNATURE" class="member-name-link">SIGNATURE</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be formatted in a Java Virtual
+ Machine Signature.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="#SOURCE" class="member-name-link">SOURCE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be written in source code.</div>
+</div>
 </div>
 </section>
 </li>
@@ -164,24 +186,32 @@ the order they are declared.</div>
 <section class="detail" id="SOURCE">
 <h3>SOURCE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a></span>&nbsp;<span class="element-name">SOURCE</span></div>
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be written in source code.
+ Note that some types cannot be written in source, such as <a href="type/TypeNull.html" title="class in honeyroasted.jype.type"><code>TypeNull</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="DESCRIPTOR">
 <h3>DESCRIPTOR</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a></span>&nbsp;<span class="element-name">DESCRIPTOR</span></div>
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be formatted in a Java Virtual
+ Machine Descriptor. Note that some types cannot be written as a descriptor, such as <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="SIGNATURE">
 <h3>SIGNATURE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a></span>&nbsp;<span class="element-name">SIGNATURE</span></div>
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be formatted in a Java Virtual
+ Machine Signature. Note that some types cannot be written as a signature, such as <a href="type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="READABLE">
 <h3>READABLE</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a></span>&nbsp;<span class="element-name">READABLE</span></div>
+<div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> in a human-readable format. All <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s
+ should be able to be written in this format.</div>
 </section>
 </li>
 </ul>

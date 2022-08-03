@@ -197,7 +197,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
                     if (si instanceof TypeOut typeOut) { //? extends X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
-                                .bound().resolveVariables(t -> otherClass.argument(t).get());
+                                .bound().map(t -> t instanceof TypeParameter ref ? otherClass.argument(ref).orElse(ref) : t);
 
                         builder.children(
                                 TypeVerification.builder()
@@ -209,7 +209,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                         );
                     } else if (si instanceof TypeIn typeIn) { //? super X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
-                                .bound().resolveVariables(t -> otherClass.argument(t).get());
+                                .bound().map(t -> t instanceof TypeParameter ref ? otherClass.argument(ref).orElse(ref) : t);
 
                         builder.children(
                                 TypeVerification.builder()

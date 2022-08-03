@@ -34,11 +34,6 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isArray() {
-        return true;
-    }
-
-    @Override
     public TypeString toSignature(TypeString.Context context) {
         TypeString element = this.element.toSignature(context);
         return element.successful() ? TypeString.successful("[" + element.value(), getClass(), TypeString.Target.SIGNATURE) : element;
@@ -57,8 +52,8 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
-        TypeString element = this.element.toString(context);
+    public TypeString toReadable(TypeString.Context context) {
+        TypeString element = this.element.toReadable(context);
         return element.successful() ? TypeString.successful(element.value() + "[]", getClass(), TypeString.Target.READABLE) : element;
     }
 

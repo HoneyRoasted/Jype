@@ -45,11 +45,11 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
+    public TypeString toReadable(TypeString.Context context) {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
             return TypeString.successful("?", getClass(), TypeString.Target.SOURCE);
         } else {
-            TypeString bound = this.bound.toString(context);
+            TypeString bound = this.bound.toReadable(context);
             return bound.successful() ? TypeString.successful("? extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }

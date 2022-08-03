@@ -47,8 +47,8 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
-        List<TypeString> args = this.types.stream().map(t -> t.toString(context)).toList();
+    public TypeString toReadable(TypeString.Context context) {
+        List<TypeString> args = this.types.stream().map(t -> t.toReadable(context)).toList();
         return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
                 TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" & ")), getClass(), TypeString.Target.READABLE));
     }

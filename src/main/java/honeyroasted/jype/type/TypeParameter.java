@@ -1,10 +1,7 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
-
-import java.util.function.Function;
 
 public class TypeParameter extends AbstractType implements TypeConcrete {
     private String name;
@@ -79,11 +76,11 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
+    public TypeString toReadable(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
             return TypeString.successful(this.name, getClass(), TypeString.Target.SOURCE);
         } else {
-            TypeString bound = this.bound.toString(TypeString.Context.CONCRETE);
+            TypeString bound = this.bound.toReadable(TypeString.Context.CONCRETE);
             return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }
@@ -130,7 +127,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         }
 
         @Override
-        public TypeString toString(TypeString.Context context) {
+        public TypeString toReadable(TypeString.Context context) {
             if (context == TypeString.Context.CONCRETE) {
                 return TypeString.successful(name() + "-" + identity(), getClass(), TypeString.Target.SOURCE);
             } else {

@@ -117,10 +117,10 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
+    public TypeString toReadable(TypeString.Context context) {
         StringBuilder sb = new StringBuilder().append(this.declaration.namespace().simpleName());
         if (!this.arguments.isEmpty()) {
-            List<TypeString> args = this.arguments.stream().map(t -> t.toString(TypeString.Context.CONCRETE)).toList();
+            List<TypeString> args = this.arguments.stream().map(t -> t.toReadable(TypeString.Context.CONCRETE)).toList();
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();

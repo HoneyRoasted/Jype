@@ -177,7 +177,7 @@ public class TypeDeclaration implements Type {
     }
 
     @Override
-    public TypeString toString(TypeString.Context context) {
+    public TypeString toReadable(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
             return TypeString.successful(this.namespace().simpleName(), getClass(), TypeString.Target.READABLE);
         } else {
@@ -186,7 +186,7 @@ public class TypeDeclaration implements Type {
 
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
-                List<TypeString> args = this.parameters.stream().map(t -> t.toString(context)).toList();
+                List<TypeString> args = this.parameters.stream().map(t -> t.toReadable(context)).toList();
                 Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
@@ -206,7 +206,7 @@ public class TypeDeclaration implements Type {
 
                 if (this.parents.size() > 1) {
                     sb.append(" implements ");
-                    List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toString(TypeString.Context.CONCRETE)).toList();
+                    List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toReadable(TypeString.Context.CONCRETE)).toList();
                     Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                     if (failure.isPresent()) {
                         return failure.get();
