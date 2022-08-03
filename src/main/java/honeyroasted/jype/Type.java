@@ -8,6 +8,8 @@ public interface Type {
 
     TypeString toSource(TypeString.Context context);
 
+    TypeString toString(TypeString.Context context);
+
     default void lock() {}
 
     default boolean isArray() {

@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.type.TypeParameter;
 
 import java.util.function.Consumer;
@@ -26,7 +27,7 @@ public interface TypeConstraint {
     record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
         @Override
         public String toString() {
-            return "(" + this.left + " = " + this.right + ")";
+            return "{" + this.left.toString(TypeString.Context.CONCRETE).value() + "} is equal to {" + this.right.toString(TypeString.Context.CONCRETE).value() + "}";
         }
     }
 
@@ -34,7 +35,7 @@ public interface TypeConstraint {
 
         @Override
         public String toString() {
-            return "(" + this.subtype + " <: " + this.parent + ")";
+            return "{" + this.subtype.toString(TypeString.Context.CONCRETE).value() + "} is assignable to {" + this.parent.toString(TypeString.Context.CONCRETE).value() + "}";
         }
 
         public Kind kind() {
@@ -58,8 +59,12 @@ public interface TypeConstraint {
 
     }
 
-    record Throws(TypeConcrete type) implements TypeConstraint {
+    record Capture(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
 
+        @Override
+        public String toString() {
+            return "{" + this.left.toString(TypeString.Context.CONCRETE).value() + "} captures {" + this.right.toString(TypeString.Context.CONCRETE).value() + "}";
+        }
     }
 
     default TypeConstraint flatten() {

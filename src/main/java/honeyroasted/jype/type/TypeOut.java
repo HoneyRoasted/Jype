@@ -22,10 +22,10 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSignature(TypeString.Context context) {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
-            return TypeString.successful("*");
+            return TypeString.successful("*", getClass(), TypeString.Target.SIGNATURE);
         } else {
             TypeString bound = this.bound.toSignature(context);
-            return bound.successful() ? TypeString.successful("+" + bound.value()) : bound;
+            return bound.successful() ? TypeString.successful("+" + bound.value(), getClass(), TypeString.Target.SIGNATURE) : bound;
         }
     }
 
@@ -37,10 +37,20 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSource(TypeString.Context context) {
         if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
-            return TypeString.successful("?");
+            return TypeString.successful("?", getClass(), TypeString.Target.SOURCE);
         } else {
             TypeString bound = this.bound.toSource(context);
-            return bound.successful() ? TypeString.successful("? extends " + bound.value()) : bound;
+            return bound.successful() ? TypeString.successful("? extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
+        }
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        if (this.bound.equals(TypeSystem.GLOBAL.OBJECT)) {
+            return TypeString.successful("?", getClass(), TypeString.Target.SOURCE);
+        } else {
+            TypeString bound = this.bound.toString(context);
+            return bound.successful() ? TypeString.successful("? extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }
 

@@ -104,7 +104,7 @@ public class TypeDeclaration implements Type {
                 }
                 sb.append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
             }
-            return TypeString.successful(sb.append(";").toString());
+            return TypeString.successful(sb.append(";").toString(), getClass(), TypeString.Target.SIGNATURE);
         } else {
             StringBuilder sb = new StringBuilder().append("L" + this.namespace.internalName());
             if (!this.parameters.isEmpty()) {
@@ -124,52 +124,99 @@ public class TypeDeclaration implements Type {
             }
             sb.append(args.stream().map(TypeString::value).collect(Collectors.joining()));
 
-            return TypeString.successful(sb.toString());
+            return TypeString.successful(sb.toString(), getClass(), TypeString.Target.SIGNATURE);
         }
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.successful("L" + this.namespace.internalName() + ";");
+        return TypeString.successful("L" + this.namespace.internalName() + ";", getClass(), TypeString.Target.DESCRIPTOR);
     }
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.namespace().name());
+        if (context == TypeString.Context.CONCRETE) {
+            return TypeString.successful(this.namespace().name(), getClass(), TypeString.Target.SOURCE);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.namespace().name());
 
-        if (!this.parameters.isEmpty()) {
-            sb.append("<");
-            List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
-            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
-            if (failure.isPresent()) {
-                return failure.get();
-            }
-            sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
-        }
-
-        if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
-            sb.append(" extends ");
-
-            TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
-            if (!superclass.successful()) {
-                return superclass;
-            }
-
-            sb.append(superclass.value());
-
-            if (this.parents.size() > 1) {
-                sb.append(" implements ");
-                List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
+            if (!this.parameters.isEmpty()) {
+                sb.append("<");
+                List<TypeString> args = this.parameters.stream().map(t -> t.toSignature(context)).toList();
                 Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                 if (failure.isPresent()) {
                     return failure.get();
                 }
-                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", ")));
+                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
             }
-        }
 
-        return TypeString.successful(sb.toString());
+            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
+                sb.append(" extends ");
+
+                TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
+                if (!superclass.successful()) {
+                    return superclass;
+                }
+
+                sb.append(superclass.value());
+
+                if (this.parents.size() > 1) {
+                    sb.append(" implements ");
+                    List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
+                    Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
+                    if (failure.isPresent()) {
+                        return failure.get();
+                    }
+                    sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", ")));
+                }
+            }
+
+            return TypeString.successful(sb.toString(), getClass(), TypeString.Target.SOURCE);
+        }
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        if (context == TypeString.Context.CONCRETE) {
+            return TypeString.successful(this.namespace().simpleName(), getClass(), TypeString.Target.READABLE);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.namespace().name());
+
+            if (!this.parameters.isEmpty()) {
+                sb.append("<");
+                List<TypeString> args = this.parameters.stream().map(t -> t.toString(context)).toList();
+                Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
+                if (failure.isPresent()) {
+                    return failure.get();
+                }
+                sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+            }
+
+            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
+                sb.append(" extends ");
+
+                TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
+                if (!superclass.successful()) {
+                    return superclass;
+                }
+
+                sb.append(superclass.value());
+
+                if (this.parents.size() > 1) {
+                    sb.append(" implements ");
+                    List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toString(TypeString.Context.CONCRETE)).toList();
+                    Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
+                    if (failure.isPresent()) {
+                        return failure.get();
+                    }
+                    sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", ")));
+                }
+            }
+
+            return TypeString.successful(sb.toString(), getClass(), TypeString.Target.READABLE);
+        }
     }
 
     @Override

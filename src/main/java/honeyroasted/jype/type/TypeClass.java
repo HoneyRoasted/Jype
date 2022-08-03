@@ -92,12 +92,12 @@ public class TypeClass extends AbstractType implements TypeConcrete {
             sb.append("<").append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
         }
 
-        return TypeString.successful(sb.append(";").toString());
+        return TypeString.successful(sb.append(";").toString(), getClass(), TypeString.Target.SIGNATURE);
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.successful("L" + this.declaration.namespace().internalName() + ";");
+        return TypeString.successful("L" + this.declaration.namespace().internalName() + ";", getClass(), TypeString.Target.DESCRIPTOR);
     }
 
     @Override
@@ -113,7 +113,23 @@ public class TypeClass extends AbstractType implements TypeConcrete {
             sb.append("<").append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
         }
 
-        return TypeString.successful(sb.toString());
+        return TypeString.successful(sb.toString(), getClass(), TypeString.Target.SOURCE);
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        StringBuilder sb = new StringBuilder().append(this.declaration.namespace().simpleName());
+        if (!this.arguments.isEmpty()) {
+            List<TypeString> args = this.arguments.stream().map(t -> t.toString(TypeString.Context.CONCRETE)).toList();
+            Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
+            if (failure.isPresent()) {
+                return failure.get();
+            }
+
+            sb.append("<").append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
+        }
+
+        return TypeString.successful(sb.toString(), getClass(), TypeString.Target.READABLE);
     }
 
     @Override

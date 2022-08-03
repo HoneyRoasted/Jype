@@ -5,14 +5,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVerification> children, boolean success) {
+public record TypeVerification(TypeConstraint constraint, List<TypeVerification> children, boolean success) {
 
-    public static TypeVerification success(Kind kind, TypeConstraint constraint) {
-        return new TypeVerification(kind, constraint, Collections.emptyList(), true);
+    public static TypeVerification success(TypeConstraint constraint) {
+        return new TypeVerification(constraint, Collections.emptyList(), true);
     }
 
-    public static TypeVerification failure(Kind kind, TypeConstraint constraint) {
-        return new TypeVerification(kind, constraint, new ArrayList<>(), false);
+    public static TypeVerification failure(TypeConstraint constraint) {
+        return new TypeVerification(constraint, new ArrayList<>(), false);
     }
 
     public static Builder builder() {
@@ -27,9 +27,8 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
 
     private void buildMessage(StringBuilder sb, int indent) {
         sb.append("    ".repeat(indent))
-                .append("Verification ").append(kind).append(" ")
                 .append(this.success ? "Succeeded" : "Failed")
-                .append(" on constraint ")
+                .append(": ")
                 .append(this.constraint);
 
         if (!this.children.isEmpty()) {
@@ -40,17 +39,7 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
         }
     }
 
-    public enum Kind {
-        NONE,
-        OR,
-        AND,
-        EQUAL,
-        SUBTYPE
-    }
-
-    public static class Builder {
-        private Kind kind;
-        private TypeConstraint constraint;
+    public static class Builder { private TypeConstraint constraint;
         private List<TypeVerification> children = new ArrayList<>();
         private boolean success = true;
 
@@ -67,11 +56,6 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
 
         public Builder success(boolean success) {
             this.success = success;
-            return this;
-        }
-
-        public Builder kind(Kind kind) {
-            this.kind = kind;
             return this;
         }
 
@@ -99,7 +83,7 @@ public record TypeVerification(Kind kind, TypeConstraint constraint, List<TypeVe
         }
 
         public TypeVerification build() {
-            return new TypeVerification(this.kind, this.constraint, List.copyOf(this.children), this.success);
+            return new TypeVerification(this.constraint, List.copyOf(this.children), this.success);
         }
 
         public boolean isSuccessful() {

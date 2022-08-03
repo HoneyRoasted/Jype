@@ -41,19 +41,25 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSignature(TypeString.Context context) {
         TypeString element = this.element.toSignature(context);
-        return element.successful() ? TypeString.successful("[" + element.value()) : element;
+        return element.successful() ? TypeString.successful("[" + element.value(), getClass(), TypeString.Target.SIGNATURE) : element;
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
         TypeString element = this.element.toDescriptor(context);
-        return element.successful() ? TypeString.successful("[" + element.value()) : element;
+        return element.successful() ? TypeString.successful("[" + element.value(), getClass(), TypeString.Target.DESCRIPTOR) : element;
     }
 
     @Override
     public TypeString toSource(TypeString.Context context) {
         TypeString element = this.element.toSource(context);
-        return element.successful() ? TypeString.successful(element.value() + "[]") : element;
+        return element.successful() ? TypeString.successful(element.value() + "[]", getClass(), TypeString.Target.SOURCE) : element;
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        TypeString element = this.element.toString(context);
+        return element.successful() ? TypeString.successful(element.value() + "[]", getClass(), TypeString.Target.READABLE) : element;
     }
 
     @Override

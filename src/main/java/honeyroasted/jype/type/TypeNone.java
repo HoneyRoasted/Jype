@@ -19,17 +19,22 @@ public class TypeNone extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toSignature(TypeString.Context context) {
-        return toDescriptor(context);
+        return TypeString.successful("V", getClass(), TypeString.Target.SIGNATURE);
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.successful("V");
+        return TypeString.successful("V", getClass(), TypeString.Target.DESCRIPTOR);
     }
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        return TypeString.successful("void");
+        return TypeString.successful("void", getClass(), TypeString.Target.SOURCE);
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        return TypeString.successful("void", getClass(), TypeString.Target.READABLE);
     }
 
     @Override

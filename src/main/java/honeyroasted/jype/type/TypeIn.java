@@ -21,7 +21,7 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSignature(TypeString.Context context) {
         TypeString bound = this.bound.toSignature(context);
-        return bound.successful() ? TypeString.successful("-" + bound.value()) : bound;
+        return bound.successful() ? TypeString.successful("-" + bound.value(), getClass(), TypeString.Target.SIGNATURE) : bound;
     }
 
     @Override
@@ -32,7 +32,13 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSource(TypeString.Context context) {
         TypeString bound = this.bound.toSource(context);
-        return bound.successful() ? TypeString.successful("? super " + bound.value()) : bound;
+        return bound.successful() ? TypeString.successful("? super " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        TypeString bound = this.bound.toString(context);
+        return bound.successful() ? TypeString.successful("? super " + bound.value(), getClass(), TypeString.Target.READABLE) : bound;
     }
 
     @Override

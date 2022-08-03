@@ -7,6 +7,7 @@ import honeyroasted.jype.TypeString;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -36,6 +37,13 @@ public class TypeOr extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSource(TypeString.Context context) {
         return TypeString.failure(TypeOr.class, TypeString.Target.SOURCE);
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        List<TypeString> args = this.types.stream().map(t -> t.toString(context)).toList();
+        return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" | ")), getClass(), TypeString.Target.READABLE));
     }
 
     @Override

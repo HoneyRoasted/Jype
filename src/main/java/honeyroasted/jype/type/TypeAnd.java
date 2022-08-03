@@ -31,7 +31,7 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     public TypeString toSignature(TypeString.Context context) {
         List<TypeString> args = this.types.stream().map(t -> t.toSignature(context)).toList();
         return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
-                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(":"))));
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(":")), getClass(), TypeString.Target.SIGNATURE));
     }
 
     @Override
@@ -43,7 +43,14 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     public TypeString toSource(TypeString.Context context) {
         List<TypeString> args = this.types.stream().map(t -> t.toSource(context)).toList();
         return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
-                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" & "))));
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" & ")), getClass(), TypeString.Target.SOURCE));
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        List<TypeString> args = this.types.stream().map(t -> t.toString(context)).toList();
+        return args.stream().filter(t -> !t.successful()).findFirst().orElseGet(() ->
+                TypeString.successful(args.stream().map(TypeString::value).collect(Collectors.joining(" & ")), getClass(), TypeString.Target.READABLE));
     }
 
     @Override

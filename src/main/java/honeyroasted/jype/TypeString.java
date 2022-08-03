@@ -1,84 +1,54 @@
 package honeyroasted.jype;
 
-public interface TypeString {
+public class TypeString {
+    private String value;
+    private boolean successful;
 
-    String value();
+    private Class<?> type;
+    private Target target;
 
-    boolean successful();
-
-    static TypeString successful(String value) {
-        return new Successful(value);
+    public TypeString(String value, boolean successful, Class<?> type, Target target) {
+        this.value = value;
+        this.successful = successful;
+        this.type = type;
+        this.target = target;
+    }
+    
+    public static TypeString successful(String value, Class<?> type, Target target) {
+        return new TypeString(value, true, type, target);
+    }
+    
+    public static TypeString failure(Class<?> type, Target target) {
+        return new TypeString("<unable to convert type " + target + " to " + (type == null ? "null" : type.getSimpleName()) + ">",
+                false, type, target);
     }
 
-    static TypeString failure(Class<?> type, Target target) {
-        return new Failure(type, target);
+    public String value() {
+        return this.value;
     }
 
-    enum Context {
+    public boolean successful() {
+        return this.successful;
+    }
+
+    public Class<?> type() {
+        return this.type;
+    }
+
+    public Target target() {
+        return this.target;
+    }
+
+    public enum Context {
         DECLARATION,
         CONCRETE
     }
 
-    enum Target {
+    public enum Target {
         SOURCE,
         DESCRIPTOR,
-        SIGNATURE
+        SIGNATURE,
+        READABLE
     }
-
-    class Successful implements TypeString {
-        private String value;
-
-        public Successful(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public String value() {
-            return this.value;
-        }
-
-        @Override
-        public boolean successful() {
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            return this.value;
-        }
-    }
-
-    class Failure implements TypeString {
-        private Class<?> type;
-        private Target target;
-
-        public Failure(Class<?> type, Target target) {
-            this.type = type;
-            this.target = target;
-        }
-
-        @Override
-        public String value() {
-            return toString();
-        }
-
-        @Override
-        public boolean successful() {
-            return false;
-        }
-
-        public Class<?> type() {
-            return type;
-        }
-
-        public Target target() {
-            return target;
-        }
-
-        @Override
-        public String toString() {
-            return "<unable to convert type " + this.target + " to " + this.type + ">";
-        }
-    }
-
+    
 }

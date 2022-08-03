@@ -62,17 +62,22 @@ public class TypePrimitive extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toSignature(TypeString.Context context) {
-        return toDescriptor(context);
+        return TypeString.successful(this.descriptor, getClass(), TypeString.Target.SIGNATURE);
     }
 
     @Override
     public TypeString toDescriptor(TypeString.Context context) {
-        return TypeString.successful(this.descriptor);
+        return TypeString.successful(this.descriptor, getClass(), TypeString.Target.DESCRIPTOR);
     }
 
     @Override
     public TypeString toSource(TypeString.Context context) {
-        return TypeString.successful(this.reflectionClass.getSimpleName());
+        return TypeString.successful(this.reflectionClass.getSimpleName(), getClass(), TypeString.Target.SOURCE);
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        return TypeString.successful(this.reflectionClass.getSimpleName(), getClass(), TypeString.Target.READABLE);
     }
 
     @Override

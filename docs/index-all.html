@@ -64,8 +64,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#and()" class="member-name-link">and()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#AND" class="member-name-link">AND</a> - Enum constant in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#argument(honeyroasted.jype.type.TypeParameter)" class="member-name-link">argument(TypeParameter)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#arguments()" class="member-name-link">arguments()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
@@ -128,6 +126,10 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/TypeCache.html#cache(javax.lang.model.type.TypeMirror,honeyroasted.jype.Type)" class="member-name-link">cache(TypeMirror, Type)</a> - Method in interface honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">Capture(TypeConcrete, TypeConcrete)</a> - Constructor for record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
+<dd>
+<div class="block">Creates an instance of a <code>Capture</code> record class.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#CHAR" class="member-name-link">CHAR</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#CHAR" class="member-name-link">CHAR</a> - Static variable in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
@@ -206,19 +208,17 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates an instance of a <code>Equal</code> record class.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#EQUAL" class="member-name-link">EQUAL</a> - Enum constant in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
 <dd>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
@@ -257,11 +257,9 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#failure()" class="member-name-link">failure()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#failure(honeyroasted.jype.system.solver.TypeVerification.Kind,honeyroasted.jype.system.solver.TypeConstraint)" class="member-name-link">failure(TypeVerification.Kind, TypeConstraint)</a> - Static method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#failure(honeyroasted.jype.system.solver.TypeConstraint)" class="member-name-link">failure(TypeConstraint)</a> - Static method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.html#failure(java.lang.Class,honeyroasted.jype.TypeString.Target)" class="member-name-link">failure(Class&lt;?&gt;, TypeString.Target)</a> - Static method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="interface in honeyroasted.jype">TypeString</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#%3Cinit%3E(java.lang.Class,honeyroasted.jype.TypeString.Target)" class="member-name-link">Failure(Class&lt;?&gt;, TypeString.Target)</a> - Constructor for class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#failure(java.lang.Class,honeyroasted.jype.TypeString.Target)" class="member-name-link">failure(Class&lt;?&gt;, TypeString.Target)</a> - Static method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.False.html#%3Cinit%3E()" class="member-name-link">False()</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a></dt>
 <dd>&nbsp;</dd>
@@ -335,11 +333,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
 <dd>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
@@ -415,15 +413,13 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html#kind()" class="member-name-link">kind()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#kind()" class="member-name-link">kind()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
-<dd>
-<div class="block">Returns the value of the <code>kind</code> record component.</div>
-</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#kind(honeyroasted.jype.system.solver.TypeVerification.Kind)" class="member-name-link">kind(TypeVerification.Kind)</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:L">L</h2>
 <dl class="index">
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#left()" class="member-name-link">left()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>left</code> record component.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#left()" class="member-name-link">left()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>left</code> record component.</div>
@@ -461,8 +457,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#map(java.util.function.Function)" class="member-name-link">map(Function&lt;TypeConcrete, TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#map(java.util.function.Function)" class="member-name-link">map(Function&lt;TypeConcrete, TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#map(java.util.function.Function)" class="member-name-link">map(Function&lt;TypeConcrete, TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -492,8 +486,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#newType(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">newType(TypeDeclaration)</a> - Method in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#NONE" class="member-name-link">NONE</a> - Enum constant in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#NONE" class="member-name-link">NONE</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeNone.html#NONE" class="member-name-link">NONE</a> - Static variable in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
@@ -519,8 +511,6 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#or()" class="member-name-link">or()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#OR" class="member-name-link">OR</a> - Enum constant in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
-<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
 <dl class="index">
@@ -542,15 +532,21 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete)" class="member-name-link">Placeholder(TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeContext.html#put(honeyroasted.jype.type.TypeParameter,honeyroasted.jype.TypeConcrete)" class="member-name-link">put(TypeParameter, TypeConcrete)</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeContext.html#put(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">put(TypeConcrete, TypeConcrete)</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:R">R</h2>
 <dl class="index">
+<dt><a href="honeyroasted/jype/TypeString.Target.html#READABLE" class="member-name-link">READABLE</a> - Enum constant in enum class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Target.html" title="enum class in honeyroasted.jype">TypeString.Target</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#reflectionClass()" class="member-name-link">reflectionClass()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#resolveVariables(java.util.function.Function)" class="member-name-link">resolveVariables(Function&lt;TypeParameter, TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#right()" class="member-name-link">right()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
+<dd>
+<div class="block">Returns the value of the <code>right</code> record component.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#right()" class="member-name-link">right()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>right</code> record component.</div>
@@ -586,8 +582,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns the value of the <code>subtype</code> record component.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#SUBTYPE" class="member-name-link">SUBTYPE</a> - Enum constant in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#success()" class="member-name-link">success()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#success()" class="member-name-link">success()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
@@ -596,29 +590,19 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#success(boolean)" class="member-name-link">success(boolean)</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#success(honeyroasted.jype.system.solver.TypeVerification.Kind,honeyroasted.jype.system.solver.TypeConstraint)" class="member-name-link">success(TypeVerification.Kind, TypeConstraint)</a> - Static method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#success(honeyroasted.jype.system.solver.TypeConstraint)" class="member-name-link">success(TypeConstraint)</a> - Static method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#successful()" class="member-name-link">successful()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#successful()" class="member-name-link">successful()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.html#successful()" class="member-name-link">successful()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="interface in honeyroasted.jype">TypeString</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Successful.html#successful()" class="member-name-link">successful()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Successful.html" title="class in honeyroasted.jype">TypeString.Successful</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.html#successful(java.lang.String)" class="member-name-link">successful(String)</a> - Static method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="interface in honeyroasted.jype">TypeString</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Successful.html#%3Cinit%3E(java.lang.String)" class="member-name-link">Successful(String)</a> - Constructor for class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Successful.html" title="class in honeyroasted.jype">TypeString.Successful</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#successful(java.lang.String,java.lang.Class,honeyroasted.jype.TypeString.Target)" class="member-name-link">successful(String, Class&lt;?&gt;, TypeString.Target)</a> - Static method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/impl/AbstractTypeSolver.html#system" class="member-name-link">system</a> - Variable in class honeyroasted.jype.system.solver.impl.<a href="honeyroasted/jype/system/solver/impl/AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver.impl">AbstractTypeSolver</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:T">T</h2>
 <dl class="index">
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#target()" class="member-name-link">target()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#target()" class="member-name-link">target()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete)" class="member-name-link">Throws(TypeConcrete)</a> - Constructor for record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a></dt>
-<dd>
-<div class="block">Creates an instance of a <code>Throws</code> record class.</div>
-</dd>
 <dt><a href="honeyroasted/jype/Type.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
@@ -705,16 +689,16 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html#toString()" class="member-name-link">toString()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a></dt>
+<dd>
+<div class="block">Returns a string representation of this record class.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html#toString()" class="member-name-link">toString()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></dt>
 <dd>
 <div class="block">Returns a string representation of this record class.</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.False.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html#toString()" class="member-name-link">toString()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a></dt>
-<dd>
-<div class="block">Returns a string representation of this record class.</div>
-</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.True.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#toString()" class="member-name-link">toString()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
@@ -743,19 +727,37 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
+<dt><a href="honeyroasted/jype/Type.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Successful.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Successful.html" title="class in honeyroasted.jype">TypeString.Successful</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeAnd.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeArray.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeClass.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeDeclaration.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeIn.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeNone.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeNull.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOr.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOut.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypePrimitive.html#toString(honeyroasted.jype.TypeString.Context)" class="member-name-link">toString(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.True.html#%3Cinit%3E()" class="member-name-link">True()</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.html#TRUE" class="member-name-link">TRUE</a> - Static variable in interface honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html#type()" class="member-name-link">type()</a> - Method in record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a></dt>
-<dd>
-<div class="block">Returns the value of the <code>type</code> record component.</div>
-</dd>
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#type()" class="member-name-link">type()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#type()" class="member-name-link">type()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Type.html" class="type-name-link" title="interface in honeyroasted.jype">Type</a> - Interface in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
 <dd>&nbsp;</dd>
@@ -787,11 +789,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html" class="type-name-link" title="enum class in honeyroasted.jype.system.solver">TypeConstraint.Bound.Kind</a> - Enum Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Capture.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.Capture</a> - Record Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a> - Record Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a> - Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Throws.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.Throws</a> - Record Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a> - Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
@@ -799,7 +801,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeContext.html#%3Cinit%3E()" class="member-name-link">TypeContext()</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeContext.html#%3Cinit%3E(java.util.Map)" class="member-name-link">TypeContext(Map&lt;TypeParameter, TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeContext.html#%3Cinit%3E(java.util.Map)" class="member-name-link">TypeContext(Map&lt;TypeConcrete, TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeDeclaration</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
 <dd>&nbsp;</dd>
@@ -851,13 +853,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeSolver.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver">TypeSolver</a> - Interface in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.html" class="type-name-link" title="interface in honeyroasted.jype">TypeString</a> - Interface in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html" class="type-name-link" title="class in honeyroasted.jype">TypeString</a> - Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/TypeString.html#%3Cinit%3E(java.lang.String,boolean,java.lang.Class,honeyroasted.jype.TypeString.Target)" class="member-name-link">TypeString(String, boolean, Class&lt;?&gt;, TypeString.Target)</a> - Constructor for class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeString.Context.html" class="type-name-link" title="enum class in honeyroasted.jype">TypeString.Context</a> - Enum Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Failure.html" class="type-name-link" title="class in honeyroasted.jype">TypeString.Failure</a> - Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Successful.html" class="type-name-link" title="class in honeyroasted.jype">TypeString.Successful</a> - Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeString.Target.html" class="type-name-link" title="enum class in honeyroasted.jype">TypeString.Target</a> - Enum Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
 <dd>&nbsp;</dd>
@@ -873,13 +873,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeVerification</a> - Record Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#%3Cinit%3E(honeyroasted.jype.system.solver.TypeVerification.Kind,honeyroasted.jype.system.solver.TypeConstraint,java.util.List,boolean)" class="member-name-link">TypeVerification(TypeVerification.Kind, TypeConstraint, List&lt;TypeVerification&gt;, boolean)</a> - Constructor for record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
+<dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#%3Cinit%3E(honeyroasted.jype.system.solver.TypeConstraint,java.util.List,boolean)" class="member-name-link">TypeVerification(TypeConstraint, List&lt;TypeVerification&gt;, boolean)</a> - Constructor for record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>TypeVerification</code> record class.</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a> - Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" class="type-name-link" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a> - Enum Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:U">U</h2>
@@ -889,17 +887,9 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:V">V</h2>
 <dl class="index">
-<dt><a href="honeyroasted/jype/TypeString.Failure.html#value()" class="member-name-link">value()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Failure.html" title="class in honeyroasted.jype">TypeString.Failure</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.Successful.html#value()" class="member-name-link">value()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Successful.html" title="class in honeyroasted.jype">TypeString.Successful</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/TypeString.html#value()" class="member-name-link">value()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="interface in honeyroasted.jype">TypeString</a></dt>
+<dt><a href="honeyroasted/jype/TypeString.html#value()" class="member-name-link">value()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeConstraint.Bound.Kind</a></dt>
-<dd>
-<div class="block">Returns the enum constant of this class with the specified name.</div>
-</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#valueOf(java.lang.String)" class="member-name-link">valueOf(String)</a> - Static method in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
 <dd>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
@@ -912,11 +902,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the enum constant of this class with the specified name.</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html#values()" class="member-name-link">values()</a> - Static method in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeConstraint.Bound.Kind</a></dt>
-<dd>
-<div class="block">Returns an array containing the constants of this enum class, in
-the order they are declared.</div>
-</dd>
-<dt><a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html#values()" class="member-name-link">values()</a> - Static method in enum class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeVerification.Kind</a></dt>
 <dd>
 <div class="block">Returns an array containing the constants of this enum class, in
 the order they are declared.</div>

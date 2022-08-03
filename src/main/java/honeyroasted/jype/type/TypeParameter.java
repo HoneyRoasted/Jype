@@ -54,17 +54,12 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeParameter(this.name, this.bound.map(mapper)));
-    }
-
-    @Override
     public TypeString toSignature(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
-            return TypeString.successful("T" + this.name + ";");
+            return TypeString.successful("T" + this.name + ";", getClass(), TypeString.Target.SIGNATURE);
         } else {
             TypeString bound = this.bound.toSignature(TypeString.Context.CONCRETE);
-            return bound.successful() ? TypeString.successful(this.name + ":" + bound.value()) : bound;
+            return bound.successful() ? TypeString.successful(this.name + ":" + bound.value(), getClass(), TypeString.Target.SIGNATURE) : bound;
         }
     }
 
@@ -76,10 +71,20 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toSource(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
-            return TypeString.successful(this.name);
+            return TypeString.successful(this.name, getClass(), TypeString.Target.SOURCE);
         } else {
             TypeString bound = this.bound.toSource(TypeString.Context.CONCRETE);
-            return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value()) : bound;
+            return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
+        }
+    }
+
+    @Override
+    public TypeString toString(TypeString.Context context) {
+        if (context == TypeString.Context.CONCRETE) {
+            return TypeString.successful(this.name, getClass(), TypeString.Target.SOURCE);
+        } else {
+            TypeString bound = this.bound.toString(TypeString.Context.CONCRETE);
+            return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }
 
@@ -122,6 +127,16 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         @Override
         public TypeString toSource(TypeString.Context context) {
             return TypeString.failure(Placeholder.class, TypeString.Target.SOURCE);
+        }
+
+        @Override
+        public TypeString toString(TypeString.Context context) {
+            if (context == TypeString.Context.CONCRETE) {
+                return TypeString.successful(name() + "-" + identity(), getClass(), TypeString.Target.SOURCE);
+            } else {
+                TypeString bound = this.bound().toSource(TypeString.Context.CONCRETE);
+                return bound.successful() ? TypeString.successful(this.name() + "-" + identity() + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
+            }
         }
     }
 

@@ -31,8 +31,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
     @Override
     public TypeSolution solve() {
-        TypeVerification.Builder builder = TypeVerification.builder()
-                .kind(TypeVerification.Kind.AND);
+        TypeVerification.Builder builder = TypeVerification.builder();
 
         List<TypeConstraint> constraints = List.copyOf(this.constraints);
         constraints.forEach(t -> builder.children(forceResolve(t)));
@@ -49,15 +48,14 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         } else if (constraint instanceof TypeConstraint.Bound bound) {
             return forceResolve(bound);
         } else if (constraint instanceof TypeConstraint.True) {
-            return TypeVerification.success(TypeVerification.Kind.NONE, constraint);
+            return TypeVerification.success(constraint);
         } else {
-            return TypeVerification.failure(TypeVerification.Kind.NONE, constraint);
+            return TypeVerification.failure(constraint);
         }
     }
 
     private TypeVerification forceResolve(TypeConstraint.Equal equal) {
         return TypeVerification.builder()
-                .kind(TypeVerification.Kind.EQUAL)
                 .constraint(equal)
                 .success(equal.left().flatten().equals(equal.right().flatten()))
                 .build();
@@ -74,33 +72,40 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     private TypeVerification assignability(TypeConstraint constraint, TypeConcrete a, TypeConcrete b) {
         if (a instanceof TypeIn || a instanceof TypeNone ||
                 b instanceof TypeOut || b instanceof TypeNone) {
-            return TypeVerification.failure(TypeVerification.Kind.SUBTYPE, constraint);
+            return TypeVerification.failure(constraint);
         } else if (Objects.equals(a, b)) {
-            return TypeVerification.success(TypeVerification.Kind.SUBTYPE, constraint);
-        } else if (a instanceof TypeOr or) {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.AND)
+                    .constraint(constraint)
+                    .children(TypeVerification.success(new TypeConstraint.Equal(a, b)))
+                    .build();
+        } else if (a instanceof TypeOr or) {
+            if (or.types().size() == 1) {
+                return assignability(a, or.types().iterator().next());
+            }
+
+            return TypeVerification.builder()
                     .constraint(constraint)
                     .children(or.types().stream().map(t -> assignability(t, b)).toList())
                     .and()
                     .build();
         } else if (a instanceof TypeAnd and) {
+            if (and.types().size() == 1) {
+                return assignability(a, and.types().iterator().next());
+            }
+
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.OR)
                     .constraint(constraint)
                     .children(and.types().stream().map(t -> assignability(t, b)).toList())
                     .or()
                     .build();
         } else if (a instanceof TypeOut out) {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .constraint(constraint)
                     .children(assignability(out.bound(), b))
                     .and()
                     .build();
         } else if (a instanceof TypeParameter ref) {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .constraint(constraint)
                     .children(assignability(ref.bound(), b))
                     .and()
@@ -119,13 +124,11 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     private TypeVerification assignability(TypeConstraint constraint, TypeArray self, TypeConcrete other) {
         if (other instanceof TypeArray arr) {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .children(assignability(constraint, self.element(), arr.element()))
                     .and()
                     .build();
         } else {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .children(assignability(this.system.OBJECT, other),
                             defaultAssignability(constraint, self, other))
                     .or()
@@ -147,11 +150,10 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     private TypeVerification assignability(TypeConstraint constraint, TypePrimitive self, TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
             return PRIM_SUPERS.get(self.descriptor()).contains(prim.descriptor()) ?
-                    TypeVerification.success(TypeVerification.Kind.SUBTYPE, constraint) :
-                    TypeVerification.failure(TypeVerification.Kind.SUBTYPE, constraint);
+                    TypeVerification.success(constraint) :
+                    TypeVerification.failure(constraint);
         } else {
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .children(assignability(this.system.of(self.box()), other),
                             defaultAssignability(constraint, self, other))
                     .or()
@@ -159,22 +161,21 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         }
     }
 
-    private TypeVerification assignability(TypeConstraint constraint, TypeClass self, TypeConcrete other) {
+    private TypeVerification assignability(TypeConstraint constraint, TypeClass in, TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
-            Optional<TypePrimitive> unbox = TypePrimitive.unbox(self.declaration().namespace());
+            Optional<TypePrimitive> unbox = TypePrimitive.unbox(in.declaration().namespace());
             if (unbox.isPresent()) {
                 return assignability(unbox.get(), prim);
             }
         } else if (other instanceof TypeClass otherClass) {
-            if (!self.declaration().equals(otherClass.declaration())) {
-                Optional<TypeClass> parent = self.parent(otherClass.declaration());
+            TypeClass self = in;
+            if (!in.declaration().equals(otherClass.declaration())) {
+                Optional<TypeClass> parent = in.parent(otherClass.declaration());
                 if (parent.isPresent()) {
                     self = parent.get();
                 } else {
                     return TypeVerification.builder()
-                            .kind(TypeVerification.Kind.SUBTYPE)
-                            .children(TypeVerification.failure(TypeVerification.Kind.SUBTYPE,
-                                    new TypeConstraint.Bound(self.declaration().withArguments(), otherClass.declaration().withArguments())))
+                            .children(TypeVerification.failure(new TypeConstraint.Bound(in.declaration().withArguments(), otherClass.declaration().withArguments())))
                             .failure()
                             .constraint(constraint)
                             .build();
@@ -182,13 +183,13 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
             }
 
             if (self.arguments().isEmpty() || otherClass.arguments().isEmpty()) {
-                return TypeVerification.success(TypeVerification.Kind.SUBTYPE, constraint);
+                return TypeVerification.success(constraint);
             } else if (self.arguments().size() != otherClass.arguments().size()) {
-                return TypeVerification.failure(TypeVerification.Kind.SUBTYPE, constraint);
+                return TypeVerification.failure(constraint);
             } else {
                 TypeVerification.Builder builder = TypeVerification.builder()
-                        .kind(TypeVerification.Kind.SUBTYPE)
-                        .constraint(constraint);
+                        .constraint(constraint)
+                        .children(TypeVerification.success(new TypeConstraint.Bound(in.declaration().withArguments(), otherClass.declaration().withArguments())));
 
                 for (int i = 0; i < self.arguments().size(); i++) {
                     TypeConcrete ti = self.arguments().get(i);
@@ -198,14 +199,26 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
                                 .bound().resolveVariables(t -> otherClass.argument(t).get());
 
-                        builder.children(assignability(ti, bound),
-                                assignability(ti, typeOut.bound()));
+                        builder.children(
+                                TypeVerification.builder()
+                                        .constraint(new TypeConstraint.Capture(si, ti))
+                                        .children(assignability(ti, bound),
+                                                assignability(ti, typeOut.bound()))
+                                        .and()
+                                        .build()
+                        );
                     } else if (si instanceof TypeIn typeIn) { //? super X
                         TypeConcrete bound = otherClass.declaration().parameters().get(i)
                                 .bound().resolveVariables(t -> otherClass.argument(t).get());
 
-                        builder.children(assignability(ti, bound),
-                                assignability(typeIn.bound(), ti));
+                        builder.children(
+                                TypeVerification.builder()
+                                        .constraint(new TypeConstraint.Capture(si, ti))
+                                        .children(assignability(ti, bound),
+                                                assignability(typeIn.bound(), ti))
+                                        .and()
+                                        .build()
+                        );
                     } else {
                         builder.children(forceResolve(new TypeConstraint.Equal(ti, si)));
                     }
@@ -215,20 +228,26 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
             }
         }
 
-        return defaultAssignability(constraint, self, other);
+        return defaultAssignability(constraint, in, other);
     }
 
     private TypeVerification defaultAssignability(TypeConstraint constraint, TypeConcrete a, TypeConcrete b) {
         if (b instanceof TypeOr or) {
+            if (or.types().size() == 1) {
+                return assignability(a, or.types().iterator().next());
+            }
+
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.OR)
                     .constraint(constraint)
                     .children(or.types().stream().map(t -> assignability(a, t)).toList())
                     .or()
                     .build();
         } else if (b instanceof TypeAnd and) {
+            if (and.types().size() == 1) {
+                return assignability(a, and.types().iterator().next());
+            }
+
             return TypeVerification.builder()
-                    .kind(TypeVerification.Kind.AND)
                     .constraint(constraint)
                     .children(and.types().stream().map(t -> assignability(a, t)).toList())
                     .and()
@@ -236,7 +255,6 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         } else if (b instanceof TypeIn in) {
             return TypeVerification
                     .builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .constraint(constraint)
                     .children(forceResolve(new TypeConstraint.Bound(a, in.bound())))
                     .and()
@@ -244,14 +262,13 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         } else if (b instanceof TypeParameter ref) {
             return TypeVerification
                     .builder()
-                    .kind(TypeVerification.Kind.SUBTYPE)
                     .constraint(constraint)
                     .children(forceResolve(new TypeConstraint.Bound(a, ref.bound())))
                     .and()
                     .build();
         }
 
-        return TypeVerification.failure(TypeVerification.Kind.SUBTYPE, constraint);
+        return TypeVerification.failure(constraint);
     }
 
 }

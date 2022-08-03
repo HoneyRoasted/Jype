@@ -5,11 +5,12 @@ import honeyroasted.jype.type.TypeParameter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class TypeContext {
-    private Map<TypeParameter, TypeConcrete> parameters;
+    private Map<TypeConcrete, TypeConcrete> parameters;
 
-    public TypeContext(Map<TypeParameter, TypeConcrete> parameters) {
+    public TypeContext(Map<TypeConcrete, TypeConcrete> parameters) {
         this.parameters = parameters;
     }
 
@@ -17,16 +18,16 @@ public class TypeContext {
         this(new HashMap<>());
     }
 
-    public TypeContext put(TypeParameter parameter, TypeConcrete concrete) {
+    public TypeContext put(TypeConcrete parameter, TypeConcrete concrete) {
         this.parameters.put(parameter, concrete);
         return this;
     }
 
-    public TypeConcrete get(TypeParameter parameter) {
-        return this.parameters.get(parameter);
+    public Optional<TypeConcrete> get(TypeParameter parameter) {
+        return Optional.ofNullable(this.parameters.get(parameter));
     }
 
-    public Map<TypeParameter, TypeConcrete> parameters() {
+    public Map<TypeConcrete, TypeConcrete> parameters() {
         return parameters;
     }
 }
