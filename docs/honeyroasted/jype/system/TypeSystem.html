@@ -77,6 +77,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TypeSystem</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">This class represents a type system, along with a <a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>. It allows creation of types from reflection
+ values and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link"><code>TypeMirror</code></a> values (for annotation processing). Additionally, it provides standard types such
+ as <a href="#NULL"><code>NULL</code></a>, all the primitives, their boxes, and the <a href="#OBJECT"><code>OBJECT</code></a> class.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -91,76 +94,124 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#ALL_PRIMITIVES" class="member-name-link">ALL_PRIMITIVES</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The set of all primitive types (not including <code>void</code>).</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#BOOLEAN" class="member-name-link">BOOLEAN</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The <code>boolean</code> primitive type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#BOOLEAN_BOX" class="member-name-link">BOOLEAN_BOX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The boxing type for <a href="#BOOLEAN"><code>BOOLEAN</code></a></div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#BYTE" class="member-name-link">BYTE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The <code>byte</code> primitive type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#BYTE_BOX" class="member-name-link">BYTE_BOX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The boxing type for <a href="#BYTE"><code>BYTE</code></a>.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#CHAR" class="member-name-link">CHAR</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The <code>char</code> primitive type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#CHAR_BOX" class="member-name-link">CHAR_BOX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The boxing type for <a href="#CHAR"><code>CHAR</code></a></div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#DOUBLE" class="member-name-link">DOUBLE</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The <code>double</code> primitive type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#DOUBLE_BOX" class="member-name-link">DOUBLE_BOX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The boxing type for <a href="#DOUBLE"><code>DOUBLE</code></a>.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#FLOAT" class="member-name-link">FLOAT</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The <code>float</code> primitive type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#FLOAT_BOX" class="member-name-link">FLOAT_BOX</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The boxing type for <a href="#FLOAT"><code>FLOAT</code></a>.</div>
+</div>
 <div class="col-first odd-row-color"><code>static final <a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#GLOBAL" class="member-name-link">GLOBAL</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The global type system, for when constructing your own <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> is unnecessary</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second even-row-color"><code><a href="#INT" class="member-name-link">INT</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The <code>int</code> primitive type.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#INT_BOX" class="member-name-link">INT_BOX</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The boxing type for <a href="#INT"><code>INT</code></a></div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second even-row-color"><code><a href="#LONG" class="member-name-link">LONG</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The <code>long</code> primitive type.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#LONG_BOX" class="member-name-link">LONG_BOX</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The boxing type for <a href="#LONG"><code>LONG</code></a>.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></code></div>
 <div class="col-second even-row-color"><code><a href="#NONE" class="member-name-link">NONE</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The NONE type.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#NULL" class="member-name-link">NULL</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The NULL type.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second even-row-color"><code><a href="#OBJECT" class="member-name-link">OBJECT</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The type corresponding to an instantiation of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a>.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#OBJECT_CLASS" class="member-name-link">OBJECT_CLASS</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The type corresponding to the class declaration of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a>.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></div>
 <div class="col-second even-row-color"><code><a href="#SHORT" class="member-name-link">SHORT</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The <code>short</code> primitive type.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#SHORT_BOX" class="member-name-link">SHORT_BOX</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The boxing type for <a href="#SHORT"><code>SHORT</code></a>.</div>
+</div>
 <div class="col-first even-row-color"><code>final <a href="../type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></code></div>
 <div class="col-second even-row-color"><code><a href="#VOID" class="member-name-link">VOID</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The VOID type.</div>
+</div>
 <div class="col-first odd-row-color"><code>final <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#VOID_BOX" class="member-name-link">VOID_BOX</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The boxing type for <a href="#VOID"><code>VOID</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -174,7 +225,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">TypeSystem</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeSystem</a><wbr>(<a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&nbsp;cache)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.resolution.TypeResolutionStrategy)" class="member-name-link">TypeSystem</a><wbr>(<a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a>&nbsp;strategy)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
@@ -193,15 +244,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#box(honeyroasted.jype.type.TypePrimitive)" class="member-name-link">box</a><wbr>(<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cache()" class="member-name-link">cache</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaration(java.lang.Class)" class="member-name-link">declaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;clazz)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaration(javax.lang.model.type.DeclaredType,javax.lang.model.util.Elements)" class="member-name-link">declaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;declared,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/util/Elements.html" title="class or interface in javax.lang.model.util" class="external-link">Elements</a>&nbsp;elements)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaration(java.lang.Object)" class="member-name-link">declaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newArray(honeyroasted.jype.TypeConcrete)" class="member-name-link">newArray</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;element)</code></div>
@@ -220,18 +264,14 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newType(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">newType</a><wbr>(<a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;declaration)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#of(java.lang.reflect.Type)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;type)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#of(java.lang.Object)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;<br>T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#of(javax.lang.model.type.TypeMirror,javax.lang.model.util.Elements)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/util/Elements.html" title="class or interface in javax.lang.model.util" class="external-link">Elements</a>&nbsp;elements)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#token(honeyroasted.jype.system.TypeToken)" class="member-name-link">token</a><wbr>(<a href="TypeToken.html" title="class in honeyroasted.jype.system">TypeToken</a>&nbsp;token)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#token(honeyroasted.jype.system.TypeToken)" class="member-name-link">token</a><wbr>(<a href="TypeToken.html" title="class in honeyroasted.jype.system">TypeToken</a>&nbsp;token)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unbox(honeyroasted.jype.TypeConcrete)" class="member-name-link">unbox</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#unbox(honeyroasted.jype.TypeConcrete)" class="member-name-link">unbox</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -253,144 +293,169 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="GLOBAL">
 <h3>GLOBAL</h3>
 <div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></span>&nbsp;<span class="element-name">GLOBAL</span></div>
+<div class="block">The global type system, for when constructing your own <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> is unnecessary</div>
 </section>
 </li>
 <li>
 <section class="detail" id="NONE">
 <h3>NONE</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></span>&nbsp;<span class="element-name">NONE</span></div>
+<div class="block">The NONE type. Equivalent in bytecode to <a href="#VOID"><code>VOID</code></a>, but indicates that a type may be unknown or
+ nonexistent.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="NULL">
 <h3>NULL</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></span>&nbsp;<span class="element-name">NULL</span></div>
+<div class="block">The NULL type. Assignable to any reference type, only the expression <code>null</code> can have this type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="VOID">
 <h3>VOID</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></span>&nbsp;<span class="element-name">VOID</span></div>
+<div class="block">The VOID type. Equivalent in bytecode to <a href="#NONE"><code>NONE</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="VOID_BOX">
 <h3>VOID_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">VOID_BOX</span></div>
+<div class="block">The boxing type for <a href="#VOID"><code>VOID</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="BOOLEAN">
 <h3>BOOLEAN</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">BOOLEAN</span></div>
+<div class="block">The <code>boolean</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="BOOLEAN_BOX">
 <h3>BOOLEAN_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">BOOLEAN_BOX</span></div>
+<div class="block">The boxing type for <a href="#BOOLEAN"><code>BOOLEAN</code></a></div>
 </section>
 </li>
 <li>
 <section class="detail" id="BYTE">
 <h3>BYTE</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">BYTE</span></div>
+<div class="block">The <code>byte</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="BYTE_BOX">
 <h3>BYTE_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">BYTE_BOX</span></div>
+<div class="block">The boxing type for <a href="#BYTE"><code>BYTE</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="SHORT">
 <h3>SHORT</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">SHORT</span></div>
+<div class="block">The <code>short</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="SHORT_BOX">
 <h3>SHORT_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">SHORT_BOX</span></div>
+<div class="block">The boxing type for <a href="#SHORT"><code>SHORT</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="CHAR">
 <h3>CHAR</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">CHAR</span></div>
+<div class="block">The <code>char</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="CHAR_BOX">
 <h3>CHAR_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">CHAR_BOX</span></div>
+<div class="block">The boxing type for <a href="#CHAR"><code>CHAR</code></a></div>
 </section>
 </li>
 <li>
 <section class="detail" id="INT">
 <h3>INT</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">INT</span></div>
+<div class="block">The <code>int</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="INT_BOX">
 <h3>INT_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">INT_BOX</span></div>
+<div class="block">The boxing type for <a href="#INT"><code>INT</code></a></div>
 </section>
 </li>
 <li>
 <section class="detail" id="LONG">
 <h3>LONG</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">LONG</span></div>
+<div class="block">The <code>long</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="LONG_BOX">
 <h3>LONG_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">LONG_BOX</span></div>
+<div class="block">The boxing type for <a href="#LONG"><code>LONG</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="FLOAT">
 <h3>FLOAT</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">FLOAT</span></div>
+<div class="block">The <code>float</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="FLOAT_BOX">
 <h3>FLOAT_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">FLOAT_BOX</span></div>
+<div class="block">The boxing type for <a href="#FLOAT"><code>FLOAT</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="DOUBLE">
 <h3>DOUBLE</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></span>&nbsp;<span class="element-name">DOUBLE</span></div>
+<div class="block">The <code>double</code> primitive type.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="DOUBLE_BOX">
 <h3>DOUBLE_BOX</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">DOUBLE_BOX</span></div>
+<div class="block">The boxing type for <a href="#DOUBLE"><code>DOUBLE</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="OBJECT">
 <h3>OBJECT</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">OBJECT</span></div>
+<div class="block">The type corresponding to an instantiation of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="OBJECT_CLASS">
 <h3>OBJECT_CLASS</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">OBJECT_CLASS</span></div>
+<div class="block">The type corresponding to the class declaration of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link"><code>Object</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="ALL_PRIMITIVES">
 <h3>ALL_PRIMITIVES</h3>
 <div class="member-signature"><span class="modifiers">public final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&gt;</span>&nbsp;<span class="element-name">ALL_PRIMITIVES</span></div>
+<div class="block">The set of all primitive types (not including <code>void</code>).</div>
 </section>
 </li>
 </ul>
@@ -408,9 +473,9 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.cache.TypeCache)">
+<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.resolution.TypeResolutionStrategy)">
 <h3>TypeSystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&nbsp;cache)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a>&nbsp;strategy)</span></div>
 </section>
 </li>
 </ul>
@@ -453,6 +518,18 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="of(java.lang.Object)">
+<h3>of</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="declaration(java.lang.Object)">
+<h3>declaration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="token(honeyroasted.jype.system.TypeToken)">
 <h3>token</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">token</span><wbr><span class="parameters">(<a href="TypeToken.html" title="class in honeyroasted.jype.system">TypeToken</a>&nbsp;token)</span></div>
@@ -468,38 +545,6 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="box(honeyroasted.jype.type.TypePrimitive)">
 <h3>box</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">box</span><wbr><span class="parameters">(<a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="of(java.lang.reflect.Type)">
-<h3>of</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="declaration(java.lang.Class)">
-<h3>declaration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;clazz)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="of(javax.lang.model.type.TypeMirror,javax.lang.model.util.Elements)">
-<h3>of</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/util/Elements.html" title="class or interface in javax.lang.model.util" class="external-link">Elements</a>&nbsp;elements)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="declaration(javax.lang.model.type.DeclaredType,javax.lang.model.util.Elements)">
-<h3>declaration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;declared,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/util/Elements.html" title="class or interface in javax.lang.model.util" class="external-link">Elements</a>&nbsp;elements)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="cache()">
-<h3>cache</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></span>&nbsp;<span class="element-name">cache</span>()</div>
 </section>
 </li>
 </ul>

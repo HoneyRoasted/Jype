@@ -4,24 +4,12 @@ import honeyroasted.jype.Type;
 
 import javax.lang.model.type.TypeMirror;
 
-public interface TypeCache {
+public interface TypeCache<K> {
 
-    <T extends Type> T get(String name, Class<T> clazz);
+    <T extends Type> T get(K key, Class<T> clazz);
 
-    TypeCache cache(String name, Type type);
+    TypeCache<K> cache(K key, Type type);
 
-    boolean has(String name, Class<? extends Type> clazz);
-
-    <T extends Type> T get(java.lang.reflect.Type reflect, Class<T> clazz);
-
-    TypeCache cache(java.lang.reflect.Type reflect, Type type);
-
-    boolean has(java.lang.reflect.Type reflect, Class<? extends Type> clazz);
-
-    <T extends Type> T get(TypeMirror source, Class<T> clazz);
-
-    TypeCache cache(TypeMirror source, Type type);
-
-    boolean has(TypeMirror source, Class<? extends Type> clazz);
+    boolean has(K key, Class<? extends Type> clazz);
 
 }

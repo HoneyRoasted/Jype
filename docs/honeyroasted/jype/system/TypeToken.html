@@ -70,9 +70,17 @@ loadScripts(document, 'script');</script>
 <div class="inheritance">honeyroasted.jype.system.TypeToken&lt;A&gt;</div>
 </div>
 <section class="class-description" id="class-description">
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>A</code> - The type to reify</dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">TypeToken&lt;A&gt;</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<div class="block">This is a utility class used by <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> to facilitate easy creation of <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from source code.
+ It works by being an abstract, class, forcing any instantiations to create an anonymous subclass. This has the
+ effect of reifying the type variable <code>A</code> in the anonymous subclass's superclass information. The expected use
+ is <code>new TypeToken&lt;MyType&gt;() {}</code>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

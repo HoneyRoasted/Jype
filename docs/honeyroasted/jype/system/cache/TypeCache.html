@@ -68,7 +68,7 @@ loadScripts(document, 'script');</script>
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">honeyroasted.jype.system.cache</a></div>
-<h1 title="Interface TypeCache" class="title">Interface TypeCache</h1>
+<h1 title="Interface TypeCache" class="title">Interface TypeCache&lt;K&gt;</h1>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
@@ -76,7 +76,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">TypeCache</span></div>
+<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">TypeCache&lt;K&gt;</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -91,40 +91,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache(java.lang.reflect.Type,honeyroasted.jype.Type)" class="member-name-link">cache</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache(java.lang.String,honeyroasted.jype.Type)" class="member-name-link">cache</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache(javax.lang.model.type.TypeMirror,honeyroasted.jype.Type)" class="member-name-link">cache</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache(K,honeyroasted.jype.Type)" class="member-name-link">cache</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(java.lang.reflect.Type,java.lang.Class)" class="member-name-link">get</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(java.lang.String,java.lang.Class)" class="member-name-link">get</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(javax.lang.model.type.TypeMirror,java.lang.Class)" class="member-name-link">get</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(K,java.lang.Class)" class="member-name-link">get</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#has(java.lang.reflect.Type,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#has(java.lang.String,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#has(javax.lang.model.type.TypeMirror,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#has(K,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
@@ -142,65 +118,23 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="get(java.lang.String,java.lang.Class)">
-<h3>get</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<section class="detail" id="get(K,java.lang.Class)">
+<h3 id="get(java.lang.Object,java.lang.Class)">get</h3>
+<div class="member-signature"><span class="type-parameters">&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="cache(java.lang.String,honeyroasted.jype.Type)">
-<h3>cache</h3>
-<div class="member-signature"><span class="return-type"><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></span>&nbsp;<span class="element-name">cache</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<section class="detail" id="cache(K,honeyroasted.jype.Type)">
+<h3 id="cache(java.lang.Object,honeyroasted.jype.Type)">cache</h3>
+<div class="member-signature"><span class="return-type"><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</span>&nbsp;<span class="element-name">cache</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="has(java.lang.String,java.lang.Class)">
-<h3>has</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="get(java.lang.reflect.Type,java.lang.Class)">
-<h3>get</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="cache(java.lang.reflect.Type,honeyroasted.jype.Type)">
-<h3>cache</h3>
-<div class="member-signature"><span class="return-type"><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></span>&nbsp;<span class="element-name">cache</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="has(java.lang.reflect.Type,java.lang.Class)">
-<h3>has</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflect,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="get(javax.lang.model.type.TypeMirror,java.lang.Class)">
-<h3>get</h3>
-<div class="member-signature"><span class="type-parameters">&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="cache(javax.lang.model.type.TypeMirror,honeyroasted.jype.Type)">
-<h3>cache</h3>
-<div class="member-signature"><span class="return-type"><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></span>&nbsp;<span class="element-name">cache</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
- <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="has(javax.lang.model.type.TypeMirror,java.lang.Class)">
-<h3>has</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;source,
+<section class="detail" id="has(K,java.lang.Class)">
+<h3 id="has(java.lang.Object,java.lang.Class)">has</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</span></div>
 </section>
 </li>

@@ -1,6 +1,11 @@
 honeyroasted.jype
 honeyroasted.jype.system
 honeyroasted.jype.system.cache
+honeyroasted.jype.system.resolution
+honeyroasted.jype.system.resolution.impl
 honeyroasted.jype.system.solver
 honeyroasted.jype.system.solver.impl
+honeyroasted.jype.system.solver.impl.erasure
+honeyroasted.jype.system.solver.impl.force
+honeyroasted.jype.system.solver.impl.inference
 honeyroasted.jype.type

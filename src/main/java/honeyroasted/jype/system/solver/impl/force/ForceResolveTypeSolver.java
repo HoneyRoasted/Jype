@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.solver.impl;
+package honeyroasted.jype.system.solver.impl.force;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.TypeSystem;
@@ -6,6 +6,7 @@ import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeContext;
 import honeyroasted.jype.system.solver.TypeSolution;
 import honeyroasted.jype.system.solver.TypeVerification;
+import honeyroasted.jype.system.solver.impl.AbstractTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
@@ -200,7 +201,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
                         builder.children(
                                 TypeVerification.builder()
-                                        .constraint(new TypeConstraint.Capture(si, ti))
+                                        .constraint(new ForceConstraint.Capture(si, ti))
                                         .children(assignability(ti, bound),
                                                 assignability(ti, typeOut.bound()))
                                         .and()
@@ -212,7 +213,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
                         builder.children(
                                 TypeVerification.builder()
-                                        .constraint(new TypeConstraint.Capture(si, ti))
+                                        .constraint(new ForceConstraint.Capture(si, ti))
                                         .children(assignability(ti, bound),
                                                 assignability(typeIn.bound(), ti))
                                         .and()

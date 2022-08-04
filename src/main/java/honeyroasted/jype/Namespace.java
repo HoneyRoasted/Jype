@@ -2,130 +2,113 @@ package honeyroasted.jype;
 
 import honeyroasted.jype.type.TypeDeclaration;
 
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
- * This class represents the Namespace of a {@link TypeDeclaration}, that is, it represents a package name and
- * a class name.
+ * This class represents the Namespace of a {@link TypeDeclaration}.
  */
 public class Namespace {
     private List<String> path;
-    private String name;
+    private int simpleName;
 
-    /**
-     * Creates a new {@link Namespace}.
-     *
-     * @param path The package name
-     * @param name The class name
-     */
-    public Namespace(List<String> path, String name) {
+    public Namespace(List<String> path, int simpleName) {
         this.path = List.copyOf(path);
-        this.name = name;
+        this.simpleName = simpleName;
     }
 
-    /**
-     * Creates a new {@link Namespace} from a {@link String} array. The last element of the array
-     * will be used as the class name.
-     *
-     * @param elements The package names followed by the class name
-     */
-    public Namespace(String... elements) {
+    public static Namespace of(String... path) {
+        return new Namespace(Arrays.asList(path), 1);
+    }
+
+    public static Namespace of(int simpleName, String... path) {
+        return new Namespace(Arrays.asList(path), simpleName);
+    }
+
+    public static Namespace of(Class cls) {
         List<String> path = new ArrayList<>();
-        for (int i = 0; i < elements.length - 1; i++) {
-            path.add(elements[i]);
+        String[] pack = cls.getPackage().getName().split("\\.");
+
+        int simpleName = 1;
+        Class current = cls;
+
+        while (current.isAnonymousClass()) {
+            String[] parts = current.getTypeName().split("\\.");
+            path.add(0, parts[parts.length - 1]);
+
+            current = current.getEnclosingClass();
+            simpleName++;
+        }
+        path.add(0, current.getSimpleName());
+        path.addAll(0, Arrays.asList(pack));
+
+        return new Namespace(path, simpleName);
+    }
+
+    public static Namespace of(TypeElement type) {
+        List<String> path = new ArrayList<>();
+
+        int simpleName = 1;
+        TypeElement current = type;
+        while ((current.getEnclosingElement().getKind().isInterface() || current.getEnclosingElement().getKind().isClass()) &&
+            current.getEnclosingElement() instanceof TypeElement element) {
+
+            path.add(0, current.getSimpleName().toString());
+
+            current = element;
+            simpleName++;
         }
 
-        this.path = Collections.unmodifiableList(path);
-        this.name = elements[elements.length - 1];
+        if (current.getEnclosingElement().getKind() == ElementKind.PACKAGE &&
+                current.getEnclosingElement() instanceof PackageElement pack) {
+            path.addAll(0, Arrays.asList(pack.getQualifiedName().toString().split("\\.")));
+        }
+
+        return new Namespace(path, simpleName);
     }
 
-    /**
-     * Creates a new {@link Namespace} from the binary name of a class.
-     *
-     * @param binaryName The binary name
-     * @return A new {@link Namespace}
-     */
-    public static Namespace binary(String binaryName) {
-        return of(binaryName.split("/"));
+    public Namespace relative(Namespace other) {
+        List<String> res = new ArrayList<>();
+        res.addAll(this.path);
+        res.addAll(other.path);
+        return new Namespace(res, this.simpleName + other.simpleName);
     }
 
-    /**
-     * Creates a new {@link Namespace} from a {@link String} array.
-     *
-     * @param elements The package names, followed by the class name.
-     * @return A new {@link Namespace}
-     */
-    public static Namespace of(String... elements) {
-        return new Namespace(elements);
+    public Namespace relative(String... path) {
+        List<String> res = new ArrayList<>();
+        res.addAll(this.path);
+        Collections.addAll(res, path);
+        return new Namespace(res, this.simpleName + path.length);
     }
 
-    /**
-     * Creates a new {@link Namespace} from a {@link Class} object.
-     *
-     * @param clazz The {@link Class} object
-     * @return A new {@link Namespace}
-     */
-    public static Namespace of(Class<?> clazz) {
-        return new Namespace(Arrays.asList(clazz.getPackage().getName().split("\\.")),
-                clazz.getName().replace(clazz.getPackage().getName() + ".", ""));
+    public Namespace relative(List<String> path) {
+        List<String> res = new ArrayList<>();
+        res.addAll(this.path);
+        res.addAll(path);
+        return new Namespace(res, this.simpleName + path.size());
     }
 
-    /**
-     * @return The full package name, broken up into individual parts
-     */
-    public List<String> path() {
-        return this.path;
-    }
-
-    /**
-     * @return The class name
-     */
-    public String simpleName() {
-        return this.name;
-    }
-
-    /**
-     * @return The fully qualified name
-     */
     public String name() {
-        return String.join(".", this.path) +
-                (this.path.isEmpty() ? "" : ".") +
-                this.name;
+        return String.join(".", this.path);
     }
 
-    /**
-     * @return The internal name
-     */
+    public String simpleName() {
+        return String.join(".", this.path.subList(this.path.size() - this.simpleName, this.path.size()));
+    }
+
+    public String packageName() {
+        return String.join("", this.path.subList(0, this.path.size() - this.simpleName));
+    }
+
     public String internalName() {
-        return String.join("/", this.path) +
-                (this.path.isEmpty() ? "" : "/") +
-                this.name.replace('.', '$');
+        return "";
     }
 
-    @Override
-    public String toString() {
-        return this.name();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Namespace namespace = (Namespace) o;
-
-        if (!Objects.equals(path, namespace.path)) return false;
-        return Objects.equals(name, namespace.name);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = path != null ? path.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        return result;
-    }
 }

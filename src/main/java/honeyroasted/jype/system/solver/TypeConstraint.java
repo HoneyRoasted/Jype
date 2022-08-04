@@ -59,14 +59,6 @@ public interface TypeConstraint {
 
     }
 
-    record Capture(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
-
-        @Override
-        public String toString() {
-            return "{" + this.left.toReadable(TypeString.Context.CONCRETE).value() + "} captures {" + this.right.toReadable(TypeString.Context.CONCRETE).value() + "}";
-        }
-    }
-
     default TypeConstraint flatten() {
         return this;
     }

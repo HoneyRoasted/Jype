@@ -4,98 +4,163 @@ import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.type.TypeAnd;
+import honeyroasted.jype.system.resolution.TypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.impl.ReflectionTypeResolver;
+import honeyroasted.jype.system.resolution.impl.SequentialTypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.impl.TypeMirrorTypeResolver;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
-import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeNull;
-import honeyroasted.jype.type.TypeOr;
-import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypePrimitive;
 
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.IntersectionType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.UnionType;
-import javax.lang.model.util.Elements;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.lang.reflect.WildcardType;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
+/**
+ * This class represents a type system, along with a {@link TypeCache}. It allows creation of types from reflection
+ * values and {@link TypeMirror} values (for annotation processing). Additionally, it provides standard types such
+ * as {@link TypeSystem#NULL}, all the primitives, their boxes, and the {@link TypeSystem#OBJECT} class.
+ */
 public class TypeSystem {
+    /**
+     * The global type system, for when constructing your own {@link TypeSystem} is unnecessary
+     */
     public static final TypeSystem GLOBAL = new TypeSystem();
 
+    /**
+     * The NONE type. Equivalent in bytecode to {@link TypeSystem#VOID}, but indicates that a type may be unknown or
+     * nonexistent.
+     */
     public final TypeNone NONE;
+    /**
+     * The NULL type. Assignable to any reference type, only the expression {@code null} can have this type.
+     */
     public final TypeNull NULL;
 
+    /**
+     * The VOID type. Equivalent in bytecode to {@link TypeSystem#NONE}.
+     */
     public final TypeNone VOID;
+    /**
+     * The boxing type for {@link TypeSystem#VOID}.
+     */
     public final TypeClass VOID_BOX;
 
+    /**
+     * The {@code boolean} primitive type.
+     */
     public final TypePrimitive BOOLEAN;
+    /**
+     * The boxing type for {@link TypeSystem#BOOLEAN}
+     */
     public final TypeClass BOOLEAN_BOX;
 
+    /**
+     * The {@code byte} primitive type.
+     */
     public final TypePrimitive BYTE;
+    /**
+     * The boxing type for {@link TypeSystem#BYTE}.
+     */
     public final TypeClass BYTE_BOX;
 
+    /**
+     * The {@code short} primitive type.
+     */
     public final TypePrimitive SHORT;
+    /**
+     * The boxing type for {@link TypeSystem#SHORT}.
+     */
     public final TypeClass SHORT_BOX;
 
+    /**
+     * The {@code char} primitive type.
+     */
     public final TypePrimitive CHAR;
+    /**
+     * The boxing type for {@link TypeSystem#CHAR}
+     */
     public final TypeClass CHAR_BOX;
 
+    /**
+     * The {@code int} primitive type.
+     */
     public final TypePrimitive INT;
+    /**
+     * The boxing type for {@link TypeSystem#INT}
+     */
     public final TypeClass INT_BOX;
 
+    /**
+     * The {@code long} primitive type.
+     */
     public final TypePrimitive LONG;
+    /**
+     * The boxing type for {@link TypeSystem#LONG}.
+     */
     public final TypeClass LONG_BOX;
 
+    /**
+     * The {@code float} primitive type.
+     */
     public final TypePrimitive FLOAT;
+    /**
+     * The boxing type for {@link TypeSystem#FLOAT}.
+     */
     public final TypeClass FLOAT_BOX;
 
+    /**
+     * The {@code double} primitive type.
+     */
     public final TypePrimitive DOUBLE;
+    /**
+     * The boxing type for {@link TypeSystem#DOUBLE}.
+     */
     public final TypeClass DOUBLE_BOX;
 
+    /**
+     * The type corresponding to an instantiation of {@link Object}.
+     */
     public final TypeClass OBJECT;
+    /**
+     * The type corresponding to the class declaration of {@link Object}.
+     */
     public final TypeDeclaration OBJECT_CLASS;
 
+    /**
+     * The set of all primitive types (not including {@code void}).
+     */
     public final Set<TypePrimitive> ALL_PRIMITIVES;
 
     private final Map<TypePrimitive, Class<?>> PRIM_TO_BOX;
     private final Map<Namespace, TypePrimitive> BOX_TO_PRIM;
 
-    private TypeCache cache;
+    private TypeResolutionStrategy strategy;
 
     public TypeSystem() {
-        this(new SimpleTypeCache());
+        this(null);
     }
 
-    public TypeSystem(TypeCache cache) {
-        this.cache = cache;
-        
+    public TypeSystem(TypeResolutionStrategy strategy) {
+        if (strategy == null) {
+            this.strategy = new SequentialTypeResolutionStrategy()
+                    .add(new ReflectionTypeResolver(this, new SimpleTypeCache<>()))
+                    .add(new TypeMirrorTypeResolver(this, new SimpleTypeCache<>()));
+        } else {
+            this.strategy = strategy;
+        }
+
         NONE = new TypeNone(this, "none", "V");
         NULL = new TypeNull(this);
-        
+
         VOID = new TypeNone(this, "void", "V");
         BOOLEAN = new TypePrimitive(this, boolean.class, "Z");
         BYTE = new TypePrimitive(this, byte.class, "B");
@@ -105,7 +170,7 @@ public class TypeSystem {
         LONG = new TypePrimitive(this, long.class, "J");
         FLOAT = new TypePrimitive(this, float.class, "F");
         DOUBLE = new TypePrimitive(this, double.class, "D");
-        
+
         VOID_BOX = of(Void.class);
         BOOLEAN_BOX = of(Boolean.class);
         BYTE_BOX = of(Byte.class);
@@ -162,6 +227,14 @@ public class TypeSystem {
         return res;
     }
 
+    public <T extends TypeConcrete> T of(Object type) {
+        return (T) this.strategy.resolve(type);
+    }
+
+    public TypeDeclaration declaration(Object type) {
+        return this.strategy.resolveDeclaration(type);
+    }
+
     public <T extends TypeConcrete> T token(TypeToken token) {
         return of(((ParameterizedType) token.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
@@ -173,254 +246,6 @@ public class TypeSystem {
 
     public TypeConcrete box(TypePrimitive type) {
         return of(PRIM_TO_BOX.get(type));
-    }
-
-    public <T extends TypeConcrete> T of(java.lang.reflect.Type type) {
-        if (type instanceof Class clazz) {
-            if (clazz.isPrimitive()) {
-                if (clazz == void.class) {
-                    return (T) VOID;
-                } else {
-                    return (T) ALL_PRIMITIVES.stream().filter(t -> t.reflectionClass() == clazz).findFirst().get();
-                }
-            } else if (clazz.isArray()) {
-                return (T) new TypeArray(this, of(clazz.getComponentType()));
-            } else {
-                if (this.cache.has(clazz.getName(), TypeClass.class)) {
-                    return (T) this.cache.get(clazz.getName(), TypeClass.class);
-                } else {
-                    TypeClass cls = new TypeClass(this, declaration(clazz));
-                    this.cache.cache(cls.declaration().namespace().name(), cls);
-                    cls.lock();
-                    return (T) cls;
-                }
-            }
-        } else if (type instanceof ParameterizedType ptype) {
-            java.lang.reflect.Type raw = ptype.getRawType();
-            if (raw instanceof Class clazz) {
-                if (this.cache.has(type, TypeClass.class)) {
-                    return (T) this.cache.get(type, TypeClass.class);
-                }
-                TypeClass typeClass = new TypeClass(this, declaration(clazz));
-                this.cache.cache(type, typeClass);
-                for (java.lang.reflect.Type param : ptype.getActualTypeArguments()) {
-                    typeClass.arguments().add(of(param));
-                }
-                typeClass.lock();
-                return (T) typeClass;
-            } else {
-                throw new IllegalArgumentException("Unknown raw type: " + type.getClass().getName());
-            }
-        } else if (type instanceof WildcardType wtype) {
-            if (wtype.getLowerBounds().length != 0) {
-                TypeIn typeIn = new TypeIn(this, and(wtype.getLowerBounds()));
-                return (T) typeIn;
-            } else {
-                TypeOut typeOut = new TypeOut(this, and(wtype.getUpperBounds()));
-                return (T) typeOut;
-            }
-        } else if (type instanceof TypeVariable<?> vtype) {
-            if (this.cache.has(vtype, TypeParameter.class)) {
-                return (T) this.cache.get(vtype, TypeParameter.class);
-            } else {
-                TypeParameter parameter = new TypeParameter(this, vtype.getName());
-                this.cache.cache(vtype, parameter);
-                parameter.setBound(and(vtype.getBounds()));
-                parameter.lock();
-                return (T) parameter;
-            }
-        } else if (type instanceof GenericArrayType atype) {
-            return (T) new TypeArray(this, of(atype.getGenericComponentType()));
-        } else {
-            throw new IllegalArgumentException("Unknown type: " + type.getClass().getName());
-        }
-    }
-
-    private TypeConcrete and(Type... array) {
-        TypeAnd and = new TypeAnd(this, Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
-        and.lock();
-        return and;
-    }
-
-    private TypeConcrete or(Type... array) {
-        TypeOr or = new TypeOr(this, Arrays.stream(array).map(t -> (TypeConcrete) of(t)).collect(Collectors.toCollection(LinkedHashSet::new)));
-        or.lock();
-        return or;
-    }
-
-    private TypeConcrete and(List<? extends TypeMirror> bounds, Elements elements) {
-        TypeAnd and = new TypeAnd(this, bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toCollection(LinkedHashSet::new)));
-        and.lock();
-        return and;
-    }
-
-    private TypeConcrete or(List<? extends TypeMirror> bounds, Elements elements) {
-        TypeOr or = new TypeOr(this, bounds.stream().map(t -> (TypeConcrete) of(t, elements)).collect(Collectors.toCollection(LinkedHashSet::new)));
-        or.lock();
-        return or;
-    }
-
-    public TypeDeclaration declaration(Class<?> clazz) {
-        if (clazz.isPrimitive() || clazz.isArray()) {
-            throw new IllegalArgumentException("Cannot get declaration from primitive or array type");
-        }
-
-        Namespace namespace = Namespace.of(clazz);
-        if (this.cache.has(namespace.name(), TypeDeclaration.class)) {
-            return this.cache.get(namespace.name(), TypeDeclaration.class);
-        } else {
-            TypeDeclaration type = new TypeDeclaration(this, namespace);
-            this.cache.cache(namespace.name(), type);
-
-            for (TypeVariable<?> var : clazz.getTypeParameters()) {
-                if (this.cache.has(var, TypeParameter.class)) {
-                    type.parameters().add(this.cache.get(var, TypeParameter.class));
-                } else {
-                    TypeParameter parameter = new TypeParameter(this, var.getName());
-                    this.cache.cache(var, parameter);
-                    parameter.setBound(and(var.getBounds()));
-                    parameter.lock();
-                    type.parameters().add(parameter);
-                }
-            }
-
-            if (clazz.getSuperclass() != null) {
-                type.parents().add(of(clazz.getGenericSuperclass()));
-            } else if (clazz.isInterface()) {
-                type.parents().add(of(Object.class));
-            }
-
-            for (java.lang.reflect.Type inter : clazz.getGenericInterfaces()) {
-                type.parents().add(of(inter));
-            }
-
-            type.lock();
-            return type;
-        }
-    }
-
-    public <T extends TypeConcrete> T of(TypeMirror type, Elements elements) {
-        if (type.getKind().isPrimitive() && type instanceof PrimitiveType primitiveType) {
-            return (T) switch (primitiveType.getKind()) {
-                case BOOLEAN -> BOOLEAN;
-                case BYTE -> BYTE;
-                case SHORT -> SHORT;
-                case INT -> INT;
-                case LONG -> LONG;
-                case CHAR -> CHAR;
-                case FLOAT -> FLOAT;
-                case DOUBLE -> DOUBLE;
-                default -> throw new IllegalArgumentException("Unknown primitive type: " + primitiveType.getKind());
-            };
-        } else if (type.getKind() == TypeKind.VOID) {
-            return (T) VOID;
-        } else if (type.getKind() == TypeKind.NONE) {
-            return (T) NONE;
-        } else if (type.getKind() == TypeKind.NULL) {
-            return (T) NULL;
-        } else if (type.getKind() == TypeKind.ARRAY && type instanceof ArrayType arrayType) {
-            return (T) new TypeArray(this, of(arrayType.getComponentType(), elements));
-        } else if (type.getKind() == TypeKind.WILDCARD && type instanceof javax.lang.model.type.WildcardType wildcardType) {
-            if (wildcardType.getSuperBound() != null) {
-                return (T) new TypeIn(this, of(wildcardType.getSuperBound(), elements));
-            } else if (wildcardType.getExtendsBound() != null) {
-                return (T) new TypeOut(this, of(wildcardType.getExtendsBound(), elements));
-            } else {
-                return (T) new TypeOut(this, of(Object.class));
-            }
-        } else if (type.getKind() == TypeKind.TYPEVAR && type instanceof javax.lang.model.type.TypeVariable typeVariable) {
-            TypeParameterElement var = (TypeParameterElement) typeVariable.asElement();
-            if (this.cache.has(typeVariable, TypeParameter.class)) {
-                return (T) this.cache.get(typeVariable, TypeParameter.class);
-            } else {
-                TypeParameter parameter = new TypeParameter(this, var.getSimpleName().toString());
-                this.cache.cache(var.asType(), parameter);
-                parameter.setBound(and(var.getBounds(), elements));
-                parameter.lock();
-                return (T) parameter;
-            }
-        } else if (type.getKind() == TypeKind.UNION && type instanceof UnionType unionType) {
-            return (T) or(unionType.getAlternatives(), elements);
-        } else if (type.getKind() == TypeKind.INTERSECTION && type instanceof IntersectionType intersectionType) {
-            return (T) and(intersectionType.getBounds(), elements);
-        } else if (type.getKind() == TypeKind.DECLARED && type instanceof DeclaredType declared && declared.asElement() instanceof TypeElement) {
-            Namespace namespace = namespace(declared, elements);
-            if (declared.getTypeArguments().isEmpty()) {
-                if (this.cache.has(namespace.name(), TypeClass.class)) {
-                    return (T) this.cache.get(namespace.name(), TypeClass.class);
-                } else {
-                    TypeClass cls = new TypeClass(this, declaration(declared, elements));
-                    this.cache.cache(namespace.name(), cls);
-                    cls.lock();
-                    return (T) cls;
-                }
-            } else {
-                if (this.cache.has(declared, TypeClass.class)) {
-                    return (T) this.cache.get(declared, TypeClass.class);
-                } else {
-                    TypeClass cls = new TypeClass(this, declaration(declared, elements));
-                    this.cache.cache(namespace.name(), cls);
-                    for (TypeMirror arg : declared.getTypeArguments()) {
-                        cls.arguments().add(of(arg, elements));
-                    }
-                    cls.lock();
-                    return (T) cls;
-                }
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown type: " + type.getKind() + ", " + type);
-        }
-    }
-
-    public TypeDeclaration declaration(DeclaredType declared, Elements elements) {
-        Element element = declared.asElement();
-        if ((element.getKind() == ElementKind.CLASS || element.getKind() == ElementKind.INTERFACE ||
-                element.getKind() == ElementKind.ANNOTATION_TYPE) && element instanceof TypeElement typeElement) {
-
-            Namespace namespace = namespace(declared, elements);
-            if (this.cache.has(namespace.name(), TypeDeclaration.class)) {
-                return this.cache.get(namespace.name(), TypeDeclaration.class);
-            } else {
-                TypeDeclaration type = new TypeDeclaration(this, namespace);
-                this.cache.cache(namespace.name(), type);
-
-                for (TypeParameterElement var : ((TypeElement) element).getTypeParameters()) {
-                    if (this.cache.has(var.asType(), TypeParameter.class)) {
-                        type.parameters().add(this.cache.get(var.asType(), TypeParameter.class));
-                    } else {
-                        TypeParameter parameter = new TypeParameter(this, var.getSimpleName().toString());
-                        this.cache.cache(var.asType(), parameter);
-                        parameter.setBound(and(var.getBounds(), elements));
-                        parameter.lock();
-                        type.parameters().add(parameter);
-                    }
-                }
-
-                TypeMirror superclass = typeElement.getSuperclass();
-                if (superclass.getKind() != TypeKind.NONE) {
-                    type.parents().add(of(superclass, elements));
-                } else if (typeElement.getKind() == ElementKind.INTERFACE) {
-                    type.parents().add(of(Object.class));
-                }
-
-                for (TypeMirror inter : typeElement.getInterfaces()) {
-                    type.parents().add(of(inter, elements));
-                }
-
-                type.lock();
-                return type;
-            }
-        } else {
-            throw new IllegalArgumentException("Unknown type: " + declared.getKind() + ", " + declared);
-        }
-    }
-
-    private static Namespace namespace(DeclaredType type, Elements elements) {
-        return Namespace.binary(elements.getBinaryName((TypeElement) type.asElement()).toString());
-    }
-
-    public TypeCache cache() {
-        return this.cache;
     }
 
     private static <K, V, T> Map<T, V> reverse(Map<V, K> map, Function<K, T> keyFunction) {
