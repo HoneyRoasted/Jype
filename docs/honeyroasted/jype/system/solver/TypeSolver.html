@@ -73,7 +73,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="impl/AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver.impl">AbstractTypeSolver</a></code>, <code><a href="impl/force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.impl.force">ForceResolveTypeSolver</a></code></dd>
+<dd><code><a href="AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a></code>, <code><a href="erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure">ErasureTypeSolver</a></code>, <code><a href="force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">TypeSolver</span></div>
@@ -85,7 +85,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -94,16 +94,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#constrain(honeyroasted.jype.system.solver.TypeConstraint)" class="member-name-link">constrain</a><wbr>(<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&nbsp;constraint)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#constrain(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">constrain</a><wbr>(<a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;subtype,
- <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;parent)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#constraints()" class="member-name-link">constraints</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeSolution.html" title="class in honeyroasted.jype.system.solver">TypeSolution</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#solve()" class="member-name-link">solve</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#constraints()" class="member-name-link">constraints</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeSolution.html" title="class in honeyroasted.jype.system.solver">TypeSolution</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#solve()" class="member-name-link">solve</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -134,13 +130,6 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="constraints()">
 <h3>constraints</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;</span>&nbsp;<span class="element-name">constraints</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="constrain(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)">
-<h3>constrain</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></span>&nbsp;<span class="element-name">constrain</span><wbr><span class="parameters">(<a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;subtype,
- <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;parent)</span></div>
 </section>
 </li>
 </ul>

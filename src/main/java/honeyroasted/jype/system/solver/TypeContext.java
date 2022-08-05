@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.TypeConcrete;
-import honeyroasted.jype.type.TypeParameter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,7 @@ public class TypeContext {
         return this;
     }
 
-    public Optional<TypeConcrete> get(TypeParameter parameter) {
+    public Optional<TypeConcrete> get(TypeConcrete parameter) {
         return Optional.ofNullable(this.parameters.get(parameter));
     }
 

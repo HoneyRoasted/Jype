@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This class represents the Namespace of a {@link TypeDeclaration}.
@@ -33,23 +31,7 @@ public class Namespace {
     }
 
     public static Namespace of(Class cls) {
-        List<String> path = new ArrayList<>();
-        String[] pack = cls.getPackage().getName().split("\\.");
-
-        int simpleName = 1;
-        Class current = cls;
-
-        while (current.isAnonymousClass()) {
-            String[] parts = current.getTypeName().split("\\.");
-            path.add(0, parts[parts.length - 1]);
-
-            current = current.getEnclosingClass();
-            simpleName++;
-        }
-        path.add(0, current.getSimpleName());
-        path.addAll(0, Arrays.asList(pack));
-
-        return new Namespace(path, simpleName);
+        return Namespace.of(cls.getTypeName().split("\\."));
     }
 
     public static Namespace of(TypeElement type) {
@@ -72,6 +54,10 @@ public class Namespace {
         }
 
         return new Namespace(path, simpleName);
+    }
+
+    public Namespace toSimpleName() {
+        return new Namespace(this.path.subList(this.path.size() - this.simpleName, this.path.size()), this.simpleName);
     }
 
     public Namespace relative(Namespace other) {

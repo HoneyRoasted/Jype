@@ -4,10 +4,10 @@ import honeyroasted.jype.Namespace;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.resolution.ReflectionTypeResolver;
+import honeyroasted.jype.system.resolution.SequentialTypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.TypeMirrorTypeResolver;
 import honeyroasted.jype.system.resolution.TypeResolutionStrategy;
-import honeyroasted.jype.system.resolution.impl.ReflectionTypeResolver;
-import honeyroasted.jype.system.resolution.impl.SequentialTypeResolutionStrategy;
-import honeyroasted.jype.system.resolution.impl.TypeMirrorTypeResolver;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
@@ -203,8 +203,8 @@ public class TypeSystem {
         return new TypeParameter(this, name);
     }
 
-    public TypeDeclaration newDeclaration(Namespace namespace) {
-        return new TypeDeclaration(this, namespace);
+    public TypeDeclaration newDeclaration(Namespace namespace, boolean isInterface) {
+        return new TypeDeclaration(this, namespace, isInterface);
     }
 
     public TypeClass newType(TypeDeclaration declaration) {

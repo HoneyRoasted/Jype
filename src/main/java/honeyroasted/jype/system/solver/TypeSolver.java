@@ -1,7 +1,5 @@
 package honeyroasted.jype.system.solver;
 
-import honeyroasted.jype.TypeConcrete;
-
 import java.util.List;
 
 public interface TypeSolver {
@@ -11,9 +9,5 @@ public interface TypeSolver {
     TypeSolution solve();
 
     List<TypeConstraint> constraints();
-
-    default TypeSolver constrain(TypeConcrete subtype, TypeConcrete parent) {
-        return constrain(new TypeConstraint.Bound(subtype, parent));
-    }
 
 }

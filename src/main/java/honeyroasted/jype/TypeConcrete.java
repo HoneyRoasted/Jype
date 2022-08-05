@@ -5,7 +5,6 @@ import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**

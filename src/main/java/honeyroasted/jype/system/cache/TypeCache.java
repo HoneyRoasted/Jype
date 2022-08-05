@@ -2,8 +2,6 @@ package honeyroasted.jype.system.cache;
 
 import honeyroasted.jype.Type;
 
-import javax.lang.model.type.TypeMirror;
-
 public interface TypeCache<K> {
 
     <T extends Type> T get(K key, Class<T> clazz);

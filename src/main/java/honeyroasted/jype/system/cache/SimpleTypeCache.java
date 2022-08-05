@@ -2,7 +2,6 @@ package honeyroasted.jype.system.cache;
 
 import honeyroasted.jype.Type;
 
-import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;

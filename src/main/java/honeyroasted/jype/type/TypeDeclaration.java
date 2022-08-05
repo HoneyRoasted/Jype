@@ -20,18 +20,20 @@ public class TypeDeclaration implements Type {
     private Namespace namespace;
     private List<TypeParameter> parameters;
     private List<TypeClass> parents;
+    private boolean isInterface;
 
     private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
 
-    public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents) {
+    public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents, boolean isInterface) {
         this.typeSystem = system;
         this.namespace = namespace;
         this.parameters = parameters;
         this.parents = parents;
+        this.isInterface = isInterface;
     }
 
-    public TypeDeclaration(TypeSystem system, Namespace namespace) {
-        this(system, namespace, new ArrayList<>(), new ArrayList<>());
+    public TypeDeclaration(TypeSystem system, Namespace namespace, boolean isInterface) {
+        this(system, namespace, new ArrayList<>(), new ArrayList<>(), isInterface);
     }
 
     public Optional<TypeClass> directParent(TypeDeclaration parent) {
@@ -93,6 +95,10 @@ public class TypeDeclaration implements Type {
         return this.namespace.internalName();
     }
 
+    public boolean isInterface() {
+        return this.isInterface;
+    }
+
     @Override
     public TypeString toSignature(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
@@ -119,7 +125,7 @@ public class TypeDeclaration implements Type {
                 sb.append(args.stream().map(TypeString::value).collect(Collectors.joining())).append(">");
             }
 
-            List<TypeString> args = this.parents.stream().map(t -> t.toSignature(context)).toList();
+            List<TypeString> args = this.parents.stream().filter(t -> (!this.isInterface || !t.equals(this.typeSystem.OBJECT))).map(t -> t.toSignature(context)).toList();
             Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
             if (failure.isPresent()) {
                 return failure.get();
@@ -153,18 +159,20 @@ public class TypeDeclaration implements Type {
                 sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
             }
 
-            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
-                sb.append(" extends ");
+            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(this.typeSystem.OBJECT))) {
+                if (!this.parents.get(0).equals(this.typeSystem.OBJECT)) {
+                    sb.append(" extends ");
 
-                TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
-                if (!superclass.successful()) {
-                    return superclass;
+                    TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
+                    if (!superclass.successful()) {
+                        return superclass;
+                    }
+
+                    sb.append(superclass.value());
                 }
 
-                sb.append(superclass.value());
-
                 if (this.parents.size() > 1) {
-                    sb.append(" implements ");
+                    sb.append(this.isInterface ? "extends" : " implements ");
                     List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toSignature(TypeString.Context.CONCRETE)).toList();
                     Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                     if (failure.isPresent()) {
@@ -196,18 +204,20 @@ public class TypeDeclaration implements Type {
                 sb.append(args.stream().map(TypeString::value).collect(Collectors.joining(", "))).append(">");
             }
 
-            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(TypeSystem.GLOBAL.OBJECT))) {
-                sb.append(" extends ");
+            if (!this.parents.isEmpty() && !this.parents.stream().allMatch(t -> t.equals(this.typeSystem().OBJECT))) {
+                if (!this.parents.get(0).equals(this.typeSystem().OBJECT)) {
+                    sb.append(" extends ");
 
-                TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
-                if (!superclass.successful()) {
-                    return superclass;
+                    TypeString superclass = this.parents.get(0).toSource(TypeString.Context.CONCRETE);
+                    if (!superclass.successful()) {
+                        return superclass;
+                    }
+
+                    sb.append(superclass.value());
                 }
 
-                sb.append(superclass.value());
-
                 if (this.parents.size() > 1) {
-                    sb.append(" implements ");
+                    sb.append(this.isInterface ? "extends" : " implements ");
                     List<TypeString> args = this.parents.subList(1, this.parameters.size()).stream().map(t -> t.toReadable(TypeString.Context.CONCRETE)).toList();
                     Optional<TypeString> failure = args.stream().filter(t -> !t.successful()).findFirst();
                     if (failure.isPresent()) {
