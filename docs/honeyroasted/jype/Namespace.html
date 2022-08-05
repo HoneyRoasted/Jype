@@ -77,7 +77,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Namespace</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
-<div class="block">This class represents the Namespace of a <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+<div class="block">This class represents the Namespace of a <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>. It consists of a path and a simple name.
+ For inner, anonymous, and local classes, the Namespace should be equivalent to the binary namespace. For example,
+ an anonymous class within a class called Test would be converted to Test$1. The namespace should be Test$1.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -91,7 +93,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,int)" class="member-name-link">Namespace</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;path,
  int&nbsp;simpleName)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> with the given path, and the number of elements that make up the simple name.</div>
+</div>
 </div>
 </section>
 </li>
@@ -106,6 +110,12 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalName()" class="member-name-link">internalName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -115,40 +125,66 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#of(int,java.lang.String...)" class="member-name-link">of</a><wbr>(int&nbsp;simpleName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> from the given path and the number of elements that make up the simple name.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#of(java.lang.Class)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&nbsp;cls)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> corresponding to a runtime class.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#of(java.lang.String...)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> from the given path.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#of(javax.lang.model.element.TypeElement)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/element/TypeElement.html" title="class or interface in javax.lang.model.element" class="external-link">TypeElement</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> corresponding to a source class from the Java annotation processing model.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#packageName()" class="member-name-link">packageName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(honeyroasted.jype.Namespace)" class="member-name-link">relative</a><wbr>(<a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;other)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#packageRelative(honeyroasted.jype.Namespace)" class="member-name-link">packageRelative</a><wbr>(<a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> with the package name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> and the simple name
+ of <code>other</code>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(honeyroasted.jype.Namespace)" class="member-name-link">relative</a><wbr>(<a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the <code>other</code> to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(java.lang.String...)" class="member-name-link">relative</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the given path to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(java.util.List)" class="member-name-link">relative</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;path)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the given path to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(java.lang.String...)" class="member-name-link">relative</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#relative(java.util.List)" class="member-name-link">relative</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;path)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toPackage()" class="member-name-link">toPackage</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toSimpleName()" class="member-name-link">toSimpleName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -165,6 +201,12 @@ loadScripts(document, 'script');</script>
 <h3>Namespace</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Namespace</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;path,
  int&nbsp;simpleName)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> with the given path, and the number of elements that make up the simple name.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - The path</dd>
+<dd><code>simpleName</code> - The number of elements in the simple name</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -179,6 +221,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="of(java.lang.String...)">
 <h3>of</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> from the given path. The simple name will be the last element of the path.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - The path</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
@@ -186,66 +235,184 @@ loadScripts(document, 'script');</script>
 <h3>of</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(int&nbsp;simpleName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> from the given path and the number of elements that make up the simple name.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>simpleName</code> - The number of elements in the simple name</dd>
+<dd><code>path</code> - The path</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="of(java.lang.Class)">
 <h3>of</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&nbsp;cls)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> corresponding to a runtime class.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>cls</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a> to generate a <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> for</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="of(javax.lang.model.element.TypeElement)">
 <h3>of</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/element/TypeElement.html" title="class or interface in javax.lang.model.element" class="external-link">TypeElement</a>&nbsp;type)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> corresponding to a source class from the Java annotation processing model.
+ Note that this method <b>may not</b> work for anonymous and local classes.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/element/TypeElement.html" title="class or interface in javax.lang.model.element" class="external-link"><code>TypeElement</code></a> to generate a <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> for</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="toSimpleName()">
 <h3>toSimpleName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">toSimpleName</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> containing only the simple name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toPackage()">
+<h3>toPackage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">toPackage</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> containing only the package of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="packageRelative(honeyroasted.jype.Namespace)">
+<h3>packageRelative</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">packageRelative</span><wbr><span class="parameters">(<a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;other)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> with the package name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> and the simple name
+ of <code>other</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>other</code> - The <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> to use for the simple name</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="relative(honeyroasted.jype.Namespace)">
 <h3>relative</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">relative</span><wbr><span class="parameters">(<a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;other)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the <code>other</code> to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>other</code> - The <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> to append</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="relative(java.lang.String...)">
 <h3>relative</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">relative</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>...&nbsp;path)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the given path to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - The path to append</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="relative(java.util.List)">
 <h3>relative</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">relative</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;&nbsp;path)</span></div>
+<div class="block">Creates a new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the given path to this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>path</code> - The path to append</dd>
+<dt>Returns:</dt>
+<dd>A new <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="name()">
 <h3>name</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">name</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of the name represented by this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="simpleName()">
 <h3>simpleName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">simpleName</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of the simple name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="packageName()">
 <h3>packageName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">packageName</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of the package name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="internalName()">
 <h3>internalName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">internalName</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of the internal name of this <a href="Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toString()">
+<h3>toString</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="equals(java.lang.Object)">
+<h3>equals</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hashCode()">
+<h3>hashCode</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">hashCode</span>()</div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+</dl>
 </section>
 </li>
 </ul>

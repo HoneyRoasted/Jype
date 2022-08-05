@@ -41,7 +41,12 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         builder.and();
         builder.constraint(builder.isSuccessful() ? TypeConstraint.TRUE : TypeConstraint.FALSE);
 
-        return new TypeSolution(new TypeContext(), constraints, builder.build());
+        TypeVerification res = builder.build();
+        if (res.children().size() == 1 && res.success() == res.children().get(0).success()) {
+            res = res.children().get(0);
+        }
+
+        return new TypeSolution(new TypeContext(), constraints, res);
     }
 
     private TypeVerification forceResolve(TypeConstraint constraint) {

@@ -8,6 +8,7 @@ import honeyroasted.jype.system.solver.TypeContext;
 import honeyroasted.jype.system.solver.TypeSolution;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.TypeVerification;
+import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
@@ -29,7 +30,9 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
 
     public ErasureTypeSolver(TypeSystem system) {
         super(system,
-                ErasureConstraint.Erasure.class);
+                ErasureConstraint.Erasure.class,
+                TypeConstraint.Bound.class, TypeConstraint.Equal.class,
+                TypeConstraint.True.class, TypeConstraint.False.class);
     }
 
     @Override
@@ -41,13 +44,60 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         this.constraints.forEach(t -> {
             if (t instanceof ErasureConstraint.Erasure erasure) {
                 builder.children(erase(erasure, context));
+            } else if (t instanceof TypeConstraint.Equal equal) {
+                TypeVerification.Builder equalBuilder = TypeVerification.builder()
+                        .constraint(equal)
+                        .children(erase(new ErasureConstraint.Erasure(equal.left()), context),
+                                erase(new ErasureConstraint.Erasure(equal.right()), context))
+                        .and();
+
+                if (equalBuilder.isSuccessful()) {
+                    TypeConcrete left = context.get(equal.left()).get();
+                    TypeConcrete right = context.get(equal.right()).get();
+
+                    if (left.equals(right)) {
+                        equalBuilder.children(TypeVerification.success(new TypeConstraint.Equal(left, right)));
+                    } else {
+                        equalBuilder.children(TypeVerification.failure(new TypeConstraint.Equal(left, right)));
+                        equalBuilder.failure();
+                    }
+                }
+
+                builder.children(equalBuilder.build());
+            } else if (t instanceof TypeConstraint.Bound bound) {
+                TypeVerification.Builder boundBuilder = TypeVerification.builder()
+                        .constraint(bound)
+                        .children(erase(new ErasureConstraint.Erasure(bound.subtype()), context),
+                                erase(new ErasureConstraint.Erasure(bound.parent()), context))
+                        .and();
+
+                if (boundBuilder.isSuccessful()) {
+                    TypeConcrete subtype = context.get(bound.subtype()).get();
+                    TypeConcrete parent = context.get(bound.parent()).get();
+                    boundBuilder.children(new ForceResolveTypeSolver(this.system)
+                            .constrain(new TypeConstraint.Bound(subtype, parent))
+                            .solve()
+                            .verification());
+                }
+
+                boundBuilder.and();
+                builder.children(boundBuilder.build());
+            } else if (t instanceof TypeConstraint.True) {
+                builder.children(TypeVerification.success(t));
+            } else if (t instanceof TypeConstraint.False) {
+                builder.children(TypeVerification.failure(t));
             }
         });
 
         builder.and();
         builder.constraint(builder.isSuccessful() ? TypeConstraint.TRUE : TypeConstraint.FALSE);
 
-        return new TypeSolution(context, this.constraints(), builder.build());
+        TypeVerification res = builder.build();
+        if (res.children().size() == 1 && res.success() == res.children().get(0).success()) {
+            res = res.children().get(0);
+        }
+
+        return new TypeSolution(context, this.constraints(), res);
     }
 
     private TypeVerification erase(ErasureConstraint.Erasure constraint, TypeContext context) {

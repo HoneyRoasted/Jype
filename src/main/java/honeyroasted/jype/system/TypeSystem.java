@@ -1,6 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.Namespace;
+import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -150,10 +151,18 @@ public class TypeSystem {
 
     private TypeResolutionStrategy strategy;
 
+    /**
+     * Creates a new {@link TypeSystem} with the default {@link TypeResolutionStrategy}.
+     */
     public TypeSystem() {
         this(null);
     }
 
+    /**
+     * Creates a new {@link TypeSystem} with the given {@link TypeResolutionStrategy}.
+     *
+     * @param strategy The {@link TypeResolutionStrategy} to use
+     */
     public TypeSystem(TypeResolutionStrategy strategy) {
         if (strategy == null) {
             this.strategy = new SequentialTypeResolutionStrategy()
@@ -202,25 +211,67 @@ public class TypeSystem {
                 DOUBLE, Double.class
         );
 
-        BOX_TO_PRIM = reverse(PRIM_TO_BOX, Namespace::of);
+        Map<Namespace, TypePrimitive> boxToPrim = new HashMap<>();
+        PRIM_TO_BOX.forEach((prim, cls) -> boxToPrim.put(Namespace.of(cls), prim));
+
+        BOX_TO_PRIM = Map.copyOf(boxToPrim);
     }
 
+    /**
+     * Creates a new {@link TypeParameter} with the given name. It will be mutable until
+     * {@link Type#lock()} is called.
+     *
+     * @param name The name
+     * @return A new {@link TypeParameter}
+     */
     public TypeParameter newParameter(String name) {
         return new TypeParameter(this, name);
     }
 
+    /**
+     * Creates a new {@link TypeDeclaration} with the given {@link Namespace} and interface status.
+     * It will be mutable until {@link Type#lock()} is called.
+     *
+     * @param namespace The {@link Namespace}
+     * @param isInterface Whether the new {@link TypeDeclaration} is an interface
+     * @return A mew {@link TypeDeclaration}
+     */
     public TypeDeclaration newDeclaration(Namespace namespace, boolean isInterface) {
         return new TypeDeclaration(this, namespace, isInterface);
     }
 
+    /**
+     * Creates a new {@link TypeClass} with the given {@link TypeDeclaration}.
+     * It will be mutable until {@link Type#lock()} is called.
+     *
+     * @param declaration The {@link TypeDeclaration}
+     * @return A new {@link TypeClass}
+     */
     public TypeClass newType(TypeDeclaration declaration) {
         return new TypeClass(this, declaration);
     }
 
+    /**
+     * Creates a new {@link TypeArray} with the given element. It will be mutable until {@link Type#lock()} is called.
+     *
+     * @param element The array element
+     * @return A new {@link TypeArray}
+     */
     public TypeArray newArray(TypeConcrete element) {
         return new TypeArray(this, element);
     }
 
+    /**
+     * Creates a new {@link TypeArray} with the given element, and the given dimensions.
+     * It will be mutable until {@link Type#lock()} is called. This may produce a {@link TypeArray}
+     * with dimensions greater than {@code dims} if {@code element} is a {@link TypeArray}.
+     *
+     * @param element The array element
+     * @param dims The dimensions of the new array
+     * @return A new {@link TypeArray}
+     *
+     * @throws IllegalArgumentException if {@code dims < 1}
+     */
     public TypeArray newArray(TypeConcrete element, int dims) {
         if (dims < 1) {
             throw new IllegalArgumentException("Array must have at least 1 dimension");
@@ -233,6 +284,15 @@ public class TypeSystem {
         return res;
     }
 
+    /**
+     * Utilizes the {@link ForceResolveTypeSolver} to check if one type is assignable to the other. Note that
+     * {@link ForceResolveTypeSolver} may not work for all {@link TypeConcrete}s. It is however guaranteed to work
+     * on type hierarchies with no unresolved {@link TypeParameter}s.
+     *
+     * @param left The type to check if it can be assigned to {@code right}
+     * @param right The type to check if {@code left} can be assigned to it
+     * @return true if {@code left} can be assigned to {@code right}
+     */
     public boolean isAssignableTo(TypeConcrete left, TypeConcrete right) {
         return new ForceResolveTypeSolver(this)
                 .constrain(new TypeConstraint.Bound(left, right))
@@ -240,6 +300,14 @@ public class TypeSystem {
                 .successful();
     }
 
+    /**
+     * Utilizes the {@link ErasureTypeSolver} to produce the {@link TypeConcrete} of the given type. The Java compiler erases
+     * certain generic type information to comply with backwards compatibility. This method will perform the same
+     * process on the given {@link TypeConcrete}.
+     *
+     * @param type The {@link TypeConcrete} to apply type erasure to
+     * @return An {@link Optional} containing the erased {@link TypeConcrete}, or empty if erasure could not be performed
+     */
     public Optional<TypeConcrete> erasure(TypeConcrete type) {
         TypeSolution solution = new ErasureTypeSolver(this)
                 .constrain(new ErasureConstraint.Erasure(type))
@@ -248,26 +316,51 @@ public class TypeSystem {
         return solution.successful() ? solution.context().get(type) : Optional.empty();
     }
 
+    /**
+     * Attempts to resolve a {@link TypeConcrete} from the given object. This method may fail if the
+     * {@link TypeResolutionStrategy} cannot resolve an object of the given type.
+     *
+     * @param type The object to resolve to a {@link TypeConcrete}
+     * @return The resolved {@link TypeConcrete}
+     * @param <T> Type parameter to facilitate loose typing
+     *
+     * @throws ClassCastException if {@code T} is not the type of the result
+     */
     public <T extends TypeConcrete> T of(Object type) {
         return (T) this.strategy.resolve(type);
     }
 
+    /**
+     * Attempts to resolve a {@link TypeDeclaration} from the given object. This method may fail if the
+     * {@link TypeResolutionStrategy} cannot resolve an object of the given type.
+     *
+     * @param type The object to resolve to a {@link TypeDeclaration}
+     * @return The resolved {@link TypeDeclaration}
+     */
     public TypeDeclaration declaration(Object type) {
         return this.strategy.resolveDeclaration(type);
     }
 
+    /**
+     * This is a utility method to unbox a {@link TypeConcrete} to a {@link TypePrimitive}.
+     *
+     * @param type The {@link TypeConcrete} to unbox
+     * @return An {@link Optional} contain the unboxed {@link TypePrimitive}, or an empty {@link Optional} if
+     *         {@code type} is not a one of the primitive boxing types
+     */
     public Optional<TypePrimitive> unbox(TypeConcrete type) {
         return type instanceof TypeClass cls ? Optional.ofNullable(BOX_TO_PRIM.get(cls.declaration().namespace())) :
                 Optional.empty();
     }
 
+    /**
+     * This is a utility method to box a {@link TypePrimitive} into a {@link TypeConcrete}.
+     *
+     * @param type The {@link TypePrimitive} to box
+     * @return The boxing {@link TypeConcrete} for {@code type}
+     */
     public TypeConcrete box(TypePrimitive type) {
         return of(PRIM_TO_BOX.get(type));
     }
 
-    private static <K, V, T> Map<T, V> reverse(Map<V, K> map, Function<K, T> keyFunction) {
-        Map<T, V> result = new HashMap<>();
-        map.forEach((key, val) -> result.put(keyFunction.apply(val), key));
-        return Map.copyOf(result);
-    }
 }
