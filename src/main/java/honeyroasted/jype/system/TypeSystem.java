@@ -11,7 +11,6 @@ import honeyroasted.jype.system.resolution.TypeResolutionStrategy;
 import honeyroasted.jype.system.resolution.TypeTokenTypeResolver;
 import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeSolution;
-import honeyroasted.jype.system.solver.TypeVerification;
 import honeyroasted.jype.system.solver.erasure.ErasureConstraint;
 import honeyroasted.jype.system.solver.erasure.ErasureTypeSolver;
 import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
@@ -24,7 +23,6 @@ import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypePrimitive;
 
 import javax.lang.model.type.TypeMirror;
-import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;

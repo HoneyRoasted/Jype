@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver;
 
 import java.util.List;
-import java.util.Optional;
 
 public class TypeSolution {
     private TypeContext context;
