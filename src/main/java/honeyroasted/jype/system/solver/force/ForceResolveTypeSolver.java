@@ -154,6 +154,11 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
             return PRIM_SUPERS.get(self.descriptor()).contains(prim.descriptor()) ?
                     TypeVerification.success(constraint) :
                     TypeVerification.failure(constraint);
+        } else if (other instanceof TypeClass cls && this.system.unbox(cls).isPresent()) {
+            TypePrimitive prim = this.system.unbox(cls).get();
+            return PRIM_SUPERS.get(self.descriptor()).contains(prim.descriptor()) ?
+                    TypeVerification.success(constraint) :
+                    TypeVerification.failure(constraint);
         } else {
             return TypeVerification.builder()
                     .children(assignability(this.system.box(self), other),

@@ -19,6 +19,13 @@ import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypePrimitive;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+
 public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver {
 
     public ErasureTypeSolver(TypeSystem system) {
@@ -46,6 +53,10 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
 
     private TypeVerification erase(ErasureConstraint.Erasure constraint, TypeContext context) {
         TypeConcrete type = constraint.type();
+
+        if (context.get(type).isPresent()) {
+            return TypeVerification.success(constraint);
+        }
 
         if (type instanceof TypePrimitive || type instanceof TypeNone) {
             context.put(type, type);
@@ -106,9 +117,56 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
                         .build();
             }
         } else if (type instanceof TypeOr or) {
-            return null;
+            return commonParent(constraint, or, or.types(), context);
         } else {
             return TypeVerification.failure(constraint);
+        }
+    }
+
+    private TypeVerification commonParent(TypeConstraint constraint, TypeOr or, Set<TypeConcrete> types, TypeContext context) {
+        List<TypeVerification> verifications = types.stream().map(t -> erase(new ErasureConstraint.Erasure(t), context)).toList();
+
+        if (verifications.stream().allMatch(TypeVerification::success)) {
+            List<TypeConcrete> erased = types.stream().map(t -> context.get(t).get()).toList();
+
+            List<TypeConcrete> parents = new ArrayList<>(erased);
+            while (parents.stream().noneMatch(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent)))) {
+                List<TypeConcrete> newParents = new ArrayList<>();
+                parents.forEach(t -> newParents.addAll(parents(t)));
+                parents = newParents;
+            }
+
+            List<TypeConcrete> commonParents = parents.stream().filter(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent))).toList();
+            if (commonParents.isEmpty()) {
+                context.put(or, this.system.OBJECT);
+            } else {
+                Optional<TypeConcrete> classParent = commonParents.stream().filter(t -> t instanceof TypeClass cls && cls.declaration().isInterface()).findFirst();
+                if (classParent.isPresent()) {
+                    context.put(or, classParent.get());
+                } else {
+                    context.put(or, commonParents.get(0));
+                }
+            }
+        }
+
+        return TypeVerification.builder()
+                .constraint(constraint)
+                .children(verifications)
+                .and()
+                .build();
+    }
+
+    private List<? extends TypeConcrete> parents(TypeConcrete type) {
+        if (type instanceof TypePrimitive prim) {
+            List<TypeConcrete> parents = new ArrayList<>();
+            parents.add(this.system.box(prim));
+            this.system.ALL_PRIMITIVES.stream().filter(t -> this.system.isAssignableTo(prim, t))
+                            .forEach(parents::add);
+            return parents;
+        } else if (type instanceof TypeClass cls) {
+            return cls.declaration().parents().stream().map(t -> t.declaration().withArguments()).toList();
+        } else {
+            return Collections.emptyList();
         }
     }
 

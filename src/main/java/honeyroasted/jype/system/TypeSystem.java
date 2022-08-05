@@ -8,6 +8,13 @@ import honeyroasted.jype.system.resolution.ReflectionTypeResolver;
 import honeyroasted.jype.system.resolution.SequentialTypeResolutionStrategy;
 import honeyroasted.jype.system.resolution.TypeMirrorTypeResolver;
 import honeyroasted.jype.system.resolution.TypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.TypeTokenTypeResolver;
+import honeyroasted.jype.system.solver.TypeConstraint;
+import honeyroasted.jype.system.solver.TypeSolution;
+import honeyroasted.jype.system.solver.TypeVerification;
+import honeyroasted.jype.system.solver.erasure.ErasureConstraint;
+import honeyroasted.jype.system.solver.erasure.ErasureTypeSolver;
+import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
@@ -153,7 +160,8 @@ public class TypeSystem {
         if (strategy == null) {
             this.strategy = new SequentialTypeResolutionStrategy()
                     .add(new ReflectionTypeResolver(this, new SimpleTypeCache<>()))
-                    .add(new TypeMirrorTypeResolver(this, new SimpleTypeCache<>()));
+                    .add(new TypeMirrorTypeResolver(this, new SimpleTypeCache<>()))
+                    .add(new TypeTokenTypeResolver(this, new SimpleTypeCache<>()));
         } else {
             this.strategy = strategy;
         }
@@ -227,16 +235,27 @@ public class TypeSystem {
         return res;
     }
 
+    public boolean isAssignableTo(TypeConcrete left, TypeConcrete right) {
+        return new ForceResolveTypeSolver(this)
+                .constrain(new TypeConstraint.Bound(left, right))
+                .solve()
+                .successful();
+    }
+
+    public Optional<TypeConcrete> erasure(TypeConcrete type) {
+        TypeSolution solution = new ErasureTypeSolver(this)
+                .constrain(new ErasureConstraint.Erasure(type))
+                .solve();
+
+        return solution.successful() ? solution.context().get(type) : Optional.empty();
+    }
+
     public <T extends TypeConcrete> T of(Object type) {
         return (T) this.strategy.resolve(type);
     }
 
     public TypeDeclaration declaration(Object type) {
         return this.strategy.resolveDeclaration(type);
-    }
-
-    public <T extends TypeConcrete> T token(TypeToken token) {
-        return of(((ParameterizedType) token.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
 
     public Optional<TypePrimitive> unbox(TypeConcrete type) {

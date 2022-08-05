@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents the Namespace of a {@link TypeDeclaration}.
@@ -97,4 +98,26 @@ public class Namespace {
         return "";
     }
 
+    @Override
+    public String toString() {
+        return name();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Namespace namespace = (Namespace) o;
+
+        if (simpleName != namespace.simpleName) return false;
+        return Objects.equals(path, namespace.path);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = path != null ? path.hashCode() : 0;
+        result = 31 * result + simpleName;
+        return result;
+    }
 }

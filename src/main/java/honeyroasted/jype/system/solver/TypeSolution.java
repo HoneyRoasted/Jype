@@ -14,8 +14,8 @@ public class TypeSolution {
         this.verification = verification;
     }
 
-    public Optional<TypeContext> context() {
-        return Optional.ofNullable(this.context);
+    public TypeContext context() {
+        return this.context;
     }
 
     public List<TypeConstraint> constraints() {
@@ -24,5 +24,9 @@ public class TypeSolution {
 
     public TypeVerification verification() {
         return this.verification;
+    }
+
+    public boolean successful() {
+        return this.verification.success();
     }
 }

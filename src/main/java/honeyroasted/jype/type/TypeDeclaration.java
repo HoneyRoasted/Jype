@@ -258,17 +258,11 @@ public class TypeDeclaration implements Type {
         if (o == null || getClass() != o.getClass()) return false;
 
         TypeDeclaration that = (TypeDeclaration) o;
-
-        if (!Objects.equals(namespace, that.namespace)) return false;
-        if (!Objects.equals(parameters, that.parameters)) return false;
-        return Objects.equals(parents, that.parents);
+        return Objects.equals(namespace, that.namespace);
     }
 
     @Override
     public int hashCode() {
-        int result = namespace != null ? namespace.hashCode() : 0;
-        result = 31 * result + (parameters != null ? parameters.hashCode() : 0);
-        result = 31 * result + (parents != null ? parents.hashCode() : 0);
-        return result;
+        return this.namespace.hashCode();
     }
 }
