@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.resolution;
 
 import honeyroasted.jype.Namespace;
-import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -36,7 +35,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
     }
 
     @Override
-    public Type resolve(TypeMirror type) {
+    public TypeConcrete resolve(TypeMirror type) {
         return of(type);
     }
 

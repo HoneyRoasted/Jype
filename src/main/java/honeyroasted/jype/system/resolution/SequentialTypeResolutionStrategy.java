@@ -17,7 +17,7 @@ public class SequentialTypeResolutionStrategy implements TypeResolutionStrategy 
     @Override
     public Type resolve(Object type) {
         for (TypeResolver resolver : this.typeResolvers) {
-            if (resolver.typeClass().isInstance(type)) {
+            if (resolver.acceptsType(type)) {
                 return resolver.resolve(type);
             }
         }
@@ -28,10 +28,10 @@ public class SequentialTypeResolutionStrategy implements TypeResolutionStrategy 
     @Override
     public TypeDeclaration resolveDeclaration(Object type) {
         for (TypeResolver resolver : this.typeResolvers) {
-            if (resolver.declarationClass().isInstance(type)) {
+            if (resolver.acceptsDeclaration(type)) {
                 return resolver.resolveDeclaration(type);
             }
         }
-        throw new IllegalArgumentException("Unrecognized type: " + (type == null ? "null" : type.getClass().getName()));
+        throw new IllegalArgumentException("Unrecognized declaration type: " + (type == null ? "null" : type.getClass().getName()));
     }
 }

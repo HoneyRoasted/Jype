@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.resolution;
 
-import honeyroasted.jype.Type;
+import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.TypeToken;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -15,7 +15,7 @@ public class TypeTokenTypeResolver extends AbstractTypeResolver<TypeToken, TypeT
     }
 
     @Override
-    public Type resolve(TypeToken type) {
+    public TypeConcrete resolve(TypeToken type) {
         return this.typeSystem().of(((ParameterizedType) type.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
 
@@ -24,4 +24,15 @@ public class TypeTokenTypeResolver extends AbstractTypeResolver<TypeToken, TypeT
         return this.typeSystem().declaration(((ParameterizedType) type.getClass().getGenericSuperclass()).getActualTypeArguments()[0]);
     }
 
+    @Override
+    public boolean acceptsType(Object type) {
+        return super.acceptsType(type) && type.getClass().getGenericSuperclass() instanceof ParameterizedType pt &&
+                pt.getActualTypeArguments().length == 1;
+    }
+
+    @Override
+    public boolean acceptsDeclaration(Object type) {
+        return super.acceptsDeclaration(type) && type.getClass().getGenericSuperclass() instanceof ParameterizedType pt &&
+                pt.getActualTypeArguments().length == 1;
+    }
 }
