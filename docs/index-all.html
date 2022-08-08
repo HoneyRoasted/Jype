@@ -53,9 +53,15 @@ loadScripts(document, 'script');</script>
 <h2 class="title" id="I:A">A</h2>
 <dl class="index">
 <dt><a href="honeyroasted/jype/type/AbstractType.html" class="type-name-link" title="class in honeyroasted.jype.type">AbstractType</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This is a utility class that handles common code for implementations of <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, including
+ holding a reference to a <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and redirecting <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link"><code>Object.equals(Object)</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link"><code>Object.hashCode()</code></a>
+ to <a href="honeyroasted/jype/TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a> and <a href="honeyroasted/jype/TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/AbstractType.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">AbstractType(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">A constructor to provide the reference to a <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt; - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache,java.lang.Class,java.lang.Class)" class="member-name-link">AbstractTypeResolver(TypeSystem, TypeCache&lt;T&gt;, Class&lt;T&gt;, Class&lt;K&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
@@ -254,7 +260,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/AbstractType.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Tests if this <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is equal to another <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#equals(java.lang.Object)" class="member-name-link">equals(Object)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
@@ -389,7 +397,9 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns a hash code value for this object.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/AbstractType.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Generates a hashcode based for this <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#hashCodeExactly()" class="member-name-link">hashCodeExactly()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
@@ -459,6 +469,22 @@ loadScripts(document, 'script');</script>
 <div class="block">Utilizes the <a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force"><code>ForceResolveTypeSolver</code></a> to check if one type is assignable to the other.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#isInterface()" class="member-name-link">isInterface()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeAnd.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeArray.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeClass.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeIn.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOr.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOut.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/TypeConcrete.html#isProperType()" class="member-name-link">isProperType()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#isSuccessful()" class="member-name-link">isSuccessful()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>

@@ -86,6 +86,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">AbstractType</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span></div>
+<div class="block">This is a utility class that handles common code for implementations of <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, including
+ holding a reference to a <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and redirecting <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link"><code>Object.equals(Object)</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link"><code>Object.hashCode()</code></a>
+ to <a href="../TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a> and <a href="../TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -98,7 +101,9 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">AbstractType</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">A constructor to provide the reference to a <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -115,10 +120,14 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Tests if this <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is equal to another <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Generates a hashcode based for this <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -133,7 +142,7 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <code><a href="../Type.html#lock()">lock</a>, <a href="../Type.html#toDescriptor(honeyroasted.jype.TypeString.Context)">toDescriptor</a>, <a href="../Type.html#toReadable(honeyroasted.jype.TypeString.Context)">toReadable</a>, <a href="../Type.html#toSignature(honeyroasted.jype.TypeString.Context)">toSignature</a>, <a href="../Type.html#toSource(honeyroasted.jype.TypeString.Context)">toSource</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.TypeConcrete">Methods inherited from interface&nbsp;honeyroasted.jype.<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></h3>
-<code><a href="../TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)">equalsExactly</a>, <a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#hashCodeExactly()">hashCodeExactly</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
+<code><a href="../TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)">equalsExactly</a>, <a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#hashCodeExactly()">hashCodeExactly</a>, <a href="../TypeConcrete.html#isProperType()">isProperType</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
 </section>
 </li>
 </ul>
@@ -149,6 +158,11 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem)">
 <h3>AbstractType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AbstractType</span><wbr><span class="parameters">(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem)</span></div>
+<div class="block">A constructor to provide the reference to a <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>typeSystem</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> associated with this type</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -175,9 +189,25 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <section class="detail" id="equals(java.lang.Object)">
 <h3>equals</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</span></div>
+<div class="block">Tests if this <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is equal to another <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>. Note that this method considers
+ type equality, that is, if the types are equivalent they are considered equal regardless of their structure.
+ If strict structural equality is needed, use <a href="../TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a>.
+ <p>
+ For example, this means a <a href="TypeAnd.html" title="class in honeyroasted.jype.type"><code>TypeAnd</code></a> with one component type would be considered equal to its component
+ type.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+<dt>Parameters:</dt>
+<dd><code>obj</code> - The object to test equality against</dd>
+<dt>Returns:</dt>
+<dd>True if this is equal to <code>obj</code>, false otherwise</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
@@ -185,9 +215,23 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <section class="detail" id="hashCode()">
 <h3>hashCode</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">hashCode</span>()</div>
+<div class="block">Generates a hashcode based for this <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>. Note that this method considers type equality,
+ that is, two types that are equivalent will produce the same hashcode, regardless of their structure.
+ If a strict structural hash code is needed, use <a href="../TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a>.
+ <p>
+ For example, this means a <a href="TypeAnd.html" title="class in honeyroasted.jype.type"><code>TypeAnd</code></a> with one component type would produce the same hash code as its
+ component type.</div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+<dt>Returns:</dt>
+<dd>A hash code representing this type</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>

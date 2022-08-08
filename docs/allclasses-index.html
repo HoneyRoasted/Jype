@@ -60,7 +60,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This is a utility class that handles common code for implementations of <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, including
+ holding a reference to a <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and redirecting <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link"><code>Object.equals(Object)</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link"><code>Object.hashCode()</code></a>
+ to <a href="honeyroasted/jype/TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a> and <a href="honeyroasted/jype/TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a>.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a></div>
