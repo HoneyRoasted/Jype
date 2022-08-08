@@ -18,5 +18,5 @@ dependencies {
     implementation 'com.github.HoneyRoasted:Jype:Version'
 }
 ```
-Additionally, JavaType is continuously built with [GitHub actions](https://github.com/HoneyRoasted/Jype/actions). You
+Additionally, Jype is continuously built with [GitHub actions](https://github.com/HoneyRoasted/Jype/actions). You
 may also download the repository and build from source using the `build.sh` script.
