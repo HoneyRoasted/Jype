@@ -150,6 +150,11 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isProperType() {
+        return this.arguments.stream().allMatch(TypeConcrete::isProperType);
+    }
+
+    @Override
     public TypeConcrete flatten() {
         return new TypeClass(this.typeSystem(), this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
     }

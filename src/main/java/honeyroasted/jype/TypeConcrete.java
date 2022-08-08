@@ -32,6 +32,13 @@ public interface TypeConcrete extends Type {
     }
 
     /**
+     * @return True if this is a proper type, that is, it contains no {@link TypeParameter}s, false otherwise.
+     */
+    default boolean isProperType() {
+        return true;
+    }
+
+    /**
      * Flattens this {@link TypeConcrete}, simplifying its structure. For example, any {@link TypeAnd}
      * with a single element will be reduced to just that element. This may be necessary for checking
      * type equality.

@@ -94,6 +94,11 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isProperType() {
+        return false;
+    }
+
+    @Override
     public boolean equalsExactly(TypeConcrete other) {
         return this == other;
     }

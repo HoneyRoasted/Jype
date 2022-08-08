@@ -66,6 +66,11 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isProperType() {
+        return this.types.stream().allMatch(TypeConcrete::isProperType);
+    }
+
+    @Override
     public TypeConcrete flatten() {
         Set<TypeConcrete> flattened = new LinkedHashSet<>();
         this.types.stream().map(TypeConcrete::flatten).forEach(t -> {

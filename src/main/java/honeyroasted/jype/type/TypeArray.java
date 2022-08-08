@@ -66,6 +66,11 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isProperType() {
+        return this.element.isProperType();
+    }
+
+    @Override
     public TypeConcrete flatten() {
         return new TypeArray(this.typeSystem(), this.element.flatten());
     }

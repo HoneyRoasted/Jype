@@ -58,6 +58,11 @@ public class TypeOr extends AbstractType implements TypeConcrete {
         return (T) mapper.apply(new TypeOr(this.typeSystem(), this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
     }
 
+    @Override
+    public boolean isProperType() {
+        return this.types.stream().allMatch(TypeConcrete::isProperType);
+    }
+
     public Set<TypeConcrete> types() {
         return types;
     }

@@ -61,6 +61,11 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isProperType() {
+        return this.bound.isProperType();
+    }
+
+    @Override
     public TypeConcrete flatten() {
         return new TypeOut(this.typeSystem(), this.bound.flatten());
     }
