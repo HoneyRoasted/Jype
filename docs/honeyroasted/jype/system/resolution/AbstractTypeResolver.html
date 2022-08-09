@@ -116,14 +116,14 @@ implements <a href="TypeResolver.html" title="interface in honeyroasted.jype.sys
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#acceptsType(java.lang.Object)" class="member-name-link">acceptsType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#cache()" class="member-name-link">cache</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declarationClass()" class="member-name-link">declarationClass</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeClass()" class="member-name-link">typeClass</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
@@ -186,22 +186,22 @@ implements <a href="TypeResolver.html" title="interface in honeyroasted.jype.sys
 </section>
 </li>
 <li>
-<section class="detail" id="typeClass()">
-<h3>typeClass</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>&gt;</span>&nbsp;<span class="element-name">typeClass</span>()</div>
+<section class="detail" id="acceptsType(java.lang.Object)">
+<h3>acceptsType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">acceptsType</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="TypeResolver.html#typeClass()">typeClass</a></code>&nbsp;in interface&nbsp;<code><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</code></dd>
+<dd><code><a href="TypeResolver.html#acceptsType(java.lang.Object)">acceptsType</a></code>&nbsp;in interface&nbsp;<code><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="declarationClass()">
-<h3>declarationClass</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</span>&nbsp;<span class="element-name">declarationClass</span>()</div>
+<section class="detail" id="acceptsDeclaration(java.lang.Object)">
+<h3>acceptsDeclaration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">acceptsDeclaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="TypeResolver.html#declarationClass()">declarationClass</a></code>&nbsp;in interface&nbsp;<code><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</code></dd>
+<dd><code><a href="TypeResolver.html#acceptsDeclaration(java.lang.Object)">acceptsDeclaration</a></code>&nbsp;in interface&nbsp;<code><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</code></dd>
 </dl>
 </section>
 </li>

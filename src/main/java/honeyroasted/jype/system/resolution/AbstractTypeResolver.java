@@ -28,12 +28,12 @@ public abstract class AbstractTypeResolver<T, K> implements TypeResolver<T, K> {
     }
 
     @Override
-    public Class<T> typeClass() {
-        return this.typeClass;
+    public boolean acceptsType(Object type) {
+        return this.typeClass.isInstance(type);
     }
 
     @Override
-    public Class<K> declarationClass() {
-        return this.declarationClass;
+    public boolean acceptsDeclaration(Object type) {
+        return this.declarationClass.isInstance(type);
     }
 }

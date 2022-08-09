@@ -29,7 +29,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
     }
 
     @Override
-    public honeyroasted.jype.Type resolve(Type type) {
+    public TypeConcrete resolve(Type type) {
         return of(type);
     }
 
