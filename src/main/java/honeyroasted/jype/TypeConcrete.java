@@ -5,6 +5,9 @@ import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -31,11 +34,26 @@ public interface TypeConcrete extends Type {
         return (T) mapper.apply(this);
     }
 
+    default void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
+        if (!seen.contains(this)) {
+            seen.add(this);
+            consumer.accept(this);
+        }
+    }
+
+    default void forEach(Consumer<TypeConcrete> consumer) {
+        forEach(consumer, new HashSet<>());
+    }
+
     /**
      * @return True if this is a proper type, that is, it contains no {@link TypeParameter}s, false otherwise.
      */
     default boolean isProperType() {
         return true;
+    }
+
+    default boolean isWildcard() {
+        return false;
     }
 
     /**

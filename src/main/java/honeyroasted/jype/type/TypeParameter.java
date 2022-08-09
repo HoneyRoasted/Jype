@@ -4,6 +4,9 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
+import java.util.Set;
+import java.util.function.Consumer;
+
 public class TypeParameter extends AbstractType implements TypeConcrete {
     private String name;
     private TypeConcrete bound;
@@ -91,6 +94,15 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     @Override
     public void lock() {
         this.mutable = false;
+    }
+
+    @Override
+    public void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
+        if (!seen.contains(this)) {
+            seen.add(this);
+            consumer.accept(this);
+            this.bound.forEach(consumer, seen);
+        }
     }
 
     @Override

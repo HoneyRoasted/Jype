@@ -10,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,15 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeAnd(this.typeSystem(), this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
+    }
+
+    @Override
+    public void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
+        if (!seen.contains(this)) {
+            seen.add(this);
+            consumer.accept(this);
+            this.types().forEach(t -> t.forEach(consumer, seen));
+        }
     }
 
     @Override

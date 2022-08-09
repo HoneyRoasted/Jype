@@ -6,6 +6,8 @@ import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class TypeOut extends AbstractType implements TypeConcrete {
@@ -61,8 +63,22 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
+        if (!seen.contains(this)) {
+            seen.add(this);
+            consumer.accept(this);
+            this.bound.forEach(consumer, seen);
+        }
+    }
+
+    @Override
     public boolean isProperType() {
         return this.bound.isProperType();
+    }
+
+    @Override
+    public boolean isWildcard() {
+        return true;
     }
 
     @Override

@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -147,6 +149,15 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(new TypeClass(this.typeSystem(), this.declaration,
                 this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
+    }
+
+    @Override
+    public void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
+        if (!seen.contains(this)) {
+            seen.add(this);
+            consumer.accept(this);
+            this.arguments.forEach(t -> t.forEach(consumer, seen));
+        }
     }
 
     @Override
