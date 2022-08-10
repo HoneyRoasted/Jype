@@ -4,16 +4,30 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.Objects;
-
+/**
+ * This class represents a type that does not exist, or is absent. All instances of this class are equivalent to {@code void}.
+ * {@code void} is not assignable to any type, and there are no types assignable to {@code void}. Equality between
+ * references to this class is determined by instance equality.
+ */
 public class TypeNone extends AbstractType implements TypeConcrete {
     private String name;
-    private String descriptor;
 
-    public TypeNone(TypeSystem system, String name, String descriptor) {
+    /**
+     * Creates a new {@link TypeNone}
+     *
+     * @param system The {@link TypeSystem} this {@link TypeNone} is a member of
+     * @param name   The name of this {@link TypeNone}
+     */
+    public TypeNone(TypeSystem system, String name) {
         super(system);
         this.name = name;
-        this.descriptor = descriptor;
+    }
+
+    /**
+     * @return The name of this {@link TypeNone}
+     */
+    public String name() {
+        return this.name;
     }
 
     @Override
@@ -42,18 +56,13 @@ public class TypeNone extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean equalsExactly(TypeConcrete o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TypeNone typeNone = (TypeNone) o;
-
-        return Objects.equals(name, typeNone.name);
+    public boolean equalsExactly(TypeConcrete other) {
+        return this == other;
     }
 
     @Override
     public int hashCodeExactly() {
-        return name != null ? name.hashCode() : 0;
+        return System.identityHashCode(this);
     }
 
 }

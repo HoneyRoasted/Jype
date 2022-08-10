@@ -66,7 +66,11 @@ loadScripts(document, 'script');</script>
  to <a href="honeyroasted/jype/TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)"><code>TypeConcrete.equalsExactly(TypeConcrete)</code></a> and <a href="honeyroasted/jype/TypeConcrete.html#hashCodeExactly()"><code>TypeConcrete.hashCodeExactly()</code></a>.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This is a utility class that handles common code for implementations of <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>, including holding a
+ reference to the <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and a <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>, as well as providing default implementations of
+ <a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsType(java.lang.Object)"><code>TypeResolver.acceptsType(Object)</code></a> and <a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsDeclaration(java.lang.Object)"><code>TypeResolver.acceptsDeclaration(Object)</code></a>.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.html" title="interface in honeyroasted.jype.system.solver.erasure">ErasureConstraint</a></div>
@@ -81,72 +85,104 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/solver/inference/InferenceConstraint.html" title="interface in honeyroasted.jype.system.solver.inference">InferenceConstraint</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">This class represents the Namespace of a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java reflection objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link"><code>Type</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="type parameter in SimpleTypeCache">K</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="type parameter in SimpleTypeCache">K</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class is a simple implementation of a <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">This interface represents any type in the Java type system.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents an intersection type.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents an array type.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Represents a cache of <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s used by a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a parameterized, concrete type of some object, such as Integer, List&lt;String&gt;, etc.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">This interface represents a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> in the Java type system which is not a declaration.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab3"><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeConstraint.Bound.Kind</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab3"><a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.Kind.html" title="enum class in honeyroasted.jype.system.solver">TypeConstraint.Bound.Kind</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab4"><a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a declared type.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a wildcard type of the form <code>? super T</code>.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java language model objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link"><code>TypeMirror</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link"><code>DeclaredType</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a type that does not exist, or is absent.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents the null type.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a union type.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a wildcard type of the form <code>? extends T</code>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a type parameter.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This class represents a <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> that isn't defined in a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Represents a primitive type.</div>
+</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">K</a>&gt;</div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">This interface represents a type resolver capable of transforming some object into a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeSolution.html" title="class in honeyroasted.jype.system.solver">TypeSolution</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="honeyroasted/jype/system/solver/TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></div>
@@ -172,7 +208,9 @@ loadScripts(document, 'script');</script>
 <div class="block">This is a utility class used by <a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeTokenTypeResolver</code></a> to facilitate easy creation of <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from source code.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the utility class <a href="honeyroasted/jype/system/TypeToken.html" title="class in honeyroasted.jype.system"><code>TypeToken</code></a>.</div>
+</div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab4"><a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></div>

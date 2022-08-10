@@ -6,9 +6,9 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.cache.SimpleTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.resolution.ReflectionTypeResolver;
-import honeyroasted.jype.system.resolution.SequentialTypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.SequentialTypeResolver;
 import honeyroasted.jype.system.resolution.TypeMirrorTypeResolver;
-import honeyroasted.jype.system.resolution.TypeResolutionStrategy;
+import honeyroasted.jype.system.resolution.TypeResolver;
 import honeyroasted.jype.system.resolution.TypeTokenTypeResolver;
 import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeSolution;
@@ -25,9 +25,11 @@ import honeyroasted.jype.type.TypePrimitive;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * This class represents a type system, along with a {@link TypeCache}. It allows creation of types from reflection
@@ -148,34 +150,34 @@ public class TypeSystem {
     private final Map<TypePrimitive, Class<?>> PRIM_TO_BOX;
     private final Map<Namespace, TypePrimitive> BOX_TO_PRIM;
 
-    private TypeResolutionStrategy strategy;
+    private TypeResolver<Object, Object> strategy;
 
     /**
-     * Creates a new {@link TypeSystem} with the default {@link TypeResolutionStrategy}.
+     * Creates a new {@link TypeSystem} with the default {@link TypeResolver}.
      */
     public TypeSystem() {
-        this(null);
+        this(t -> {
+            TypeCache<Object> shared = new SimpleTypeCache<>();
+
+            return new SequentialTypeResolver(List.of(
+                    new ReflectionTypeResolver(t, shared),
+                    new TypeMirrorTypeResolver(t, shared),
+                    new TypeTokenTypeResolver(t, shared)));
+        });
     }
 
     /**
-     * Creates a new {@link TypeSystem} with the given {@link TypeResolutionStrategy}.
+     * Creates a new {@link TypeSystem} with the given {@link TypeResolver}.
      *
-     * @param strategy The {@link TypeResolutionStrategy} to use
+     * @param strategy The {@link TypeResolver} to use
      */
-    public TypeSystem(TypeResolutionStrategy strategy) {
-        if (strategy == null) {
-            this.strategy = new SequentialTypeResolutionStrategy()
-                    .add(new ReflectionTypeResolver(this, new SimpleTypeCache<>()))
-                    .add(new TypeMirrorTypeResolver(this, new SimpleTypeCache<>()))
-                    .add(new TypeTokenTypeResolver(this, new SimpleTypeCache<>()));
-        } else {
-            this.strategy = strategy;
-        }
+    public TypeSystem(Function<TypeSystem, TypeResolver<?, ?>> strategy) {
+        this.strategy = (TypeResolver<Object, Object>) strategy.apply(this);
 
-        NONE = new TypeNone(this, "none", "V");
+        NONE = new TypeNone(this, "none");
         NULL = new TypeNull(this);
 
-        VOID = new TypeNone(this, "void", "V");
+        VOID = new TypeNone(this, "void");
         BOOLEAN = new TypePrimitive(this, boolean.class, "Z");
         BYTE = new TypePrimitive(this, byte.class, "B");
         SHORT = new TypePrimitive(this, short.class, "S");
@@ -185,17 +187,17 @@ public class TypeSystem {
         FLOAT = new TypePrimitive(this, float.class, "F");
         DOUBLE = new TypePrimitive(this, double.class, "D");
 
-        VOID_BOX = of(Void.class);
-        BOOLEAN_BOX = of(Boolean.class);
-        BYTE_BOX = of(Byte.class);
-        SHORT_BOX = of(Short.class);
-        CHAR_BOX = of(Character.class);
-        INT_BOX = of(Integer.class);
-        LONG_BOX = of(Long.class);
-        FLOAT_BOX = of(Float.class);
-        DOUBLE_BOX = of(Double.class);
-        OBJECT = of(Object.class);
-        OBJECT_CLASS = declaration(Object.class);
+        VOID_BOX = (TypeClass) of(Void.class).get();
+        BOOLEAN_BOX = (TypeClass) of(Boolean.class).get();
+        BYTE_BOX = (TypeClass) of(Byte.class).get();
+        SHORT_BOX = (TypeClass) of(Short.class).get();
+        CHAR_BOX = (TypeClass) of(Character.class).get();
+        INT_BOX = (TypeClass) of(Integer.class).get();
+        LONG_BOX = (TypeClass) of(Long.class).get();
+        FLOAT_BOX = (TypeClass) of(Float.class).get();
+        DOUBLE_BOX = (TypeClass) of(Double.class).get();
+        OBJECT = (TypeClass) of(Object.class).get();
+        OBJECT_CLASS = declaration(Object.class).get();
 
         ALL_PRIMITIVES = Set.of(BOOLEAN, BYTE, SHORT, CHAR, INT, LONG, FLOAT, DOUBLE);
 
@@ -231,7 +233,7 @@ public class TypeSystem {
      * Creates a new {@link TypeDeclaration} with the given {@link Namespace} and interface status.
      * It will be mutable until {@link Type#lock()} is called.
      *
-     * @param namespace The {@link Namespace}
+     * @param namespace   The {@link Namespace}
      * @param isInterface Whether the new {@link TypeDeclaration} is an interface
      * @return A mew {@link TypeDeclaration}
      */
@@ -266,9 +268,8 @@ public class TypeSystem {
      * with dimensions greater than {@code dims} if {@code element} is a {@link TypeArray}.
      *
      * @param element The array element
-     * @param dims The dimensions of the new array
+     * @param dims    The dimensions of the new array
      * @return A new {@link TypeArray}
-     *
      * @throws IllegalArgumentException if {@code dims < 1}
      */
     public TypeArray newArray(TypeConcrete element, int dims) {
@@ -288,7 +289,7 @@ public class TypeSystem {
      * {@link ForceResolveTypeSolver} may not work for all {@link TypeConcrete}s. It is however guaranteed to work
      * on type hierarchies with no unresolved {@link TypeParameter}s.
      *
-     * @param left The type to check if it can be assigned to {@code right}
+     * @param left  The type to check if it can be assigned to {@code right}
      * @param right The type to check if {@code left} can be assigned to it
      * @return true if {@code left} can be assigned to {@code right}
      */
@@ -316,28 +317,25 @@ public class TypeSystem {
     }
 
     /**
-     * Attempts to resolve a {@link TypeConcrete} from the given object. This method may fail if the
-     * {@link TypeResolutionStrategy} cannot resolve an object of the given type.
+     * Attempts to resolve a {@link TypeConcrete} from the given object.
      *
      * @param type The object to resolve to a {@link TypeConcrete}
-     * @return The resolved {@link TypeConcrete}
-     * @param <T> Type parameter to facilitate loose typing
-     *
+     * @param <T>  Type parameter to facilitate loose typing
+     * @return An {@link Optional} containing the resolved {@link TypeConcrete}, or empty if it could not be resolved
      * @throws ClassCastException if {@code T} is not the type of the result
      */
-    public <T extends TypeConcrete> T of(Object type) {
-        return (T) this.strategy.resolve(type);
+    public <T extends TypeConcrete> Optional<T> of(Object type) {
+        return Optional.ofNullable((T) this.strategy.resolve(type));
     }
 
     /**
-     * Attempts to resolve a {@link TypeDeclaration} from the given object. This method may fail if the
-     * {@link TypeResolutionStrategy} cannot resolve an object of the given type.
+     * Attempts to resolve a {@link TypeDeclaration} from the given object.
      *
      * @param type The object to resolve to a {@link TypeDeclaration}
-     * @return The resolved {@link TypeDeclaration}
+     * @return An {@link Optional} containing the resolved {@link TypeDeclaration}, or empty if it could not be resolved
      */
-    public TypeDeclaration declaration(Object type) {
-        return this.strategy.resolveDeclaration(type);
+    public Optional<TypeDeclaration> declaration(Object type) {
+        return Optional.ofNullable(this.strategy.resolveDeclaration(type));
     }
 
     /**
@@ -345,7 +343,7 @@ public class TypeSystem {
      *
      * @param type The {@link TypeConcrete} to unbox
      * @return An {@link Optional} contain the unboxed {@link TypePrimitive}, or an empty {@link Optional} if
-     *         {@code type} is not a one of the primitive boxing types
+     * {@code type} is not a one of the primitive boxing types
      */
     public Optional<TypePrimitive> unbox(TypeConcrete type) {
         return type instanceof TypeClass cls ? Optional.ofNullable(BOX_TO_PRIM.get(cls.declaration().namespace())) :
@@ -359,7 +357,7 @@ public class TypeSystem {
      * @return The boxing {@link TypeConcrete} for {@code type}
      */
     public TypeConcrete box(TypePrimitive type) {
-        return of(PRIM_TO_BOX.get(type));
+        return of(PRIM_TO_BOX.get(type)).get();
     }
 
 }

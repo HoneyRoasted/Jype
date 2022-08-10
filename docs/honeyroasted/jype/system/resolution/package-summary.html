@@ -88,19 +88,31 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color class-summary class-summary-tab2"><a href="AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;T,<wbr>K&gt;</div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last even-row-color class-summary class-summary-tab2">
+<div class="block">This is a utility class that handles common code for implementations of <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>, including holding a
+ reference to the <a href="../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and a <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>, as well as providing default implementations of
+ <a href="TypeResolver.html#acceptsType(java.lang.Object)"><code>TypeResolver.acceptsType(Object)</code></a> and <a href="TypeResolver.html#acceptsDeclaration(java.lang.Object)"><code>TypeResolver.acceptsDeclaration(Object)</code></a>.</div>
+</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">This is a <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java reflection objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link"><code>Type</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab2"><a href="SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></div>
 <div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
 <div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></div>
-<div class="col-last odd-row-color class-summary class-summary-tab2">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab1"><a href="TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab1">&nbsp;</div>
-<div class="col-first odd-row-color class-summary class-summary-tab1"><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;</div>
-<div class="col-last odd-row-color class-summary class-summary-tab1">&nbsp;</div>
-<div class="col-first even-row-color class-summary class-summary-tab2"><a href="TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></div>
-<div class="col-last even-row-color class-summary class-summary-tab2">&nbsp;</div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">This is a <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java language model objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link"><code>TypeMirror</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link"><code>DeclaredType</code></a>.</div>
+</div>
+<div class="col-first even-row-color class-summary class-summary-tab1"><a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;</div>
+<div class="col-last even-row-color class-summary class-summary-tab1">
+<div class="block">This interface represents a type resolver capable of transforming some object into a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>.</div>
+</div>
+<div class="col-first odd-row-color class-summary class-summary-tab2"><a href="TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></div>
+<div class="col-last odd-row-color class-summary class-summary-tab2">
+<div class="block">This is a <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the utility class <a href="../TypeToken.html" title="class in honeyroasted.jype.system"><code>TypeToken</code></a>.</div>
+</div>
 </div>
 </div>
 </div>

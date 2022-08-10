@@ -82,6 +82,10 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TypeDeclaration</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a></span></div>
+<div class="block">This class represents a declared type. That is, the actual declaration of a class or interface. It contains information
+ about the declaration's name, type parameters, and parents. Instantiations of objects are represented by <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a>.
+ Every <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> has a corresponding <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>, but a <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> may have infinite
+ possible <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a>s.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -96,13 +100,17 @@ implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.Namespace,boolean)" class="member-name-link">TypeDeclaration</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
  <a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;namespace,
  boolean&nbsp;isInterface)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> with no parents and no type parameters.</div>
+</div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.Namespace,java.util.List,java.util.List,boolean)" class="member-name-link">TypeDeclaration</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
  <a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;namespace,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a>&gt;&nbsp;parameters,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;&nbsp;parents,
  boolean&nbsp;isInterface)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a new <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -117,77 +125,80 @@ implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#directParent(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">directParent</a><wbr>(<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;parent)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalName()" class="member-name-link">internalName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;o)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInterface()" class="member-name-link">isInterface</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalName()" class="member-name-link">internalName</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInterface()" class="member-name-link">isInterface</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lock()" class="member-name-link">lock</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lock()" class="member-name-link">lock</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Locks this <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>, making it immutable.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#namespace()" class="member-name-link">namespace</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameters()" class="member-name-link">parameters</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#namespace()" class="member-name-link">namespace</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parents()" class="member-name-link">parents</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parameters()" class="member-name-link">parameters</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pathTo(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">pathTo</a><wbr>(<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;parent)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#parents()" class="member-name-link">parents</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#pathTo(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">pathTo</a><wbr>(<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;parent)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the inheritance path of <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>s needed to reach the given parent type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Generates the <a href="../TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine descriptor under the given
  <a href="../TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Generates the <a href="../TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s human-readable representation under the given
  <a href="../TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Generates the <a href="../TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine signature under the given
  <a href="../TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource</a><wbr>(<a href="../TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Generates the <a href="../TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s source representation under the given
  <a href="../TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withArgList(java.util.List)" class="member-name-link">withArgList</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;arguments)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withArguments(honeyroasted.jype.TypeConcrete...)" class="member-name-link">withArguments</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>...&nbsp;arguments)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withArgList(java.util.List)" class="member-name-link">withArgList</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;arguments)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Constructs a <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withArguments(honeyroasted.jype.TypeConcrete...)" class="member-name-link">withArguments</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>...&nbsp;arguments)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Constructs a <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+</div>
 </div>
 </div>
 </div>
@@ -213,6 +224,15 @@ implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a>&gt;&nbsp;parameters,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;&nbsp;parents,
  boolean&nbsp;isInterface)</span></div>
+<div class="block">Creates a new <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> is a member of</dd>
+<dd><code>namespace</code> - The <a href="../Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> representing the name of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+<dd><code>parameters</code> - The type parameters of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+<dd><code>parents</code> - The parents (whether superclass, or interfaces) of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+<dd><code>isInterface</code> - Whether this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> represents an interface declaration</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -221,6 +241,13 @@ implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeDeclaration</span><wbr><span class="parameters">(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
  <a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a>&nbsp;namespace,
  boolean&nbsp;isInterface)</span></div>
+<div class="block">Creates a new <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> with no parents and no type parameters.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> is a member of</dd>
+<dd><code>namespace</code> - The <a href="../Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> representing the name of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+<dd><code>isInterface</code> - Whether this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> represents an interface declaration</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -232,63 +259,115 @@ implements <a href="../Type.html" title="interface in honeyroasted.jype">Type</a
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="directParent(honeyroasted.jype.type.TypeDeclaration)">
-<h3>directParent</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;</span>&nbsp;<span class="element-name">directParent</span><wbr><span class="parameters">(<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;parent)</span></div>
-</section>
-</li>
-<li>
 <section class="detail" id="pathTo(honeyroasted.jype.type.TypeDeclaration)">
 <h3>pathTo</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&gt;&gt;</span>&nbsp;<span class="element-name">pathTo</span><wbr><span class="parameters">(<a href="TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&nbsp;parent)</span></div>
+<div class="block">Returns the inheritance path of <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>s needed to reach the given parent type. For example, if
+ this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> represents the type <code>Integer</code>, the inheritance path necessary to reach
+ <code>Object</code> is:
+ <ul>
+ <li><code>Integer</code></li>
+ <li><code>Number</code></li>
+ <li><code>Object</code></li>
+ </ul></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>parent</code> - The parent <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> to construct an inheritance path to</dd>
+<dt>Returns:</dt>
+<dd>An optional containing the inheritance path, or an empty optional if one could not be found</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="withArgList(java.util.List)">
 <h3>withArgList</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">withArgList</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;arguments)</span></div>
+<div class="block">Constructs a <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>arguments</code> - The arguments for the new <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a></dd>
+<dt>Returns:</dt>
+<dd>A new <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If the number of arguments is not 0 or equal to the number of parameters in this
+                                  <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="withArguments(honeyroasted.jype.TypeConcrete...)">
 <h3>withArguments</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></span>&nbsp;<span class="element-name">withArguments</span><wbr><span class="parameters">(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>...&nbsp;arguments)</span></div>
+<div class="block">Constructs a <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>arguments</code> - The arguments for the new <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a></dd>
+<dt>Returns:</dt>
+<dd>A new <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a></dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - If the number of arguments is not 0 or equal to the number of parameters in this
+                                  <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="namespace()">
 <h3>namespace</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../Namespace.html" title="class in honeyroasted.jype">Namespace</a></span>&nbsp;<span class="element-name">namespace</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="../Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="parameters()">
 <h3>parameters</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a>&gt;</span>&nbsp;<span class="element-name">parameters</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The type parameters of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="parents()">
 <h3>parents</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a>&gt;</span>&nbsp;<span class="element-name">parents</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The parents of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>, including the superclass and interfaces</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="name()">
 <h3>name</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">name</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The fully qualified name of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="internalName()">
 <h3>internalName</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">internalName</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The java virtual machine internal name of this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="isInterface()">
 <h3>isInterface</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isInterface</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>True if this <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> represents an interface, false otherwise</dd>
+</dl>
 </section>
 </li>
 <li>

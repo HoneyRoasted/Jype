@@ -109,6 +109,17 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Flattens this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, simplifying its structure.</div>
 </div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hashCodeExactly()" class="member-name-link">hashCodeExactly</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -118,9 +129,12 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isProperType()" class="member-name-link">isProperType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(java.util.function.Function)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>,<wbr><a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;mapper)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isWildcard()" class="member-name-link">isWildcard</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(java.util.function.Function)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>,<wbr><a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;mapper)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Applies a mapper function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
 </div>
 </div>
@@ -144,7 +158,7 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <section class="detail" id="map(java.util.function.Function)">
 <h3>map</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>,<wbr><a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;mapper)</span></div>
-<div class="block">Applies a mapper function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any. Notably this method
+<div class="block">Applies a mapper function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any. This method
  does not walk the <i>entire</i> <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> tree. Specifically, <a href="type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> will
  not apply the mapper to its corresponding <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>
  will not apply the mapper to its corresponding bound. This is to prevent infinite recursion, and to
@@ -152,11 +166,61 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>T</code> - The return <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>. This may cause a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassCastException.html" title="class or interface in java.lang" class="external-link"><code>ClassCastException</code></a> if the mapper does not produce
-           a type of <code>T</code> for the highest level <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a></dd>
+               a type of <code>T</code> for the highest level <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a></dd>
 <dt>Parameters:</dt>
 <dd><code>mapper</code> - The mapper function to apply</dd>
 <dt>Returns:</dt>
 <dd>A (possibly new) <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> constructed by mapping this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="forEach(java.util.function.Consumer,java.util.Set)">
+<h3>forEach</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">forEach</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</span></div>
+<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any. This method does not
+ walk the <i>entire</i> <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> tree. Specifically, <a href="type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> will not apply the consumer to its
+ corresponding <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>. However, this method will apply the consumer to each <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>
+ and its bounds (unlike <a href="#map(java.util.function.Function)"><code>map(Function)</code></a>). To prevent recursion if the bounds are circular,
+ a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> containing the visited types is passed to this function and each child invocation of the function,
+ ensuring any instance of a type is visited only once.
+ <p>
+ Note that this method is primarily called within the <a href="#forEach(java.util.function.Consumer,java.util.Set)"><code>forEach(Consumer, Set)</code></a> implementation
+ to pass the visited type set to children <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s. For general purpose use, <a href="#forEach(java.util.function.Consumer)"><code>forEach(Consumer)</code></a>
+ should be used.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>consumer</code> - The action to apply to each <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
+<dd><code>seen</code> - The set of types already visited</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="#forEach(java.util.function.Consumer)"><code>forEach(Consumer)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="forEach(java.util.function.Consumer)">
+<h3>forEach</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">forEach</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer)</span></div>
+<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any. This method does not
+ walk the <i>entire</i> <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> tree. Specifically, <a href="type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> will not apply the consumer to its
+ corresponding <a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>. However, this method will apply the consumer to each <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>
+ and its bounds (unlike <a href="#map(java.util.function.Function)"><code>map(Function)</code></a>).
+ <p>
+ This is equivalent to calling <code>forEach(consumer, new HashSet&lt;&gt;())</code>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>consumer</code> - The action to apply to each <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="#forEach(java.util.function.Consumer,java.util.Set)"><code>forEach(Consumer, Set)</code></a></li>
+</ul>
+</dd>
 </dl>
 </section>
 </li>
@@ -168,6 +232,12 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <dt>Returns:</dt>
 <dd>True if this is a proper type, that is, it contains no <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s, false otherwise.</dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="isWildcard()">
+<h3>isWildcard</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isWildcard</span>()</div>
 </section>
 </li>
 <li>

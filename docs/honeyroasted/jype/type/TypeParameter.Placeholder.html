@@ -89,6 +89,9 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public static class </span><span class="element-name type-name-label">TypeParameter.Placeholder</span>
 <span class="extends-implements">extends <a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></span></div>
+<div class="block">This class represents a <a href="TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> that isn't defined in a <a href="TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>. It can be used
+ as an inference variable. For example, the diamond operator in <code>new ArrayList&lt;&gt;()</code> would be represented
+ as a <a href="TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> with one argument, a TypeParameter.Placeholder.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -109,9 +112,15 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">Placeholder</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">Placeholder</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a> with no bound</div>
+</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">Placeholder</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
  <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;bound)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a new <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a></div>
+</div>
 </div>
 </section>
 </li>
@@ -155,7 +164,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.TypeParameter">Methods inherited from class&nbsp;honeyroasted.jype.type.<a href="TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></h3>
-<code><a href="TypeParameter.html#bound()">bound</a>, <a href="TypeParameter.html#equalsExactly(honeyroasted.jype.TypeConcrete)">equalsExactly</a>, <a href="TypeParameter.html#hashCodeExactly()">hashCodeExactly</a>, <a href="TypeParameter.html#identity()">identity</a>, <a href="TypeParameter.html#isProperType()">isProperType</a>, <a href="TypeParameter.html#lock()">lock</a>, <a href="TypeParameter.html#name()">name</a>, <a href="TypeParameter.html#setBound(honeyroasted.jype.TypeConcrete)">setBound</a>, <a href="TypeParameter.html#setName(java.lang.String)">setName</a>, <a href="TypeParameter.html#toString()">toString</a></code></div>
+<code><a href="TypeParameter.html#bound()">bound</a>, <a href="TypeParameter.html#equalsExactly(honeyroasted.jype.TypeConcrete)">equalsExactly</a>, <a href="TypeParameter.html#forEach(java.util.function.Consumer,java.util.Set)">forEach</a>, <a href="TypeParameter.html#hashCodeExactly()">hashCodeExactly</a>, <a href="TypeParameter.html#identity()">identity</a>, <a href="TypeParameter.html#isProperType()">isProperType</a>, <a href="TypeParameter.html#lock()">lock</a>, <a href="TypeParameter.html#name()">name</a>, <a href="TypeParameter.html#setBound(honeyroasted.jype.TypeConcrete)">setBound</a>, <a href="TypeParameter.html#setName(java.lang.String)">setName</a>, <a href="TypeParameter.html#toString()">toString</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.AbstractType">Methods inherited from class&nbsp;honeyroasted.jype.type.<a href="AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></h3>
 <code><a href="AbstractType.html#equals(java.lang.Object)">equals</a>, <a href="AbstractType.html#hashCode()">hashCode</a>, <a href="AbstractType.html#typeSystem()">typeSystem</a></code></div>
@@ -167,7 +176,7 @@ loadScripts(document, 'script');</script>
 <code><a href="../Type.html#typeSystem()">typeSystem</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.TypeConcrete">Methods inherited from interface&nbsp;honeyroasted.jype.<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></h3>
-<code><a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
+<code><a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#forEach(java.util.function.Consumer)">forEach</a>, <a href="../TypeConcrete.html#isWildcard()">isWildcard</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
 </section>
 </li>
 </ul>
@@ -184,6 +193,23 @@ loadScripts(document, 'script');</script>
 <h3>Placeholder</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Placeholder</span><wbr><span class="parameters">(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
  <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;bound)</span></div>
+<div class="block">Creates a new <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a> is a member of</dd>
+<dd><code>bound</code> - The bound of this <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem)">
+<h3>Placeholder</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Placeholder</span><wbr><span class="parameters">(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</span></div>
+<div class="block">Creates a new <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a> with no bound</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a> is a member of</dd>
+</dl>
 </section>
 </li>
 </ul>

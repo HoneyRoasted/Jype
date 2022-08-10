@@ -114,8 +114,8 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             context.put(type, system.OBJECT);
             return TypeVerification.success(constraint);
         } else if (type instanceof TypeClass cls) {
-          context.put(cls, cls.declaration().withArguments());
-          return TypeVerification.success(constraint);
+            context.put(cls, cls.declaration().withArguments());
+            return TypeVerification.success(constraint);
         } else if (type instanceof TypeParameter parameter) {
             TypeVerification bound = erase(new ErasureConstraint.Erasure(parameter.bound()), context);
             if (bound.success()) {
@@ -210,7 +210,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             List<TypeConcrete> parents = new ArrayList<>();
             parents.add(this.system.box(prim));
             this.system.ALL_PRIMITIVES.stream().filter(t -> this.system.isAssignableTo(prim, t))
-                            .forEach(parents::add);
+                    .forEach(parents::add);
             return parents;
         } else if (type instanceof TypeClass cls) {
             return cls.declaration().parents().stream().map(t -> t.declaration().withArguments()).toList();

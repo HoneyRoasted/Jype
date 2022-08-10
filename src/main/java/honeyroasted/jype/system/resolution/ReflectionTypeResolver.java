@@ -22,9 +22,19 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
+/**
+ * This is a {@link TypeResolver} for resolving {@link honeyroasted.jype.Type}s from the java reflection objects
+ * {@link Type} and {@link Class}.
+ */
 public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
 
-    public ReflectionTypeResolver(TypeSystem typeSystem, TypeCache<Type> cache) {
+    /**
+     * Creates a new {@link ReflectionTypeResolver}.
+     *
+     * @param typeSystem The {@link TypeSystem} this {@link ReflectionTypeResolver} is resolving types for
+     * @param cache      The {@link TypeCache} this {@link ReflectionTypeResolver} is using to cache resolved types
+     */
+    public ReflectionTypeResolver(TypeSystem typeSystem, TypeCache<? super Type> cache) {
         super(typeSystem, cache, Type.class, Class.class);
     }
 
@@ -38,7 +48,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
         return declaration(type);
     }
 
-    public TypeConcrete of(java.lang.reflect.Type type) {
+    private TypeConcrete of(java.lang.reflect.Type type) {
         if (type instanceof Class clazz) {
             if (clazz.isPrimitive()) {
                 if (clazz == void.class) {
@@ -108,8 +118,8 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
         or.lock();
         return or;
     }
-    
-    public TypeDeclaration declaration(Class<?> clazz) {
+
+    private TypeDeclaration declaration(Class<?> clazz) {
         if (clazz.isPrimitive() || clazz.isArray()) {
             throw new IllegalArgumentException("Cannot get declaration from primitive or array type");
         }
@@ -147,5 +157,5 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
             return type;
         }
     }
-    
+
 }

@@ -15,16 +15,33 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents a union type. That is, a type which is at least one of its children types. Given a union type
+ * O, and some other type T, the following generally holds true:
+ * <ul>
+ * <li>T is assignable to O if, for <i>any</i> type O<sub>i</sub> in O, T is assignable to O<sub>i</sub></li>
+ * <li>O is assignable to T if, for <i>each</i> type O<sub>i</sub> in O, O<sub>i</sub> is assignable to T</li>
+ * </ul>
+ */
 public class TypeOr extends AbstractType implements TypeConcrete {
     private Set<TypeConcrete> types;
 
+    /**
+     * Creates a new {@link TypeOr}
+     *
+     * @param system The {@link TypeSystem} this {@link TypeOr} is a member of
+     * @param types  The set of {@link TypeConcrete}s that this represents the union of
+     */
     public TypeOr(TypeSystem system, Set<TypeConcrete> types) {
         super(system);
         this.types = types;
     }
 
-    public TypeOr(TypeSystem system) {
-        this(system, new LinkedHashSet<>());
+    /**
+     * @return The set of {@link TypeConcrete}s that this {@link TypeOr} is an union of
+     */
+    public Set<TypeConcrete> types() {
+        return types;
     }
 
     @Override
@@ -71,10 +88,6 @@ public class TypeOr extends AbstractType implements TypeConcrete {
     @Override
     public boolean isProperType() {
         return this.types.stream().allMatch(TypeConcrete::isProperType);
-    }
-
-    public Set<TypeConcrete> types() {
-        return types;
     }
 
     @Override

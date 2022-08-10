@@ -63,9 +63,15 @@ loadScripts(document, 'script');</script>
 <div class="block">A constructor to provide the reference to a <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a>.</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="type parameter in AbstractTypeResolver">K</a>&gt; - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache,java.lang.Class,java.lang.Class)" class="member-name-link">AbstractTypeResolver(TypeSystem, TypeCache&lt;T&gt;, Class&lt;T&gt;, Class&lt;K&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This is a utility class that handles common code for implementations of <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>, including holding a
+ reference to the <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> and a <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>, as well as providing default implementations of
+ <a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsType(java.lang.Object)"><code>TypeResolver.acceptsType(Object)</code></a> and <a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsDeclaration(java.lang.Object)"><code>TypeResolver.acceptsDeclaration(Object)</code></a>.</div>
+</dd>
+<dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache,java.lang.Class,java.lang.Class)" class="member-name-link">AbstractTypeResolver(TypeSystem, TypeCache&lt;? super T&gt;, Class&lt;T&gt;, Class&lt;K&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>AbstractTypeResolver</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a> - Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.Class...)" class="member-name-link">AbstractTypeSolver(TypeSystem, Class&lt;? extends TypeConstraint&gt;...)</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a></dt>
@@ -74,17 +80,23 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration(Object)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration(Object)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
+<dd>
+<div class="block">Determines if this <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#acceptsType(java.lang.Object)" class="member-name-link">acceptsType(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html#acceptsType(java.lang.Object)" class="member-name-link">acceptsType(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#acceptsType(java.lang.Object)" class="member-name-link">acceptsType(Object)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Determines if this <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#acceptsType(java.lang.Object)" class="member-name-link">acceptsType(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html#add(honeyroasted.jype.system.resolution.TypeResolver)" class="member-name-link">add(TypeResolver&lt;?, ?&gt;)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#ALL_PRIMITIVES" class="member-name-link">ALL_PRIMITIVES</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
@@ -93,7 +105,10 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#and()" class="member-name-link">and()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#argument(honeyroasted.jype.type.TypeParameter)" class="member-name-link">argument(TypeParameter)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Attempts to fetch a <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> argument from this <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> by its corresponding
+ <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> instance.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#arguments()" class="member-name-link">arguments()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -146,12 +161,12 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#cache()" class="member-name-link">cache()</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#cache()" class="member-name-link">cache()</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html#cache(K,honeyroasted.jype.Type)" class="member-name-link">cache(K, Type)</a> - Method in class honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/TypeCache.html#cache(K,honeyroasted.jype.Type)" class="member-name-link">cache(K, Type)</a> - Method in interface honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Caches a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> at the given key.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/force/ForceConstraint.Capture.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">Capture(TypeConcrete, TypeConcrete)</a> - Constructor for record class honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceConstraint.Capture.html" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.Capture</a></dt>
 <dd>
 <div class="block">Creates an instance of a <code>Capture</code> record class.</div>
@@ -201,14 +216,10 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="honeyroasted/jype/type/TypeClass.html#declaration()" class="member-name-link">declaration()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#declaration(java.lang.Class)" class="member-name-link">declaration(Class&lt;?&gt;)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#declaration(java.lang.Object)" class="member-name-link">declaration(Object)</a> - Method in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">Attempts to resolve a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#declaration(javax.lang.model.type.DeclaredType)" class="member-name-link">declaration(DeclaredType)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeString.Context.html#DECLARATION" class="member-name-link">DECLARATION</a> - Enum constant in enum class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a></dt>
 <dd>
 <div class="block">Represents a DECLARATION context for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> conversion.</div>
@@ -224,10 +235,6 @@ loadScripts(document, 'script');</script>
 <div class="block">Represents the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> representation of a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> as it would be formatted in a Java Virtual
  Machine Descriptor.</div>
 </dd>
-<dt><a href="honeyroasted/jype/type/TypeClass.html#directParent(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">directParent(TypeDeclaration)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeDeclaration.html#directParent(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">directParent(TypeDeclaration)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#DOUBLE" class="member-name-link">DOUBLE</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">The <code>double</code> primitive type.</div>
@@ -362,6 +369,28 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">ForceResolveTypeSolver(TypeSystem)</a> - Constructor for class honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/TypeConcrete.html#forEach(java.util.function.Consumer)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
+<dd>
+<div class="block">Applies a consumer function over this <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeAnd.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeArray.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeClass.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeIn.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOr.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOut.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/TypeConcrete.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
+<dd>
+<div class="block">Applies a consumer function over this <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:G">G</h2>
 <dl class="index">
@@ -370,7 +399,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html#get(K,java.lang.Class)" class="member-name-link">get(K, Class&lt;T&gt;)</a> - Method in class honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/TypeCache.html#get(K,java.lang.Class)" class="member-name-link">get(K, Class&lt;T&gt;)</a> - Method in interface honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Retrieves a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> from this <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#GLOBAL" class="member-name-link">GLOBAL</a> - Static variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">The global type system, for when constructing your own <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> is unnecessary</div>
@@ -381,7 +412,9 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html#has(K,java.lang.Class)" class="member-name-link">has(K, Class&lt;? extends Type&gt;)</a> - Method in class honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/TypeCache.html#has(K,java.lang.Class)" class="member-name-link">has(K, Class&lt;? extends Type&gt;)</a> - Method in interface honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Tests whether this <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a> has a cached <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> for the given key and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#hashCode()" class="member-name-link">hashCode()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.Erasure.html#hashCode()" class="member-name-link">hashCode()</a> - Method in record class honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.Erasure.html" title="class in honeyroasted.jype.system.solver.erasure">ErasureConstraint.Erasure</a></dt>
@@ -449,16 +482,12 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/force/package-summary.html">honeyroasted.jype.system.solver.force</a> - package honeyroasted.jype.system.solver.force</dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/inference/package-summary.html">honeyroasted.jype.system.solver.inference</a> - package honeyroasted.jype.system.solver.inference</dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a> - package honeyroasted.jype.type</dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#identity()" class="member-name-link">identity()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/solver/inference/InferenceConstraint.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver.inference">InferenceConstraint</a> - Interface in <a href="honeyroasted/jype/system/solver/inference/package-summary.html">honeyroasted.jype.system.solver.inference</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#INT" class="member-name-link">INT</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
@@ -495,6 +524,12 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#isProperType()" class="member-name-link">isProperType()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#isSuccessful()" class="member-name-link">isSuccessful()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeIn.html#isWildcard()" class="member-name-link">isWildcard()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeOut.html#isWildcard()" class="member-name-link">isWildcard()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/TypeConcrete.html#isWildcard()" class="member-name-link">isWildcard()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:K">K</h2>
@@ -560,6 +595,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeNone.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#namespace()" class="member-name-link">namespace()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
@@ -623,8 +660,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Attempts to resolve a <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#of(java.lang.reflect.Type)" class="member-name-link">of(Type)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#of(java.lang.String...)" class="member-name-link">of(String...)</a> - Static method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> from the given path.</div>
@@ -633,8 +668,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> corresponding to a source class from the Java annotation processing model.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#of(javax.lang.model.type.TypeMirror)" class="member-name-link">of(TypeMirror)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html#or()" class="member-name-link">or()</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -656,13 +689,23 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the value of the <code>parent</code> record component.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#parent(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">parent(TypeDeclaration)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns a new <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a>, created from this, relative to the given <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#parents()" class="member-name-link">parents()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#pathTo(honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">pathTo(TypeDeclaration)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns the inheritance path of <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>s needed to reach the given parent type.</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">Placeholder(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a> with no bound</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">Placeholder(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Placeholder</code></a></div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeContext.html#put(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">put(TypeConcrete, TypeConcrete)</a> - Method in class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -675,9 +718,14 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#reflectionClass()" class="member-name-link">reflectionClass()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a> - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">ReflectionTypeResolver(TypeSystem, TypeCache&lt;Type&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java reflection objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link"><code>Type</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+</dd>
+<dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">ReflectionTypeResolver(TypeSystem, TypeCache&lt;? super Type&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>ReflectionTypeResolver</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#relative(honeyroasted.jype.Namespace)" class="member-name-link">relative(Namespace)</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a> by appending the <code>other</code> to this <a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype"><code>Namespace</code></a></div>
@@ -692,28 +740,28 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#resolve(honeyroasted.jype.system.TypeToken)" class="member-name-link">resolve(TypeToken)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html#resolve(java.lang.Object)" class="member-name-link">resolve(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html#resolve(java.lang.Object)" class="member-name-link">resolve(Object)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a></dt>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html#resolve(java.lang.Object)" class="member-name-link">resolve(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#resolve(java.lang.reflect.Type)" class="member-name-link">resolve(Type)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#resolve(javax.lang.model.type.TypeMirror)" class="member-name-link">resolve(TypeMirror)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#resolve(T)" class="member-name-link">resolve(T)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Resolves a <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#resolveDeclaration(honeyroasted.jype.system.TypeToken)" class="member-name-link">resolveDeclaration(TypeToken)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html#resolveDeclaration(java.lang.Class)" class="member-name-link">resolveDeclaration(Class)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html#resolveDeclaration(java.lang.Object)" class="member-name-link">resolveDeclaration(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html#resolveDeclaration(java.lang.Object)" class="member-name-link">resolveDeclaration(Object)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a></dt>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html#resolveDeclaration(java.lang.Object)" class="member-name-link">resolveDeclaration(Object)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#resolveDeclaration(javax.lang.model.type.DeclaredType)" class="member-name-link">resolveDeclaration(DeclaredType)</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#resolveDeclaration(K)" class="member-name-link">resolveDeclaration(K)</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Resolves a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/force/ForceConstraint.Capture.html#right()" class="member-name-link">right()</a> - Method in record class honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceConstraint.Capture.html" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.Capture</a></dt>
 <dd>
 <div class="block">Returns the value of the <code>right</code> record component.</div>
@@ -725,14 +773,18 @@ loadScripts(document, 'script');</script>
 </dl>
 <h2 class="title" id="I:S">S</h2>
 <dl class="index">
-<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a> - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a> - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html#%3Cinit%3E()" class="member-name-link">SequentialTypeResolutionStrategy()</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolutionStrategy.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolutionStrategy</a></dt>
+<dt><a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html#%3Cinit%3E(java.util.List)" class="member-name-link">SequentialTypeResolver(List&lt;TypeResolver&lt;?, ?&gt;&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#setBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the bound of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#setName(java.lang.String)" class="member-name-link">setName(String)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Sets the name of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#SHORT" class="member-name-link">SHORT</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">The <code>short</code> primitive type.</div>
@@ -749,9 +801,17 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/Namespace.html#simpleName()" class="member-name-link">simpleName()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" class="type-name-link" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="type parameter in SimpleTypeCache">K</a>&gt; - Class in <a href="honeyroasted/jype/system/cache/package-summary.html">honeyroasted.jype.system.cache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class is a simple implementation of a <a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html#%3Cinit%3E()" class="member-name-link">SimpleTypeCache()</a> - Constructor for class honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache"><code>SimpleTypeCache</code></a> with no custom behavior.</div>
+</dd>
+<dt><a href="honeyroasted/jype/system/cache/SimpleTypeCache.html#%3Cinit%3E(java.util.function.Supplier)" class="member-name-link">SimpleTypeCache(Supplier&lt;Map&lt;K, Type&gt;&gt;)</a> - Constructor for class honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache"><code>SimpleTypeCache</code></a> with the given factory for creating key to type maps.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/erasure/ErasureTypeSolver.html#solve()" class="member-name-link">solve()</a> - Method in class honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure">ErasureTypeSolver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html#solve()" class="member-name-link">solve()</a> - Method in class honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></dt>
@@ -974,25 +1034,37 @@ loadScripts(document, 'script');</script>
 <div class="block">This interface represents any type in the Java type system.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeAnd</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeAnd.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">TypeAnd(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents an intersection type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.util.Set)" class="member-name-link">TypeAnd(TypeSystem, Set&lt;TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type"><code>TypeAnd</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeArray.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeArray</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents an array type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeArray.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeArray(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeArray.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete,int)" class="member-name-link">TypeArray(TypeSystem, TypeConcrete, int)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type"><code>TypeArray</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/cache/TypeCache.html" class="type-name-link" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="honeyroasted/jype/system/cache/TypeCache.html" title="type parameter in TypeCache">K</a>&gt; - Interface in <a href="honeyroasted/jype/system/cache/package-summary.html">honeyroasted.jype.system.cache</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Represents a cache of <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s used by a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeClass</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a parameterized, concrete type of some object, such as Integer, List&lt;String&gt;, etc.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.TypeDeclaration)" class="member-name-link">TypeClass(TypeSystem, TypeDeclaration)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> with no <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeClass.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.TypeDeclaration,java.util.List)" class="member-name-link">TypeClass(TypeSystem, TypeDeclaration, List&lt;TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type">TypeClass</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html" class="type-name-link" title="interface in honeyroasted.jype">TypeConcrete</a> - Interface in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
 <dd>
 <div class="block">This interface represents a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> in the Java type system which is not a declaration.</div>
@@ -1016,55 +1088,96 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/system/solver/TypeContext.html#%3Cinit%3E(java.util.Map)" class="member-name-link">TypeContext(Map&lt;TypeConcrete, TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" title="class in honeyroasted.jype.system.solver">TypeContext</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeDeclaration</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a declared type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.Namespace,boolean)" class="member-name-link">TypeDeclaration(TypeSystem, Namespace, boolean)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> with no parents and no type parameters.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.Namespace,java.util.List,java.util.List,boolean)" class="member-name-link">TypeDeclaration(TypeSystem, Namespace, List&lt;TypeParameter&gt;, List&lt;TypeClass&gt;, boolean)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeIn.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeIn</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a wildcard type of the form <code>? super T</code>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeIn.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeIn(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeIn.html" title="class in honeyroasted.jype.type"><code>TypeIn</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a> - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeMirrorTypeResolver(TypeSystem, TypeCache&lt;TypeMirror&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java language model objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link"><code>TypeMirror</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link"><code>DeclaredType</code></a>.</div>
+</dd>
+<dt><a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeMirrorTypeResolver(TypeSystem, TypeCache&lt;? super TypeMirror&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeMirrorTypeResolver</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeNone.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNone</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeNone.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String,java.lang.String)" class="member-name-link">TypeNone(TypeSystem, String, String)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a type that does not exist, or is absent.</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeNone.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String)" class="member-name-link">TypeNone(TypeSystem, String)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type"><code>TypeNone</code></a></div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeNull.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNull</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents the null type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeNull.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">TypeNull(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeNull.html" title="class in honeyroasted.jype.type"><code>TypeNull</code></a></div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeOr.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOr</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeOr.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">TypeOr(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a union type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeOr.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.util.Set)" class="member-name-link">TypeOr(TypeSystem, Set&lt;TypeConcrete&gt;)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type"><code>TypeOr</code></a></div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOut</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a wildcard type of the form <code>? extends T</code>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeOut(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a type parameter.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> with no name.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String)" class="member-name-link">TypeParameter(TypeSystem, String)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> with no bounds.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, String, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This class represents a <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> that isn't defined in a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html" class="type-name-link" title="class in honeyroasted.jype.type">TypePrimitive</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Represents a primitive type.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.Class,java.lang.String)" class="member-name-link">TypePrimitive(TypeSystem, Class&lt;?&gt;, String)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" class="type-name-link" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a> - Interface in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type"><code>TypePrimitive</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html" class="type-name-link" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">K</a>&gt; - Interface in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This interface represents a type resolver capable of transforming some object into a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#types()" class="member-name-link">types()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOr.html#types()" class="member-name-link">types()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></dt>
@@ -1093,8 +1206,6 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html#typeSystem()" class="member-name-link">typeSystem()</a> - Method in class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html#typeSystem()" class="member-name-link">typeSystem()</a> - Method in interface honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/AbstractType.html#typeSystem()" class="member-name-link">typeSystem()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#typeSystem()" class="member-name-link">typeSystem()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
@@ -1107,11 +1218,11 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#%3Cinit%3E()" class="member-name-link">TypeSystem()</a> - Constructor for class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
-<div class="block">Creates a new <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </dd>
-<dt><a href="honeyroasted/jype/system/TypeSystem.html#%3Cinit%3E(honeyroasted.jype.system.resolution.TypeResolutionStrategy)" class="member-name-link">TypeSystem(TypeResolutionStrategy)</a> - Constructor for class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
+<dt><a href="honeyroasted/jype/system/TypeSystem.html#%3Cinit%3E(java.util.function.Function)" class="member-name-link">TypeSystem(Function&lt;TypeSystem, TypeResolver&lt;?, ?&gt;&gt;)</a> - Constructor for class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
-<div class="block">Creates a new <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="honeyroasted/jype/system/resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/TypeToken.html" class="type-name-link" title="class in honeyroasted.jype.system">TypeToken</a>&lt;<a href="honeyroasted/jype/system/TypeToken.html" title="type parameter in TypeToken">A</a>&gt; - Class in <a href="honeyroasted/jype/system/package-summary.html">honeyroasted.jype.system</a></dt>
 <dd>
@@ -1120,9 +1231,13 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/system/TypeToken.html#%3Cinit%3E()" class="member-name-link">TypeToken()</a> - Constructor for class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeToken.html" title="class in honeyroasted.jype.system">TypeToken</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a> - Class in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeTokenTypeResolver(TypeSystem, TypeCache&lt;TypeToken&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">This is a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the utility class <a href="honeyroasted/jype/system/TypeToken.html" title="class in honeyroasted.jype.system"><code>TypeToken</code></a>.</div>
+</dd>
+<dt><a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeTokenTypeResolver(TypeSystem, TypeCache&lt;? super Type&gt;)</a> - Constructor for class honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeTokenTypeResolver</code></a>.</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeVerification</a> - Record Class in <a href="honeyroasted/jype/system/solver/package-summary.html">honeyroasted.jype.system.solver</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/solver/TypeVerification.html#%3Cinit%3E(honeyroasted.jype.system.solver.TypeConstraint,java.util.List,boolean)" class="member-name-link">TypeVerification(TypeConstraint, List&lt;TypeVerification&gt;, boolean)</a> - Constructor for record class honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" title="class in honeyroasted.jype.system.solver">TypeVerification</a></dt>
@@ -1190,9 +1305,13 @@ the order they are declared.</div>
 <dt><a href="honeyroasted/jype/system/solver/TypeConstraint.html#walk(java.util.function.Consumer)" class="member-name-link">walk(Consumer&lt;TypeConstraint&gt;)</a> - Method in interface honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#withArgList(java.util.List)" class="member-name-link">withArgList(List&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructs a <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#withArguments(honeyroasted.jype.TypeConcrete...)" class="member-name-link">withArguments(TypeConcrete...)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Constructs a <a href="honeyroasted/jype/type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> from this <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> and the given <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> arguments.</div>
+</dd>
 </dl>
 <a href="#I:A">A</a>&nbsp;<a href="#I:B">B</a>&nbsp;<a href="#I:C">C</a>&nbsp;<a href="#I:D">D</a>&nbsp;<a href="#I:E">E</a>&nbsp;<a href="#I:F">F</a>&nbsp;<a href="#I:G">G</a>&nbsp;<a href="#I:H">H</a>&nbsp;<a href="#I:I">I</a>&nbsp;<a href="#I:K">K</a>&nbsp;<a href="#I:L">L</a>&nbsp;<a href="#I:M">M</a>&nbsp;<a href="#I:N">N</a>&nbsp;<a href="#I:O">O</a>&nbsp;<a href="#I:P">P</a>&nbsp;<a href="#I:R">R</a>&nbsp;<a href="#I:S">S</a>&nbsp;<a href="#I:T">T</a>&nbsp;<a href="#I:U">U</a>&nbsp;<a href="#I:V">V</a>&nbsp;<a href="#I:W">W</a>&nbsp;<br><a href="allclasses-index.html">All&nbsp;Classes&nbsp;and&nbsp;Interfaces</a><span class="vertical-separator">|</span><a href="allpackages-index.html">All&nbsp;Packages</a></main>
 </div>

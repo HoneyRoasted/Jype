@@ -35,7 +35,6 @@ public abstract class AbstractType implements TypeConcrete {
      *
      * @param obj The object to test equality against
      * @return True if this is equal to {@code obj}, false otherwise
-     *
      * @see TypeConcrete#equalsExactly(TypeConcrete)
      */
     @Override
@@ -53,7 +52,6 @@ public abstract class AbstractType implements TypeConcrete {
      * component type.
      *
      * @return A hash code representing this type
-     *
      * @see TypeConcrete#hashCodeExactly()
      */
     @Override

@@ -18,22 +18,37 @@ import java.util.function.Function;
 public interface TypeConcrete extends Type {
 
     /**
-     * Applies a mapper function over this {@link Type} and its child {@link Type}s, if any. Notably this method
+     * Applies a mapper function over this {@link Type} and its child {@link Type}s, if any. This method
      * does not walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will
      * not apply the mapper to its corresponding {@link TypeDeclaration} and {@link TypeParameter}
      * will not apply the mapper to its corresponding bound. This is to prevent infinite recursion, and to
      * keep instances of {@link TypeParameter} the same.
      *
      * @param mapper The mapper function to apply
+     * @param <T>    The return {@link Type}. This may cause a {@link ClassCastException} if the mapper does not produce
+     *               a type of {@code T} for the highest level {@link Type}
      * @return A (possibly new) {@link Type} constructed by mapping this {@link Type} and its child {@link Type}s
-     *
-     * @param <T> The return {@link Type}. This may cause a {@link ClassCastException} if the mapper does not produce
-     *           a type of {@code T} for the highest level {@link Type}
      */
     default <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
         return (T) mapper.apply(this);
     }
 
+    /**
+     * Applies a consumer function over this {@link Type} and its child {@link Type}s, if any. This method does not
+     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will not apply the consumer to its
+     * corresponding {@link TypeDeclaration}. However, this method will apply the consumer to each {@link TypeParameter}
+     * and its bounds (unlike {@link TypeConcrete#map(Function)}). To prevent recursion if the bounds are circular,
+     * a {@link Set} containing the visited types is passed to this function and each child invocation of the function,
+     * ensuring any instance of a type is visited only once.
+     * <p>
+     * Note that this method is primarily called within the {@link TypeConcrete#forEach(Consumer, Set)} implementation
+     * to pass the visited type set to children {@link Type}s. For general purpose use, {@link TypeConcrete#forEach(Consumer)}
+     * should be used.
+     *
+     * @param consumer The action to apply to each {@link TypeConcrete}
+     * @param seen     The set of types already visited
+     * @see TypeConcrete#forEach(Consumer)
+     */
     default void forEach(Consumer<TypeConcrete> consumer, Set<TypeConcrete> seen) {
         if (!seen.contains(this)) {
             seen.add(this);
@@ -41,6 +56,17 @@ public interface TypeConcrete extends Type {
         }
     }
 
+    /**
+     * Applies a consumer function over this {@link Type} and its child {@link Type}s, if any. This method does not
+     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will not apply the consumer to its
+     * corresponding {@link TypeDeclaration}. However, this method will apply the consumer to each {@link TypeParameter}
+     * and its bounds (unlike {@link TypeConcrete#map(Function)}).
+     * <p>
+     * This is equivalent to calling {@code forEach(consumer, new HashSet<>())}.
+     *
+     * @param consumer The action to apply to each {@link TypeConcrete}
+     * @see TypeConcrete#forEach(Consumer, Set)
+     */
     default void forEach(Consumer<TypeConcrete> consumer) {
         forEach(consumer, new HashSet<>());
     }

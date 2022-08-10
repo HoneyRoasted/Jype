@@ -22,10 +22,10 @@ public class TypeString {
     /**
      * Creates a new {@link TypeString}.
      *
-     * @param value The {@link String} value
+     * @param value      The {@link String} value
      * @param successful Whether conversion to a {@link String} was successful
-     * @param type The {@link Class} of the relevant {@link Type} that is being converted
-     * @param target The target {@link String} representation
+     * @param type       The {@link Class} of the relevant {@link Type} that is being converted
+     * @param target     The target {@link String} representation
      */
     public TypeString(String value, boolean successful, Class<?> type, Target target) {
         this.value = value;
@@ -37,8 +37,8 @@ public class TypeString {
     /**
      * Creates and returns a successful {@link TypeString}.
      *
-     * @param value The {@link String value}
-     * @param type The {@link Class} of the relevant {@link Type} that is being converted
+     * @param value  The {@link String value}
+     * @param type   The {@link Class} of the relevant {@link Type} that is being converted
      * @param target The target {@link String} representation
      * @return a new {@link TypeString}
      */
@@ -49,7 +49,7 @@ public class TypeString {
     /**
      * Creates and returns an unsuccessful {@link TypeString}.
      *
-     * @param type The {@link Class} of the relevant {@link Type} that is being converted
+     * @param type   The {@link Class} of the relevant {@link Type} that is being converted
      * @param target The target {@link String} representation
      * @return a new {@link TypeString}
      */
@@ -137,5 +137,5 @@ public class TypeString {
          */
         READABLE
     }
-    
+
 }

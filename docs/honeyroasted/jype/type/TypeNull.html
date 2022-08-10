@@ -84,6 +84,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TypeNull</span>
 <span class="extends-implements">extends <a href="AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a>
 implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span></div>
+<div class="block">This class represents the null type. The only expression with this type is <code>null</code>, and the null type
+ is assignable to any reference type. However, no type (other than the null type itself) is assignable to the
+ null type. All instances of this class are considered equal to each other.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -96,7 +99,9 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">TypeNull</a><wbr>(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="TypeNull.html" title="class in honeyroasted.jype.type"><code>TypeNull</code></a></div>
+</div>
 </div>
 </section>
 </li>
@@ -163,7 +168,7 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <code><a href="../Type.html#lock()">lock</a>, <a href="../Type.html#typeSystem()">typeSystem</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.TypeConcrete">Methods inherited from interface&nbsp;honeyroasted.jype.<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></h3>
-<code><a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#isProperType()">isProperType</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
+<code><a href="../TypeConcrete.html#flatten()">flatten</a>, <a href="../TypeConcrete.html#forEach(java.util.function.Consumer)">forEach</a>, <a href="../TypeConcrete.html#forEach(java.util.function.Consumer,java.util.Set)">forEach</a>, <a href="../TypeConcrete.html#isProperType()">isProperType</a>, <a href="../TypeConcrete.html#isWildcard()">isWildcard</a>, <a href="../TypeConcrete.html#map(java.util.function.Function)">map</a></code></div>
 </section>
 </li>
 </ul>
@@ -179,6 +184,11 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem)">
 <h3>TypeNull</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeNull</span><wbr><span class="parameters">(<a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem)</span></div>
+<div class="block">Creates a new <a href="TypeNull.html" title="class in honeyroasted.jype.type"><code>TypeNull</code></a></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>typeSystem</code> - The <a href="../system/TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeNull.html" title="class in honeyroasted.jype.type"><code>TypeNull</code></a> is a member of</dd>
+</dl>
 </section>
 </li>
 </ul>

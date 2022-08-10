@@ -1,5 +1,6 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
@@ -7,39 +8,80 @@ import honeyroasted.jype.system.TypeSystem;
 import java.util.Set;
 import java.util.function.Consumer;
 
+/**
+ * This class represents a type parameter. It can be used interchangeably as a formal type parameter in
+ * {@link TypeDeclaration} or as a reference to a type parameter. Notably, unlike most other {@link Type}s,
+ * equality between references of {@link TypeParameter} is based on instance equality. If a {@link TypeParameter}
+ * is being used as a reference to a formal type parameter, it should be <i>the same instance</i> of this class
+ * being used in both places.
+ */
 public class TypeParameter extends AbstractType implements TypeConcrete {
     private String name;
     private TypeConcrete bound;
 
     private boolean mutable = true;
 
+    /**
+     * Creates a new {@link TypeParameter}.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeParameter} is a member of
+     * @param name   The name of this {@link TypeParameter}
+     * @param bound  The bound of this {@link TypeParameter}
+     */
     public TypeParameter(TypeSystem system, String name, TypeConcrete bound) {
         super(system);
         this.name = name;
         this.bound = bound.flatten();
     }
 
+    /**
+     * Creates a new {@link TypeParameter} with no name.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeParameter} is a member of
+     * @param bound  The bound of this {@link TypeParameter}
+     */
     public TypeParameter(TypeSystem system, TypeConcrete bound) {
         this(system, "<UNKNOWN_NAME>", bound);
     }
 
+    /**
+     * Creates a new {@link TypeParameter} with no bounds.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeParameter} is a member of
+     * @param name   The name of this {@link TypeParameter}
+     */
     public TypeParameter(TypeSystem system, String name) {
-        super(system);
-        this.name = name;
+        this(system, name, system.OBJECT);
     }
 
+    /**
+     * @return The name of this {@link TypeParameter}
+     */
     public String name() {
         return this.name;
     }
 
+    /**
+     * @return The bound of this {@link TypeParameter}
+     */
     public TypeConcrete bound() {
         return this.bound;
     }
 
+    /**
+     * @return A {@link String} representing this specific {@link TypeParameter} instance, for use in differentiating
+     * {@link TypeParameter}s with the same name
+     */
     public String identity() {
         return Integer.toHexString(System.identityHashCode(this));
     }
 
+    /**
+     * Sets the bound of this {@link TypeParameter} if it is currently mutable
+     *
+     * @param bound The new bound
+     * @throws IllegalStateException if this {@link TypeParameter} is no longer mutable
+     */
     public void setBound(TypeConcrete bound) {
         if (this.mutable) {
             this.bound = bound;
@@ -48,6 +90,12 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         }
     }
 
+    /**
+     * Sets the name of this {@link TypeParameter} if it is currently mutable
+     *
+     * @param name The new name
+     * @throws IllegalStateException if this {@link TypeParameter} is no longer mutable
+     */
     public void setName(String name) {
         if (this.mutable) {
             this.name = name;
@@ -125,10 +173,30 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         return this.name + "-" + identity();
     }
 
+    /**
+     * This class represents a {@link TypeParameter} that isn't defined in a {@link TypeDeclaration}. It can be used
+     * as an inference variable. For example, the diamond operator in {@code new ArrayList<>()} would be represented
+     * as a {@link TypeClass} with one argument, a TypeParameter.Placeholder.
+     */
     public static class Placeholder extends TypeParameter {
 
+        /**
+         * Creates a new {@link Placeholder}
+         *
+         * @param system The {@link TypeSystem} this {@link Placeholder} is a member of
+         * @param bound  The bound of this {@link Placeholder}
+         */
         public Placeholder(TypeSystem system, TypeConcrete bound) {
             super(system, "#typevar", bound);
+        }
+
+        /**
+         * Creates a new {@link Placeholder} with no bound
+         *
+         * @param system The {@link TypeSystem} this {@link Placeholder} is a member of
+         */
+        public Placeholder(TypeSystem system) {
+            this(system, system.OBJECT);
         }
 
         @Override

@@ -14,18 +14,31 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents an intersection type. That is, a type which is every one of its child types. Given an intersection
+ * type A, and some other type T, the following generally holds true:
+ * <ul>
+ * <li>T is assignable to A if, for <i>each</i> type A<sub>i</sub> in A, T is assignable to A<sub>i</sub> </li>
+ * <li>A is assignable to T if, for <i>any</i> type A<sub>i</sub> in A, A<sub>i</sub> is assignable to T</li>
+ * </ul>
+ */
 public class TypeAnd extends AbstractType implements TypeConcrete {
     private Set<TypeConcrete> types;
 
+    /**
+     * Creates a new {@link TypeAnd}.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeAnd} is a member of
+     * @param types  The set of {@link TypeConcrete}s that this represents the intersection of
+     */
     public TypeAnd(TypeSystem system, Set<TypeConcrete> types) {
         super(system);
         this.types = types;
     }
 
-    public TypeAnd(TypeSystem system) {
-        this(system, new LinkedHashSet<>());
-    }
-
+    /**
+     * @return The set of {@link TypeConcrete}s that this {@link TypeAnd} is an intersection of
+     */
     public Set<TypeConcrete> types() {
         return types;
     }

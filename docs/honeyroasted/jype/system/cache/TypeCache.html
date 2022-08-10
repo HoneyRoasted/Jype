@@ -72,11 +72,19 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>K</code> - The key type supported by this <a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a></dd>
+</dl>
+<dl class="notes">
 <dt>All Known Implementing Classes:</dt>
 <dd><code><a href="SimpleTypeCache.html" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">TypeCache&lt;K&gt;</span></div>
+<div class="block">Represents a cache of <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s used by a <a href="../resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>. Notably, <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s cached here should
+ not be discarded if a reference to them is still held during their construction. This prevents circular type
+ hierarchies from causing a stack overflow. In practice, this means implementations of this class will either
+ have to maintain all the <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s in memory or make use of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ref/WeakReference.html" title="class or interface in java.lang.ref" class="external-link"><code>WeakReference</code></a>s.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -85,7 +93,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -94,15 +102,21 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache(K,honeyroasted.jype.Type)" class="member-name-link">cache</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Caches a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> at the given key.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(K,java.lang.Class)" class="member-name-link">get</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#has(K,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Retrieves a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> from this <a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#has(K,java.lang.Class)" class="member-name-link">has</a><wbr>(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Tests whether this <a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a> has a cached <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> for the given key and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+</div>
 </div>
 </div>
 </div>
@@ -122,6 +136,16 @@ loadScripts(document, 'script');</script>
 <h3 id="get(java.lang.Object,java.lang.Class)">get</h3>
 <div class="member-signature"><span class="type-parameters">&lt;T extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;T&gt;&nbsp;clazz)</span></div>
+<div class="block">Retrieves a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> from this <a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a>.</div>
+<dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - The type of the <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a></dd>
+<dt>Parameters:</dt>
+<dd><code>key</code> - The key of the <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a></dd>
+<dd><code>clazz</code> - The class of the <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a></dd>
+<dt>Returns:</dt>
+<dd>The cached <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>, or null if it was not found</dd>
+</dl>
 </section>
 </li>
 <li>
@@ -129,13 +153,29 @@ loadScripts(document, 'script');</script>
 <h3 id="cache(java.lang.Object,honeyroasted.jype.Type)">cache</h3>
 <div class="member-signature"><span class="return-type"><a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&gt;</span>&nbsp;<span class="element-name">cache</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&nbsp;type)</span></div>
+<div class="block">Caches a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> at the given key.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>key</code> - The key to cache at</dd>
+<dd><code>type</code> - The <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> to cache</dd>
+<dt>Returns:</dt>
+<dd>this, for method chaining</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="has(K,java.lang.Class)">
 <h3 id="has(java.lang.Object,java.lang.Class)">has</h3>
-<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">has</span><wbr><span class="parameters">(<a href="TypeCache.html" title="type parameter in TypeCache">K</a>&nbsp;key,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="../../Type.html" title="interface in honeyroasted.jype">Type</a>&gt;&nbsp;clazz)</span></div>
+<div class="block">Tests whether this <a href="TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a> has a cached <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> for the given key and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link"><code>Class</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>key</code> - The key to test</dd>
+<dd><code>clazz</code> - The class to test</dd>
+<dt>Returns:</dt>
+<dd>True if a mapping exists, false otherwise</dd>
+</dl>
 </section>
 </li>
 </ul>

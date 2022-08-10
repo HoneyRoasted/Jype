@@ -4,7 +4,18 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
+/**
+ * This class represents the null type. The only expression with this type is {@code null}, and the null type
+ * is assignable to any reference type. However, no type (other than the null type itself) is assignable to the
+ * null type. All instances of this class are considered equal to each other.
+ */
 public class TypeNull extends AbstractType implements TypeConcrete {
+
+    /**
+     * Creates a new {@link TypeNull}
+     *
+     * @param typeSystem The {@link TypeSystem} this {@link TypeNull} is a member of
+     */
     public TypeNull(TypeSystem typeSystem) {
         super(typeSystem);
     }

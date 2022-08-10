@@ -225,11 +225,11 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">TypeSystem</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.resolution.TypeResolutionStrategy)" class="member-name-link">TypeSystem</a><wbr>(<a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a>&nbsp;strategy)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.function.Function)" class="member-name-link">TypeSystem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </div>
 </div>
 </section>
@@ -250,7 +250,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This is a utility method to box a <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type"><code>TypePrimitive</code></a> into a <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaration(java.lang.Object)" class="member-name-link">declaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Attempts to resolve a <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object.</div>
@@ -293,7 +293,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Creates a new <a href="../type/TypeClass.html" title="class in honeyroasted.jype.type"><code>TypeClass</code></a> with the given <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;<br>T</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#of(java.lang.Object)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Attempts to resolve a <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object.</div>
@@ -501,17 +501,17 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;()">
 <h3>TypeSystem</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span>()</div>
-<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.resolution.TypeResolutionStrategy)">
+<section class="detail" id="&lt;init&gt;(java.util.function.Function)">
 <h3>TypeSystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution">TypeResolutionStrategy</a>&nbsp;strategy)</span></div>
-<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a>.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</span></div>
+<div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>strategy</code> - The <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a> to use</dd>
+<dd><code>strategy</code> - The <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> to use</dd>
 </dl>
 </section>
 </li>
@@ -634,16 +634,15 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="of(java.lang.Object)">
 <h3>of</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
-<div class="block">Attempts to resolve a <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object. This method may fail if the
- <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a> cannot resolve an object of the given type.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+<div class="block">Attempts to resolve a <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object.</div>
 <dl class="notes">
 <dt>Type Parameters:</dt>
 <dd><code>T</code> - Type parameter to facilitate loose typing</dd>
 <dt>Parameters:</dt>
 <dd><code>type</code> - The object to resolve to a <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
 <dt>Returns:</dt>
-<dd>The resolved <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
+<dd>An <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> containing the resolved <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, or empty if it could not be resolved</dd>
 <dt>Throws:</dt>
 <dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ClassCastException.html" title="class or interface in java.lang" class="external-link">ClassCastException</a></code> - if <code>T</code> is not the type of the result</dd>
 </dl>
@@ -652,14 +651,13 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="declaration(java.lang.Object)">
 <h3>declaration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
-<div class="block">Attempts to resolve a <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object. This method may fail if the
- <a href="resolution/TypeResolutionStrategy.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolutionStrategy</code></a> cannot resolve an object of the given type.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a>&gt;</span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+<div class="block">Attempts to resolve a <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>type</code> - The object to resolve to a <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
 <dt>Returns:</dt>
-<dd>The resolved <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a></dd>
+<dd>An <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> containing the resolved <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>, or empty if it could not be resolved</dd>
 </dl>
 </section>
 </li>
@@ -673,7 +671,7 @@ loadScripts(document, 'script');</script>
 <dd><code>type</code> - The <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> to unbox</dd>
 <dt>Returns:</dt>
 <dd>An <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> contain the unboxed <a href="../type/TypePrimitive.html" title="class in honeyroasted.jype.type"><code>TypePrimitive</code></a>, or an empty <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> if
-         <code>type</code> is not a one of the primitive boxing types</dd>
+ <code>type</code> is not a one of the primitive boxing types</dd>
 </dl>
 </section>
 </li>

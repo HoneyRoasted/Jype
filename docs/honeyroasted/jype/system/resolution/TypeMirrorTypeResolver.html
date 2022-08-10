@@ -83,6 +83,8 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TypeMirrorTypeResolver</span>
 <span class="extends-implements">extends <a href="AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&gt;</span></div>
+<div class="block">This is a <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> for resolving <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s from the java language model objects
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link"><code>TypeMirror</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link"><code>DeclaredType</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -95,8 +97,10 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)" class="member-name-link">TypeMirrorTypeResolver</a><wbr>(<a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem,
- <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&gt;&nbsp;cache)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+ <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&gt;&nbsp;cache)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeMirrorTypeResolver</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -111,18 +115,16 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaration(javax.lang.model.type.DeclaredType)" class="member-name-link">declaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;declared)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#of(javax.lang.model.type.TypeMirror)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolve(javax.lang.model.type.TypeMirror)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resolves a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolveDeclaration(javax.lang.model.type.DeclaredType)" class="member-name-link">resolveDeclaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Resolves a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+</div>
 </div>
 </div>
 </div>
@@ -147,7 +149,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.cache.TypeCache)">
 <h3>TypeMirrorTypeResolver</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeMirrorTypeResolver</span><wbr><span class="parameters">(<a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;typeSystem,
- <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&gt;&nbsp;cache)</span></div>
+ <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;? super <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&gt;&nbsp;cache)</span></div>
+<div class="block">Creates a new <a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeMirrorTypeResolver</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>typeSystem</code> - The <a href="../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> this <a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeMirrorTypeResolver</code></a> is resolving types for</dd>
+<dd><code>cache</code> - The <a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a> this <a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeMirrorTypeResolver</code></a> is using to cache resolved types</dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -162,24 +170,28 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolve(javax.lang.model.type.TypeMirror)">
 <h3>resolve</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="TypeResolver.html#resolve(T)">TypeResolver</a></code></span></div>
+<div class="block">Resolves a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to resolve a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from</dd>
+<dt>Returns:</dt>
+<dd>The resolved <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, or null if it could not be resolved</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="resolveDeclaration(javax.lang.model.type.DeclaredType)">
 <h3>resolveDeclaration</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">resolveDeclaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="of(javax.lang.model.type.TypeMirror)">
-<h3>of</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/TypeMirror.html" title="class or interface in javax.lang.model.type" class="external-link">TypeMirror</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="declaration(javax.lang.model.type.DeclaredType)">
-<h3>declaration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">declaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.compiler/javax/lang/model/type/DeclaredType.html" title="class or interface in javax.lang.model.type" class="external-link">DeclaredType</a>&nbsp;declared)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="TypeResolver.html#resolveDeclaration(K)">TypeResolver</a></code></span></div>
+<div class="block">Resolves a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to resolve a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from</dd>
+<dt>Returns:</dt>
+<dd>The resolved <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>, or null if it could not be resolved</dd>
+</dl>
 </section>
 </li>
 </ul>

@@ -15,7 +15,6 @@ public interface Type {
      *
      * @param context The context under which this {@link Type} is being converted to a {@link String}
      * @return The {@link TypeString} representation of this {@link Type}'s signature
-     *
      * @see TypeString.Context
      */
     TypeString toSignature(TypeString.Context context);
@@ -27,7 +26,6 @@ public interface Type {
      *
      * @param context The context under which this {@link Type} is being converted to a {@link String}
      * @return The {@link TypeString} representation of this {@link Type}'s descriptor
-     *
      * @see TypeString.Context
      */
     TypeString toDescriptor(TypeString.Context context);
@@ -39,7 +37,6 @@ public interface Type {
      *
      * @param context The context under which this {@link Type} is being converted to a {@link String}
      * @return The {@link TypeString} representation of this {@link Type}'s source
-     *
      * @see TypeString.Context
      */
     TypeString toSource(TypeString.Context context);
@@ -51,7 +48,6 @@ public interface Type {
      *
      * @param context The context under which this {@link Type} is being converted to a {@link String}
      * @return The {@link TypeString} representation of this {@link Type}'s source
-     *
      * @see TypeString.Context
      */
     TypeString toReadable(TypeString.Context context);
@@ -66,6 +62,7 @@ public interface Type {
      * of compound types such as {@link TypeAnd}. Since {@link Type} hierarchies can contain circular references, it
      * may be necessary to instantiate {@link Type}s, build their values, and then lock them to maintain immutability.
      */
-    default void lock() {}
+    default void lock() {
+    }
 
 }

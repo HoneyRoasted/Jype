@@ -10,14 +10,32 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * This class represents a wildcard type of the form {@code ? super T}. Given a wildcard W of the form ? super W', and
+ * some other type T, the following generally holds true:
+ * <ul>
+ * <li>T is assignable to W if T is assignable to W'</li>
+ * <li>W is assignable to T if T is java.lang.Object</li>
+ * </ul>
+ * Note that wildcards of the form {@code ? extends T} are represented by {@link TypeOut}.
+ */
 public class TypeIn extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 
+    /**
+     * Creates a new {@link TypeIn}.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeIn} is a member of
+     * @param bound  The bound of this {@link TypeIn}
+     */
     public TypeIn(TypeSystem system, TypeConcrete bound) {
         super(system);
         this.bound = bound;
     }
 
+    /**
+     * @return The bound of this {@link TypeIn}
+     */
     public TypeConcrete bound() {
         return bound;
     }

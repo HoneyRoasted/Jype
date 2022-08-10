@@ -23,7 +23,7 @@ public class Namespace {
     /**
      * Creates a new {@link Namespace} with the given path, and the number of elements that make up the simple name.
      *
-     * @param path The path
+     * @param path       The path
      * @param simpleName The number of elements in the simple name
      */
     public Namespace(List<String> path, int simpleName) {
@@ -45,7 +45,7 @@ public class Namespace {
      * Creates a new {@link Namespace} from the given path and the number of elements that make up the simple name.
      *
      * @param simpleName The number of elements in the simple name
-     * @param path The path
+     * @param path       The path
      * @return A new {@link Namespace}
      */
     public static Namespace of(int simpleName, String... path) {
@@ -76,7 +76,7 @@ public class Namespace {
 
         TypeElement current = type;
         while ((current.getEnclosingElement().getKind().isInterface() || current.getEnclosingElement().getKind().isClass()) &&
-            current.getEnclosingElement() instanceof TypeElement element) {
+                current.getEnclosingElement() instanceof TypeElement element) {
             name.insert(0, current.getSimpleName().toString() + ((name.length() == 0) ? "" : "$"));
             current = element;
         }

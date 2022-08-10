@@ -16,6 +16,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents a parameterized, concrete type of some object, such as Integer, List&lt;String&gt;, etc.
+ * Given some two parameterized types, C and T, the following generally holds true:
+ * <ul>
+ * <li>C is assignable to T if T is a super class/interface of C and C and T have compatible type arguments</li>
+ * <li>Each argument C<sub>i</sub> is compatible with an argument T<sub>i</sub> if they are equal, or if capture conversion succeeds</li>
+ * </ul>
+ */
 public class TypeClass extends AbstractType implements TypeConcrete {
     private TypeDeclaration declaration;
     private List<TypeConcrete> arguments;
@@ -23,25 +31,51 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     private Map<TypeParameter, TypeConcrete> argMap = new LinkedHashMap<>();
     private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
 
+    /**
+     * Creates a new {@link TypeClass}.
+     *
+     * @param system      The {@link TypeSystem} this {@link TypeClass} is a member of
+     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeClass}
+     * @param arguments   The {@link TypeConcrete} arguments for this {@link TypeClass}
+     */
     public TypeClass(TypeSystem system, TypeDeclaration declaration, List<TypeConcrete> arguments) {
         super(system);
         this.declaration = declaration;
         this.arguments = arguments;
     }
 
+    /**
+     * Creates a new {@link TypeClass} with no {@link TypeConcrete} arguments.
+     *
+     * @param system      The {@link TypeSystem} this {@link TypeClass} is a member of
+     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeClass}
+     */
     public TypeClass(TypeSystem system, TypeDeclaration declaration) {
         this(system, declaration, new ArrayList<>());
     }
 
-
+    /**
+     * @return The {@link TypeDeclaration} corresponding to this {@link TypeClass}
+     */
     public TypeDeclaration declaration() {
         return this.declaration;
     }
 
+    /**
+     * @return The {@link TypeConcrete} arguments of this {@link TypeClass}
+     */
     public List<TypeConcrete> arguments() {
         return this.arguments;
     }
 
+    /**
+     * Attempts to fetch a {@link TypeConcrete} argument from this {@link TypeClass} by its corresponding
+     * {@link TypeParameter} instance.
+     *
+     * @param parameter The {@link TypeParameter} to get the corresponding argument for
+     * @return An optional containing the corresponding argument, or an empty optional if no
+     * corresponding argument was found
+     */
     public Optional<TypeConcrete> argument(TypeParameter parameter) {
         return Optional.ofNullable(this.argMap.computeIfAbsent(parameter, key ->
                 this.declaration.parameters().stream().filter(t -> t.equals(key)).findFirst().map(tp -> {
@@ -51,6 +85,17 @@ public class TypeClass extends AbstractType implements TypeConcrete {
                 }).orElse(null)));
     }
 
+    /**
+     * Returns a new {@link TypeClass}, created from this, relative to the given {@link TypeDeclaration}. For example,
+     * if this {@link TypeClass} represents the type {@code ArrayList<Integer>}, calling this method with the
+     * {@link TypeDeclaration} for {@code List} will produce a {@link TypeClass} representing
+     * {@code List<Integer>}. This example is a trivial case where the type parameters of {@link ArrayList}
+     * are the same, and in the same order, as its parent {@link List}, but in cases where the type
+     * parameters don't map directly, this method is useful (and necessary for assignability checking).
+     *
+     * @param parent The {@link TypeDeclaration} for the resulting {@link TypeClass}
+     * @return A relative {@link TypeClass}, or an empty {@link Optional} if no valid mapping could be found
+     */
     public Optional<TypeClass> parent(TypeDeclaration parent) {
         return Optional.ofNullable(this.parentMap.computeIfAbsent(parent, key -> this.declaration.pathTo(parent).map(path -> {
             TypeClass current = this;
@@ -67,21 +112,22 @@ public class TypeClass extends AbstractType implements TypeConcrete {
         }).orElse(null)));
     }
 
-    public Optional<TypeClass> directParent(TypeDeclaration parent) {
-        return this.declaration.directParent(parent).map(typeParent -> {
-            TypeClass result = new TypeClass(this.typeSystem(), parent);
-            for (TypeConcrete arg : typeParent.arguments()) {
-                result.arguments().add(arg.map(t -> {
-                    if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
-                        return this.argument(ref).get();
+    private Optional<TypeClass> directParent(TypeDeclaration parent) {
+        return this.declaration.parents().stream().filter(t -> t.declaration().equals(parent))
+                .findFirst().map(typeParent -> {
+                    TypeClass result = new TypeClass(this.typeSystem(), parent);
+                    for (TypeConcrete arg : typeParent.arguments()) {
+                        result.arguments().add(arg.map(t -> {
+                            if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
+                                return this.argument(ref).get();
+                            }
+                            return t;
+                        }));
                     }
-                    return t;
-                }));
-            }
 
-            result.lock();
-            return result;
-        });
+                    result.lock();
+                    return result;
+                });
     }
 
     @Override

@@ -28,9 +28,19 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This is a {@link TypeResolver} for resolving {@link honeyroasted.jype.Type}s from the java language model objects
+ * {@link TypeMirror} and {@link DeclaredType}.
+ */
 public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, DeclaredType> {
-    
-    public TypeMirrorTypeResolver(TypeSystem typeSystem, TypeCache<TypeMirror> cache) {
+
+    /**
+     * Creates a new {@link TypeMirrorTypeResolver}.
+     *
+     * @param typeSystem The {@link TypeSystem} this {@link TypeMirrorTypeResolver} is resolving types for
+     * @param cache      The {@link TypeCache} this {@link TypeMirrorTypeResolver} is using to cache resolved types
+     */
+    public TypeMirrorTypeResolver(TypeSystem typeSystem, TypeCache<? super TypeMirror> cache) {
         super(typeSystem, cache, TypeMirror.class, DeclaredType.class);
     }
 
@@ -44,7 +54,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
         return declaration(type);
     }
 
-    public TypeConcrete of(TypeMirror type) {
+    private TypeConcrete of(TypeMirror type) {
         if (type.getKind().isPrimitive() && type instanceof PrimitiveType primitiveType) {
             return switch (primitiveType.getKind()) {
                 case BOOLEAN -> this.typeSystem().BOOLEAN;
@@ -89,7 +99,6 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
         } else if (type.getKind() == TypeKind.INTERSECTION && type instanceof IntersectionType intersectionType) {
             return and(intersectionType.getBounds());
         } else if (type.getKind() == TypeKind.DECLARED && type instanceof DeclaredType declared && declared.asElement() instanceof TypeElement) {
-            Namespace namespace = namespace(declared);
             if (declared.getTypeArguments().isEmpty()) {
                 if (this.cache().has(declared, TypeClass.class)) {
                     return this.cache().get(declared, TypeClass.class);
@@ -117,7 +126,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
         }
     }
 
-    public TypeDeclaration declaration(DeclaredType declared) {
+    private TypeDeclaration declaration(DeclaredType declared) {
         Element element = declared.asElement();
         if ((element.getKind().isClass() || element.getKind().isInterface()) && element instanceof TypeElement typeElement) {
 
@@ -179,5 +188,5 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
             throw new IllegalArgumentException("Unrecognized element type: " + element.getKind() + " for type: " + type);
         }
     }
-    
+
 }

@@ -72,11 +72,18 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Type Parameters:</dt>
+<dd><code>T</code> - The type of objects that can be transformed into <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s</dd>
+<dd><code>K</code> - The type of objects that can be transformed into <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>s</dd>
+</dl>
+<dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></code>, <code><a href="ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></code>, <code><a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></code>, <code><a href="TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></code></dd>
+<dd><code><a href="AbstractTypeResolver.html" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a></code>, <code><a href="ReflectionTypeResolver.html" title="class in honeyroasted.jype.system.resolution">ReflectionTypeResolver</a></code>, <code><a href="SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a></code>, <code><a href="TypeMirrorTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></code>, <code><a href="TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">TypeResolver&lt;T,<wbr>K&gt;</span></div>
+<div class="block">This interface represents a type resolver capable of transforming some object into a <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>. What method is
+ used to resolve <a href="../../Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s is left up to implementations.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -93,22 +100,24 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#acceptsDeclaration(java.lang.Object)" class="member-name-link">acceptsDeclaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Determines if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#acceptsType(java.lang.Object)" class="member-name-link">acceptsType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeResolver.html" title="type parameter in TypeResolver">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#cache()" class="member-name-link">cache</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolve(T)" class="member-name-link">resolve</a><wbr>(<a href="TypeResolver.html" title="type parameter in TypeResolver">T</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveDeclaration(K)" class="member-name-link">resolveDeclaration</a><wbr>(<a href="TypeResolver.html" title="type parameter in TypeResolver">K</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Determines if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolve(T)" class="member-name-link">resolve</a><wbr>(<a href="TypeResolver.html" title="type parameter in TypeResolver">T</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Resolves a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolveDeclaration(K)" class="member-name-link">resolveDeclaration</a><wbr>(<a href="TypeResolver.html" title="type parameter in TypeResolver">K</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Resolves a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+</div>
 </div>
 </div>
 </div>
@@ -127,36 +136,52 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="resolve(T)">
 <h3 id="resolve(java.lang.Object)">resolve</h3>
 <div class="member-signature"><span class="return-type"><a href="../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="TypeResolver.html" title="type parameter in TypeResolver">T</a>&nbsp;type)</span></div>
+<div class="block">Resolves a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to resolve a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from</dd>
+<dt>Returns:</dt>
+<dd>The resolved <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, or null if it could not be resolved</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="resolveDeclaration(K)">
 <h3 id="resolveDeclaration(java.lang.Object)">resolveDeclaration</h3>
 <div class="member-signature"><span class="return-type"><a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></span>&nbsp;<span class="element-name">resolveDeclaration</span><wbr><span class="parameters">(<a href="TypeResolver.html" title="type parameter in TypeResolver">K</a>&nbsp;type)</span></div>
-</section>
-</li>
-<li>
-<section class="detail" id="typeSystem()">
-<h3>typeSystem</h3>
-<div class="member-signature"><span class="return-type"><a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></span>&nbsp;<span class="element-name">typeSystem</span>()</div>
-</section>
-</li>
-<li>
-<section class="detail" id="cache()">
-<h3>cache</h3>
-<div class="member-signature"><span class="return-type"><a href="../cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="TypeResolver.html" title="type parameter in TypeResolver">T</a>&gt;</span>&nbsp;<span class="element-name">cache</span>()</div>
+<div class="block">Resolves a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to resolve a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from</dd>
+<dt>Returns:</dt>
+<dd>The resolved <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>, or null if it could not be resolved</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="acceptsType(java.lang.Object)">
 <h3>acceptsType</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">acceptsType</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+<div class="block">Determines if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to check</dd>
+<dt>Returns:</dt>
+<dd>True if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> accepts the given object</dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="acceptsDeclaration(java.lang.Object)">
 <h3>acceptsDeclaration</h3>
 <div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">acceptsDeclaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;type)</span></div>
+<div class="block">Determines if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> can resolve a <a href="../../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>type</code> - The object to check</dd>
+<dt>Returns:</dt>
+<dd>True if this <a href="TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> accepts the given object</dd>
+</dl>
 </section>
 </li>
 </ul>

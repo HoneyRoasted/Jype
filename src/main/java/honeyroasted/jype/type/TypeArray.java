@@ -10,30 +10,46 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * This class represents an array type. Given an array type A, with element E, and some other type T, the following generally holds true:
+ * <ul>
+ * <li>A is assignable to T if T is an array type with element Z, and E is assignable to Z</li>
+ * <li>T is assignable to A if T is an array type with element Z, and Z is assignable to E</li>
+ * </ul>
+ * <p>
+ * Note that the element of a {@link TypeArray} may be another {@link TypeArray} in the case of multidimensional arrays.
+ */
 public class TypeArray extends AbstractType implements TypeConcrete {
     private TypeConcrete element;
 
+    /**
+     * Creates a new {@link TypeArray}.
+     *
+     * @param system  The {@link TypeSystem} this {@link TypeArray} is a member of
+     * @param element The element type of this {@link TypeArray}
+     */
     public TypeArray(TypeSystem system, TypeConcrete element) {
         super(system);
         this.element = element;
     }
 
-    public TypeArray(TypeSystem system, TypeConcrete element, int depth) {
-        super(system);
-        for (int i = 0; i < depth - 1; i++) {
-            element = new TypeArray(system, element);
-        }
-        this.element = element;
-    }
-
+    /**
+     * @return The direct element of this {@link TypeArray}. It may be another {@link TypeArray} for multidimensional arrays
+     */
     public TypeConcrete element() {
         return this.element;
     }
 
+    /**
+     * @return The deep element of this {@link TypeArray}. Guaranteed to not be a {@link TypeArray}
+     */
     public TypeConcrete deepElement() {
         return this.element instanceof TypeArray arr ? arr.deepElement() : this.element;
     }
 
+    /**
+     * @return The depth (or number of dimensions) of this array
+     */
     public int depth() {
         return this.element instanceof TypeArray arr ? arr.depth() + 1 : 1;
     }

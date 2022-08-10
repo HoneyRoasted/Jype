@@ -39,7 +39,8 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
         }
     }
 
-    public static class Builder { private TypeConstraint constraint;
+    public static class Builder {
+        private TypeConstraint constraint;
         private List<TypeVerification> children = new ArrayList<>();
         private boolean success = true;
 

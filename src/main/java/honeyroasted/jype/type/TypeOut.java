@@ -10,6 +10,16 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+/**
+ * This class represents a wildcard type of the form {@code ? extends T}. Given a wildcard W of the form ? extends W',
+ * and some other type T, the following generally holds true:
+ * <ul>
+ * <li>T is never assignable to W</li>
+ * <li>W is assignable to T if W' is assignable to T</li>
+ * </ul>
+ * Note that the wildcard type of the form {@code ?} is equivalent to {@code ? extends Object}, and that
+ * wildcards of the form {@code ? super T} are represented by {@link TypeIn}.
+ */
 public class TypeOut extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 

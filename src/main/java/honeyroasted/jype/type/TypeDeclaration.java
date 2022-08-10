@@ -8,13 +8,17 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * This class represents a declared type. That is, the actual declaration of a class or interface. It contains information
+ * about the declaration's name, type parameters, and parents. Instantiations of objects are represented by {@link TypeClass}.
+ * Every {@link TypeClass} has a corresponding {@link TypeDeclaration}, but a {@link TypeDeclaration} may have infinite
+ * possible {@link TypeClass}s.
+ */
 public class TypeDeclaration implements Type {
     private TypeSystem typeSystem;
     private Namespace namespace;
@@ -22,8 +26,15 @@ public class TypeDeclaration implements Type {
     private List<TypeClass> parents;
     private boolean isInterface;
 
-    private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
-
+    /**
+     * Creates a new {@link TypeDeclaration}.
+     *
+     * @param system      The {@link TypeSystem} this {@link TypeDeclaration} is a member of
+     * @param namespace   The {@link Namespace} representing the name of this {@link TypeDeclaration}
+     * @param parameters  The type parameters of this {@link TypeDeclaration}
+     * @param parents     The parents (whether superclass, or interfaces) of this {@link TypeDeclaration}
+     * @param isInterface Whether this {@link TypeDeclaration} represents an interface declaration
+     */
     public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents, boolean isInterface) {
         this.typeSystem = system;
         this.namespace = namespace;
@@ -32,15 +43,30 @@ public class TypeDeclaration implements Type {
         this.isInterface = isInterface;
     }
 
+    /**
+     * Creates a new {@link TypeDeclaration} with no parents and no type parameters.
+     *
+     * @param system      The {@link TypeSystem} this {@link TypeDeclaration} is a member of
+     * @param namespace   The {@link Namespace} representing the name of this {@link TypeDeclaration}
+     * @param isInterface Whether this {@link TypeDeclaration} represents an interface declaration
+     */
     public TypeDeclaration(TypeSystem system, Namespace namespace, boolean isInterface) {
         this(system, namespace, new ArrayList<>(), new ArrayList<>(), isInterface);
     }
 
-    public Optional<TypeClass> directParent(TypeDeclaration parent) {
-        return Optional.ofNullable(this.parentMap.computeIfAbsent(parent, key ->
-                this.parents.stream().filter(t -> t.declaration().equals(key)).findFirst().orElse(null)));
-    }
-
+    /**
+     * Returns the inheritance path of {@link TypeDeclaration}s needed to reach the given parent type. For example, if
+     * this {@link TypeDeclaration} represents the type {@code Integer}, the inheritance path necessary to reach
+     * {@code Object} is:
+     * <ul>
+     * <li>{@code Integer}</li>
+     * <li>{@code Number}</li>
+     * <li>{@code Object}</li>
+     * </ul>
+     *
+     * @param parent The parent {@link TypeDeclaration} to construct an inheritance path to
+     * @return An optional containing the inheritance path, or an empty optional if one could not be found
+     */
     public Optional<List<TypeDeclaration>> pathTo(TypeDeclaration parent) {
         List<TypeDeclaration> path = new ArrayList<>();
         path.add(this);
@@ -61,6 +87,14 @@ public class TypeDeclaration implements Type {
                 Optional.of(path) : Optional.empty();
     }
 
+    /**
+     * Constructs a {@link TypeClass} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
+     *
+     * @param arguments The arguments for the new {@link TypeClass}
+     * @return A new {@link TypeClass}
+     * @throws IllegalArgumentException If the number of arguments is not 0 or equal to the number of parameters in this
+     *                                  {@link TypeDeclaration}
+     */
     public TypeClass withArgList(List<TypeConcrete> arguments) {
         if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
             TypeClass clazz = new TypeClass(this.typeSystem(), this, arguments);
@@ -71,30 +105,56 @@ public class TypeDeclaration implements Type {
         throw new IllegalArgumentException("Expected 0 arguments or " + this.parameters.size() + " argument(s)");
     }
 
+    /**
+     * Constructs a {@link TypeClass} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
+     *
+     * @param arguments The arguments for the new {@link TypeClass}
+     * @return A new {@link TypeClass}
+     * @throws IllegalArgumentException If the number of arguments is not 0 or equal to the number of parameters in this
+     *                                  {@link TypeDeclaration}
+     */
     public TypeClass withArguments(TypeConcrete... arguments) {
         return withArgList(Arrays.asList(arguments));
     }
 
+    /**
+     * @return The {@link Namespace} of this {@link TypeDeclaration}
+     */
     public Namespace namespace() {
         return this.namespace;
     }
 
+    /**
+     * @return The type parameters of this {@link TypeDeclaration}
+     */
     public List<TypeParameter> parameters() {
         return this.parameters;
     }
 
+    /**
+     * @return The parents of this {@link TypeDeclaration}, including the superclass and interfaces
+     */
     public List<TypeClass> parents() {
         return this.parents;
     }
 
+    /**
+     * @return The fully qualified name of this {@link TypeDeclaration}
+     */
     public String name() {
         return this.namespace.name();
     }
 
+    /**
+     * @return The java virtual machine internal name of this {@link TypeDeclaration}
+     */
     public String internalName() {
         return this.namespace.internalName();
     }
 
+    /**
+     * @return True if this {@link TypeDeclaration} represents an interface, false otherwise
+     */
     public boolean isInterface() {
         return this.isInterface;
     }
@@ -240,8 +300,6 @@ public class TypeDeclaration implements Type {
     public void lock() {
         this.parameters = List.copyOf(this.parameters);
         this.parents = List.copyOf(this.parents);
-
-        this.parentMap = new LinkedHashMap<>();
     }
 
     @Override
