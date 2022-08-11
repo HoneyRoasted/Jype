@@ -5,6 +5,8 @@ import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeNull;
 import honeyroasted.jype.type.TypeParameter;
 
+import java.util.Objects;
+
 /**
  * This class represents the conversion of a {@link Type} to a string. There are many string representations
  * of any given {@link Type}, and certain {@link Type}s cannot be converted under certain contexts. Furthermore,
@@ -84,6 +86,33 @@ public class TypeString {
      */
     public Target target() {
         return this.target;
+    }
+
+    @Override
+    public String toString() {
+        return this.value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TypeString that = (TypeString) o;
+
+        if (successful != that.successful) return false;
+        if (!Objects.equals(value, that.value)) return false;
+        if (!Objects.equals(type, that.type)) return false;
+        return target == that.target;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = value != null ? value.hashCode() : 0;
+        result = 31 * result + (successful ? 1 : 0);
+        result = 31 * result + (type != null ? type.hashCode() : 0);
+        result = 31 * result + (target != null ? target.hashCode() : 0);
+        return result;
     }
 
     /**

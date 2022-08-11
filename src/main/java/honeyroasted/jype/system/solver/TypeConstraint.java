@@ -27,7 +27,7 @@ public interface TypeConstraint {
     record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
         @Override
         public String toString() {
-            return "{" + this.left.toReadable(TypeString.Context.CONCRETE).value() + "} is equal to {" + this.right.toReadable(TypeString.Context.CONCRETE).value() + "}";
+            return "{" + this.left.toReadable(TypeString.Context.CONCRETE) + "} is equal to {" + this.right.toReadable(TypeString.Context.CONCRETE) + "}";
         }
     }
 
@@ -35,7 +35,7 @@ public interface TypeConstraint {
 
         @Override
         public String toString() {
-            return "{" + this.subtype.toReadable(TypeString.Context.CONCRETE).value() + "} is assignable to {" + this.parent.toReadable(TypeString.Context.CONCRETE).value() + "}";
+            return "{" + this.subtype.toReadable(TypeString.Context.CONCRETE) + "} is assignable to {" + this.parent.toReadable(TypeString.Context.CONCRETE) + "}";
         }
 
         public Kind kind() {
