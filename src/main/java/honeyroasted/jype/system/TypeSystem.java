@@ -16,13 +16,13 @@ import honeyroasted.jype.system.solver.erasure.ErasureConstraint;
 import honeyroasted.jype.system.solver.erasure.ErasureTypeSolver;
 import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
 import honeyroasted.jype.type.TypeArray;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeNull;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 import honeyroasted.jype.type.TypePrimitive;
 
 import javax.lang.model.type.TypeMirror;
@@ -61,7 +61,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#VOID}.
      */
-    public final TypeClass VOID_BOX;
+    public final TypeParameterized VOID_BOX;
 
     /**
      * The {@code boolean} primitive type.
@@ -70,7 +70,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#BOOLEAN}
      */
-    public final TypeClass BOOLEAN_BOX;
+    public final TypeParameterized BOOLEAN_BOX;
 
     /**
      * The {@code byte} primitive type.
@@ -79,7 +79,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#BYTE}.
      */
-    public final TypeClass BYTE_BOX;
+    public final TypeParameterized BYTE_BOX;
 
     /**
      * The {@code short} primitive type.
@@ -88,7 +88,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#SHORT}.
      */
-    public final TypeClass SHORT_BOX;
+    public final TypeParameterized SHORT_BOX;
 
     /**
      * The {@code char} primitive type.
@@ -97,7 +97,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#CHAR}
      */
-    public final TypeClass CHAR_BOX;
+    public final TypeParameterized CHAR_BOX;
 
     /**
      * The {@code int} primitive type.
@@ -106,7 +106,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#INT}
      */
-    public final TypeClass INT_BOX;
+    public final TypeParameterized INT_BOX;
 
     /**
      * The {@code long} primitive type.
@@ -115,7 +115,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#LONG}.
      */
-    public final TypeClass LONG_BOX;
+    public final TypeParameterized LONG_BOX;
 
     /**
      * The {@code float} primitive type.
@@ -124,7 +124,7 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#FLOAT}.
      */
-    public final TypeClass FLOAT_BOX;
+    public final TypeParameterized FLOAT_BOX;
 
     /**
      * The {@code double} primitive type.
@@ -133,12 +133,12 @@ public class TypeSystem {
     /**
      * The boxing type for {@link TypeSystem#DOUBLE}.
      */
-    public final TypeClass DOUBLE_BOX;
+    public final TypeParameterized DOUBLE_BOX;
 
     /**
      * The type corresponding to an instantiation of {@link Object}.
      */
-    public final TypeClass OBJECT;
+    public final TypeParameterized OBJECT;
     /**
      * The type corresponding to the class declaration of {@link Object}.
      */
@@ -189,16 +189,16 @@ public class TypeSystem {
         FLOAT = new TypePrimitive(this, float.class, "F");
         DOUBLE = new TypePrimitive(this, double.class, "D");
 
-        VOID_BOX = (TypeClass) of(Void.class).get();
-        BOOLEAN_BOX = (TypeClass) of(Boolean.class).get();
-        BYTE_BOX = (TypeClass) of(Byte.class).get();
-        SHORT_BOX = (TypeClass) of(Short.class).get();
-        CHAR_BOX = (TypeClass) of(Character.class).get();
-        INT_BOX = (TypeClass) of(Integer.class).get();
-        LONG_BOX = (TypeClass) of(Long.class).get();
-        FLOAT_BOX = (TypeClass) of(Float.class).get();
-        DOUBLE_BOX = (TypeClass) of(Double.class).get();
-        OBJECT = (TypeClass) of(Object.class).get();
+        VOID_BOX = (TypeParameterized) of(Void.class).get();
+        BOOLEAN_BOX = (TypeParameterized) of(Boolean.class).get();
+        BYTE_BOX = (TypeParameterized) of(Byte.class).get();
+        SHORT_BOX = (TypeParameterized) of(Short.class).get();
+        CHAR_BOX = (TypeParameterized) of(Character.class).get();
+        INT_BOX = (TypeParameterized) of(Integer.class).get();
+        LONG_BOX = (TypeParameterized) of(Long.class).get();
+        FLOAT_BOX = (TypeParameterized) of(Float.class).get();
+        DOUBLE_BOX = (TypeParameterized) of(Double.class).get();
+        OBJECT = (TypeParameterized) of(Object.class).get();
         OBJECT_CLASS = declaration(Object.class).get();
 
         ALL_PRIMITIVES = Set.of(BOOLEAN, BYTE, SHORT, CHAR, INT, LONG, FLOAT, DOUBLE);
@@ -244,14 +244,14 @@ public class TypeSystem {
     }
 
     /**
-     * Creates a new {@link TypeClass} with the given {@link TypeDeclaration}.
+     * Creates a new {@link TypeParameterized} with the given {@link TypeDeclaration}.
      * It will be mutable until {@link Type#lock()} is called.
      *
      * @param declaration The {@link TypeDeclaration}
-     * @return A new {@link TypeClass}
+     * @return A new {@link TypeParameterized}
      */
-    public TypeClass newType(TypeDeclaration declaration) {
-        return new TypeClass(this, declaration);
+    public TypeParameterized newType(TypeDeclaration declaration) {
+        return new TypeParameterized(this, declaration);
     }
 
     /**
@@ -371,7 +371,7 @@ public class TypeSystem {
      * {@code type} is not a one of the primitive boxing types
      */
     public Optional<TypePrimitive> unbox(TypeConcrete type) {
-        return type instanceof TypeClass cls ? Optional.ofNullable(BOX_TO_PRIM.get(cls.declaration().namespace())) :
+        return type instanceof TypeParameterized cls ? Optional.ofNullable(BOX_TO_PRIM.get(cls.declaration().namespace())) :
                 Optional.empty();
     }
 

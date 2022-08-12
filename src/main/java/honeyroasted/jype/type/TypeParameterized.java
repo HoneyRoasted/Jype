@@ -24,52 +24,52 @@ import java.util.stream.Collectors;
  * <li>Each argument C<sub>i</sub> is compatible with an argument T<sub>i</sub> if they are equal, or if capture conversion succeeds</li>
  * </ul>
  */
-public class TypeClass extends AbstractType implements TypeConcrete {
+public class TypeParameterized extends AbstractType implements TypeConcrete {
     private TypeDeclaration declaration;
     private List<TypeConcrete> arguments;
 
     private Map<TypeParameter, TypeConcrete> argMap = new LinkedHashMap<>();
-    private Map<TypeDeclaration, TypeClass> parentMap = new LinkedHashMap<>();
+    private Map<TypeDeclaration, TypeParameterized> parentMap = new LinkedHashMap<>();
 
     /**
-     * Creates a new {@link TypeClass}.
+     * Creates a new {@link TypeParameterized}.
      *
-     * @param system      The {@link TypeSystem} this {@link TypeClass} is a member of
-     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeClass}
-     * @param arguments   The {@link TypeConcrete} arguments for this {@link TypeClass}
+     * @param system      The {@link TypeSystem} this {@link TypeParameterized} is a member of
+     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeParameterized}
+     * @param arguments   The {@link TypeConcrete} arguments for this {@link TypeParameterized}
      */
-    public TypeClass(TypeSystem system, TypeDeclaration declaration, List<TypeConcrete> arguments) {
+    public TypeParameterized(TypeSystem system, TypeDeclaration declaration, List<TypeConcrete> arguments) {
         super(system);
         this.declaration = declaration;
         this.arguments = arguments;
     }
 
     /**
-     * Creates a new {@link TypeClass} with no {@link TypeConcrete} arguments.
+     * Creates a new {@link TypeParameterized} with no {@link TypeConcrete} arguments.
      *
-     * @param system      The {@link TypeSystem} this {@link TypeClass} is a member of
-     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeClass}
+     * @param system      The {@link TypeSystem} this {@link TypeParameterized} is a member of
+     * @param declaration The {@link TypeDeclaration} corresponding to this {@link TypeParameterized}
      */
-    public TypeClass(TypeSystem system, TypeDeclaration declaration) {
+    public TypeParameterized(TypeSystem system, TypeDeclaration declaration) {
         this(system, declaration, new ArrayList<>());
     }
 
     /**
-     * @return The {@link TypeDeclaration} corresponding to this {@link TypeClass}
+     * @return The {@link TypeDeclaration} corresponding to this {@link TypeParameterized}
      */
     public TypeDeclaration declaration() {
         return this.declaration;
     }
 
     /**
-     * @return The {@link TypeConcrete} arguments of this {@link TypeClass}
+     * @return The {@link TypeConcrete} arguments of this {@link TypeParameterized}
      */
     public List<TypeConcrete> arguments() {
         return this.arguments;
     }
 
     /**
-     * Attempts to fetch a {@link TypeConcrete} argument from this {@link TypeClass} by its corresponding
+     * Attempts to fetch a {@link TypeConcrete} argument from this {@link TypeParameterized} by its corresponding
      * {@link TypeParameter} instance.
      *
      * @param parameter The {@link TypeParameter} to get the corresponding argument for
@@ -86,21 +86,21 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     /**
-     * Returns a new {@link TypeClass}, created from this, relative to the given {@link TypeDeclaration}. For example,
-     * if this {@link TypeClass} represents the type {@code ArrayList<Integer>}, calling this method with the
-     * {@link TypeDeclaration} for {@code List} will produce a {@link TypeClass} representing
+     * Returns a new {@link TypeParameterized}, created from this, relative to the given {@link TypeDeclaration}. For example,
+     * if this {@link TypeParameterized} represents the type {@code ArrayList<Integer>}, calling this method with the
+     * {@link TypeDeclaration} for {@code List} will produce a {@link TypeParameterized} representing
      * {@code List<Integer>}. This example is a trivial case where the type parameters of {@link ArrayList}
      * are the same, and in the same order, as its parent {@link List}, but in cases where the type
      * parameters don't map directly, this method is useful (and necessary for assignability checking).
      *
-     * @param parent The {@link TypeDeclaration} for the resulting {@link TypeClass}
-     * @return A relative {@link TypeClass}, or an empty {@link Optional} if no valid mapping could be found
+     * @param parent The {@link TypeDeclaration} for the resulting {@link TypeParameterized}
+     * @return A relative {@link TypeParameterized}, or an empty {@link Optional} if no valid mapping could be found
      */
-    public Optional<TypeClass> parent(TypeDeclaration parent) {
+    public Optional<TypeParameterized> parent(TypeDeclaration parent) {
         return Optional.ofNullable(this.parentMap.computeIfAbsent(parent, key -> this.declaration.pathTo(parent).map(path -> {
-            TypeClass current = this;
+            TypeParameterized current = this;
             for (int i = 1; i < path.size(); i++) {
-                Optional<TypeClass> next = current.directParent(path.get(i));
+                Optional<TypeParameterized> next = current.directParent(path.get(i));
                 if (next.isPresent()) {
                     current = next.get();
                 } else {
@@ -112,10 +112,10 @@ public class TypeClass extends AbstractType implements TypeConcrete {
         }).orElse(null)));
     }
 
-    private Optional<TypeClass> directParent(TypeDeclaration parent) {
+    private Optional<TypeParameterized> directParent(TypeDeclaration parent) {
         return this.declaration.parents().stream().filter(t -> t.declaration().equals(parent))
                 .findFirst().map(typeParent -> {
-                    TypeClass result = new TypeClass(this.typeSystem(), parent);
+                    TypeParameterized result = new TypeParameterized(this.typeSystem(), parent);
                     for (TypeConcrete arg : typeParent.arguments()) {
                         result.arguments().add(arg.map(t -> {
                             if (t instanceof TypeParameter ref && this.argument(ref).isPresent()) {
@@ -193,7 +193,7 @@ public class TypeClass extends AbstractType implements TypeConcrete {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeClass(this.typeSystem(), this.declaration,
+        return (T) mapper.apply(new TypeParameterized(this.typeSystem(), this.declaration,
                 this.arguments.stream().map(t -> (TypeConcrete) t.map(mapper)).toList()));
     }
 
@@ -218,7 +218,7 @@ public class TypeClass extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeConcrete flatten() {
-        return new TypeClass(this.typeSystem(), this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
+        return new TypeParameterized(this.typeSystem(), this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
     }
 
     @Override
@@ -233,11 +233,11 @@ public class TypeClass extends AbstractType implements TypeConcrete {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        TypeClass typeClass = (TypeClass) o;
+        TypeParameterized typeParameterized = (TypeParameterized) o;
 
-        if (!Objects.equals(declaration, typeClass.declaration))
+        if (!Objects.equals(declaration, typeParameterized.declaration))
             return false;
-        return Objects.equals(arguments, typeClass.arguments);
+        return Objects.equals(arguments, typeParameterized.arguments);
     }
 
     @Override

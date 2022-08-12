@@ -15,15 +15,15 @@ import java.util.stream.Collectors;
 
 /**
  * This class represents a declared type. That is, the actual declaration of a class or interface. It contains information
- * about the declaration's name, type parameters, and parents. Instantiations of objects are represented by {@link TypeClass}.
- * Every {@link TypeClass} has a corresponding {@link TypeDeclaration}, but a {@link TypeDeclaration} may have infinite
- * possible {@link TypeClass}s.
+ * about the declaration's name, type parameters, and parents. Instantiations of objects are represented by {@link TypeParameterized}.
+ * Every {@link TypeParameterized} has a corresponding {@link TypeDeclaration}, but a {@link TypeDeclaration} may have infinite
+ * possible {@link TypeParameterized}s.
  */
 public class TypeDeclaration implements Type {
     private TypeSystem typeSystem;
     private Namespace namespace;
     private List<TypeParameter> parameters;
-    private List<TypeClass> parents;
+    private List<TypeParameterized> parents;
     private boolean isInterface;
 
     /**
@@ -35,7 +35,7 @@ public class TypeDeclaration implements Type {
      * @param parents     The parents (whether superclass, or interfaces) of this {@link TypeDeclaration}
      * @param isInterface Whether this {@link TypeDeclaration} represents an interface declaration
      */
-    public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeClass> parents, boolean isInterface) {
+    public TypeDeclaration(TypeSystem system, Namespace namespace, List<TypeParameter> parameters, List<TypeParameterized> parents, boolean isInterface) {
         this.typeSystem = system;
         this.namespace = namespace;
         this.parameters = parameters;
@@ -74,7 +74,7 @@ public class TypeDeclaration implements Type {
         if (this.parents.stream().anyMatch(t -> t.declaration().equals(parent))) {
             path.add(parent);
         } else {
-            for (TypeClass type : this.parents) {
+            for (TypeParameterized type : this.parents) {
                 Optional<List<TypeDeclaration>> pathOpt = type.declaration().pathTo(parent);
                 if (pathOpt.isPresent()) {
                     path.addAll(pathOpt.get());
@@ -88,16 +88,16 @@ public class TypeDeclaration implements Type {
     }
 
     /**
-     * Constructs a {@link TypeClass} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
+     * Constructs a {@link TypeParameterized} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
      *
-     * @param arguments The arguments for the new {@link TypeClass}
-     * @return A new {@link TypeClass}
+     * @param arguments The arguments for the new {@link TypeParameterized}
+     * @return A new {@link TypeParameterized}
      * @throws IllegalArgumentException If the number of arguments is not 0 or equal to the number of parameters in this
      *                                  {@link TypeDeclaration}
      */
-    public TypeClass withArgList(List<TypeConcrete> arguments) {
+    public TypeParameterized withArgList(List<TypeConcrete> arguments) {
         if (arguments.isEmpty() || arguments.size() == this.parameters.size()) {
-            TypeClass clazz = new TypeClass(this.typeSystem(), this, arguments);
+            TypeParameterized clazz = new TypeParameterized(this.typeSystem(), this, arguments);
             clazz.lock();
             return clazz;
         }
@@ -106,14 +106,14 @@ public class TypeDeclaration implements Type {
     }
 
     /**
-     * Constructs a {@link TypeClass} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
+     * Constructs a {@link TypeParameterized} from this {@link TypeDeclaration} and the given {@link TypeConcrete} arguments.
      *
-     * @param arguments The arguments for the new {@link TypeClass}
-     * @return A new {@link TypeClass}
+     * @param arguments The arguments for the new {@link TypeParameterized}
+     * @return A new {@link TypeParameterized}
      * @throws IllegalArgumentException If the number of arguments is not 0 or equal to the number of parameters in this
      *                                  {@link TypeDeclaration}
      */
-    public TypeClass withArguments(TypeConcrete... arguments) {
+    public TypeParameterized withArguments(TypeConcrete... arguments) {
         return withArgList(Arrays.asList(arguments));
     }
 
@@ -134,7 +134,7 @@ public class TypeDeclaration implements Type {
     /**
      * @return The parents of this {@link TypeDeclaration}, including the superclass and interfaces
      */
-    public List<TypeClass> parents() {
+    public List<TypeParameterized> parents() {
         return this.parents;
     }
 

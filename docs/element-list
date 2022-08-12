@@ -3,6 +3,7 @@ honeyroasted.jype.system
 honeyroasted.jype.system.cache
 honeyroasted.jype.system.resolution
 honeyroasted.jype.system.solver
+honeyroasted.jype.system.solver.circle
 honeyroasted.jype.system.solver.erasure
 honeyroasted.jype.system.solver.force
 honeyroasted.jype.type

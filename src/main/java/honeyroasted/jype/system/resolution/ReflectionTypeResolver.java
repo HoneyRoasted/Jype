@@ -6,12 +6,12 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -59,10 +59,10 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
             } else if (clazz.isArray()) {
                 return new TypeArray(this.typeSystem(), of(clazz.getComponentType()));
             } else {
-                if (this.cache().has(clazz, TypeClass.class)) {
-                    return this.cache().get(clazz, TypeClass.class);
+                if (this.cache().has(clazz, TypeParameterized.class)) {
+                    return this.cache().get(clazz, TypeParameterized.class);
                 } else {
-                    TypeClass cls = new TypeClass(this.typeSystem(), declaration(clazz));
+                    TypeParameterized cls = new TypeParameterized(this.typeSystem(), declaration(clazz));
                     this.cache().cache(clazz, cls);
                     cls.lock();
                     return cls;
@@ -71,16 +71,16 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
         } else if (type instanceof ParameterizedType ptype) {
             java.lang.reflect.Type raw = ptype.getRawType();
             if (raw instanceof Class clazz) {
-                if (this.cache().has(type, TypeClass.class)) {
-                    return this.cache().get(type, TypeClass.class);
+                if (this.cache().has(type, TypeParameterized.class)) {
+                    return this.cache().get(type, TypeParameterized.class);
                 }
-                TypeClass typeClass = new TypeClass(this.typeSystem(), declaration(clazz));
-                this.cache().cache(type, typeClass);
+                TypeParameterized typeParameterized = new TypeParameterized(this.typeSystem(), declaration(clazz));
+                this.cache().cache(type, typeParameterized);
                 for (java.lang.reflect.Type param : ptype.getActualTypeArguments()) {
-                    typeClass.arguments().add(of(param));
+                    typeParameterized.arguments().add(of(param));
                 }
-                typeClass.lock();
-                return typeClass;
+                typeParameterized.lock();
+                return typeParameterized;
             } else {
                 throw new IllegalArgumentException("Unknown raw type: " + type.getClass().getName());
             }
@@ -144,13 +144,13 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
             }
 
             if (clazz.getSuperclass() != null) {
-                type.parents().add((TypeClass) of(clazz.getGenericSuperclass()));
+                type.parents().add((TypeParameterized) of(clazz.getGenericSuperclass()));
             } else if (clazz.isInterface()) {
-                type.parents().add((TypeClass) of(Object.class));
+                type.parents().add((TypeParameterized) of(Object.class));
             }
 
             for (java.lang.reflect.Type inter : clazz.getGenericInterfaces()) {
-                type.parents().add((TypeClass) of(inter));
+                type.parents().add((TypeParameterized) of(inter));
             }
 
             type.lock();

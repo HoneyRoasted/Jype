@@ -9,12 +9,12 @@ import honeyroasted.jype.system.solver.TypeSolution;
 import honeyroasted.jype.system.solver.TypeVerification;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 import honeyroasted.jype.type.TypePrimitive;
 
 import java.util.List;
@@ -77,14 +77,21 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
     }
 
     private TypeVerification assignability(TypeConstraint constraint, TypeConcrete a, TypeConcrete b) {
-        if (a instanceof TypeIn || a instanceof TypeNone ||
-                b instanceof TypeOut || b instanceof TypeNone) {
+        if (a.isCircular()) {
+            return TypeVerification.failure(new ForceConstraint.NonCircular(a));
+        } else if (b.isCircular()) {
+            return TypeVerification.failure(new ForceConstraint.NonCircular(b));
+        }
+
+        if (a instanceof TypeNone || b instanceof TypeNone) {
             return TypeVerification.failure(constraint);
         } else if (Objects.equals(a, b)) {
             return TypeVerification.builder()
                     .constraint(constraint)
                     .children(TypeVerification.success(new TypeConstraint.Equal(a, b)))
                     .build();
+        } else if (a instanceof TypeIn || b instanceof TypeOut) {
+            return TypeVerification.failure(constraint);
         } else if (a instanceof TypeOr or) {
             if (or.types().size() == 1) {
                 return assignability(a, or.types().iterator().next());
@@ -117,7 +124,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                     .children(assignability(ref.bound(), b))
                     .and()
                     .build();
-        } else if (a instanceof TypeClass cls) {
+        } else if (a instanceof TypeParameterized cls) {
             return assignability(constraint, cls, b);
         } else if (a instanceof TypeArray arr) {
             return assignability(constraint, arr, b);
@@ -159,7 +166,7 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
             return PRIM_SUPERS.get(self.descriptor()).contains(prim.descriptor()) ?
                     TypeVerification.success(constraint) :
                     TypeVerification.failure(constraint);
-        } else if (other instanceof TypeClass cls && this.system.unbox(cls).isPresent()) {
+        } else if (other instanceof TypeParameterized cls && this.system.unbox(cls).isPresent()) {
             TypePrimitive prim = this.system.unbox(cls).get();
             return PRIM_SUPERS.get(self.descriptor()).contains(prim.descriptor()) ?
                     TypeVerification.success(constraint) :
@@ -173,16 +180,16 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
         }
     }
 
-    private TypeVerification assignability(TypeConstraint constraint, TypeClass in, TypeConcrete other) {
+    private TypeVerification assignability(TypeConstraint constraint, TypeParameterized in, TypeConcrete other) {
         if (other instanceof TypePrimitive prim) {
             Optional<TypePrimitive> unbox = this.system.unbox(in);
             if (unbox.isPresent()) {
                 return assignability(unbox.get(), prim);
             }
-        } else if (other instanceof TypeClass otherClass) {
-            TypeClass self = in;
+        } else if (other instanceof TypeParameterized otherClass) {
+            TypeParameterized self = in;
             if (!in.declaration().equals(otherClass.declaration())) {
-                Optional<TypeClass> parent = in.parent(otherClass.declaration());
+                Optional<TypeParameterized> parent = in.parent(otherClass.declaration());
                 if (parent.isPresent()) {
                     self = parent.get();
                 } else {

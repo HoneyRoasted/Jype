@@ -30,7 +30,7 @@ public interface TypeResolver<T, K> {
     TypeDeclaration resolveDeclaration(K type);
 
     /**
-     * Determines if this {@link TypeResolver} can resolve a {@link TypeConcrete} from the given object
+     * Determines if this {@link TypeResolver} could potentially resolve a {@link TypeConcrete} from the given object
      *
      * @param type The object to check
      * @return True if this {@link TypeResolver} accepts the given object
@@ -38,7 +38,7 @@ public interface TypeResolver<T, K> {
     boolean acceptsType(Object type);
 
     /**
-     * Determines if this {@link TypeResolver} can resolve a {@link TypeDeclaration} from the given object
+     * Determines if this {@link TypeResolver} could potentially resolve a {@link TypeDeclaration} from the given object
      *
      * @param type The object to check
      * @return True if this {@link TypeResolver} accepts the given object

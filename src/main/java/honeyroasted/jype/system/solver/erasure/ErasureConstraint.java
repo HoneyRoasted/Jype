@@ -9,7 +9,7 @@ public interface ErasureConstraint extends TypeConstraint {
     record Erasure(TypeConcrete type) implements ErasureConstraint {
         @Override
         public String toString() {
-            return "erasure " + this.type.toReadable(TypeString.Context.CONCRETE);
+            return "{erasure " + this.type.toReadable(TypeString.Context.CONCRETE) + "}";
         }
     }
 

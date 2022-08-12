@@ -1,9 +1,9 @@
 package honeyroasted.jype;
 
 import honeyroasted.jype.type.TypeAnd;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,7 +19,7 @@ public interface TypeConcrete extends Type {
 
     /**
      * Applies a mapper function over this {@link Type} and its child {@link Type}s, if any. This method
-     * does not walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will
+     * does not walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeParameterized} will
      * not apply the mapper to its corresponding {@link TypeDeclaration} and {@link TypeParameter}
      * will not apply the mapper to its corresponding bound. This is to prevent infinite recursion, and to
      * keep instances of {@link TypeParameter} the same.
@@ -35,7 +35,7 @@ public interface TypeConcrete extends Type {
 
     /**
      * Applies a consumer function over this {@link Type} and its child {@link Type}s, if any. This method does not
-     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will not apply the consumer to its
+     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeParameterized} will not apply the consumer to its
      * corresponding {@link TypeDeclaration}. However, this method will apply the consumer to each {@link TypeParameter}
      * and its bounds (unlike {@link TypeConcrete#map(Function)}). To prevent recursion if the bounds are circular,
      * a {@link Set} containing the visited types is passed to this function and each child invocation of the function,
@@ -58,7 +58,7 @@ public interface TypeConcrete extends Type {
 
     /**
      * Applies a consumer function over this {@link Type} and its child {@link Type}s, if any. This method does not
-     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeClass} will not apply the consumer to its
+     * walk the <i>entire</i> {@link Type} tree. Specifically, {@link TypeParameterized} will not apply the consumer to its
      * corresponding {@link TypeDeclaration}. However, this method will apply the consumer to each {@link TypeParameter}
      * and its bounds (unlike {@link TypeConcrete#map(Function)}).
      * <p>

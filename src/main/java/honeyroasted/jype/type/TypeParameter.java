@@ -181,7 +181,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     /**
      * This class represents a {@link TypeParameter} that isn't defined in a {@link TypeDeclaration}. It can be used
      * as an inference variable. For example, the diamond operator in {@code new ArrayList<>()} would be represented
-     * as a {@link TypeClass} with one argument, a TypeParameter.Placeholder.
+     * as a {@link TypeParameterized} with one argument, a TypeParameter.Placeholder.
      */
     public static class Placeholder extends TypeParameter {
 

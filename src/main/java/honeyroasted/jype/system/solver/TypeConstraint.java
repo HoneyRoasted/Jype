@@ -1,15 +1,28 @@
 package honeyroasted.jype.system.solver;
 
+import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.type.TypeParameter;
 
-import java.util.function.Consumer;
-
+/**
+ * This interface represents some sort of constraint over {@link Type}s, for use in {@link TypeSolver}s. It is very
+ * general and each {@link TypeSolver} may define their own constraints and/or use the default ones. A {@link TypeSolver}
+ * is not required to accept every implementation of {@link TypeConstraint}, but rather only the ones relevant
+ * to whatever computation it is performing.
+ *
+ * @see TypeConstraint.False
+ * @see TypeConstraint.True
+ * @see TypeConstraint.Equal
+ * @see TypeConstraint.Bound
+ */
 public interface TypeConstraint {
     TypeConstraint FALSE = new False();
     TypeConstraint TRUE = new True();
 
+    /**
+     * Represents a {@link TypeConstraint} which always evaluates to false
+     */
     class False implements TypeConstraint {
         @Override
         public String toString() {
@@ -17,6 +30,9 @@ public interface TypeConstraint {
         }
     }
 
+    /**
+     * Represents a {@link TypeConstraint} which always evaluates to true
+     */
     class True implements TypeConstraint {
         @Override
         public String toString() {
@@ -24,6 +40,12 @@ public interface TypeConstraint {
         }
     }
 
+    /**
+     * Represents a {@link TypeConstraint} that requires {@code left} to be equal to {@code right}.
+     *
+     * @param left  A {@link TypeConcrete} to check equality of
+     * @param right A {@link TypeConcrete} to check equality of
+     */
     record Equal(TypeConcrete left, TypeConcrete right) implements TypeConstraint {
         @Override
         public String toString() {
@@ -31,6 +53,12 @@ public interface TypeConstraint {
         }
     }
 
+    /**
+     * Represents a {@link TypeConcrete} that requires {@code subtype} is assignable to {@code parent}.
+     *
+     * @param subtype The subtype to check assignability from
+     * @param parent  The parent to check assignability to
+     */
     record Bound(TypeConcrete subtype, TypeConcrete parent) implements TypeConstraint {
 
         @Override
@@ -57,14 +85,6 @@ public interface TypeConstraint {
             BOUND_TO_BOUND
         }
 
-    }
-
-    default TypeConstraint flatten() {
-        return this;
-    }
-
-    default void walk(Consumer<TypeConstraint> consumer) {
-        consumer.accept(this);
     }
 
 }

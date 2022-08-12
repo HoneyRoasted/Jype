@@ -6,12 +6,12 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -100,19 +100,19 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
             return and(intersectionType.getBounds());
         } else if (type.getKind() == TypeKind.DECLARED && type instanceof DeclaredType declared && declared.asElement() instanceof TypeElement) {
             if (declared.getTypeArguments().isEmpty()) {
-                if (this.cache().has(declared, TypeClass.class)) {
-                    return this.cache().get(declared, TypeClass.class);
+                if (this.cache().has(declared, TypeParameterized.class)) {
+                    return this.cache().get(declared, TypeParameterized.class);
                 } else {
-                    TypeClass cls = new TypeClass(this.typeSystem(), declaration(declared));
+                    TypeParameterized cls = new TypeParameterized(this.typeSystem(), declaration(declared));
                     this.cache().cache(declared, cls);
                     cls.lock();
                     return cls;
                 }
             } else {
-                if (this.cache().has(declared, TypeClass.class)) {
-                    return this.cache().get(declared, TypeClass.class);
+                if (this.cache().has(declared, TypeParameterized.class)) {
+                    return this.cache().get(declared, TypeParameterized.class);
                 } else {
-                    TypeClass cls = new TypeClass(this.typeSystem(), declaration(declared));
+                    TypeParameterized cls = new TypeParameterized(this.typeSystem(), declaration(declared));
                     this.cache().cache(declared, cls);
                     for (TypeMirror arg : declared.getTypeArguments()) {
                         cls.arguments().add(of(arg));
@@ -151,13 +151,13 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
 
                 TypeMirror superclass = typeElement.getSuperclass();
                 if (superclass.getKind() != TypeKind.NONE) {
-                    type.parents().add((TypeClass) of(superclass));
+                    type.parents().add((TypeParameterized) of(superclass));
                 } else if (typeElement.getKind() == ElementKind.INTERFACE) {
                     type.parents().add(this.typeSystem().OBJECT);
                 }
 
                 for (TypeMirror inter : typeElement.getInterfaces()) {
-                    type.parents().add((TypeClass) of(inter));
+                    type.parents().add((TypeParameterized) of(inter));
                 }
 
                 type.lock();

@@ -5,9 +5,18 @@ import honeyroasted.jype.type.TypeDeclaration;
 
 import java.util.List;
 
+/**
+ * This is a simple {@link TypeResolver} that attempts to resolve types with a list of other {@link TypeResolver}s.
+ * It will return the first successful, non-null resolution from one of those children resolvers.
+ */
 public class SequentialTypeResolver implements TypeResolver<Object, Object> {
     private List<TypeResolver> resolvers;
 
+    /**
+     * Creates a new {@link SequentialTypeResolver}
+     *
+     * @param resolvers The children {@link TypeResolver}s to use (in order) for type resolution
+     */
     public SequentialTypeResolver(List<TypeResolver<?, ?>> resolvers) {
         this.resolvers = List.copyOf(resolvers);
     }

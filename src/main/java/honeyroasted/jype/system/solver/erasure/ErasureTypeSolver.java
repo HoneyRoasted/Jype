@@ -11,13 +11,13 @@ import honeyroasted.jype.system.solver.TypeVerification;
 import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
-import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeNull;
 import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeParameterized;
 import honeyroasted.jype.type.TypePrimitive;
 
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         } else if (type instanceof TypeIn || type instanceof TypeNull) {
             context.put(type, system.OBJECT);
             return TypeVerification.success(constraint);
-        } else if (type instanceof TypeClass cls) {
+        } else if (type instanceof TypeParameterized cls) {
             context.put(cls, cls.declaration().withArguments());
             return TypeVerification.success(constraint);
         } else if (type instanceof TypeParameter parameter) {
@@ -189,7 +189,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             if (commonParents.isEmpty()) {
                 context.put(or, this.system.OBJECT);
             } else {
-                Optional<TypeConcrete> classParent = commonParents.stream().filter(t -> t instanceof TypeClass cls && cls.declaration().isInterface()).findFirst();
+                Optional<TypeConcrete> classParent = commonParents.stream().filter(t -> t instanceof TypeParameterized cls && cls.declaration().isInterface()).findFirst();
                 if (classParent.isPresent()) {
                     context.put(or, classParent.get());
                 } else {
@@ -212,7 +212,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             this.system.ALL_PRIMITIVES.stream().filter(t -> this.isAssignableTo(prim, t))
                     .forEach(parents::add);
             return parents;
-        } else if (type instanceof TypeClass cls) {
+        } else if (type instanceof TypeParameterized cls) {
             return cls.declaration().parents().stream().map(t -> t.declaration().withArguments()).toList();
         } else {
             return Collections.emptyList();

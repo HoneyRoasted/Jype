@@ -13,4 +13,11 @@ public interface ForceConstraint extends TypeConstraint {
         }
     }
 
+    record NonCircular(TypeConcrete type) implements ForceConstraint {
+        @Override
+        public String toString() {
+            return "{" + this.type.toReadable(TypeString.Context.CONCRETE) + " is not circular}";
+        }
+    }
+
 }
