@@ -31,7 +31,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     public TypeParameter(TypeSystem system, String name, TypeConcrete bound) {
         super(system);
         this.name = name;
-        this.bound = bound.flatten();
+        this.bound = bound;
     }
 
     /**
@@ -51,7 +51,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
      * @param name   The name of this {@link TypeParameter}
      */
     public TypeParameter(TypeSystem system, String name) {
-        this(system, name, system.OBJECT);
+        this(system, name, system.of(Object.class).get());
     }
 
     /**
