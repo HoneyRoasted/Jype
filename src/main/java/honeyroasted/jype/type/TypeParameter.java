@@ -159,6 +159,11 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isCircular(Set<TypeConcrete> seen) {
+        return seen.contains(this) || this.bound.isCircular(seen, this);
+    }
+
+    @Override
     public boolean equalsExactly(TypeConcrete other) {
         return this == other;
     }

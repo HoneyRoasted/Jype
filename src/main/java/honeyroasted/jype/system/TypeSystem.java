@@ -18,8 +18,10 @@ import honeyroasted.jype.system.solver.force.ForceResolveTypeSolver;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeClass;
 import honeyroasted.jype.type.TypeDeclaration;
+import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeNone;
 import honeyroasted.jype.type.TypeNull;
+import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypePrimitive;
 
@@ -285,9 +287,12 @@ public class TypeSystem {
     }
 
     /**
-     * Utilizes the {@link ForceResolveTypeSolver} to check if one type is assignable to the other. Note that
-     * {@link ForceResolveTypeSolver} may not work for all {@link TypeConcrete}s. It is however guaranteed to work
-     * on type hierarchies with no unresolved {@link TypeParameter}s.
+     * This method tests if one {@link TypeConcrete} is assignable to another. It performs no type
+     * inference, and does not support circular type references (e.g. List&lt;T&gt; where T extends T). Any circular
+     * {@link TypeParameter}s, {@link TypeIn}s, or {@link TypeOut}s will be replaced with the wildcard type
+     * {@code ? extends Object}. In general, if this method returns true, it is guaranteed that {@code left} is
+     * assignable to {@code right}. However, if this method returns false, there may be some set of type parameter
+     * substitutions that would make it true.
      *
      * @param left  The type to check if it can be assigned to {@code right}
      * @param right The type to check if {@code left} can be assigned to it
@@ -295,9 +300,29 @@ public class TypeSystem {
      */
     public boolean isAssignableTo(TypeConcrete left, TypeConcrete right) {
         return new ForceResolveTypeSolver(this)
-                .constrain(new TypeConstraint.Bound(left, right))
+                .constrain(new TypeConstraint.Bound(this.deCircularize(left), this.deCircularize(right)))
                 .solve()
                 .successful();
+    }
+
+    /**
+     * This is a utility method to 'de-circularize' a {@link TypeConcrete}. That is, it replaces any {@link TypeParameter}s,
+     * {@link TypeIn}s, or {@link TypeOut}s that have circular bounds with a wildcard type of the form {@code ? extends Object}.
+     * This is useful for inspecting types through a method that does not support circular type references.
+     *
+     * @param type The type to remove circular references from
+     * @return A type without circular references
+     */
+    public TypeConcrete deCircularize(TypeConcrete type) {
+        Map<TypeConcrete, TypeOut> replacements = new HashMap<>();
+        return type.map(t -> {
+            if ((t instanceof TypeParameter prm && prm.isCircular()) ||
+                    (t instanceof TypeOut out && out.isCircular()) ||
+                    (t instanceof TypeIn in && in.isCircular())) {
+                return replacements.computeIfAbsent(t, k -> new TypeOut(this, this.OBJECT));
+            }
+            return t;
+        });
     }
 
     /**

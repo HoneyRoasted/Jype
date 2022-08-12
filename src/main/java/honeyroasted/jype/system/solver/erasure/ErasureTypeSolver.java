@@ -179,13 +179,13 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             List<TypeConcrete> erased = types.stream().map(t -> context.get(t).get()).toList();
 
             List<TypeConcrete> parents = new ArrayList<>(erased);
-            while (parents.stream().noneMatch(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent)))) {
+            while (parents.stream().noneMatch(parent -> erased.stream().allMatch(sub -> this.isAssignableTo(sub, parent)))) {
                 List<TypeConcrete> newParents = new ArrayList<>();
                 parents.forEach(t -> newParents.addAll(parents(t)));
                 parents = newParents;
             }
 
-            List<TypeConcrete> commonParents = parents.stream().filter(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent))).toList();
+            List<TypeConcrete> commonParents = parents.stream().filter(parent -> erased.stream().allMatch(sub -> this.isAssignableTo(sub, parent))).toList();
             if (commonParents.isEmpty()) {
                 context.put(or, this.system.OBJECT);
             } else {
@@ -209,7 +209,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         if (type instanceof TypePrimitive prim) {
             List<TypeConcrete> parents = new ArrayList<>();
             parents.add(this.system.box(prim));
-            this.system.ALL_PRIMITIVES.stream().filter(t -> this.system.isAssignableTo(prim, t))
+            this.system.ALL_PRIMITIVES.stream().filter(t -> this.isAssignableTo(prim, t))
                     .forEach(parents::add);
             return parents;
         } else if (type instanceof TypeClass cls) {
@@ -217,6 +217,13 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         } else {
             return Collections.emptyList();
         }
+    }
+
+    private boolean isAssignableTo(TypeConcrete left, TypeConcrete right) {
+        return new ForceResolveTypeSolver(this.system)
+                .constrain(new TypeConstraint.Bound(left, right))
+                .solve()
+                .successful();
     }
 
 }

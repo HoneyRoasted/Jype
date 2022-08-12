@@ -78,7 +78,36 @@ public interface TypeConcrete extends Type {
         return true;
     }
 
-    default boolean isWildcard() {
+    /**
+     * @return True if this type is circular, that is, it contains circular type references
+     */
+    default boolean isCircular() {
+        return this.isCircular(new HashSet<>());
+    }
+
+    /**
+     * This is a utility method that creates a copy of the given {@link Set}, adds the given {@link TypeConcrete} to the copy,
+     * and then calls {@link TypeConcrete#isCircular(Set)} with that copy. This is mostly a utility method for the
+     * implementation of {@link TypeConcrete#isCircular()}.
+     *
+     * @param seen   The {@link Set} of {@link TypeConcrete}s which have already been seen
+     * @param parent The parent {@link TypeConcrete} that is calling this method
+     * @return True if this type is circular, that is, it contains circular type references
+     */
+    default boolean isCircular(Set<TypeConcrete> seen, TypeConcrete parent) {
+        Set<TypeConcrete> newSeen = new HashSet<>(seen);
+        newSeen.add(parent);
+        return this.isCircular(seen);
+    }
+
+    /**
+     * Checks if this type is circular, using the given {@link Set} of types which have already been seen. This is
+     * mostly a utility method for the implementation of {@link TypeConcrete#isCircular()}.
+     *
+     * @param seen The {@link Set} of {@link TypeConcrete}s which have already been seen
+     * @return True if this type is circular, that is, it contains circular type references
+     */
+    default boolean isCircular(Set<TypeConcrete> seen) {
         return false;
     }
 

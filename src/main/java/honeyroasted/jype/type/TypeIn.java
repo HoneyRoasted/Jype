@@ -5,7 +5,6 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -17,7 +16,10 @@ import java.util.function.Function;
  * <li>T is assignable to W if T is assignable to W'</li>
  * <li>W is assignable to T if T is java.lang.Object</li>
  * </ul>
- * Note that wildcards of the form {@code ? extends T} are represented by {@link TypeOut}.
+ * Note that wildcards of the form {@code ? extends T} are represented by {@link TypeOut}. Also, unlike most other
+ * {@link Type}s, equality between references of {@link TypeIn} is based on instance equality. This is because
+ * two wildcards of the form {@code ? super T} and {@code ? super T}, where T is the same type, are not considered
+ * equivalent.
  */
 public class TypeIn extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
@@ -83,8 +85,8 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isWildcard() {
-        return true;
+    public boolean isCircular(Set<TypeConcrete> seen) {
+        return seen.contains(this) || this.bound.isCircular(seen, this);
     }
 
     @Override
@@ -98,17 +100,12 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean equalsExactly(TypeConcrete o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TypeIn typeIn = (TypeIn) o;
-
-        return Objects.equals(bound, typeIn.bound);
+    public boolean equalsExactly(TypeConcrete other) {
+        return this == other;
     }
 
     @Override
     public int hashCodeExactly() {
-        return bound != null ? bound.hashCode() : 0;
+        return System.identityHashCode(this);
     }
 }

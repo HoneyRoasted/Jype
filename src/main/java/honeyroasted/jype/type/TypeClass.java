@@ -212,6 +212,11 @@ public class TypeClass extends AbstractType implements TypeConcrete {
     }
 
     @Override
+    public boolean isCircular(Set<TypeConcrete> seen) {
+        return seen.contains(this) || this.arguments.stream().anyMatch(t -> t.isCircular(seen, this));
+    }
+
+    @Override
     public TypeConcrete flatten() {
         return new TypeClass(this.typeSystem(), this.declaration, this.arguments.stream().map(TypeConcrete::flatten).collect(Collectors.toList()));
     }
