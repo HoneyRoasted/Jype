@@ -91,8 +91,10 @@ public class TypeOr extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isCircular(Set<TypeConcrete> seen) {
-        return seen.contains(this) || this.types.stream().anyMatch(t -> t.isCircular(seen, this));
+    public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        Set<TypeConcrete> res = new HashSet<>();
+        this.types.stream().map(t -> t.circularChildren(seen, this)).forEach(res::addAll);
+        return res;
     }
 
     @Override

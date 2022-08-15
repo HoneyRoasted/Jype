@@ -25,11 +25,20 @@ import java.util.function.Function;
 public class TypeOut extends AbstractType implements TypeConcrete {
     private TypeConcrete bound;
 
+    /**
+     * Creates a new {@link TypeIn}.
+     *
+     * @param system The {@link TypeSystem} this {@link TypeIn} is a member of
+     * @param bound  The bound of this {@link TypeIn}
+     */
     public TypeOut(TypeSystem system, TypeConcrete bound) {
         super(system);
         this.bound = bound;
     }
 
+    /**
+     * @return The bound of this {@link TypeIn}
+     */
     public TypeConcrete bound() {
         return bound;
     }
@@ -89,8 +98,8 @@ public class TypeOut extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isCircular(Set<TypeConcrete> seen) {
-        return seen.contains(this) || this.bound.isCircular(seen, this);
+    public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        return seen.contains(this) ? Set.of(this) : this.bound.circularChildren(seen, this);
     }
 
     @Override

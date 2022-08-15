@@ -35,6 +35,16 @@ public interface TypeCache<K> {
     TypeCache<K> cache(K key, Type type);
 
     /**
+     * Caches a {@link Type} at the given key and {@link Class}.
+     *
+     * @param key  The key to cache at
+     * @param type The {@link Type} to cache
+     * @param clazz The {@link Class} to cache at
+     * @return this, for method chaining
+     */
+    TypeCache<K> cache(K key, Type type, Class<? extends Type> clazz);
+
+    /**
      * Tests whether this {@link TypeCache} has a cached {@link Type} for the given key and {@link Class}.
      *
      * @param key   The key to test

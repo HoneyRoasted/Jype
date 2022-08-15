@@ -80,7 +80,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="circle/DeCircleTypeSolver.html" title="class in honeyroasted.jype.system.solver.circle">DeCircleTypeSolver</a></code>, <code><a href="erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure">ErasureTypeSolver</a></code>, <code><a href="force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></code></dd>
+<dd><code><a href="erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure">ErasureTypeSolver</a></code>, <code><a href="force/ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public abstract class </span><span class="element-name type-name-label">AbstractTypeSolver</span>
@@ -102,13 +102,19 @@ implements <a href="TypeSolver.html" title="interface in honeyroasted.jype.syste
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;[]</code></div>
 <div class="col-second even-row-color"><code><a href="#acceptedConstraints" class="member-name-link">acceptedConstraints</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The types of <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a>s this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> accepts.</div>
+</div>
 <div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#constraints" class="member-name-link">constraints</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">This <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link"><code>List</code></a> of <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a>s currently held in this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>.</div>
+</div>
 <div class="col-first even-row-color"><code>protected <a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
 <div class="col-second even-row-color"><code><a href="#system" class="member-name-link">system</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">The <a href="../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> associated with this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -177,18 +183,21 @@ implements <a href="TypeSolver.html" title="interface in honeyroasted.jype.syste
 <section class="detail" id="system">
 <h3>system</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></span>&nbsp;<span class="element-name">system</span></div>
+<div class="block">The <a href="../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> associated with this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="constraints">
 <h3>constraints</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;</span>&nbsp;<span class="element-name">constraints</span></div>
+<div class="block">This <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link"><code>List</code></a> of <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a>s currently held in this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="acceptedConstraints">
 <h3>acceptedConstraints</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;? extends <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>&gt;[]</span>&nbsp;<span class="element-name">acceptedConstraints</span></div>
+<div class="block">The types of <a href="TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a>s this <a href="TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> accepts.</div>
 </section>
 </li>
 </ul>

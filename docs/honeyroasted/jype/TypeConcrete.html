@@ -99,54 +99,56 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly</a><wbr>(<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;other)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#circularChildren()" class="member-name-link">circularChildren</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#circularChildren(java.util.Set)" class="member-name-link">circularChildren</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">This is the implementation method for <a href="#circularChildren()"><code>circularChildren()</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#circularChildren(java.util.Set,honeyroasted.jype.TypeConcrete)" class="member-name-link">circularChildren</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen,
+ <a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;parent)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">This is a utility method for the implementation of <a href="#circularChildren(java.util.Set)"><code>circularChildren(Set)</code></a>.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly</a><wbr>(<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is exactly equal to another <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#flatten()" class="member-name-link">flatten</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#flatten()" class="member-name-link">flatten</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Flattens this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, simplifying its structure.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;consumer,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Applies a consumer function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hashCodeExactly()" class="member-name-link">hashCodeExactly</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hashCodeExactly()" class="member-name-link">hashCodeExactly</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Generates a hash code from the exact type structure represented by this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, wherease the normal
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link"><code>Object.hashCode()</code></a> on <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s is compliant with type equality (e.g.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCircular()" class="member-name-link">isCircular</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCircular(java.util.Set)" class="member-name-link">isCircular</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">Checks if this type is circular, using the given <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of types which have already been seen.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCircular(java.util.Set,honeyroasted.jype.TypeConcrete)" class="member-name-link">isCircular</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen,
- <a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;parent)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
-<div class="block">This is a utility method that creates a copy of the given <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a>, adds the given <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> to the copy,
- and then calls <a href="#isCircular(java.util.Set)"><code>isCircular(Set)</code></a> with that copy.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isProperType()" class="member-name-link">isProperType</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCircular()" class="member-name-link">isCircular</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(java.util.function.Function)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>,<wbr><a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;mapper)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isProperType()" class="member-name-link">isProperType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a>&gt;<br>T</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(java.util.function.Function)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>,<wbr><a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;mapper)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Applies a mapper function over this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
 </div>
 </div>
@@ -252,38 +254,50 @@ extends <a href="Type.html" title="interface in honeyroasted.jype">Type</a></spa
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCircular</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>True if this type is circular, that is, it contains circular type references</dd>
+<dd>True if this is not a circular type, that is it contains no <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s, <a href="type/TypeOut.html" title="class in honeyroasted.jype.type"><code>TypeOut</code></a>s,
+ or <a href="type/TypeIn.html" title="class in honeyroasted.jype.type"><code>TypeIn</code></a>s which eventually refer to themselves. For example, given <code>&lt;T extends List&lt;B&gt;, B extends List&lt;T&gt;&gt;</code>,
+ both <code>T</code> and <code>B</code> are considered circular</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="isCircular(java.util.Set,honeyroasted.jype.TypeConcrete)">
-<h3>isCircular</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCircular</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen,
+<section class="detail" id="circularChildren()">
+<h3>circularChildren</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="element-name">circularChildren</span>()</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s that are children of this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> and are circular.
+ Note that this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is considered circular if any of its children are circular, but this method
+ specifically looks for the <a href="type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s, <a href="type/TypeOut.html" title="class in honeyroasted.jype.type"><code>TypeOut</code></a>s, and <a href="type/TypeIn.html" title="class in honeyroasted.jype.type"><code>TypeIn</code></a>s which cause the
+ circular reference</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="circularChildren(java.util.Set,honeyroasted.jype.TypeConcrete)">
+<h3>circularChildren</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="element-name">circularChildren</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen,
  <a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;parent)</span></div>
-<div class="block">This is a utility method that creates a copy of the given <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a>, adds the given <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> to the copy,
- and then calls <a href="#isCircular(java.util.Set)"><code>isCircular(Set)</code></a> with that copy. This is mostly a utility method for the
- implementation of <a href="#isCircular()"><code>isCircular()</code></a>.</div>
+<div class="block">This is a utility method for the implementation of <a href="#circularChildren(java.util.Set)"><code>circularChildren(Set)</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>seen</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s which have already been seen</dd>
-<dd><code>parent</code> - The parent <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> that is calling this method</dd>
+<dd><code>seen</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s already seen</dd>
+<dd><code>parent</code> - The <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> calling this method</dd>
 <dt>Returns:</dt>
-<dd>True if this type is circular, that is, it contains circular type references</dd>
+<dd>The <a href="#circularChildren()"><code>circularChildren()</code></a> of this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="isCircular(java.util.Set)">
-<h3>isCircular</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCircular</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</span></div>
-<div class="block">Checks if this type is circular, using the given <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of types which have already been seen. This is
- mostly a utility method for the implementation of <a href="#isCircular()"><code>isCircular()</code></a>.</div>
+<section class="detail" id="circularChildren(java.util.Set)">
+<h3>circularChildren</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="element-name">circularChildren</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;seen)</span></div>
+<div class="block">This is the implementation method for <a href="#circularChildren()"><code>circularChildren()</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>seen</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s which have already been seen</dd>
+<dd><code>seen</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link"><code>Set</code></a> of <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s already seen</dd>
 <dt>Returns:</dt>
-<dd>True if this type is circular, that is, it contains circular type references</dd>
+<dd>The <a href="#circularChildren()"><code>circularChildren()</code></a> of this <a href="TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a></dd>
 </dl>
 </section>
 </li>

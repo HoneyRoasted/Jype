@@ -227,7 +227,8 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the default <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.function.Function)" class="member-name-link">TypeSystem</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.cache.TypeCache,java.util.function.Function)" class="member-name-link">TypeSystem</a><wbr>(<a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;cache,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </div>
@@ -510,12 +511,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(java.util.function.Function)">
+<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.cache.TypeCache,java.util.function.Function)">
 <h3>TypeSystem</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeSystem</span><wbr><span class="parameters">(<a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;&nbsp;cache,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>,<wbr><a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;?,<wbr>?&gt;&gt;&nbsp;strategy)</span></div>
 <div class="block">Creates a new <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> with the given <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
+<dd><code>cache</code> - The <a href="cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache"><code>TypeCache</code></a> used by this <a href="TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> for removing circular references</dd>
 <dd><code>strategy</code> - The <a href="resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a> to use</dd>
 </dl>
 </section>

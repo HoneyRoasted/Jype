@@ -84,6 +84,15 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ErasureTypeSolver</span>
 <span class="extends-implements">extends <a href="../AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a>
 implements <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></span></div>
+<div class="block">This class represents a <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> capable of applying erasure to a <a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, as well as
+ testing assignability based on erased types. The accepted constraints for this <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> are:
+ <ul>
+     <li><a href="ErasureConstraint.Erasure.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureConstraint.Erasure</code></a></li>
+     <li><a href="../TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.Bound</code></a></li>
+     <li><a href="../TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.Equal</code></a></li>
+     <li><a href="../TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.True</code></a></li>
+     <li><a href="../TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.False</code></a></li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -105,7 +114,9 @@ implements <a href="../TypeSolver.html" title="interface in honeyroasted.jype.sy
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">ErasureTypeSolver</a><wbr>(<a href="../../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureTypeSolver</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -153,6 +164,11 @@ implements <a href="../TypeSolver.html" title="interface in honeyroasted.jype.sy
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem)">
 <h3>ErasureTypeSolver</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ErasureTypeSolver</span><wbr><span class="parameters">(<a href="../../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</span></div>
+<div class="block">Creates a new <a href="ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureTypeSolver</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> associated with this <a href="ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureTypeSolver</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>

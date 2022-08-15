@@ -153,12 +153,13 @@ public class TypeSystem {
     private final Map<Namespace, TypePrimitive> BOX_TO_PRIM;
 
     private TypeResolver<Object, Object> strategy;
+    private TypeCache<TypeConcrete> cache;
 
     /**
      * Creates a new {@link TypeSystem} with the default {@link TypeResolver}.
      */
     public TypeSystem() {
-        this(t -> {
+        this(new SimpleTypeCache<>(), t -> {
             TypeCache<Object> shared = new SimpleTypeCache<>();
 
             return new SequentialTypeResolver(List.of(
@@ -171,10 +172,12 @@ public class TypeSystem {
     /**
      * Creates a new {@link TypeSystem} with the given {@link TypeResolver}.
      *
+     * @param cache The {@link TypeCache} used by this {@link TypeSystem} for removing circular references
      * @param strategy The {@link TypeResolver} to use
      */
-    public TypeSystem(Function<TypeSystem, TypeResolver<?, ?>> strategy) {
+    public TypeSystem(TypeCache<TypeConcrete> cache, Function<TypeSystem, TypeResolver<?, ?>> strategy) {
         this.strategy = (TypeResolver<Object, Object>) strategy.apply(this);
+        this.cache = cache;
 
         NONE = new TypeNone(this, "none");
         NULL = new TypeNull(this);
@@ -314,14 +317,18 @@ public class TypeSystem {
      * @return A type without circular references
      */
     public TypeConcrete deCircularize(TypeConcrete type) {
-        Map<TypeConcrete, TypeOut> replacements = new HashMap<>();
-        return type.map(t -> {
-            if ((t instanceof TypeParameter prm && prm.isCircular()) ||
-                    (t instanceof TypeOut out && out.isCircular()) ||
-                    (t instanceof TypeIn in && in.isCircular())) {
-                return replacements.computeIfAbsent(t, k -> new TypeOut(this, this.OBJECT));
+        type.circularChildren().forEach(t -> {
+            if (!this.cache.has(t, TypeConcrete.class)) {
+                this.cache.cache(t, new TypeOut(this, this.OBJECT), TypeConcrete.class);
             }
-            return t;
+        });
+
+        return type.map(t -> {
+            if (this.cache.has(t, TypeConcrete.class)) {
+                return this.cache.get(t, TypeConcrete.class);
+            } else {
+                return t;
+            }
         });
     }
 

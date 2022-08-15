@@ -6,7 +6,9 @@ import honeyroasted.jype.system.solver.AbstractTypeSolver;
 import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeContext;
 import honeyroasted.jype.system.solver.TypeSolution;
+import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.TypeVerification;
+import honeyroasted.jype.system.solver.erasure.ErasureTypeSolver;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeIn;
@@ -23,8 +25,27 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-public class ForceResolveTypeSolver extends AbstractTypeSolver {
+/**
+ * This class represents a {@link TypeSolver} capable of testing assignability between types where no inference
+ * is required. Any {@link TypeParameter}s are evaluated as if they were equal to their bounds, and any {@link TypeParameter}s
+ * which contain circular references are substituted with {@code ? extends Object}. Generally, if this {@link TypeSolver}
+ * finds a solution, it can be considered a valid solution. However, if no solution is found, that does not guarantee that
+ * a solution could not be found for some substitution of {@link TypeParameter}s. The accepted constraints for this
+ * {@link TypeSolver} are:
+ * <ul>
+ *     <li>{@link TypeConstraint.Bound}</li>
+ *     <li>{@link TypeConstraint.Equal}</li>
+ *     <li>{@link TypeConstraint.True}</li>
+ *     <li>{@link TypeConstraint.False}</li>
+ * </ul>
+ */
+public class ForceResolveTypeSolver extends AbstractTypeSolver implements TypeSolver {
 
+    /**
+     * Creates a new {@link ForceResolveTypeSolver}.
+     *
+     * @param system The {@link TypeSystem} associated with this {@link ForceResolveTypeSolver}
+     */
     public ForceResolveTypeSolver(TypeSystem system) {
         super(system,
                 TypeConstraint.Bound.class, TypeConstraint.Equal.class,
@@ -78,9 +99,11 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
 
     private TypeVerification assignability(TypeConstraint constraint, TypeConcrete a, TypeConcrete b) {
         if (a.isCircular()) {
-            return TypeVerification.failure(new ForceConstraint.NonCircular(a));
-        } else if (b.isCircular()) {
-            return TypeVerification.failure(new ForceConstraint.NonCircular(b));
+            a = this.system.deCircularize(a);
+        }
+
+        if (b.isCircular()) {
+            b = this.system.deCircularize(b);
         }
 
         if (a instanceof TypeNone || b instanceof TypeNone) {
@@ -97,9 +120,10 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                 return assignability(a, or.types().iterator().next());
             }
 
+            TypeConcrete finalB = b;
             return TypeVerification.builder()
                     .constraint(constraint)
-                    .children(or.types().stream().map(t -> assignability(t, b)).toList())
+                    .children(or.types().stream().map(t -> assignability(t, finalB)).toList())
                     .and()
                     .build();
         } else if (a instanceof TypeAnd and) {
@@ -107,9 +131,10 @@ public class ForceResolveTypeSolver extends AbstractTypeSolver {
                 return assignability(a, and.types().iterator().next());
             }
 
+            TypeConcrete finalB1 = b;
             return TypeVerification.builder()
                     .constraint(constraint)
-                    .children(and.types().stream().map(t -> assignability(t, b)).toList())
+                    .children(and.types().stream().map(t -> assignability(t, finalB1)).toList())
                     .or()
                     .build();
         } else if (a instanceof TypeOut out) {

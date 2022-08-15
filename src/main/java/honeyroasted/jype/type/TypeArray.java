@@ -98,8 +98,8 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isCircular(Set<TypeConcrete> seen) {
-        return seen.contains(this) || this.element.isCircular(seen, this);
+    public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        return this.element.circularChildren(seen, this);
     }
 
     @Override

@@ -53,6 +53,14 @@ public class SimpleTypeCache<K> implements TypeCache<K> {
     }
 
     @Override
+    public TypeCache<K> cache(K key, Type type, Class<? extends Type> clazz) {
+        if (type != null) {
+            this.map.computeIfAbsent(clazz, k -> this.factory.get()).put(key, type);
+        }
+        return this;
+    }
+
+    @Override
     public boolean has(K key, Class<? extends Type> clazz) {
         Map<K, Type> subMap = this.map.get(clazz);
         if (subMap != null) {

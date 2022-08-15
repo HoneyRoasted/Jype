@@ -6,6 +6,7 @@ import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -212,8 +213,10 @@ public class TypeParameterized extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isCircular(Set<TypeConcrete> seen) {
-        return seen.contains(this) || this.arguments.stream().anyMatch(t -> t.isCircular(seen, this));
+    public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        Set<TypeConcrete> res = new HashSet<>();
+        this.arguments.stream().map(t -> t.circularChildren(seen, this)).forEach(res::addAll);
+        return res;
     }
 
     @Override

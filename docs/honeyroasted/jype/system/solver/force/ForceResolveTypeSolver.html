@@ -82,7 +82,20 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ForceResolveTypeSolver</span>
-<span class="extends-implements">extends <a href="../AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a></span></div>
+<span class="extends-implements">extends <a href="../AbstractTypeSolver.html" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a>
+implements <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></span></div>
+<div class="block">This class represents a <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> capable of testing assignability between types where no inference
+ is required. Any <a href="../../../type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s are evaluated as if they were equal to their bounds, and any <a href="../../../type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s
+ which contain circular references are substituted with <code>? extends Object</code>. Generally, if this <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>
+ finds a solution, it can be considered a valid solution. However, if no solution is found, that does not guarantee that
+ a solution could not be found for some substitution of <a href="../../../type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s. The accepted constraints for this
+ <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a> are:
+ <ul>
+     <li><a href="../TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.Bound</code></a></li>
+     <li><a href="../TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.Equal</code></a></li>
+     <li><a href="../TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.True</code></a></li>
+     <li><a href="../TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver"><code>TypeConstraint.False</code></a></li>
+ </ul></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -104,7 +117,9 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">ForceResolveTypeSolver</a><wbr>(<a href="../../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new <a href="ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force"><code>ForceResolveTypeSolver</code></a>.</div>
+</div>
 </div>
 </section>
 </li>
@@ -134,6 +149,9 @@ loadScripts(document, 'script');</script>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-honeyroasted.jype.system.solver.TypeSolver">Methods inherited from interface&nbsp;honeyroasted.jype.system.solver.<a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></h3>
+<code><a href="../TypeSolver.html#constrain(honeyroasted.jype.system.solver.TypeConstraint)">constrain</a>, <a href="../TypeSolver.html#constraints()">constraints</a>, <a href="../TypeSolver.html#remove(honeyroasted.jype.system.solver.TypeConstraint)">remove</a></code></div>
 </section>
 </li>
 </ul>
@@ -149,6 +167,11 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.TypeSystem)">
 <h3>ForceResolveTypeSolver</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ForceResolveTypeSolver</span><wbr><span class="parameters">(<a href="../../TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</span></div>
+<div class="block">Creates a new <a href="ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force"><code>ForceResolveTypeSolver</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>system</code> - The <a href="../../TypeSystem.html" title="class in honeyroasted.jype.system"><code>TypeSystem</code></a> associated with this <a href="ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force"><code>ForceResolveTypeSolver</code></a></dd>
+</dl>
 </section>
 </li>
 </ul>
@@ -168,6 +191,8 @@ loadScripts(document, 'script');</script>
  <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a>. In general, implementations of this method should not throw exceptions, but rather
  report errors through a failed <a href="../TypeSolution.html" title="class in honeyroasted.jype.system.solver"><code>TypeSolution</code></a>.</div>
 <dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../TypeSolver.html#solve()">solve</a></code>&nbsp;in interface&nbsp;<code><a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></code></dd>
 <dt>Returns:</dt>
 <dd>The <a href="../TypeSolution.html" title="class in honeyroasted.jype.system.solver"><code>TypeSolution</code></a> generated from this <a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver"><code>TypeSolver</code></a></dd>
 </dl>

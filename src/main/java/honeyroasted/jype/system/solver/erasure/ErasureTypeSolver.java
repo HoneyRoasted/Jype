@@ -26,8 +26,24 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * This class represents a {@link TypeSolver} capable of applying erasure to a {@link TypeConcrete}, as well as
+ * testing assignability based on erased types. The accepted constraints for this {@link TypeSolver} are:
+ * <ul>
+ *     <li>{@link ErasureConstraint.Erasure}</li>
+ *     <li>{@link TypeConstraint.Bound}</li>
+ *     <li>{@link TypeConstraint.Equal}</li>
+ *     <li>{@link TypeConstraint.True}</li>
+ *     <li>{@link TypeConstraint.False}</li>
+ * </ul>
+ */
 public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver {
 
+    /**
+     * Creates a new {@link ErasureTypeSolver}.
+     *
+     * @param system The {@link TypeSystem} associated with this {@link ErasureTypeSolver}
+     */
     public ErasureTypeSolver(TypeSystem system) {
         super(system,
                 ErasureConstraint.Erasure.class,
@@ -179,13 +195,13 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
             List<TypeConcrete> erased = types.stream().map(t -> context.get(t).get()).toList();
 
             List<TypeConcrete> parents = new ArrayList<>(erased);
-            while (parents.stream().noneMatch(parent -> erased.stream().allMatch(sub -> this.isAssignableTo(sub, parent)))) {
+            while (parents.stream().noneMatch(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent)))) {
                 List<TypeConcrete> newParents = new ArrayList<>();
                 parents.forEach(t -> newParents.addAll(parents(t)));
                 parents = newParents;
             }
 
-            List<TypeConcrete> commonParents = parents.stream().filter(parent -> erased.stream().allMatch(sub -> this.isAssignableTo(sub, parent))).toList();
+            List<TypeConcrete> commonParents = parents.stream().filter(parent -> erased.stream().allMatch(sub -> this.system.isAssignableTo(sub, parent))).toList();
             if (commonParents.isEmpty()) {
                 context.put(or, this.system.OBJECT);
             } else {
@@ -209,7 +225,7 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         if (type instanceof TypePrimitive prim) {
             List<TypeConcrete> parents = new ArrayList<>();
             parents.add(this.system.box(prim));
-            this.system.ALL_PRIMITIVES.stream().filter(t -> this.isAssignableTo(prim, t))
+            this.system.ALL_PRIMITIVES.stream().filter(t -> this.system.isAssignableTo(prim, t))
                     .forEach(parents::add);
             return parents;
         } else if (type instanceof TypeParameterized cls) {
@@ -217,13 +233,6 @@ public class ErasureTypeSolver extends AbstractTypeSolver implements TypeSolver 
         } else {
             return Collections.emptyList();
         }
-    }
-
-    private boolean isAssignableTo(TypeConcrete left, TypeConcrete right) {
-        return new ForceResolveTypeSolver(this.system)
-                .constrain(new TypeConstraint.Bound(left, right))
-                .solve()
-                .successful();
     }
 
 }

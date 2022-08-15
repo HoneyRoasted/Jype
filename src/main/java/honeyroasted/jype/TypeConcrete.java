@@ -2,6 +2,8 @@ package honeyroasted.jype;
 
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeDeclaration;
+import honeyroasted.jype.type.TypeIn;
+import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypeParameterized;
 
@@ -79,36 +81,50 @@ public interface TypeConcrete extends Type {
     }
 
     /**
-     * @return True if this type is circular, that is, it contains circular type references
+     * @return True if this is not a circular type, that is it contains no {@link TypeParameter}s, {@link TypeOut}s,
+     * or {@link TypeIn}s which eventually refer to themselves. For example, given {@code <T extends List<B>, B extends List<T>>},
+     * both {@code T} and {@code B} are considered circular
      */
     default boolean isCircular() {
-        return this.isCircular(new HashSet<>());
+        return this.circularChildren().isEmpty();
     }
 
     /**
-     * This is a utility method that creates a copy of the given {@link Set}, adds the given {@link TypeConcrete} to the copy,
-     * and then calls {@link TypeConcrete#isCircular(Set)} with that copy. This is mostly a utility method for the
-     * implementation of {@link TypeConcrete#isCircular()}.
-     *
-     * @param seen   The {@link Set} of {@link TypeConcrete}s which have already been seen
-     * @param parent The parent {@link TypeConcrete} that is calling this method
-     * @return True if this type is circular, that is, it contains circular type references
+     * @return The {@link Set} of {@link TypeConcrete}s that are children of this {@link TypeConcrete} and are circular.
+     * Note that this {@link TypeConcrete} is considered circular if any of its children are circular, but this method
+     * specifically looks for the {@link TypeParameter}s, {@link TypeOut}s, and {@link TypeIn}s which cause the
+     * circular reference
      */
-    default boolean isCircular(Set<TypeConcrete> seen, TypeConcrete parent) {
+    default Set<TypeConcrete> circularChildren() {
+        return this.circularChildren(new HashSet<>());
+    }
+
+
+    /**
+     * This is a utility method for the implementation of {@link TypeConcrete#circularChildren(Set)}.
+     *
+     * @param seen The {@link Set} of {@link TypeConcrete}s already seen
+     * @param parent The {@link TypeConcrete} calling this method
+     * @return The {@link TypeConcrete#circularChildren()} of this {@link TypeConcrete}
+     */
+    default Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen, TypeConcrete parent) {
         Set<TypeConcrete> newSeen = new HashSet<>(seen);
         newSeen.add(parent);
-        return this.isCircular(seen);
+        return this.circularChildren(newSeen);
     }
 
     /**
-     * Checks if this type is circular, using the given {@link Set} of types which have already been seen. This is
-     * mostly a utility method for the implementation of {@link TypeConcrete#isCircular()}.
+     * This is the implementation method for {@link TypeConcrete#circularChildren()}.
      *
-     * @param seen The {@link Set} of {@link TypeConcrete}s which have already been seen
-     * @return True if this type is circular, that is, it contains circular type references
+     * @param seen The {@link Set} of {@link TypeConcrete}s already seen
+     * @return The {@link TypeConcrete#circularChildren()} of this {@link TypeConcrete}
      */
-    default boolean isCircular(Set<TypeConcrete> seen) {
-        return false;
+    default Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        if (seen.contains(this)) {
+            return Set.of(this);
+        } else {
+            return Set.of();
+        }
     }
 
     /**

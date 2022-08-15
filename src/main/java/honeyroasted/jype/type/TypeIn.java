@@ -85,8 +85,8 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public boolean isCircular(Set<TypeConcrete> seen) {
-        return seen.contains(this) || this.bound.isCircular(seen, this);
+    public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
+        return seen.contains(this) ? Set.of(this) : this.bound.circularChildren(seen, this);
     }
 
     @Override

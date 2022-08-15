@@ -77,6 +77,10 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Record Components:</dt>
+<dd><code><span id="param-type">type</span></code> - The <a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a> to perform erasure on</dd>
+</dl>
+<dl class="notes">
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="ErasureConstraint.html" title="interface in honeyroasted.jype.system.solver.erasure">ErasureConstraint</a></code>, <code><a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></code></dd>
 </dl>
@@ -88,6 +92,7 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">ErasureConstraint.Erasure</span>(<a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
 implements <a href="ErasureConstraint.html" title="interface in honeyroasted.jype.system.solver.erasure">ErasureConstraint</a></span></div>
+<div class="block">Represents a <a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a> that indicates that the erasure of the given type should be processed.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -156,7 +161,7 @@ implements <a href="ErasureConstraint.html" title="interface in honeyroasted.jyp
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type()" class="member-name-link">type</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>type</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-type"><code>type</code></a> record component.</div>
 </div>
 </div>
 </div>
@@ -182,7 +187,7 @@ implements <a href="ErasureConstraint.html" title="interface in honeyroasted.jyp
 <div class="block">Creates an instance of a <code>Erasure</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>type</code> - the value for the <code>type</code> record component</dd>
+<dd><code>type</code> - the value for the <a href="#param-type"><code>type</code></a> record component</dd>
 </dl>
 </section>
 </li>
@@ -239,10 +244,10 @@ implements <a href="ErasureConstraint.html" title="interface in honeyroasted.jyp
 <section class="detail" id="type()">
 <h3>type</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">type</span>()</div>
-<div class="block">Returns the value of the <code>type</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-type"><code>type</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>type</code> record component</dd>
+<dd>the value of the <a href="#param-type"><code>type</code></a> record component</dd>
 </dl>
 </section>
 </li>

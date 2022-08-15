@@ -77,6 +77,11 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>Record Components:</dt>
+<dd><code><span id="param-left">left</span></code> - The <a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> that should capture <code>right</code></dd>
+<dd><code><span id="param-right">right</span></code> - The <a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> that should be capture by <code>left</code></dd>
+</dl>
+<dl class="notes">
 <dt>All Implemented Interfaces:</dt>
 <dd><code><a href="ForceConstraint.html" title="interface in honeyroasted.jype.system.solver.force">ForceConstraint</a></code>, <code><a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></code></dd>
 </dl>
@@ -88,6 +93,9 @@ loadScripts(document, 'script');</script>
 <div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">ForceConstraint.Capture</span>(<a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;left, <a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;right)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
 implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.system.solver.force">ForceConstraint</a></span></div>
+<div class="block">Represents a <a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a> that requires <code>left</code> to capture <code>right</code>, per the rules of
+ capture conversion. Note that this <a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver"><code>TypeConstraint</code></a> is purely information. It cannot be accepted by
+ <a href="ForceResolveTypeSolver.html" title="class in honeyroasted.jype.system.solver.force"><code>ForceResolveTypeSolver</code></a>, but it may be produced as a reason for failure.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -97,7 +105,7 @@ implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.system.solver.force.ForceConstraint">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.system.solver.force.<a href="ForceConstraint.html" title="interface in honeyroasted.jype.system.solver.force">ForceConstraint</a></h2>
-<code><a href="ForceConstraint.Capture.html" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.Capture</a>, <a href="ForceConstraint.NonCircular.html" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.NonCircular</a></code></div>
+<code><a href="ForceConstraint.Capture.html" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.Capture</a></code></div>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.system.solver.TypeConstraint">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.system.solver.<a href="../TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a></h2>
 <code><a href="../TypeConstraint.Bound.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a>, <a href="../TypeConstraint.Equal.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a>, <a href="../TypeConstraint.False.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a>, <a href="../TypeConstraint.True.html" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a></code></div>
@@ -152,12 +160,12 @@ implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#left()" class="member-name-link">left</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>left</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-left"><code>left</code></a> record component.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#right()" class="member-name-link">right</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns the value of the <code>right</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-right"><code>right</code></a> record component.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
@@ -189,8 +197,8 @@ implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.
 <div class="block">Creates an instance of a <code>Capture</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>left</code> - the value for the <code>left</code> record component</dd>
-<dd><code>right</code> - the value for the <code>right</code> record component</dd>
+<dd><code>left</code> - the value for the <a href="#param-left"><code>left</code></a> record component</dd>
+<dd><code>right</code> - the value for the <a href="#param-right"><code>right</code></a> record component</dd>
 </dl>
 </section>
 </li>
@@ -247,10 +255,10 @@ implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.
 <section class="detail" id="left()">
 <h3>left</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">left</span>()</div>
-<div class="block">Returns the value of the <code>left</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-left"><code>left</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>left</code> record component</dd>
+<dd>the value of the <a href="#param-left"><code>left</code></a> record component</dd>
 </dl>
 </section>
 </li>
@@ -258,10 +266,10 @@ implements <a href="ForceConstraint.html" title="interface in honeyroasted.jype.
 <section class="detail" id="right()">
 <h3>right</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">right</span>()</div>
-<div class="block">Returns the value of the <code>right</code> record component.</div>
+<div class="block">Returns the value of the <a href="#param-right"><code>right</code></a> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>the value of the <code>right</code> record component</dd>
+<dd>the value of the <a href="#param-right"><code>right</code></a> record component</dd>
 </dl>
 </section>
 </li>

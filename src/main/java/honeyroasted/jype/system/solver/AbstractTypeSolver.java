@@ -13,9 +13,17 @@ import java.util.stream.Collectors;
  * holding a reference to the relevant {@link TypeSystem}, and a list of accepted {@link TypeConstraint} types.
  */
 public abstract class AbstractTypeSolver implements TypeSolver {
+    /**
+     * The {@link TypeSystem} associated with this {@link TypeSolver}.
+     */
     protected TypeSystem system;
+    /**
+     * This {@link List} of {@link TypeConstraint}s currently held in this {@link TypeSolver}.
+     */
     protected List<TypeConstraint> constraints = Collections.synchronizedList(new ArrayList<>());
-
+    /**
+     * The types of {@link TypeConstraint}s this {@link TypeSolver} accepts.
+     */
     protected Class<? extends TypeConstraint>[] acceptedConstraints;
 
 
