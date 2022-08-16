@@ -15,13 +15,13 @@ public class SimpleAssignabilityTest extends TypeTest {
         ));
 
         assertTrue(this.typeSystem.isAssignableTo(
-                this.typeSystem.BYTE,
-                this.typeSystem.INT
+                this.typeSystem.INT,
+                this.typeSystem.DOUBLE
         ));
 
         assertFalse(this.typeSystem.isAssignableTo(
-                this.typeSystem.INT,
-                this.typeSystem.BYTE
+                this.typeSystem.DOUBLE,
+                this.typeSystem.LONG
         ));
     }
 
