@@ -178,12 +178,17 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toMessage()" class="member-name-link">toMessage</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Formats this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> as a potentially multi-lined message.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toMessage(boolean)" class="member-name-link">toMessage</a><wbr>(boolean&nbsp;forceChildren)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Formats this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> as a potentially multi-lined message, with the success value,
  the constraint, and its children listed.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
 </div>
@@ -266,6 +271,24 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="toMessage()">
 <h3>toMessage</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toMessage</span>()</div>
+<div class="block">Formats this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> as a potentially multi-lined message. It is functionally
+ equivalent to <code>toMessage(true)</code></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>A formatted <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> containing information about this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> and its children</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="#toMessage(boolean)"><code>toMessage(boolean)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="toMessage(boolean)">
+<h3>toMessage</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toMessage</span><wbr><span class="parameters">(boolean&nbsp;forceChildren)</span></div>
 <div class="block">Formats this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> as a potentially multi-lined message, with the success value,
  the constraint, and its children listed. Each child will be listed on a new line, with an indent. This method
  is mostly for debugging purposes, and if a full explanation of why a <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> failed (or
@@ -273,6 +296,9 @@ loadScripts(document, 'script');</script>
  themselves. More complex <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a>s have significantly more complicated messages, often with
  much unneeded information.</div>
 <dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>forceChildren</code> - true if children <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a>s should be included when their parents are
+                      successful.</dd>
 <dt>Returns:</dt>
 <dd>A formatted <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link"><code>String</code></a> containing information about this <a href="TypeVerification.html" title="class in honeyroasted.jype.system.solver"><code>TypeVerification</code></a> and its children</dd>
 </dl>

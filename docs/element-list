@@ -3,6 +3,11 @@ honeyroasted.jype.system
 honeyroasted.jype.system.cache
 honeyroasted.jype.system.resolution
 honeyroasted.jype.system.solver
+honeyroasted.jype.system.solver.casting
 honeyroasted.jype.system.solver.erasure
 honeyroasted.jype.system.solver.force
+honeyroasted.jype.system.solver.loose
+honeyroasted.jype.system.solver.numeric
+honeyroasted.jype.system.solver.strict
+honeyroasted.jype.system.solver.string
 honeyroasted.jype.type
