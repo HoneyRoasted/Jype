@@ -19,6 +19,7 @@ public class DescriptorTest extends TypeTest {
         assertEquals(this.typeSystem.OBJECT.toDescriptor(TypeString.Context.CONCRETE).value(), "Ljava/lang/Object;");
     }
 
+    @Test
     public void testDescriptorFails() {
         assertFalse(new TypeOr(this.typeSystem, Set.of(this.typeSystem.INT_BOX, this.typeSystem.BYTE_BOX))
                 .toDescriptor(TypeString.Context.CONCRETE).successful());

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -24,7 +25,7 @@ public abstract class AbstractTypeSolver implements TypeSolver {
     /**
      * The types of {@link TypeConstraint}s this {@link TypeSolver} accepts.
      */
-    protected Class<? extends TypeConstraint>[] acceptedConstraints;
+    protected Set<Class<? extends TypeConstraint>> acceptedConstraints;
 
 
     /**
@@ -36,21 +37,19 @@ public abstract class AbstractTypeSolver implements TypeSolver {
      */
     public AbstractTypeSolver(TypeSystem system, Class<? extends TypeConstraint>... acceptedConstraints) {
         this.system = system;
-        this.acceptedConstraints = acceptedConstraints;
+        this.acceptedConstraints = Set.of(acceptedConstraints);
     }
 
     @Override
     public TypeSolver constrain(TypeConstraint constraint) {
-        for (Class<? extends TypeConstraint> clazz : this.acceptedConstraints) {
-            if (clazz.isInstance(constraint)) {
-                this.constraints.add(constraint);
-                return this;
-            }
+        if (constraint != null && this.acceptedConstraints.contains(constraint.getClass())) {
+            this.constraints.add(constraint);
+            return this;
         }
 
         throw new IllegalArgumentException(getClass().getSimpleName() + " does not accept TypeConstraints of type " +
                 (constraint == null ? "null" : constraint.getClass().getCanonicalName()) + ", accepted types are: [" +
-                Arrays.stream(this.acceptedConstraints).map(Class::getCanonicalName).collect(Collectors.joining(", ")) + "]");
+                this.acceptedConstraints.stream().map(Class::getCanonicalName).collect(Collectors.joining(", ")) + "]");
     }
 
     @Override

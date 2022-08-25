@@ -3,26 +3,22 @@ package honeyroasted.jype.test;
 import honeyroasted.jype.TypeConcrete;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class SimpleAssignabilityTest extends TypeTest {
 
     @Test
     public void testPrimitiveAssignability() {
-        assertTrue(this.typeSystem.isAssignableTo(
-                this.typeSystem.BYTE,
-                this.typeSystem.INT
-        ));
-
-        assertTrue(this.typeSystem.isAssignableTo(
-                this.typeSystem.INT,
-                this.typeSystem.DOUBLE
-        ));
-
-        assertFalse(this.typeSystem.isAssignableTo(
-                this.typeSystem.DOUBLE,
-                this.typeSystem.LONG
-        ));
+        assignabilityMatrix(new TypeConcrete[]{
+                        this.typeSystem.BYTE,
+                        this.typeSystem.INT,
+                        this.typeSystem.DOUBLE,
+                        this.typeSystem.LONG
+                },
+                new boolean[][]{
+                        {true, true, true, true},
+                        {false, true, true, true},
+                        {false, false, true, false},
+                        {false, false, true, true}
+                });
     }
 
     @Test
@@ -31,11 +27,11 @@ public class SimpleAssignabilityTest extends TypeTest {
         TypeConcrete charsequence = this.typeSystem.of(CharSequence.class).get();
         TypeConcrete object = this.typeSystem.OBJECT;
 
-        assertTrue(this.typeSystem.isAssignableTo(string, charsequence));
-        assertTrue(this.typeSystem.isAssignableTo(charsequence, object));
+        assertAssignable(string, charsequence);
+        assertAssignable(charsequence, object);
 
-        assertFalse(this.typeSystem.isAssignableTo(charsequence, string));
-        assertFalse(this.typeSystem.isAssignableTo(object, string));
+        assertUnassignable(charsequence, string);
+        assertUnassignable(object, string);
     }
 
 }

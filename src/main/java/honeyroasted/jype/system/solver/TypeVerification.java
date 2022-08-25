@@ -45,6 +45,17 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
     }
 
     /**
+     * Formats this {@link TypeVerification} as a potentially multi-lined message. It is functionally
+     * equivalent to {@code toMessage(true)}
+     *
+     * @see TypeVerification#toMessage(boolean)
+     * @return A formatted {@link String} containing information about this {@link TypeVerification} and its children
+     */
+    public String toMessage() {
+        return toMessage(true);
+    }
+
+    /**
      * Formats this {@link TypeVerification} as a potentially multi-lined message, with the success value,
      * the constraint, and its children listed. Each child will be listed on a new line, with an indent. This method
      * is mostly for debugging purposes, and if a full explanation of why a {@link TypeVerification} failed (or
@@ -52,23 +63,26 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
      * themselves. More complex {@link TypeVerification}s have significantly more complicated messages, often with
      * much unneeded information.
      *
+     * @param forceChildren true if children {@link TypeVerification}s should be included when their parents are
+     *                      successful.
+     *
      * @return A formatted {@link String} containing information about this {@link TypeVerification} and its children
      */
-    public String toMessage() {
+    public String toMessage(boolean forceChildren) {
         StringBuilder sb = new StringBuilder();
-        buildMessage(sb, 0);
+        buildMessage(sb, 0, forceChildren);
         return sb.toString();
     }
 
-    private void buildMessage(StringBuilder sb, int indent) {
+    private void buildMessage(StringBuilder sb, int indent, boolean forceChildren) {
         sb.append("    ".repeat(indent))
                 .append(this.success ? "Succeeded" : "Failed")
                 .append(": ")
                 .append(this.constraint);
 
-        if (!this.children.isEmpty()) {
+        if (!this.children.isEmpty() && (forceChildren || !this.success)) {
             sb.append(", Caused by:").append(System.lineSeparator());
-            this.children.forEach(t -> t.buildMessage(sb, indent + 1));
+            this.children.forEach(t -> t.buildMessage(sb, indent + 1, forceChildren));
         } else {
             sb.append(System.lineSeparator());
         }
