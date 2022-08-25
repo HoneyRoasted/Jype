@@ -5,6 +5,8 @@ import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.type.TypeParameter;
 
+import java.util.Objects;
+
 /**
  * This interface represents some sort of constraint over {@link Type}s, for use in {@link TypeSolver}s. It is very
  * general and each {@link TypeSolver} may define their own constraints and/or use the default ones. A {@link TypeSolver}
