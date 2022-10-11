@@ -3,9 +3,7 @@ package honeyroasted.jype.system.solver;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
-import honeyroasted.jype.type.TypeParameter;
-
-import java.util.Objects;
+import honeyroasted.jype.type.TypePrimitive;
 
 /**
  * This interface represents some sort of constraint over {@link Type}s, for use in {@link TypeSolver}s. It is very
@@ -63,6 +61,18 @@ public interface TypeConstraint {
     }
 
     /**
+     * Helper method to create a {@link TypeConstraint.Equal}.
+     *
+     * @param left  A {@link TypeConcrete} to check equality of
+     * @param right A {@link TypeConcrete} to check equality of
+     * @return A new {@link TypeConstraint.Equal}
+     * @see TypeConstraint.Equal
+     */
+    static Equal equal(TypeConcrete left, TypeConcrete right) {
+        return new Equal(left, right);
+    }
+
+    /**
      * Represents a {@link TypeConcrete} that requires {@code subtype} is assignable to {@code parent}.
      *
      * @param subtype The subtype to check assignability from
@@ -74,6 +84,30 @@ public interface TypeConstraint {
         public String toString() {
             return "{" + this.subtype.toReadable(TypeString.Context.CONCRETE) + "} is assignable to {" + this.parent.toReadable(TypeString.Context.CONCRETE) + "}";
         }
+    }
+
+    /**
+     * Helper method to create a {@link TypeConstraint.Bound}.
+     *
+     * @param subtype The subtype to check assignability from
+     * @param parent  The parent to check assignability to
+     * @return A new {@link TypeConstraint.Bound}
+     * @see TypeConstraint.Bound
+     */
+    static Bound bound(TypeConcrete subtype, TypeConcrete parent) {
+        return new Bound(subtype, parent);
+    }
+
+    record Boxes(TypePrimitive prim, TypeConcrete box) implements TypeConstraint {
+
+        @Override
+        public String toString() {
+            return "{" + this.box.toReadable(TypeString.Context.CONCRETE) + "} boxes {" + this.prim.toReadable(TypeString.Context.CONCRETE) + "}";
+        }
+    }
+
+    static Boxes boxes(TypePrimitive prim, TypeConcrete box) {
+        return new Boxes(prim, box);
     }
 
 }

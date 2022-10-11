@@ -38,6 +38,17 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
     }
 
     /**
+     * Creates a new {@link TypeVerification} with the given constraint, zero children, and the given result value.
+     *
+     * @param success    Whether this {@link TypeVerification} was successful
+     * @param constraint The {@link TypeConstraint} associated with this {@link TypeVerification}
+     * @return A new {@link TypeVerification}
+     */
+    public static TypeVerification of(boolean success, TypeConstraint constraint) {
+        return new TypeVerification(constraint, new ArrayList<>(), success);
+    }
+
+    /**
      * @return A new {@link Builder} instance
      */
     public static Builder builder() {
@@ -48,8 +59,8 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
      * Formats this {@link TypeVerification} as a potentially multi-lined message. It is functionally
      * equivalent to {@code toMessage(true)}
      *
-     * @see TypeVerification#toMessage(boolean)
      * @return A formatted {@link String} containing information about this {@link TypeVerification} and its children
+     * @see TypeVerification#toMessage(boolean)
      */
     public String toMessage() {
         return toMessage(true);
@@ -65,7 +76,6 @@ public record TypeVerification(TypeConstraint constraint, List<TypeVerification>
      *
      * @param forceChildren true if children {@link TypeVerification}s should be included when their parents are
      *                      successful.
-     *
      * @return A formatted {@link String} containing information about this {@link TypeVerification} and its children
      */
     public String toMessage(boolean forceChildren) {
