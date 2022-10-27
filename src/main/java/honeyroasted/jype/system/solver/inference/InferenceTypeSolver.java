@@ -6,7 +6,7 @@ import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeSolution;
 
 public class InferenceTypeSolver extends AbstractTypeSolver {
-    
+
     public InferenceTypeSolver(TypeSystem system) {
         super(system,
                 TypeConstraint.Bound.class, TypeConstraint.Equal.class,
