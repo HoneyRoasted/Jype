@@ -9,8 +9,14 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
 
     public InferenceTypeSolver(TypeSystem system) {
         super(system,
-                TypeConstraint.Bound.class, TypeConstraint.Equal.class,
-                TypeConstraint.True.class, TypeConstraint.False.class);
+                ConstraintFormula.TypeCompatible.class, ConstraintFormula.Subtype.class,
+                ConstraintFormula.ExpressionCompatible.class, ConstraintFormula.Contained.class,
+                ConstraintFormula.Equal.class, ConstraintFormula.LambdaThrows.class,
+                ConstraintFormula.MethodRefThrows.class,
+
+                TypeBound.Equal.class, TypeBound.LowerBound.class,
+                TypeBound.UpperBound.class, TypeBound.False.class,
+                TypeBound.Capture.class, TypeBound.Throws.class);
     }
 
     @Override
