@@ -10,21 +10,21 @@ public interface TypeBound extends TypeConstraint {
     record Equal(TypeParameter param, TypeConcrete value) implements TypeBound {
         @Override
         public String toString() {
-            return "<" + this.param.toReadable(TypeString.Context.CONCRETE) + " = " + this.value.toReadable(TypeString.Context.CONCRETE) + ">";
+            return this.param.toReadable(TypeString.Context.CONCRETE) + " = " + this.value.toReadable(TypeString.Context.CONCRETE);
         }
     }
 
     record LowerBound(TypeConcrete subtype, TypeParameter param) implements TypeBound {
         @Override
         public String toString() {
-            return "<" + this.subtype.toReadable(TypeString.Context.CONCRETE) + " <: " + this.param.toReadable(TypeString.Context.CONCRETE) + ">";
+            return this.subtype.toReadable(TypeString.Context.CONCRETE) + " <: " + this.param.toReadable(TypeString.Context.CONCRETE);
         }
     }
 
     record UpperBound(TypeParameter subtype, TypeConcrete param) implements TypeBound {
         @Override
         public String toString() {
-            return "<" + this.subtype.toReadable(TypeString.Context.CONCRETE) + " <: " + this.param.toReadable(TypeString.Context.CONCRETE) + ">";
+            return this.subtype.toReadable(TypeString.Context.CONCRETE) + " <: " + this.param.toReadable(TypeString.Context.CONCRETE);
         }
     }
 

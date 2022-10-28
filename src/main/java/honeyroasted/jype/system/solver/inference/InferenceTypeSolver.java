@@ -2,8 +2,9 @@ package honeyroasted.jype.system.solver.inference;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.AbstractTypeSolver;
-import honeyroasted.jype.system.solver.TypeConstraint;
 import honeyroasted.jype.system.solver.TypeSolution;
+
+import java.util.List;
 
 public class InferenceTypeSolver extends AbstractTypeSolver {
 
@@ -19,8 +20,55 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
                 TypeBound.Capture.class, TypeBound.Throws.class);
     }
 
+    private List<ConstraintFormula> constraintFormulas;
+    private List<TypeBound> typeBounds;
+
+    public InferenceTypeSolver copy() {
+        InferenceTypeSolver copy = new InferenceTypeSolver(this.system);
+        this.constraints.forEach(copy::constrain);
+        copy.setConstraintFormulas(this.constraintFormulas);
+        copy.setTypeBounds(this.typeBounds);
+        return copy;
+    }
+
+    public List<ConstraintFormula> constraintFormulas() {
+        return this.constraintFormulas;
+    }
+
+    public void setConstraintFormulas(List<ConstraintFormula> constraintFormulas) {
+        this.constraintFormulas = List.copyOf(constraintFormulas);
+    }
+
+    public List<TypeBound> typeBounds() {
+        return this.typeBounds;
+    }
+
+    public void setTypeBounds(List<TypeBound> typeBounds) {
+        this.typeBounds = List.copyOf(typeBounds);
+    }
+
+    public void collectConstraints() {
+        this.constraintFormulas = this.constraints.stream().filter(t -> t instanceof ConstraintFormula).map(t -> (ConstraintFormula) t).toList();
+        this.typeBounds = this.constraints.stream().filter(t -> t instanceof TypeBound).map(t -> (TypeBound) t).toList();
+    }
+
+    public void performReduction() {
+
+    }
+
+    public void performIncorporation() {
+
+    }
+
+    public TypeSolution performResolution() {
+        return null;
+    }
+
     @Override
     public TypeSolution solve() {
-        return null;
+        this.collectConstraints();
+        this.performReduction();
+        this.performIncorporation();
+        return this.performResolution();
     }
 }
