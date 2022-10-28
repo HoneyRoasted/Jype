@@ -98,16 +98,4 @@ public interface TypeConstraint {
         return new Bound(subtype, parent);
     }
 
-    record Boxes(TypePrimitive prim, TypeConcrete box) implements TypeConstraint {
-
-        @Override
-        public String toString() {
-            return "{" + this.box.toReadable(TypeString.Context.CONCRETE) + "} boxes {" + this.prim.toReadable(TypeString.Context.CONCRETE) + "}";
-        }
-    }
-
-    static Boxes boxes(TypePrimitive prim, TypeConcrete box) {
-        return new Boxes(prim, box);
-    }
-
 }
