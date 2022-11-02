@@ -3,12 +3,14 @@ package honeyroasted.jype.system.solver.inference;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.AbstractTypeSolver;
 import honeyroasted.jype.system.solver.TypeSolution;
+import honeyroasted.jype.system.solver.inference.model.adapter.ExpressionAdapter;
 
 import java.util.List;
 
 public class InferenceTypeSolver extends AbstractTypeSolver {
+    private ExpressionAdapter adapter;
 
-    public InferenceTypeSolver(TypeSystem system) {
+    public InferenceTypeSolver(TypeSystem system, ExpressionAdapter adapter) {
         super(system,
                 ConstraintFormula.TypeCompatible.class, ConstraintFormula.Subtype.class,
                 ConstraintFormula.ExpressionCompatible.class, ConstraintFormula.Contained.class,
@@ -18,13 +20,14 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
                 TypeBound.Equal.class, TypeBound.LowerBound.class,
                 TypeBound.UpperBound.class, TypeBound.False.class,
                 TypeBound.Capture.class, TypeBound.Throws.class);
+        this.adapter = adapter;
     }
 
     private List<ConstraintFormula> constraintFormulas;
     private List<TypeBound> typeBounds;
 
     public InferenceTypeSolver copy() {
-        InferenceTypeSolver copy = new InferenceTypeSolver(this.system);
+        InferenceTypeSolver copy = new InferenceTypeSolver(this.system, this.adapter);
         this.constraints.forEach(copy::constrain);
         copy.setConstraintFormulas(this.constraintFormulas);
         copy.setTypeBounds(this.typeBounds);
