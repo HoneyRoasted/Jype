@@ -65,4 +65,8 @@ public interface Type {
     default void lock() {
     }
 
+    default String kind() {
+        return Namespace.of(this.getClass()).simpleName();
+    }
+
 }
