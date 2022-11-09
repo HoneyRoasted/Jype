@@ -1,4 +1,6 @@
-package honeyroasted.jype.system.result;
+package honeyroasted.jype.system.operations.result;
+
+import honeyroasted.jype.system.operations.TypeOperation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,7 +18,8 @@ public class TypeResultBuilder<T> {
         if (this.success == null) {
             this.success = success;
         } else {
-            this.success = () -> this.success.getAsBoolean() && success.getAsBoolean();
+            BooleanSupplier curr = this.success;
+            this.success = () -> curr.getAsBoolean() && success.getAsBoolean();
         }
         return this;
     }
@@ -32,7 +35,8 @@ public class TypeResultBuilder<T> {
         if (this.success == null) {
             this.success = success;
         } else {
-            this.success = () -> this.success.getAsBoolean() || success.getAsBoolean();
+            BooleanSupplier curr = this.success;
+            this.success = () -> curr.getAsBoolean() || success.getAsBoolean();
         }
         return this;
     }
@@ -66,6 +70,13 @@ public class TypeResultBuilder<T> {
         return this;
     }
 
+    public TypeResultBuilder<T> causes(TypeOperation<?>... operations) {
+        for (TypeOperation<?> operation : operations) {
+            this.causes.add(operation::perform);
+        }
+        return this;
+    }
+
     public TypeResultBuilder<T> prerequisites(Supplier<TypeResult<?>>... causes) {
         for (Supplier<TypeResult<?>> cause : causes) {
             this.and(() -> cause.get().successful());
@@ -80,8 +91,21 @@ public class TypeResultBuilder<T> {
         return this.causes(causes);
     }
 
-    public TypeResultBuilder<T> operation(TypeOperation operation) {
+    public TypeResultBuilder<T> prerequisites(TypeOperation<?>... operations) {
+        for (TypeOperation<?> operation : operations) {
+            this.and(() -> operation.perform().successful());
+        }
+        return this.causes(operations);
+    }
+
+    public TypeResultBuilder<T> operation(TypeOperation<T> operation) {
         this.operation = operation;
+        return this;
+    }
+
+    public TypeResultBuilder<T> valueAttempt(Supplier<T> value) {
+        this.value(value);
+        this.and(() -> value.get() != null);
         return this;
     }
 

@@ -1,4 +1,7 @@
-package honeyroasted.jype.system.result;
+package honeyroasted.jype.system.operations.result;
+
+import honeyroasted.jype.Namespace;
+import honeyroasted.jype.system.operations.TypeOperation;
 
 import java.util.Collections;
 import java.util.List;
@@ -9,24 +12,28 @@ public class TypeResult<T> {
     private Supplier<T> value;
     private List<Supplier<TypeResult<?>>> causes;
     private BooleanSupplier success;
-    private TypeOperation operation;
+    private TypeOperation<T> operation;
 
-    public TypeResult(Supplier<T> value, List<Supplier<TypeResult<?>>> causes, BooleanSupplier success, TypeOperation operation) {
+    public TypeResult(Supplier<T> value, List<Supplier<TypeResult<?>>> causes, BooleanSupplier success, TypeOperation<T> operation) {
         this.value = value;
         this.causes = List.copyOf(causes);
         this.success = success;
         this.operation = operation;
     }
 
-    public static <T> TypeResultBuilder<T> builder() {
-        return new TypeResultBuilder<>();
+    public static <T> TypeResultBuilder<T> builder(TypeOperation<T> operation) {
+        return new TypeResultBuilder<T>().operation(operation);
     }
 
-    public static <T> TypeResult<T> success(T value, TypeOperation operation) {
+    public static <T> TypeResult<T> of(TypeOperation<T> operation) {
+        return operation.perform();
+    }
+
+    public static <T> TypeResult<T> success(T value, TypeOperation<T> operation) {
         return new TypeResult<>(() -> value, Collections.emptyList(), () -> true, operation);
     }
 
-    public static <T> TypeResult<T> failure(TypeOperation operation) {
+    public static <T> TypeResult<T> failure(TypeOperation<T> operation) {
         return new TypeResult<>(() -> null, Collections.emptyList(), () -> false, operation);
     }
 
@@ -46,7 +53,7 @@ public class TypeResult<T> {
         return this.causes.stream().map(Supplier::get).toList();
     }
 
-    public TypeOperation operation() {
+    public TypeOperation<T> operation() {
         return this.operation;
     }
 
@@ -57,9 +64,13 @@ public class TypeResult<T> {
     }
 
     private void buildMessage(StringBuilder sb, int indent) {
-        String ind = "    ".repeat(indent);
+        String ind = "|    ".repeat(indent);
         String ls = System.lineSeparator();
         boolean successful = this.successful();
+
+        if (indent > 0) {
+            sb.append(ind).append(ls);
+        }
 
         sb.append(ind).append("STATUS: ").append(successful ? "SUCCESS" : "FAILURE").append(ls);
 
@@ -67,8 +78,8 @@ public class TypeResult<T> {
             sb.append(ind).append("VALUE: ").append(this.value()).append(ls);
         }
 
-        sb.append(ind).append("OPERATION: ").append(this.operation.getClass().getName()).append(ls);
-        sb.append(ind).append("MESSAGE: ").append(this.operation.message());
+        sb.append(ind).append("OPERATION: ").append(Namespace.of(this.operation.getClass()).simpleName().replace('$', '.')).append(ls);
+        sb.append(ind).append("MESSAGE: ").append(this.operation.message()).append(ls);
 
         if (!this.causes.isEmpty()) {
             sb.append(ind).append("CAUSES: ").append(ls);

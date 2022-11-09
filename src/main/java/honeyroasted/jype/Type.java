@@ -66,7 +66,7 @@ public interface Type {
     }
 
     default String kind() {
-        return Namespace.of(this.getClass()).simpleName();
+        return Namespace.of(this.getClass()).simpleName().replace('$', '.');
     }
 
 }

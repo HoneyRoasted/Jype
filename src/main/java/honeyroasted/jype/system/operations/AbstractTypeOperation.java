@@ -1,14 +1,13 @@
-package honeyroasted.jype.system.result.operations;
+package honeyroasted.jype.system.operations;
 
 import honeyroasted.jype.Type;
-import honeyroasted.jype.system.result.TypeOperation;
 
 import java.util.Collection;
 import java.util.List;
 
-public class AbstractTypeOperation implements TypeOperation {
-    private List<Type> types;
-    private String message;
+public abstract class AbstractTypeOperation<T> implements TypeOperation<T> {
+    protected List<Type> types;
+    protected String message;
 
     public AbstractTypeOperation(String message, Collection<Type> types) {
         this.types = List.copyOf(types);
@@ -18,6 +17,10 @@ public class AbstractTypeOperation implements TypeOperation {
     public AbstractTypeOperation(String message, Type... types) {
         this.types = List.of(types);
         this.message = message;
+    }
+
+    public <T extends Type> T type(int index) {
+        return (T) this.types.get(index);
     }
 
     @Override
