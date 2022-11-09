@@ -113,12 +113,6 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
         return and;
     }
 
-    private TypeConcrete or(Type... array) {
-        TypeOr or = new TypeOr(this.typeSystem(), Arrays.stream(array).map(this::of).collect(Collectors.toCollection(LinkedHashSet::new)));
-        or.lock();
-        return or;
-    }
-
     private TypeDeclaration declaration(Class<?> clazz) {
         if (clazz.isPrimitive() || clazz.isArray()) {
             throw new IllegalArgumentException("Cannot get declaration from primitive or array type");

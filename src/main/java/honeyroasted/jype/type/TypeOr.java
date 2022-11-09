@@ -108,6 +108,10 @@ public class TypeOr extends AbstractType implements TypeConcrete {
             }
         });
 
+        //Null type is never useful in union type
+        //under the Java type system
+        flattened.remove(this.typeSystem().NULL);
+
         if (flattened.size() == 0) {
             return this.typeSystem().VOID;
         } else if (flattened.size() == 1) {
