@@ -31,6 +31,27 @@ public class TypeResultBuilder<T> {
         return this;
     }
 
+    public TypeResultBuilder<T> and(Supplier<TypeResult<?>> supplier) {
+        this.causes.add(supplier);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() && supplier.get().successful();
+        return this;
+    }
+
+    public TypeResultBuilder<T> and(TypeResult<?> result) {
+        this.causes.add(() -> result);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() && result.successful();
+        return this;
+    }
+
+    public TypeResultBuilder<T> and(TypeOperation<?> operation) {
+        this.causes.add(operation::perform);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() && operation.perform().successful();
+        return this;
+    }
+
     public TypeResultBuilder<T> or(BooleanSupplier success) {
         if (this.success == null) {
             this.success = success;
@@ -45,6 +66,27 @@ public class TypeResultBuilder<T> {
         if (success) {
             this.success = () -> true;
         }
+        return this;
+    }
+
+    public TypeResultBuilder<T> or(Supplier<TypeResult<?>> supplier) {
+        this.causes.add(supplier);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() || supplier.get().successful();
+        return this;
+    }
+
+    public TypeResultBuilder<T> or(TypeResult<?> result) {
+        this.causes.add(() -> result);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() || result.successful();
+        return this;
+    }
+
+    public TypeResultBuilder<T> or(TypeOperation<?> operation) {
+        this.causes.add(operation::perform);
+        BooleanSupplier curr = this.success;
+        this.success = () -> curr.getAsBoolean() || operation.perform().successful();
         return this;
     }
 
@@ -75,27 +117,6 @@ public class TypeResultBuilder<T> {
             this.causes.add(operation::perform);
         }
         return this;
-    }
-
-    public TypeResultBuilder<T> prerequisites(Supplier<TypeResult<?>>... causes) {
-        for (Supplier<TypeResult<?>> cause : causes) {
-            this.and(() -> cause.get().successful());
-        }
-        return this.causes(causes);
-    }
-
-    public TypeResultBuilder<T> prerequisites(TypeResult<?>... causes) {
-        for (TypeResult<?> cause : causes) {
-            this.and(cause::successful);
-        }
-        return this.causes(causes);
-    }
-
-    public TypeResultBuilder<T> prerequisites(TypeOperation<?>... operations) {
-        for (TypeOperation<?> operation : operations) {
-            this.and(() -> operation.perform().successful());
-        }
-        return this.causes(operations);
     }
 
     public TypeResultBuilder<T> operation(TypeOperation<T> operation) {

@@ -19,9 +19,9 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         }
 
         @Override
-        public TypeResult<TypeConcrete> perform() {
+        public TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .prerequisites(new BooleanTypeOperation.Equal(this.type(0), this.type(1)))
+                    .and(new BooleanTypeOperation.Equal(this.type(0), this.type(1)))
                     .build();
         }
     }
@@ -30,8 +30,8 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         private static final Map<String, Set<String>> PRIM_SUPERS = Map.of(
                 "Z", Set.of(),
                 "B", Set.of("S", "C", "I", "J", "F", "D"),
-                "S", Set.of("C", "I", "J", "F", "D"),
-                "C", Set.of("S", "I", "J", "F", "D"),
+                "S", Set.of("I", "J", "F", "D"),
+                "C", Set.of("I", "J", "F", "D"),
                 "I", Set.of("J", "F", "D"),
                 "J", Set.of("F", "D"),
                 "F", Set.of("D"),
@@ -44,12 +44,10 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         }
 
         @Override
-        public TypeResult<TypeConcrete> perform() {
+        public TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .prerequisites(
-                            new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class),
-                            new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class)
-                    )
+                    .and(new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class))
+                    .and(new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class))
                     .and(() -> {
                         TypePrimitive from = this.type(0);
                         TypePrimitive to = this.type(1);
