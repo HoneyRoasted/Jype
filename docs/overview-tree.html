@@ -53,13 +53,10 @@ loadScripts(document, 'script');</script>
 <li><a href="honeyroasted/jype/package-tree.html">honeyroasted.jype</a>, </li>
 <li><a href="honeyroasted/jype/system/package-tree.html">honeyroasted.jype.system</a>, </li>
 <li><a href="honeyroasted/jype/system/cache/package-tree.html">honeyroasted.jype.system.cache</a>, </li>
+<li><a href="honeyroasted/jype/system/operations/package-tree.html">honeyroasted.jype.system.operations</a>, </li>
+<li><a href="honeyroasted/jype/system/operations/conversion/package-tree.html">honeyroasted.jype.system.operations.conversion</a>, </li>
+<li><a href="honeyroasted/jype/system/operations/result/package-tree.html">honeyroasted.jype.system.operations.result</a>, </li>
 <li><a href="honeyroasted/jype/system/resolution/package-tree.html">honeyroasted.jype.system.resolution</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/package-tree.html">honeyroasted.jype.system.solver</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/assignment/package-tree.html">honeyroasted.jype.system.solver.assignment</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/casting/package-tree.html">honeyroasted.jype.system.solver.casting</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/erasure/package-tree.html">honeyroasted.jype.system.solver.erasure</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/force/package-tree.html">honeyroasted.jype.system.solver.force</a>, </li>
-<li><a href="honeyroasted/jype/system/solver/invocation/package-tree.html">honeyroasted.jype.system.solver.invocation</a>, </li>
 <li><a href="honeyroasted/jype/type/package-tree.html">honeyroasted.jype.type</a></li>
 </ul>
 </div>
@@ -80,11 +77,24 @@ loadScripts(document, 'script');</script>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOut</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)
 <ul>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Placeholder.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></li>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameterized</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" class="type-name-link" title="class in honeyroasted.jype.type">TypePrimitive</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
+</ul>
+</li>
+<li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/AbstractTypeOperation.html" class="type-name-link" title="class in honeyroasted.jype.system.operations">AbstractTypeOperation</a>&lt;T&gt; (implements honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/TypeOperation.html" title="interface in honeyroasted.jype.system.operations">TypeOperation</a>&lt;T&gt;)
+<ul>
+<li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/BooleanTypeOperation.Equal.html" class="type-name-link" title="class in honeyroasted.jype.system.operations">BooleanTypeOperation.Equal</a> (implements honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/BooleanTypeOperation.html" title="interface in honeyroasted.jype.system.operations">BooleanTypeOperation</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/BooleanTypeOperation.Kind.html" class="type-name-link" title="class in honeyroasted.jype.system.operations">BooleanTypeOperation.Kind</a> (implements honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/BooleanTypeOperation.html" title="interface in honeyroasted.jype.system.operations">BooleanTypeOperation</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Boxing.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Boxing</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Capture.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Capture</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Identity.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Identity</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.NarrowingPrimitive.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.NarrowingPrimitive</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Unboxing.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Unboxing</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Unchecked.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Unchecked</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.WideningPrimitive.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.WideningPrimitive</a> (implements honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a>)</li>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/AbstractTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">AbstractTypeResolver</a>&lt;T,<wbr>K&gt; (implements honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;)
@@ -93,37 +103,17 @@ loadScripts(document, 'script');</script>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeMirrorTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">TypeMirrorTypeResolver</a></li>
 </ul>
 </li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/AbstractTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">AbstractTypeSolver</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a>)
-<ul>
-<li class="circle">honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.erasure">ErasureTypeSolver</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceResolveTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.force">ForceResolveTypeSolver</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a>)</li>
-</ul>
-</li>
-<li class="circle">honeyroasted.jype.system.solver.assignment.<a href="honeyroasted/jype/system/solver/assignment/AssignmentTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.assignment">AssignmentTypeSolver</a></li>
-<li class="circle">honeyroasted.jype.system.solver.casting.<a href="honeyroasted/jype/system/solver/casting/CastingContextTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.casting">CastingContextTypeSolver</a></li>
-<li class="circle">honeyroasted.jype.system.solver.invocation.<a href="honeyroasted/jype/system/solver/invocation/InvocationTypeSolver.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.invocation">InvocationTypeSolver</a></li>
 <li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" class="type-name-link" title="class in honeyroasted.jype">Namespace</a></li>
-<li class="circle">java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Record.html" class="type-name-link external-link" title="class or interface in java.lang">Record</a>
-<ul>
-<li class="circle">honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.Erasure.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.erasure">ErasureConstraint.Erasure</a> (implements honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.html" title="interface in honeyroasted.jype.system.solver.erasure">ErasureConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceConstraint.Capture.html" class="type-name-link" title="class in honeyroasted.jype.system.solver.force">ForceConstraint.Capture</a> (implements honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceConstraint.html" title="interface in honeyroasted.jype.system.solver.force">ForceConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Bound.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.Bound</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.Equal.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.Equal</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeVerification</a></li>
-</ul>
-</li>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a> (implements honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;)</li>
 <li class="circle">honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" class="type-name-link" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a>&lt;K&gt; (implements honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;K&gt;)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.False.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.False</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.True.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeConstraint.True</a> (implements honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeContext.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeContext</a></li>
+<li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/Test.html" class="type-name-link" title="class in honeyroasted.jype">Test</a></li>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeDeclaration</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a>)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeSolution.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeSolution</a></li>
+<li class="circle">honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResult.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.result">TypeResult</a>&lt;T&gt;</li>
+<li class="circle">honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.result">TypeResultBuilder</a>&lt;T&gt;</li>
 <li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" class="type-name-link" title="class in honeyroasted.jype">TypeString</a></li>
 <li class="circle">honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" class="type-name-link" title="class in honeyroasted.jype.system">TypeSystem</a></li>
 <li class="circle">honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeToken.html" class="type-name-link" title="class in honeyroasted.jype.system">TypeToken</a>&lt;A&gt;</li>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">TypeTokenTypeResolver</a> (implements honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;)</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeVerification.Builder.html" class="type-name-link" title="class in honeyroasted.jype.system.solver">TypeVerification.Builder</a></li>
 </ul>
 </li>
 </ul>
@@ -137,14 +127,13 @@ loadScripts(document, 'script');</script>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" class="type-name-link" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;K&gt;</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeConstraint.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver">TypeConstraint</a>
+<li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/TypeOperation.html" class="type-name-link" title="interface in honeyroasted.jype.system.operations">TypeOperation</a>&lt;T&gt;
 <ul>
-<li class="circle">honeyroasted.jype.system.solver.erasure.<a href="honeyroasted/jype/system/solver/erasure/ErasureConstraint.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver.erasure">ErasureConstraint</a></li>
-<li class="circle">honeyroasted.jype.system.solver.force.<a href="honeyroasted/jype/system/solver/force/ForceConstraint.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver.force">ForceConstraint</a></li>
+<li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/BooleanTypeOperation.html" class="type-name-link" title="interface in honeyroasted.jype.system.operations">BooleanTypeOperation</a></li>
+<li class="circle">honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.html" class="type-name-link" title="interface in honeyroasted.jype.system.operations.conversion">TypeConversion</a></li>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" class="type-name-link" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;</li>
-<li class="circle">honeyroasted.jype.system.solver.<a href="honeyroasted/jype/system/solver/TypeSolver.html" class="type-name-link" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></li>
 </ul>
 </section>
 <section class="hierarchy">

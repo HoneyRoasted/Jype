@@ -1,6 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
+import honeyroasted.jype.TypeString;
 import honeyroasted.jype.system.TypeSystem;
 
 /**
@@ -57,6 +58,11 @@ public abstract class AbstractType implements TypeConcrete {
     @Override
     public int hashCode() {
         return this.flatten().hashCodeExactly();
+    }
+
+    @Override
+    public final String toString() {
+        return this.toReadable(TypeString.Context.DECLARATION).value();
     }
 
 }

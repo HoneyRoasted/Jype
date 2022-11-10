@@ -108,11 +108,6 @@ public class TypeArray extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public String toString() {
-        return this.element + "[]";
-    }
-
-    @Override
     public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

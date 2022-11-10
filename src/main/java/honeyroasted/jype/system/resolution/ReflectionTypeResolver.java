@@ -8,7 +8,6 @@ import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeArray;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeIn;
-import honeyroasted.jype.type.TypeOr;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypeParameterized;
@@ -96,7 +95,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
             } else {
                 TypeParameter parameter = new TypeParameter(this.typeSystem(), vtype.getName());
                 this.cache().cache(vtype, parameter);
-                parameter.setBound(and(vtype.getBounds()));
+                parameter.setUpperBound(and(vtype.getBounds()));
                 parameter.lock();
                 return parameter;
             }
@@ -131,7 +130,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
                 } else {
                     TypeParameter parameter = new TypeParameter(this.typeSystem(), var.getName());
                     this.cache().cache(var, parameter);
-                    parameter.setBound(and(var.getBounds()));
+                    parameter.setUpperBound(and(var.getBounds()));
                     parameter.lock();
                     type.parameters().add(parameter);
                 }

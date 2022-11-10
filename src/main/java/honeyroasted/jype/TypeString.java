@@ -157,7 +157,7 @@ public class TypeString {
         DESCRIPTOR,
         /**
          * Represents the {@link String} representation of a {@link Type} as it would be formatted in a Java Virtual
-         * Machine Signature. Note that some types cannot be written as a signature, such as {@link TypeParameter.Placeholder}.
+         * Machine Signature. Note that some types cannot be written as a signature, such as {@link TypeParameter.Fresh}.
          */
         SIGNATURE,
         /**

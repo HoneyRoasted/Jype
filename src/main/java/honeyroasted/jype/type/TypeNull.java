@@ -37,12 +37,7 @@ public class TypeNull extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toReadable(TypeString.Context context) {
-        return TypeString.successful("<null>", getClass(), TypeString.Target.READABLE);
-    }
-
-    @Override
-    public String toString() {
-        return "<null>";
+        return TypeString.successful("#null", getClass(), TypeString.Target.READABLE);
     }
 
     @Override

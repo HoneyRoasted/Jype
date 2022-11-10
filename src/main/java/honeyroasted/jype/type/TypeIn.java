@@ -95,11 +95,6 @@ public class TypeIn extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public String toString() {
-        return "? super " + this.bound;
-    }
-
-    @Override
     public boolean equalsExactly(TypeConcrete other) {
         return this == other;
     }

@@ -1,11 +1,8 @@
 honeyroasted.jype
 honeyroasted.jype.system
 honeyroasted.jype.system.cache
+honeyroasted.jype.system.operations
+honeyroasted.jype.system.operations.conversion
+honeyroasted.jype.system.operations.result
 honeyroasted.jype.system.resolution
-honeyroasted.jype.system.solver
-honeyroasted.jype.system.solver.assignment
-honeyroasted.jype.system.solver.casting
-honeyroasted.jype.system.solver.erasure
-honeyroasted.jype.system.solver.force
-honeyroasted.jype.system.solver.invocation
 honeyroasted.jype.type

@@ -47,12 +47,7 @@ public class TypeNone extends AbstractType implements TypeConcrete {
 
     @Override
     public TypeString toReadable(TypeString.Context context) {
-        return TypeString.successful("void", getClass(), TypeString.Target.READABLE);
-    }
-
-    @Override
-    public String toString() {
-        return "<" + this.name + ">";
+        return TypeString.successful("#" + this.name, getClass(), TypeString.Target.READABLE);
     }
 
     @Override

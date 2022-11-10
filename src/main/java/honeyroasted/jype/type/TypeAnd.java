@@ -112,22 +112,16 @@ public class TypeAnd extends AbstractType implements TypeConcrete {
             }
         });
 
-        //Object is never useful in intersection type
-        //under the Java type system
-        flattened.remove(this.typeSystem().OBJECT);
-
         if (flattened.size() == 0) {
             return this.typeSystem().VOID;
         } else if (flattened.size() == 1) {
             return flattened.iterator().next();
         } else {
+            //Object is never useful in intersection type
+            //under the Java type system
+            flattened.remove(this.typeSystem().OBJECT);
             return new TypeAnd(this.typeSystem(), flattened);
         }
-    }
-
-    @Override
-    public String toString() {
-        return this.types.stream().map(TypeConcrete::toString).collect(Collectors.joining(" & "));
     }
 
     @Override

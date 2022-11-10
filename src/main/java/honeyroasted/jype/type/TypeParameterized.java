@@ -225,13 +225,6 @@ public class TypeParameterized extends AbstractType implements TypeConcrete {
     }
 
     @Override
-    public String toString() {
-        return this.declaration.namespace() +
-                (this.arguments.isEmpty() ? "" :
-                        "<" + this.arguments.stream().map(TypeConcrete::toString).collect(Collectors.joining(", ")) + ">");
-    }
-
-    @Override
     public boolean equalsExactly(TypeConcrete o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

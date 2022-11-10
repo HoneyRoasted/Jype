@@ -24,6 +24,10 @@ public abstract class AbstractTypeOperation<T> implements TypeOperation<T> {
         return (T) this.types.get(index);
     }
 
+    protected <T extends Type> T type() {
+        return this.type(0);
+    }
+
     protected T value() {
         return null;
     }

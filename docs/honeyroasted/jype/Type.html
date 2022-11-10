@@ -77,7 +77,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></code>, <code><a href="type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></code>, <code><a href="type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></code>, <code><a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code>, <code><a href="type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></code>, <code><a href="type/TypeMethodDeclaration.html" title="class in honeyroasted.jype.type">TypeMethodDeclaration</a></code>, <code><a href="type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></code>, <code><a href="type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></code>, <code><a href="type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></code>, <code><a href="type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></code>, <code><a href="type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></code>, <code><a href="type/TypeParameter.Placeholder.html" title="class in honeyroasted.jype.type">TypeParameter.Placeholder</a></code>, <code><a href="type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></code>, <code><a href="type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></dd>
+<dd><code><a href="type/AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a></code>, <code><a href="type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></code>, <code><a href="type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></code>, <code><a href="type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></code>, <code><a href="type/TypeIn.html" title="class in honeyroasted.jype.type">TypeIn</a></code>, <code><a href="type/TypeMethodDeclaration.html" title="class in honeyroasted.jype.type">TypeMethodDeclaration</a></code>, <code><a href="type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></code>, <code><a href="type/TypeNull.html" title="class in honeyroasted.jype.type">TypeNull</a></code>, <code><a href="type/TypeOr.html" title="class in honeyroasted.jype.type">TypeOr</a></code>, <code><a href="type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></code>, <code><a href="type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></code>, <code><a href="type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></code>, <code><a href="type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></code>, <code><a href="type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">Type</span></div>
@@ -96,38 +96,41 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#lock()" class="member-name-link">lock</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#kind()" class="member-name-link">kind</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#lock()" class="member-name-link">lock</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
 <div class="block">Locks this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>, making it immutable.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Generates the <a href="TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine descriptor under the given
  <a href="TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Generates the <a href="TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s human-readable representation under the given
  <a href="TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Generates the <a href="TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine signature under the given
  <a href="TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="TypeString.html" title="class in honeyroasted.jype">TypeString</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource</a><wbr>(<a href="TypeString.Context.html" title="enum class in honeyroasted.jype">TypeString.Context</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Generates the <a href="TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s source representation under the given
  <a href="TypeString.Context.html" title="enum class in honeyroasted.jype"><code>TypeString.Context</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#typeSystem()" class="member-name-link">typeSystem</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -243,6 +246,12 @@ loadScripts(document, 'script');</script>
 <div class="block">Locks this <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>, making it immutable. Note that this does not necessarily lock the child <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s
  of compound types such as <a href="type/TypeAnd.html" title="class in honeyroasted.jype.type"><code>TypeAnd</code></a>. Since <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> hierarchies can contain circular references, it
  may be necessary to instantiate <a href="Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, build their values, and then lock them to maintain immutability.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="kind()">
+<h3>kind</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">kind</span>()</div>
 </section>
 </li>
 </ul>

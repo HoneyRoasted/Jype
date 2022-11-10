@@ -261,17 +261,6 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Attempts to resolve a <a href="../type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a> from the given object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#erasure(honeyroasted.jype.TypeConcrete)" class="member-name-link">erasure</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Utilizes the <a href="solver/erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureTypeSolver</code></a> to produce the <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> of the given type.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isAssignableTo(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">isAssignableTo</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;left,
- <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;right)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">This method tests if one <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is assignable to another.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newArray(honeyroasted.jype.TypeConcrete)" class="member-name-link">newArray</a><wbr>(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;element)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -608,26 +597,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="isAssignableTo(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)">
-<h3>isAssignableTo</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAssignableTo</span><wbr><span class="parameters">(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;left,
- <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;right)</span></div>
-<div class="block">This method tests if one <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is assignable to another. It performs no type
- inference, and does not support circular type references (e.g. List&lt;T&gt; where T extends T). Any circular
- <a href="../type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s, <a href="../type/TypeIn.html" title="class in honeyroasted.jype.type"><code>TypeIn</code></a>s, or <a href="../type/TypeOut.html" title="class in honeyroasted.jype.type"><code>TypeOut</code></a>s will be replaced with the wildcard type
- <code>? extends Object</code>. In general, if this method returns true, it is guaranteed that <code>left</code> is
- assignable to <code>right</code>. However, if this method returns false, there may be some set of type parameter
- substitutions that would make it true.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>left</code> - The type to check if it can be assigned to <code>right</code></dd>
-<dd><code>right</code> - The type to check if <code>left</code> can be assigned to it</dd>
-<dt>Returns:</dt>
-<dd>true if <code>left</code> can be assigned to <code>right</code></dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="deCircularize(honeyroasted.jype.TypeConcrete)">
 <h3>deCircularize</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span>&nbsp;<span class="element-name">deCircularize</span><wbr><span class="parameters">(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)</span></div>
@@ -639,21 +608,6 @@ loadScripts(document, 'script');</script>
 <dd><code>type</code> - The type to remove circular references from</dd>
 <dt>Returns:</dt>
 <dd>A type without circular references</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="erasure(honeyroasted.jype.TypeConcrete)">
-<h3>erasure</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&gt;</span>&nbsp;<span class="element-name">erasure</span><wbr><span class="parameters">(<a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>&nbsp;type)</span></div>
-<div class="block">Utilizes the <a href="solver/erasure/ErasureTypeSolver.html" title="class in honeyroasted.jype.system.solver.erasure"><code>ErasureTypeSolver</code></a> to produce the <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> of the given type. The Java compiler erases
- certain generic type information to comply with backwards compatibility. This method will perform the same
- process on the given <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>type</code> - The <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> to apply type erasure to</dd>
-<dt>Returns:</dt>
-<dd>An <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link"><code>Optional</code></a> containing the erased <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, or empty if erasure could not be performed</dd>
 </dl>
 </section>
 </li>
