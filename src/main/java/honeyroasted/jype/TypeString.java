@@ -4,6 +4,7 @@ import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeDeclaration;
 import honeyroasted.jype.type.TypeNull;
 import honeyroasted.jype.type.TypeParameter;
+import honeyroasted.jype.type.TypeVariable;
 
 import java.util.Objects;
 
@@ -157,7 +158,7 @@ public class TypeString {
         DESCRIPTOR,
         /**
          * Represents the {@link String} representation of a {@link Type} as it would be formatted in a Java Virtual
-         * Machine Signature. Note that some types cannot be written as a signature, such as {@link TypeParameter.Fresh}.
+         * Machine Signature. Note that some types cannot be written as a signature, such as {@link TypeVariable}.
          */
         SIGNATURE,
         /**

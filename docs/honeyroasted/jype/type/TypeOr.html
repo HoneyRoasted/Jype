@@ -78,12 +78,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../Type.html" title="interface in honeyroasted.jype">Type</a></code>, <code><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></dd>
+<dd><code><a href="../marker/TypeComposition.html" title="interface in honeyroasted.jype.marker">TypeComposition</a></code>, <code><a href="../Type.html" title="interface in honeyroasted.jype">Type</a></code>, <code><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">TypeOr</span>
 <span class="extends-implements">extends <a href="AbstractType.html" title="class in honeyroasted.jype.type">AbstractType</a>
-implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></span></div>
+implements <a href="../marker/TypeComposition.html" title="interface in honeyroasted.jype.marker">TypeComposition</a></span></div>
 <div class="block">This class represents a union type. That is, a type which is at least one of its children types. Given a union type
  O, and some other type T, the following generally holds true:
  <ul>
@@ -416,7 +416,7 @@ implements <a href="../TypeConcrete.html" title="interface in honeyroasted.jype"
 <dt>Specified by:</dt>
 <dd><code><a href="../TypeConcrete.html#isProperType()">isProperType</a></code>&nbsp;in interface&nbsp;<code><a href="../TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></code></dd>
 <dt>Returns:</dt>
-<dd>True if this is a proper type, that is, it contains no <a href="TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>s, false otherwise.</dd>
+<dd>True if this is a proper type, that is, it contains no <a href="TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a>s, false otherwise.</dd>
 </dl>
 </section>
 </li>

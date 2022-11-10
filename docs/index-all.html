@@ -140,6 +140,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#bound()" class="member-name-link">bound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#bound()" class="member-name-link">bound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#box(honeyroasted.jype.type.TypePrimitive)" class="member-name-link">box(TypePrimitive)</a> - Method in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">This is a utility method to box a <a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type"><code>TypePrimitive</code></a> into a <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
@@ -210,6 +212,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#circularChildren(java.util.Set)" class="member-name-link">circularChildren(Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#circularChildren(java.util.Set)" class="member-name-link">circularChildren(Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#circularChildren(java.util.Set)" class="member-name-link">circularChildren(Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#circularChildren(java.util.Set)" class="member-name-link">circularChildren(Set&lt;TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>
@@ -298,6 +302,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#equalsExactly(honeyroasted.jype.TypeConcrete)" class="member-name-link">equalsExactly(TypeConcrete)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>
 <div class="block">Checks if this <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a> is exactly equal to another <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>.</div>
@@ -353,17 +359,11 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#forEach(java.util.function.Consumer,java.util.Set)" class="member-name-link">forEach(Consumer&lt;TypeConcrete&gt;, Set&lt;TypeConcrete&gt;)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>
 <div class="block">Applies a consumer function over this <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> and its child <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s, if any.</div>
-</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">Fresh(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></dt>
-<dd>
-<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Fresh</code></a> with no bound</div>
-</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">Fresh(TypeSystem, TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></dt>
-<dd>
-<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type"><code>TypeParameter.Fresh</code></a></div>
 </dd>
 </dl>
 <h2 class="title" id="I:G">G</h2>
@@ -419,12 +419,16 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#hashCodeExactly()" class="member-name-link">hashCodeExactly()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#hashCodeExactly()" class="member-name-link">hashCodeExactly()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#hashCodeExactly()" class="member-name-link">hashCodeExactly()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>
 <div class="block">Generates a hash code from the exact type structure represented by this <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>, wherease the normal
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link"><code>Object.hashCode()</code></a> on <a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype"><code>TypeConcrete</code></a>s is compliant with type equality (e.g.</div>
 </dd>
 <dt><a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a> - package honeyroasted.jype</dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/marker/package-summary.html">honeyroasted.jype.marker</a> - package honeyroasted.jype.marker</dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/package-summary.html">honeyroasted.jype.system</a> - package honeyroasted.jype.system</dt>
 <dd>&nbsp;</dd>
@@ -444,6 +448,8 @@ loadScripts(document, 'script');</script>
 <h2 class="title" id="I:I">I</h2>
 <dl class="index">
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#identity()" class="member-name-link">identity()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#identity()" class="member-name-link">identity()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Identity.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">Identity(TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Identity.html" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Identity</a></dt>
 <dd>&nbsp;</dd>
@@ -473,9 +479,9 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#isProperType()" class="member-name-link">isProperType()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html#isProperType()" class="member-name-link">isProperType()</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a></dt>
 <dd>&nbsp;</dd>
@@ -503,6 +509,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#lock()" class="member-name-link">lock()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#lock()" class="member-name-link">lock()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#LONG" class="member-name-link">LONG</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
 <div class="block">The <code>long</code> primitive type.</div>
@@ -511,13 +519,11 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">The boxing type for <a href="honeyroasted/jype/system/TypeSystem.html#LONG"><code>TypeSystem.LONG</code></a>.</div>
 </dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#lowerBound()" class="member-name-link">lowerBound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#lowerBound()" class="member-name-link">lowerBound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:M">M</h2>
 <dl class="index">
-<dt><a href="honeyroasted/jype/Test.html#main(java.lang.String%5B%5D)" class="member-name-link">main(String[])</a> - Static method in class honeyroasted.jype.<a href="honeyroasted/jype/Test.html" title="class in honeyroasted.jype">Test</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeAnd.html#map(java.util.function.Function)" class="member-name-link">map(Function&lt;TypeConcrete, TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" title="class in honeyroasted.jype.type">TypeAnd</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeArray.html#map(java.util.function.Function)" class="member-name-link">map(Function&lt;TypeConcrete, TypeConcrete&gt;)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" title="class in honeyroasted.jype.type">TypeArray</a></dt>
@@ -550,6 +556,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="honeyroasted/jype/type/TypeNone.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" title="class in honeyroasted.jype.type">TypeNone</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#name()" class="member-name-link">name()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeDeclaration.html#namespace()" class="member-name-link">namespace()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type">TypeDeclaration</a></dt>
 <dd>&nbsp;</dd>
@@ -747,21 +755,29 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>SequentialTypeResolver</code></a></div>
 </dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#setLowerBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setLowerBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#setBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>
-<div class="block">Sets the lower bound of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
+<div class="block">Sets the bound of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#setLowerBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setLowerBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>
+<div class="block">Sets the lower bound of this <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a> if it is currently mutable</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#setName(java.lang.String)" class="member-name-link">setName(String)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>
 <div class="block">Sets the name of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
 </dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#setName(java.lang.String)" class="member-name-link">setName(String)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>
+<div class="block">Sets the name of this <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a> if it is currently mutable</div>
+</dd>
 <dt><a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html#setSuccess(boolean)" class="member-name-link">setSuccess(boolean)</a> - Method in class honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html" title="class in honeyroasted.jype.system.operations.result">TypeResultBuilder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html#setSuccess(java.util.function.BooleanSupplier)" class="member-name-link">setSuccess(BooleanSupplier)</a> - Method in class honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html" title="class in honeyroasted.jype.system.operations.result">TypeResultBuilder</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#setUpperBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setUpperBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#setUpperBound(honeyroasted.jype.TypeConcrete)" class="member-name-link">setUpperBound(TypeConcrete)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>
-<div class="block">Sets the upper bound of this <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> if it is currently mutable</div>
+<div class="block">Sets the upper bound of this <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a> if it is currently mutable</div>
 </dd>
 <dt><a href="honeyroasted/jype/system/TypeSystem.html#SHORT" class="member-name-link">SHORT</a> - Variable in class honeyroasted.jype.system.<a href="honeyroasted/jype/system/TypeSystem.html" title="class in honeyroasted.jype.system">TypeSystem</a></dt>
 <dd>
@@ -809,10 +825,6 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="honeyroasted/jype/TypeString.html#target()" class="member-name-link">target()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype">TypeString</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/Test.html" class="type-name-link" title="class in honeyroasted.jype">Test</a> - Class in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
-<dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/Test.html#%3Cinit%3E()" class="member-name-link">Test()</a> - Constructor for class honeyroasted.jype.<a href="honeyroasted/jype/Test.html" title="class in honeyroasted.jype">Test</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Type.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></dt>
 <dd>
 <div class="block">Generates the <a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine descriptor under the given
@@ -836,13 +848,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#toDescriptor(honeyroasted.jype.TypeString.Context)" class="member-name-link">toDescriptor(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#toPackage()" class="member-name-link">toPackage()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
@@ -875,6 +887,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#toReadable(honeyroasted.jype.TypeString.Context)" class="member-name-link">toReadable(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Type.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in interface honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a></dt>
 <dd>
 <div class="block">Generates the <a href="honeyroasted/jype/TypeString.html" title="class in honeyroasted.jype"><code>TypeString</code></a> of this <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>'s Java Virtual Machine signature under the given
@@ -898,13 +912,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#toSignature(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSignature(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#toSimpleName()" class="member-name-link">toSimpleName()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
@@ -931,13 +945,13 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeOut.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" title="class in honeyroasted.jype.type">TypeOut</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></dt>
-<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameter.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" title="class in honeyroasted.jype.type">TypeParameterized</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/type/TypePrimitive.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type">TypePrimitive</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#toSource(honeyroasted.jype.TypeString.Context)" class="member-name-link">toSource(TypeString.Context)</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/Namespace.html#toString()" class="member-name-link">toString()</a> - Method in class honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" title="class in honeyroasted.jype">Namespace</a></dt>
 <dd>&nbsp;</dd>
@@ -977,6 +991,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Represents a cache of <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>s used by a <a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution"><code>TypeResolver</code></a>.</div>
 </dd>
+<dt><a href="honeyroasted/jype/marker/TypeComposition.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeComposition</a> - Interface in <a href="honeyroasted/jype/marker/package-summary.html">honeyroasted.jype.marker</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/TypeConcrete.html" class="type-name-link" title="interface in honeyroasted.jype">TypeConcrete</a> - Interface in <a href="honeyroasted/jype/package-summary.html">honeyroasted.jype</a></dt>
 <dd>
 <div class="block">This interface represents a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a> in the Java type system which is not a declaration.</div>
@@ -1072,7 +1088,7 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">This class represents a type parameter.</div>
 </dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> with no name.</div>
 </dd>
@@ -1080,13 +1096,9 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> with no bounds.</div>
 </dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String,honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, String, TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeParameter.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeParameter(TypeSystem, String, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a>.</div>
-</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.Fresh.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
-<dd>
-<div class="block">This class represents a <a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type"><code>TypeParameter</code></a> that isn't defined in a <a href="honeyroasted/jype/type/TypeDeclaration.html" title="class in honeyroasted.jype.type"><code>TypeDeclaration</code></a>.</div>
 </dd>
 <dt><a href="honeyroasted/jype/type/TypeParameterized.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameterized</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
 <dd>
@@ -1108,6 +1120,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/type/TypePrimitive.html" title="class in honeyroasted.jype.type"><code>TypePrimitive</code></a>.</div>
 </dd>
+<dt><a href="honeyroasted/jype/marker/TypePsuedo.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypePsuedo</a> - Interface in <a href="honeyroasted/jype/marker/package-summary.html">honeyroasted.jype.marker</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/marker/TypeReference.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeReference</a> - Interface in <a href="honeyroasted/jype/marker/package-summary.html">honeyroasted.jype.marker</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/resolution/TypeResolver.html" class="type-name-link" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">T</a>,<wbr><a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="type parameter in TypeResolver">K</a>&gt; - Interface in <a href="honeyroasted/jype/system/resolution/package-summary.html">honeyroasted.jype.system.resolution</a></dt>
 <dd>
 <div class="block">This interface represents a type resolver capable of transforming some object into a <a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype"><code>Type</code></a>.</div>
@@ -1180,6 +1196,24 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates a new <a href="honeyroasted/jype/system/resolution/TypeTokenTypeResolver.html" title="class in honeyroasted.jype.system.resolution"><code>TypeTokenTypeResolver</code></a>.</div>
 </dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeVariable</a> - Class in <a href="honeyroasted/jype/type/package-summary.html">honeyroasted.jype.type</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem)" class="member-name-link">TypeVariable(TypeSystem)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeVariable(TypeSystem, TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a> with no name.</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String)" class="member-name-link">TypeVariable(TypeSystem, String)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a> with no bounds.</div>
+</dd>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#%3Cinit%3E(honeyroasted.jype.system.TypeSystem,java.lang.String,honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">TypeVariable(TypeSystem, String, TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
+<dd>
+<div class="block">Creates a new <a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type"><code>TypeVariable</code></a>.</div>
+</dd>
+<dt><a href="honeyroasted/jype/marker/TypeWild.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeWild</a> - Interface in <a href="honeyroasted/jype/marker/package-summary.html">honeyroasted.jype.marker</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:U">U</h2>
 <dl class="index">
@@ -1191,7 +1225,7 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Unchecked.html#%3Cinit%3E(honeyroasted.jype.TypeConcrete,honeyroasted.jype.TypeConcrete)" class="member-name-link">Unchecked(TypeConcrete, TypeConcrete)</a> - Constructor for class honeyroasted.jype.system.operations.conversion.<a href="honeyroasted/jype/system/operations/conversion/TypeConversion.Unchecked.html" title="class in honeyroasted.jype.system.operations.conversion">TypeConversion.Unchecked</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="honeyroasted/jype/type/TypeParameter.html#upperBound()" class="member-name-link">upperBound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" title="class in honeyroasted.jype.type">TypeParameter</a></dt>
+<dt><a href="honeyroasted/jype/type/TypeVariable.html#upperBound()" class="member-name-link">upperBound()</a> - Method in class honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" title="class in honeyroasted.jype.type">TypeVariable</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:V">V</h2>

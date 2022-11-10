@@ -51,6 +51,7 @@ loadScripts(document, 'script');</script>
 <span class="package-hierarchy-label">Package Hierarchies:</span>
 <ul class="horizontal">
 <li><a href="honeyroasted/jype/package-tree.html">honeyroasted.jype</a>, </li>
+<li><a href="honeyroasted/jype/marker/package-tree.html">honeyroasted.jype.marker</a>, </li>
 <li><a href="honeyroasted/jype/system/package-tree.html">honeyroasted.jype.system</a>, </li>
 <li><a href="honeyroasted/jype/system/cache/package-tree.html">honeyroasted.jype.system.cache</a>, </li>
 <li><a href="honeyroasted/jype/system/operations/package-tree.html">honeyroasted.jype.system.operations</a>, </li>
@@ -67,21 +68,18 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/AbstractType.html" class="type-name-link" title="class in honeyroasted.jype.type">AbstractType</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)
 <ul>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeAnd</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeArray</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeIn</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeMethodDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeMethodDeclaration</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNone</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNull.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNull</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOr</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOut</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)
-<ul>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.Fresh.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter.Fresh</a></li>
-</ul>
-</li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameterized</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeAnd.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeAnd</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeComposition.html" title="interface in honeyroasted.jype.marker">TypeComposition</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeArray.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeArray</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeReference.html" title="interface in honeyroasted.jype.marker">TypeReference</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeIn.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeIn</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeWild.html" title="interface in honeyroasted.jype.marker">TypeWild</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeMethodDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeMethodDeclaration</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypePsuedo.html" title="interface in honeyroasted.jype.marker">TypePsuedo</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNone.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNone</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypePsuedo.html" title="interface in honeyroasted.jype.marker">TypePsuedo</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeNull.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeNull</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypePsuedo.html" title="interface in honeyroasted.jype.marker">TypePsuedo</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOr.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOr</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeComposition.html" title="interface in honeyroasted.jype.marker">TypeComposition</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeOut.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeOut</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeWild.html" title="interface in honeyroasted.jype.marker">TypeWild</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameter.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameter</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeReference.html" title="interface in honeyroasted.jype.marker">TypeReference</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeParameterized.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeParameterized</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeReference.html" title="interface in honeyroasted.jype.marker">TypeReference</a>)</li>
 <li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypePrimitive.html" class="type-name-link" title="class in honeyroasted.jype.type">TypePrimitive</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeVariable.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeVariable</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" title="interface in honeyroasted.jype">TypeConcrete</a>)</li>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/AbstractTypeOperation.html" class="type-name-link" title="class in honeyroasted.jype.system.operations">AbstractTypeOperation</a>&lt;T&gt; (implements honeyroasted.jype.system.operations.<a href="honeyroasted/jype/system/operations/TypeOperation.html" title="interface in honeyroasted.jype.system.operations">TypeOperation</a>&lt;T&gt;)
@@ -106,8 +104,7 @@ loadScripts(document, 'script');</script>
 <li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/Namespace.html" class="type-name-link" title="class in honeyroasted.jype">Namespace</a></li>
 <li class="circle">honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/SequentialTypeResolver.html" class="type-name-link" title="class in honeyroasted.jype.system.resolution">SequentialTypeResolver</a> (implements honeyroasted.jype.system.resolution.<a href="honeyroasted/jype/system/resolution/TypeResolver.html" title="interface in honeyroasted.jype.system.resolution">TypeResolver</a>&lt;T,<wbr>K&gt;)</li>
 <li class="circle">honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/SimpleTypeCache.html" class="type-name-link" title="class in honeyroasted.jype.system.cache">SimpleTypeCache</a>&lt;K&gt; (implements honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;K&gt;)</li>
-<li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/Test.html" class="type-name-link" title="class in honeyroasted.jype">Test</a></li>
-<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeDeclaration</a> (implements honeyroasted.jype.<a href="honeyroasted/jype/Type.html" title="interface in honeyroasted.jype">Type</a>)</li>
+<li class="circle">honeyroasted.jype.type.<a href="honeyroasted/jype/type/TypeDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.type">TypeDeclaration</a> (implements honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypePsuedo.html" title="interface in honeyroasted.jype.marker">TypePsuedo</a>)</li>
 <li class="circle">honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResult.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.result">TypeResult</a>&lt;T&gt;</li>
 <li class="circle">honeyroasted.jype.system.operations.result.<a href="honeyroasted/jype/system/operations/result/TypeResultBuilder.html" class="type-name-link" title="class in honeyroasted.jype.system.operations.result">TypeResultBuilder</a>&lt;T&gt;</li>
 <li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/TypeString.html" class="type-name-link" title="class in honeyroasted.jype">TypeString</a></li>
@@ -123,7 +120,14 @@ loadScripts(document, 'script');</script>
 <ul>
 <li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/Type.html" class="type-name-link" title="interface in honeyroasted.jype">Type</a>
 <ul>
-<li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" class="type-name-link" title="interface in honeyroasted.jype">TypeConcrete</a></li>
+<li class="circle">honeyroasted.jype.<a href="honeyroasted/jype/TypeConcrete.html" class="type-name-link" title="interface in honeyroasted.jype">TypeConcrete</a>
+<ul>
+<li class="circle">honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeComposition.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeComposition</a></li>
+<li class="circle">honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeReference.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeReference</a></li>
+<li class="circle">honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypeWild.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypeWild</a></li>
+</ul>
+</li>
+<li class="circle">honeyroasted.jype.marker.<a href="honeyroasted/jype/marker/TypePsuedo.html" class="type-name-link" title="interface in honeyroasted.jype.marker">TypePsuedo</a></li>
 </ul>
 </li>
 <li class="circle">honeyroasted.jype.system.cache.<a href="honeyroasted/jype/system/cache/TypeCache.html" class="type-name-link" title="interface in honeyroasted.jype.system.cache">TypeCache</a>&lt;K&gt;</li>
