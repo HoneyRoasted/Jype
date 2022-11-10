@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypeReference;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
  * <li>Each argument C<sub>i</sub> is compatible with an argument T<sub>i</sub> if they are equal, or if capture conversion succeeds</li>
  * </ul>
  */
-public class TypeParameterized extends AbstractType implements TypeConcrete {
+public class TypeParameterized extends AbstractType implements TypeReference {
     private TypeDeclaration declaration;
     private List<TypeConcrete> arguments;
 

@@ -95,7 +95,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
             } else {
                 TypeParameter parameter = new TypeParameter(this.typeSystem(), vtype.getName());
                 this.cache().cache(vtype, parameter);
-                parameter.setUpperBound(and(vtype.getBounds()));
+                parameter.setBound(and(vtype.getBounds()));
                 parameter.lock();
                 return parameter;
             }
@@ -130,7 +130,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
                 } else {
                     TypeParameter parameter = new TypeParameter(this.typeSystem(), var.getName());
                     this.cache().cache(var, parameter);
-                    parameter.setUpperBound(and(var.getBounds()));
+                    parameter.setBound(and(var.getBounds()));
                     parameter.lock();
                     type.parameters().add(parameter);
                 }

@@ -6,6 +6,7 @@ import honeyroasted.jype.type.TypeIn;
 import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypeParameterized;
+import honeyroasted.jype.type.TypeVariable;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,7 +75,7 @@ public interface TypeConcrete extends Type {
     }
 
     /**
-     * @return True if this is a proper type, that is, it contains no {@link TypeParameter}s, false otherwise.
+     * @return True if this is a proper type, that is, it contains no {@link TypeVariable}s, false otherwise.
      */
     default boolean isProperType() {
         return true;

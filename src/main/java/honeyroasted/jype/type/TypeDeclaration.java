@@ -4,6 +4,7 @@ import honeyroasted.jype.Namespace;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypePsuedo;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * Every {@link TypeParameterized} has a corresponding {@link TypeDeclaration}, but a {@link TypeDeclaration} may have infinite
  * possible {@link TypeParameterized}s.
  */
-public class TypeDeclaration implements Type {
+public class TypeDeclaration implements TypePsuedo {
     private TypeSystem typeSystem;
     private Namespace namespace;
     private List<TypeParameter> parameters;

@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypePsuedo;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  * This class represents a method declaration pseudo-type. It is mostly provided for generating method descriptors
  * and signatures.
  */
-public class TypeMethodDeclaration extends AbstractType implements Type {
+public class TypeMethodDeclaration extends AbstractType implements TypePsuedo {
     private TypeConcrete returnType;
     private List<TypeParameter> typeParameters;
     private List<TypeConcrete> parameterTypes;

@@ -12,6 +12,7 @@ import honeyroasted.jype.type.TypeOut;
 import honeyroasted.jype.type.TypeParameter;
 import honeyroasted.jype.type.TypeParameterized;
 import honeyroasted.jype.type.TypePrimitive;
+import honeyroasted.jype.type.TypeVariable;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -169,13 +170,13 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
                         TypeParameterized type = this.type();
                         TypeSystem system = type.typeSystem();
                         List<TypeConcrete> capturedArgs = type.arguments().stream()
-                                .map(t -> t instanceof TypeOut || t instanceof TypeIn ? new TypeParameter.Fresh(system) : t).toList();
+                                .map(t -> t instanceof TypeOut || t instanceof TypeIn ? new TypeVariable(system) : t).toList();
 
                         for (int i = 0; i < type.arguments().size(); i++) {
                             TypeConcrete arg = type.arguments().get(i);
                             if (arg instanceof TypeOut || arg instanceof TypeIn) {
-                                TypeParameter.Fresh fresh = (TypeParameter.Fresh) capturedArgs.get(i);
-                                TypeConcrete ui = type.declaration().parameters().get(i).upperBound();
+                                TypeVariable fresh = (TypeVariable) capturedArgs.get(i);
+                                TypeConcrete ui = type.declaration().parameters().get(i).bound();
                                 TypeConcrete substitution = ui.map(t -> {
                                     if (t instanceof TypeParameter param && type.declaration().parameters().contains(param)) {
                                         int index = type.declaration().parameters().indexOf(param);

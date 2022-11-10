@@ -90,7 +90,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
             } else {
                 TypeParameter parameter = new TypeParameter(this.typeSystem(), var.getSimpleName().toString());
                 this.cache().cache(var.asType(), parameter);
-                parameter.setUpperBound(and(var.getBounds()));
+                parameter.setBound(and(var.getBounds()));
                 parameter.lock();
                 return parameter;
             }
@@ -143,7 +143,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
                     } else {
                         TypeParameter parameter = new TypeParameter(this.typeSystem(), var.getSimpleName().toString());
                         this.cache().cache(var.asType(), parameter);
-                        parameter.setUpperBound(and(var.getBounds()));
+                        parameter.setBound(and(var.getBounds()));
                         parameter.lock();
                         type.parameters().add(parameter);
                     }

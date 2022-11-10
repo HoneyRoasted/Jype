@@ -3,9 +3,9 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypeReference;
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -16,10 +16,9 @@ import java.util.function.Consumer;
  * is being used as a reference to a formal type parameter, it should be <i>the same instance</i> of this class
  * being used in both places.
  */
-public class TypeParameter extends AbstractType implements TypeConcrete {
+public class TypeParameter extends AbstractType implements TypeReference {
     private String name;
-    private TypeConcrete upperBound;
-    private TypeConcrete lowerBound;
+    private TypeConcrete bound;
 
     private boolean mutable = true;
 
@@ -28,25 +27,22 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
      *
      * @param system The {@link TypeSystem} this {@link TypeParameter} is a member of
      * @param name   The name of this {@link TypeParameter}
-     * @param upperBound  The upper bound of this {@link TypeParameter}
-     * @param lowerBound The lower bound of this {@link TypeParameter}
+     * @param bound  The bound of this {@link TypeParameter}
      */
-    public TypeParameter(TypeSystem system, String name, TypeConcrete upperBound, TypeConcrete lowerBound) {
+    public TypeParameter(TypeSystem system, String name, TypeConcrete bound) {
         super(system);
         this.name = name;
-        this.upperBound = upperBound;
-        this.lowerBound = lowerBound;
+        this.bound = bound;
     }
 
     /**
      * Creates a new {@link TypeParameter} with no name.
      *
      * @param system The {@link TypeSystem} this {@link TypeParameter} is a member of
-     * @param upperBound  The upper bound of this {@link TypeParameter}
-     * @param lowerBound The lower bound of this {@link TypeParameter}
+     * @param bound  The bound of this {@link TypeParameter}
      */
-    public TypeParameter(TypeSystem system, TypeConcrete upperBound, TypeConcrete lowerBound) {
-        this(system, "<UNKNOWN_NAME>", upperBound, lowerBound);
+    public TypeParameter(TypeSystem system, TypeConcrete bound) {
+        this(system, "<UNKNOWN_NAME>", bound);
     }
 
     /**
@@ -56,7 +52,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
      * @param name   The name of this {@link TypeParameter}
      */
     public TypeParameter(TypeSystem system, String name) {
-        this(system, name, system.of(Object.class).get(), system.NULL);
+        this(system, name, system.of(Object.class).get());
     }
 
     /**
@@ -67,17 +63,10 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     /**
-     * @return The upper bound of this {@link TypeParameter}
+     * @return The bound of this {@link TypeParameter}
      */
-    public TypeConcrete upperBound() {
-        return this.upperBound;
-    }
-
-    /**
-     * @return The lower bound of this {@link TypeParameter}
-     */
-    public TypeConcrete lowerBound() {
-        return this.lowerBound;
+    public TypeConcrete bound() {
+        return this.bound;
     }
 
     /**
@@ -89,28 +78,14 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     }
 
     /**
-     * Sets the upper bound of this {@link TypeParameter} if it is currently mutable
+     * Sets the bound of this {@link TypeParameter} if it is currently mutable
      *
-     * @param upperBound The new bound
+     * @param bound The new bound
      * @throws IllegalStateException if this {@link TypeParameter} is no longer mutable
      */
-    public void setUpperBound(TypeConcrete upperBound) {
+    public void setBound(TypeConcrete bound) {
         if (this.mutable) {
-            this.upperBound = upperBound;
-        } else {
-            throw new IllegalStateException("TypeParameter is no longer mutable");
-        }
-    }
-
-    /**
-     * Sets the lower bound of this {@link TypeParameter} if it is currently mutable
-     *
-     * @param lowerBound The new bound
-     * @throws IllegalStateException if this {@link TypeParameter} is no longer mutable
-     */
-    public void setLowerBound(TypeConcrete lowerBound) {
-        if (this.mutable) {
-            this.lowerBound = lowerBound;
+            this.bound = bound;
         } else {
             throw new IllegalStateException("TypeParameter is no longer mutable");
         }
@@ -135,7 +110,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         if (context == TypeString.Context.CONCRETE) {
             return TypeString.successful("T" + this.name + ";", getClass(), TypeString.Target.SIGNATURE);
         } else {
-            TypeString bound = this.upperBound.toSignature(TypeString.Context.CONCRETE);
+            TypeString bound = this.bound.toSignature(TypeString.Context.CONCRETE);
             return bound.successful() ? TypeString.successful(this.name + ":" + bound.value(), getClass(), TypeString.Target.SIGNATURE) : bound;
         }
     }
@@ -150,7 +125,7 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         if (context == TypeString.Context.CONCRETE) {
             return TypeString.successful(this.name, getClass(), TypeString.Target.SOURCE);
         } else {
-            TypeString bound = this.upperBound.toSource(TypeString.Context.CONCRETE);
+            TypeString bound = this.bound.toSource(TypeString.Context.CONCRETE);
             return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }
@@ -158,16 +133,10 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     @Override
     public TypeString toReadable(TypeString.Context context) {
         if (context == TypeString.Context.CONCRETE) {
-            return TypeString.successful(this.name + "-" + this.identity(), getClass(), TypeString.Target.SOURCE);
+            return TypeString.successful(this.name, getClass(), TypeString.Target.SOURCE);
         } else {
-            TypeString bound = this.upperBound.toReadable(TypeString.Context.CONCRETE);
-            TypeString lower = this.lowerBound.toReadable(TypeString.Context.CONCRETE);
-
-            if (bound.successful() && lower.successful()) {
-                return TypeString.successful(this.name + "-" + this.identity() + " extends " + bound.value() + ", super " + lower.value(), getClass(), TypeString.Target.SOURCE);
-            } else {
-                return bound.successful() ? lower : bound;
-            }
+            TypeString bound = this.bound.toReadable(TypeString.Context.CONCRETE);
+            return bound.successful() ? TypeString.successful(this.name + " extends " + bound.value(), getClass(), TypeString.Target.SOURCE) : bound;
         }
     }
 
@@ -181,18 +150,13 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
         if (!seen.contains(this)) {
             seen.add(this);
             consumer.accept(this);
-            this.upperBound.forEach(consumer, seen);
+            this.bound.forEach(consumer, seen);
         }
     }
 
     @Override
-    public boolean isProperType() {
-        return false;
-    }
-
-    @Override
     public Set<TypeConcrete> circularChildren(Set<TypeConcrete> seen) {
-        return seen.contains(this) ? Set.of(this) : this.upperBound.circularChildren(seen, this);
+        return seen.contains(this) ? Set.of(this) : this.bound.circularChildren(seen, this);
     }
 
     @Override
@@ -203,50 +167,6 @@ public class TypeParameter extends AbstractType implements TypeConcrete {
     @Override
     public int hashCodeExactly() {
         return System.identityHashCode(this);
-    }
-
-    /**
-     * This class represents a {@link TypeParameter} that isn't defined in a {@link TypeDeclaration}. It can be used
-     * as an inference variable. For example, the diamond operator in {@code new ArrayList<>()} would be represented
-     * as a {@link TypeParameterized} with one argument, a TypeParameter.Placeholder.
-     */
-    public static class Fresh extends TypeParameter {
-
-        /**
-         * Creates a new {@link Fresh}
-         *
-         * @param system The {@link TypeSystem} this {@link Fresh} is a member of
-         * @param upperBound  The upper bound of this {@link Fresh}
-         * @param lowerBound The lower bound of this {@link Fresh}
-         */
-        public Fresh(TypeSystem system, TypeConcrete upperBound, TypeConcrete lowerBound) {
-            super(system, "#typevar", upperBound, lowerBound);
-        }
-
-        /**
-         * Creates a new {@link Fresh} with no bound
-         *
-         * @param system The {@link TypeSystem} this {@link Fresh} is a member of
-         */
-        public Fresh(TypeSystem system) {
-            this(system, system.OBJECT, system.NULL);
-        }
-
-        @Override
-        public TypeString toSignature(TypeString.Context context) {
-            return TypeString.failure(Fresh.class, TypeString.Target.SIGNATURE);
-        }
-
-        @Override
-        public TypeString toDescriptor(TypeString.Context context) {
-            return TypeString.failure(Fresh.class, TypeString.Target.DESCRIPTOR);
-        }
-
-        @Override
-        public TypeString toSource(TypeString.Context context) {
-            return TypeString.failure(Fresh.class, TypeString.Target.SOURCE);
-        }
-
     }
 
 }

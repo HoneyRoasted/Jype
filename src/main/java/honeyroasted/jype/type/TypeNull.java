@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypePsuedo;
 import honeyroasted.jype.system.TypeSystem;
 
 /**
@@ -9,7 +10,7 @@ import honeyroasted.jype.system.TypeSystem;
  * is assignable to any reference type. However, no type (other than the null type itself) is assignable to the
  * null type. All instances of this class are considered equal to each other.
  */
-public class TypeNull extends AbstractType implements TypeConcrete {
+public class TypeNull extends AbstractType implements TypePsuedo {
 
     /**
      * Creates a new {@link TypeNull}

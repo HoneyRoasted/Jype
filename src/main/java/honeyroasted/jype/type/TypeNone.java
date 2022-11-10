@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypePsuedo;
 import honeyroasted.jype.system.TypeSystem;
 
 /**
@@ -9,7 +10,7 @@ import honeyroasted.jype.system.TypeSystem;
  * {@code void} is not assignable to any type, and there are no types assignable to {@code void}. Equality between
  * references to this class is determined by instance equality.
  */
-public class TypeNone extends AbstractType implements TypeConcrete {
+public class TypeNone extends AbstractType implements TypePsuedo {
     private String name;
 
     /**

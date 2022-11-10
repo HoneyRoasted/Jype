@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypeComposition;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Collections;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
  * <li>O is assignable to T if, for <i>each</i> type O<sub>i</sub> in O, O<sub>i</sub> is assignable to T</li>
  * </ul>
  */
-public class TypeOr extends AbstractType implements TypeConcrete {
+public class TypeOr extends AbstractType implements TypeComposition {
     private Set<TypeConcrete> types;
 
     /**

@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypeReference;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ import java.util.function.Function;
  * <p>
  * Note that the element of a {@link TypeArray} may be another {@link TypeArray} in the case of multidimensional arrays.
  */
-public class TypeArray extends AbstractType implements TypeConcrete {
+public class TypeArray extends AbstractType implements TypeReference {
     private TypeConcrete element;
 
     /**

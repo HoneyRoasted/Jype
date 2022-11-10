@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
+import honeyroasted.jype.marker.TypeWild;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Set;
@@ -21,7 +22,7 @@ import java.util.function.Function;
  * two wildcards of the form {@code ? super T} and {@code ? super T}, where T is the same type, are not considered
  * equivalent.
  */
-public class TypeIn extends AbstractType implements TypeConcrete {
+public class TypeIn extends AbstractType implements TypeWild {
     private TypeConcrete bound;
 
     /**
