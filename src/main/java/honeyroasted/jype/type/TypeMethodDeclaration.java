@@ -1,6 +1,5 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.Type;
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.TypeString;
 import honeyroasted.jype.marker.TypePsuedo;

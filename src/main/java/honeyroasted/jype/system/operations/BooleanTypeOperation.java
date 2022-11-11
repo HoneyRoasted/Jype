@@ -3,7 +3,6 @@ package honeyroasted.jype.system.operations;
 import honeyroasted.jype.Namespace;
 import honeyroasted.jype.Type;
 
-import java.util.Arrays;
 import java.util.stream.Stream;
 
 public interface BooleanTypeOperation extends TypeOperation<Boolean> {

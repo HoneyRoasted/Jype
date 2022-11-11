@@ -18,7 +18,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public interface TypeConversion extends TypeOperation<TypeConcrete> {
 
@@ -31,7 +30,7 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         public TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Equal(this.type(0), this.type(1)))
+                    .andCause(new BooleanTypeOperation.Equal(this.type(0), this.type(1)))
                     .build();
         }
     }
@@ -56,14 +55,14 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         public TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class))
-                    .and(new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class))
-                    .and(() -> {
+                    .andCause(new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class))
+                    .andCause(new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class))
+                    .andCause(t -> {
                         TypePrimitive from = this.type(0);
                         TypePrimitive to = this.type(1);
                         return WIDENING_CONVERSIONS.get(from.descriptor()).contains(to.descriptor());
                     })
-                    .value(() -> this.type(1))
+                    .value(t -> this.type(1))
                     .build();
         }
     }
@@ -87,14 +86,14 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         protected TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class))
-                    .and(new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class))
-                    .and(() -> {
+                    .andCause(new BooleanTypeOperation.Kind(this.type(0), TypePrimitive.class))
+                    .andCause(new BooleanTypeOperation.Kind(this.type(1), TypePrimitive.class))
+                    .andCause(t -> {
                         TypePrimitive from = this.type(0);
                         TypePrimitive to = this.type(1);
                         return NARROWING_CONVERSIONS.get(from.descriptor()).contains(to.descriptor());
                     })
-                    .value(() -> this.type(1))
+                    .value(t -> this.type(1))
                     .build();
         }
     }
@@ -108,8 +107,8 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         protected TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Kind(this.type(), TypePrimitive.class))
-                    .value(() -> this.type().typeSystem().box(this.type()))
+                    .andCause(new BooleanTypeOperation.Kind(this.type(), TypePrimitive.class))
+                    .value(t -> this.type().typeSystem().box(this.type()))
                     .build();
         }
     }
@@ -125,15 +124,15 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
             TypeSystem system = this.type().typeSystem();
 
             return TypeResult.builder(this)
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.BOOLEAN_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.BYTE_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.SHORT_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.CHAR_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.INT_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.LONG_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.FLOAT_BOX))
-                    .or(new BooleanTypeOperation.Equal(this.type(), system.DOUBLE_BOX))
-                    .value(() -> system.unbox(this.type()).orElse(null))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.BOOLEAN_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.BYTE_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.SHORT_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.CHAR_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.INT_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.LONG_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.FLOAT_BOX))
+                    .orCause(new BooleanTypeOperation.Equal(this.type(), system.DOUBLE_BOX))
+                    .value(t -> system.unbox(this.type()).orElse(null))
                     .build();
         }
     }
@@ -147,11 +146,11 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         protected TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Kind(this.type(0), TypeParameterized.class))
-                    .and(new BooleanTypeOperation.Kind(this.type(1), TypeParameterized.class))
-                    .and(() -> new BooleanTypeOperation.Equal(this.<TypeParameterized>type(0).declaration(), this.<TypeParameterized>type(1).declaration()))
-                    .and(() -> this.<TypeParameterized>type(0).arguments().isEmpty())
-                    .value(() -> this.<TypeParameterized>type(1))
+                    .andCause(new BooleanTypeOperation.Kind(this.type(0), TypeParameterized.class))
+                    .andCause(new BooleanTypeOperation.Kind(this.type(1), TypeParameterized.class))
+                    .andCause(t -> new BooleanTypeOperation.Equal(this.<TypeParameterized>type(0).declaration(), this.<TypeParameterized>type(1).declaration()))
+                    .and(t -> this.<TypeParameterized>type(0).arguments().isEmpty())
+                    .value(t -> this.<TypeParameterized>type(1))
                     .build();
         }
     }
@@ -165,8 +164,8 @@ public interface TypeConversion extends TypeOperation<TypeConcrete> {
         @Override
         protected TypeResult<TypeConcrete> result() {
             return TypeResult.builder(this)
-                    .and(new BooleanTypeOperation.Kind(this.type(), TypeParameterized.class))
-                    .value(() -> {
+                    .andCause(new BooleanTypeOperation.Kind(this.type(), TypeParameterized.class))
+                    .value(r -> {
                         TypeParameterized type = this.type();
                         TypeSystem system = type.typeSystem();
                         List<TypeConcrete> capturedArgs = type.arguments().stream()

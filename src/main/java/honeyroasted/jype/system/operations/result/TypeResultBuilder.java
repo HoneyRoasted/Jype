@@ -2,120 +2,118 @@ package honeyroasted.jype.system.operations.result;
 
 import honeyroasted.jype.system.operations.TypeOperation;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class TypeResultBuilder<T> {
-    private Supplier<T> value = () -> null;
-    private BooleanSupplier success = null;
-    private List<Supplier<TypeResult<?>>> causes = new ArrayList<>();
-    private TypeOperation operation;
+    private Function<TypeResult<T>, T> value = t -> null;
+    private List<Function<TypeResult<T>, TypeResult<?>>> causes;
+    private Predicate<TypeResult<T>> success;
+    private TypeOperation<T> operation;
 
-    public TypeResultBuilder<T> and(BooleanSupplier success) {
+    public TypeResultBuilder<T> and(Predicate<TypeResult<T>> success) {
         if (this.success == null) {
             this.success = success;
         } else {
-            BooleanSupplier curr = this.success;
-            this.success = () -> curr.getAsBoolean() && success.getAsBoolean();
+            Predicate<TypeResult<T>> curr = this.success;
+            this.success = t -> curr.test(t) && success.test(t);
         }
         return this;
     }
 
     public TypeResultBuilder<T> and(boolean success) {
         if (!success) {
-            this.success = () -> false;
+            this.success = t -> false;
         } else if (this.success == null) {
-            this.success = () -> true;
+            this.success = t -> true;
         }
         return this;
     }
 
-    public TypeResultBuilder<T> and(Supplier<?> supplier) {
-        Supplier<TypeResult<?>> res = make(supplier);
+    public TypeResultBuilder<T> andCause(Function<TypeResult<T>, ?> supplier) {
+        Function<TypeResult<T>, TypeResult<?>> res = make(supplier);
         this.causes.add(res);
-        this.and(() -> res.get().successful());
+        this.and(t -> res.apply(t).successful());
         return this;
     }
 
-    public TypeResultBuilder<T> and(TypeResult<?> result) {
-        this.causes.add(() -> result);
-        this.and(result::successful);
+    public TypeResultBuilder<T> andCause(TypeResult<?> result) {
+        this.causes.add(t -> result);
+        this.and(t -> result.successful());
         return this;
     }
 
-    public TypeResultBuilder<T> and(TypeOperation<?> operation) {
-        this.causes.add(operation::perform);
-        this.and(() -> operation.perform().successful());
+    public TypeResultBuilder<T> andCause(TypeOperation<?> operation) {
+        this.causes.add(t -> operation.perform());
+        this.and(t -> operation.perform().successful());
         return this;
     }
 
-    public TypeResultBuilder<T> or(BooleanSupplier success) {
+    public TypeResultBuilder<T> or(Predicate<TypeResult<T>> success) {
         if (this.success == null) {
             this.success = success;
         } else {
-            BooleanSupplier curr = this.success;
-            this.success = () -> curr.getAsBoolean() || success.getAsBoolean();
+            Predicate<TypeResult<T>> curr = this.success;
+            this.success = t -> curr.test(t) || success.test(t);
         }
         return this;
     }
 
     public TypeResultBuilder<T> or(boolean success) {
         if (success) {
-            this.success = () -> true;
+            this.success = t -> true;
         } else if (this.success == null) {
-            this.success = () -> false;
+            this.success = t -> false;
         }
         return this;
     }
 
-    public TypeResultBuilder<T> or(Supplier<?> supplier) {
-        Supplier<TypeResult<?>> res = make(supplier);
+    public TypeResultBuilder<T> orCause(Function<TypeResult<T>, ?> supplier) {
+        Function<TypeResult<T>, TypeResult<?>> res = make(supplier);
         this.causes.add(res);
-        this.or(() -> res.get().successful());
+        this.or(t -> res.apply(t).successful());
         return this;
     }
 
-    public TypeResultBuilder<T> or(TypeResult<?> result) {
-        this.causes.add(() -> result);
-        this.or(result::successful);
+    public TypeResultBuilder<T> orCause(TypeResult<?> result) {
+        this.causes.add(t -> result);
+        this.or(t -> result.successful());
         return this;
     }
 
-    public TypeResultBuilder<T> or(TypeOperation<?> operation) {
-        this.causes.add(operation::perform);
-        this.or(() -> operation.perform().successful());
+    public TypeResultBuilder<T> orCause(TypeOperation<?> operation) {
+        this.causes.add(t -> operation.perform());
+        this.or(t -> operation.perform().successful());
         return this;
     }
 
-    public TypeResultBuilder<T> setSuccess(BooleanSupplier success) {
+    public TypeResultBuilder<T> setSuccess(Predicate<TypeResult<T>> success) {
         this.success = success;
         return this;
     }
 
     public TypeResultBuilder<T> setSuccess(boolean success) {
-        this.success = () -> success;
+        this.success = t -> success;
         return this;
     }
 
-    public TypeResultBuilder<T> causes(Supplier<TypeResult<?>>... causes) {
+    public TypeResultBuilder<T> causes(Function<TypeResult<T>, TypeResult<?>>... causes) {
         Collections.addAll(this.causes, causes);
         return this;
     }
 
     public TypeResultBuilder<T> causes(TypeResult<?>... causes) {
         for (TypeResult<?> cause : causes) {
-            this.causes.add(() -> cause);
+            this.causes.add(t -> cause);
         }
         return this;
     }
 
     public TypeResultBuilder<T> causes(TypeOperation<?>... operations) {
         for (TypeOperation<?> operation : operations) {
-            this.causes.add(operation::perform);
+            this.causes.add(t -> operation.perform());
         }
         return this;
     }
@@ -125,19 +123,19 @@ public class TypeResultBuilder<T> {
         return this;
     }
 
-    public TypeResultBuilder<T> valueAttempt(Supplier<T> value) {
+    public TypeResultBuilder<T> valueAttempt(Function<TypeResult<T>, T> value) {
         this.value(value);
-        this.and(() -> value.get() != null);
+        this.and(t -> value.apply(t) != null);
         return this;
     }
 
-    public TypeResultBuilder<T> value(Supplier<T> value) {
+    public TypeResultBuilder<T> value(Function<TypeResult<T>, T> value) {
         this.value = value;
         return this;
     }
 
     public TypeResultBuilder<T> value(T value) {
-        this.value = () -> value;
+        this.value = t -> value;
         return this;
     }
 
@@ -145,9 +143,9 @@ public class TypeResultBuilder<T> {
         return new TypeResult<>(this.value, this.causes, this.success, this.operation);
     }
 
-    private static Supplier<TypeResult<?>> make(Supplier<?> original) {
-        return () -> {
-            Object val = original.get();
+    private Function<TypeResult<T>, TypeResult<?>> make(Function<TypeResult<T>, ?> original) {
+        return t -> {
+            Object val = original.apply(t);
             if (val instanceof TypeResult<?> res) {
                 return res;
             } else if (val instanceof TypeOperation<?> op) {
