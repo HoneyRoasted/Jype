@@ -35,7 +35,7 @@ public interface TypeDirectSuper extends TypeOperation<Set<TypeConcrete>> {
         protected TypeResult<Set<TypeConcrete>> result() {
             return TypeResult.builder(this)
                     .andCause(new BooleanTypeOperation.Kind(this.type(), TypePrimitive.class))
-                    .value(() -> {
+                    .value(t -> {
                         TypePrimitive type = this.type();
                         return PRIMITIVE_DIRECT_SUPERS.get(type.descriptor()).stream().map(type.typeSystem().DESCRIPTOR_TO_PRIMITIVE::get)
                                 .collect(Collectors.toUnmodifiableSet());
@@ -55,7 +55,7 @@ public interface TypeDirectSuper extends TypeOperation<Set<TypeConcrete>> {
         protected TypeResult<Set<TypeConcrete>> result() {
             return TypeResult.builder(this)
                     .andCause(new BooleanTypeOperation.Kind(this.type(), TypeParameterized.class))
-                    .value(() -> {
+                    .value(t -> {
                         TypeParameterized type = this.type();
                         Set<TypeConcrete> res = new HashSet<>();
                         type.declaration().parents().forEach(p -> type.parent(p.declaration()).ifPresent(res::add));
