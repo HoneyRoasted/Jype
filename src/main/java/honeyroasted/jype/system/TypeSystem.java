@@ -21,6 +21,7 @@ import honeyroasted.jype.type.TypeParameterized;
 import honeyroasted.jype.type.TypePrimitive;
 
 import javax.lang.model.type.TypeMirror;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +145,8 @@ public class TypeSystem {
      */
     public final Set<TypePrimitive> ALL_PRIMITIVES;
 
+    public final Map<String, TypePrimitive> DESCRIPTOR_TO_PRIMITIVE;
+
     private final Map<TypePrimitive, Class<?>> PRIM_TO_BOX;
     private final Map<Namespace, TypePrimitive> BOX_TO_PRIM;
 
@@ -200,6 +203,10 @@ public class TypeSystem {
         OBJECT_CLASS = declaration(Object.class).get();
 
         ALL_PRIMITIVES = Set.of(BOOLEAN, BYTE, SHORT, CHAR, INT, LONG, FLOAT, DOUBLE);
+
+        Map<String, TypePrimitive> descToPrim = new HashMap<>();
+        ALL_PRIMITIVES.forEach(t -> descToPrim.put(t.descriptor(), t));
+        DESCRIPTOR_TO_PRIMITIVE = Collections.unmodifiableMap(descToPrim);
 
         PRIM_TO_BOX = Map.of(
                 BOOLEAN, Boolean.class,

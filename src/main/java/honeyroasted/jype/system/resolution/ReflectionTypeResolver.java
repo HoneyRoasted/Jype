@@ -138,7 +138,7 @@ public class ReflectionTypeResolver extends AbstractTypeResolver<Type, Class> {
 
             if (clazz.getSuperclass() != null) {
                 type.parents().add((TypeParameterized) of(clazz.getGenericSuperclass()));
-            } else if (clazz.isInterface()) {
+            } else if (clazz.isInterface() && clazz.getInterfaces().length == 0) {
                 type.parents().add((TypeParameterized) of(Object.class));
             }
 

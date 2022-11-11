@@ -152,7 +152,7 @@ public class TypeMirrorTypeResolver extends AbstractTypeResolver<TypeMirror, Dec
                 TypeMirror superclass = typeElement.getSuperclass();
                 if (superclass.getKind() != TypeKind.NONE) {
                     type.parents().add((TypeParameterized) of(superclass));
-                } else if (typeElement.getKind() == ElementKind.INTERFACE) {
+                } else if (typeElement.getKind() == ElementKind.INTERFACE && typeElement.getInterfaces().isEmpty()) {
                     type.parents().add(this.typeSystem().OBJECT);
                 }
 
