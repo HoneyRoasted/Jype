@@ -1,10 +1,7 @@
-package honeyroasted.jype.system.operations.conversion;
+package honeyroasted.jype.system.operations;
 
 import honeyroasted.jype.TypeConcrete;
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.operations.AbstractTypeOperation;
-import honeyroasted.jype.system.operations.BooleanTypeOperation;
-import honeyroasted.jype.system.operations.TypeOperation;
 import honeyroasted.jype.system.operations.result.TypeResult;
 import honeyroasted.jype.type.TypeAnd;
 import honeyroasted.jype.type.TypeIn;

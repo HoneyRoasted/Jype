@@ -78,7 +78,7 @@ public class TypeAnd extends AbstractType implements TypeComposition {
 
     @Override
     public <T extends Type> T map(Function<TypeConcrete, TypeConcrete> mapper) {
-        return (T) mapper.apply(new TypeAnd(this.typeSystem(), this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toSet())));
+        return (T) mapper.apply(new TypeAnd(this.typeSystem(), this.types.stream().map(t -> (TypeConcrete) t.map(mapper)).collect(Collectors.toCollection(LinkedHashSet::new))));
     }
 
     @Override
