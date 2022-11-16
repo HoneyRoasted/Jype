@@ -7,8 +7,10 @@ import honeyroasted.jype.marker.TypeReference;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -112,6 +114,12 @@ public class TypeParameterized extends AbstractType implements TypeReference {
 
             return current;
         }).orElse(null)));
+    }
+
+    public Set<TypeParameterized> directParents() {
+        Set<TypeParameterized> parents = new LinkedHashSet<>();
+        this.declaration.parents().forEach(t -> this.directParent(t.declaration).ifPresent(parents::add));
+        return Collections.unmodifiableSet(parents);
     }
 
     private Optional<TypeParameterized> directParent(TypeDeclaration parent) {
