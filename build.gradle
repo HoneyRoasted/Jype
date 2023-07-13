@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = 1.17
-targetCompatibility = 1.17
+sourceCompatibility = 1.19
+targetCompatibility = 1.19
 
 group 'honeyroasted.jype'
 version '0.0.8'
@@ -15,7 +15,15 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
+    implementation('org.ow2.asm:asm:9.5',
+            'org.ow2.asm:asm-util:9.5',
+            'org.ow2.asm:asm-tree:9.5',
+            'org.ow2.asm:asm-commons:9.5',
+            'org.ow2.asm:asm-analysis:9.5')
+
+    implementation fileTree(dir: "libs", includes: ["*.jar"])
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
 }
 
 task ghpagesJavadocs(type: Javadoc) {
@@ -27,14 +35,12 @@ task ghpagesJavadocs(type: Javadoc) {
 
 task javadocJar(type: Jar) {
     from javadoc
-
-    classifier("javadoc")
+    archiveClassifier.set("javadoc")
 }
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
-
-    classifier("source")
+    archiveClassifier.set("source")
 }
 
 artifacts {

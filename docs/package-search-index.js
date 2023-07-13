@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"honeyroasted.jype"},{"l":"honeyroasted.jype.marker"},{"l":"honeyroasted.jype.system"},{"l":"honeyroasted.jype.system.cache"},{"l":"honeyroasted.jype.system.operations"},{"l":"honeyroasted.jype.system.operations.result"},{"l":"honeyroasted.jype.system.resolution"},{"l":"honeyroasted.jype.type"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"honeyroasted.jype"}];updateSearchResults();
