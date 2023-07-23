@@ -58,11 +58,7 @@ public record Name(Type type, SubType subType, Name containing, String value) {
         Name containing;
 
         if (Name.isInInitializer(clazz)) {
-            if (Name.isInConstructorInitializer(clazz)) {
-                containing = new Name(Type.METHOD, SubType.INITIALIZER, nameOf(clazz.getEnclosingClass()), "<init$" + nestIndex(clazz) + ">");
-            } else {
-                containing = new Name(Type.METHOD, SubType.STATIC_INITIALIZER, nameOf(clazz.getEnclosingClass()), "<clinit$" + nestIndex(clazz) + ">");
-            }
+            containing = new Name(Type.METHOD, SubType.INITIALIZER, nameOf(clazz.getEnclosingClass()), "<initializer$" + nestIndex(clazz) + ">");
         } else if (clazz.getEnclosingMethod() != null) {
             containing = nameOf(clazz.getEnclosingMethod());
         } else if (clazz.getEnclosingConstructor() != null) {
@@ -147,20 +143,6 @@ public record Name(Type type, SubType subType, Name containing, String value) {
                 cls.getEnclosingClass() != null;
     }
 
-    private static boolean isInConstructorInitializer(Class<?> cls) {
-        /*
-         * As far as I can tell, the only way to distinguish a class declared in a
-         * <clinit> initializer vs an {} initializer block is that the class in the
-         * <clinit> block will be static and not require an instance of the parent
-         * class. I can't find any difference in modifiers or definitions of these
-         * classes except that the class in the {} initializer block will have
-         * it's enclosing class as a parameter in its constructor.
-         */
-
-        Class<?> enclosing = cls.getEnclosingClass();
-        return Stream.of(cls.getDeclaredConstructors()).allMatch(c -> c.getParameterTypes().length > 0 && c.getParameterTypes()[0].equals(enclosing));
-    }
-
     private static int nestIndex(Class<?> cls) {
         return indexOf(cls, cls.getEnclosingClass().getNestMembers());
     }
@@ -179,15 +161,7 @@ public record Name(Type type, SubType subType, Name containing, String value) {
     }
 
     public boolean isConstructor() {
-        return this.type == Type.METHOD && this.value.startsWith("<init>(");
-    }
-
-    public boolean isConstructorInitializer() {
-        return this.type == Type.METHOD && this.value.equals("<init>");
-    }
-
-    public boolean isStaticInitializer() {
-        return this.type == Type.METHOD && this.value.equals("<clinit>");
+        return this.type == Type.METHOD && this.subType == SubType.CONSTRUCTOR;
     }
 
     public boolean isReferenceable() {
@@ -226,7 +200,6 @@ public record Name(Type type, SubType subType, Name containing, String value) {
 
     enum SubType {
         INITIALIZER,
-        STATIC_INITIALIZER,
         CONSTRUCTOR,
         ANONYMOUS_CLASS,
         NONE
