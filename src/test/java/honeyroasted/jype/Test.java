@@ -1,5 +1,7 @@
 package honeyroasted.jype;
 
+import honeyroasted.jype.model.name.ClassLocation;
+import honeyroasted.jype.model.name.ClassName;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.TraceClassVisitor;
 
@@ -7,7 +9,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class Test {
     static Class<?> insideStatic;
@@ -67,8 +68,8 @@ public class Test {
     }
 
     private static void printName(Class<?> cls) {
-        System.out.println("Name: " + Name.nameOf(cls));
-        System.out.println("Location: " + Name.locationOf(cls));
+        System.out.println("Name: " + ClassName.of(cls));
+        System.out.println("Location: " + ClassLocation.of(cls));
         System.out.println("------------------------------------");
     }
 
