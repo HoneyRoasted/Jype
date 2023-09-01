@@ -51,8 +51,8 @@ public class Test {
         test();
         new Test();
 
-        printName(anonymousClassInMethod);
-        printName(insideStatic2);
+        printName(int.class);
+        printName(String[][][].class);
     }
 
     private static String fileName(Class<?> cls) {

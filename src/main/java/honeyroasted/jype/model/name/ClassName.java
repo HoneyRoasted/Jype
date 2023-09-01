@@ -19,6 +19,8 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
 
         if (clazz.isPrimitive()) {
             return new ClassName(Type.CLASS, SubType.NONE, clazz.getName());
+        } else if (clazz.isArray()) {
+            return new ClassName(Type.CLASS, SubType.ARRAY, of(clazz.getComponentType()), "[]");
         }
 
         ClassName containing;
@@ -122,6 +124,10 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
         return -1;
     }
 
+    public boolean isArray() {
+        return this.type == Type.CLASS && this.subType == SubType.ARRAY;
+    }
+
     public boolean isAnonymousClass() {
         return this.type == Type.CLASS && this.subType == SubType.ANONYMOUS_CLASS;
     }
@@ -142,7 +148,11 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
     }
 
     public String toString(String delim) {
-        return this.containing == null ? this.value : this.containing.toString(delim) + delim + this.value;
+        if (this.subType == SubType.ARRAY) {
+            return this.containing == null ? this.value : this.containing.toString(delim) + this.value;
+        } else {
+            return this.containing == null ? this.value : this.containing.toString(delim) + delim + this.value;
+        }
     }
 
     public String toString() {
@@ -159,6 +169,7 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
         INITIALIZER,
         CONSTRUCTOR,
         ANONYMOUS_CLASS,
+        ARRAY,
         NONE
     }
 }
