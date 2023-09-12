@@ -3,6 +3,7 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -150,5 +151,10 @@ public final class ClassReference extends AbstractPossiblyUnmodifiableType {
     @Override
     public String toString() {
         return this.namespace.toString();
+    }
+
+    @Override
+    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitClassRef(this, context);
     }
 }

@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Objects;
 
@@ -40,5 +41,10 @@ public final class ArrayType extends AbstractType {
     @Override
     public String toString() {
         return this.component + "[]";
+    }
+
+    @Override
+    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitArray(this, context);
     }
 }

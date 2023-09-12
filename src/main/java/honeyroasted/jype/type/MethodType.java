@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,5 +72,10 @@ public final class MethodType extends AbstractPossiblyUnmodifiableType {
             sb.append(">");
         }
         return sb.toString();
+    }
+
+    @Override
+    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitMethod(this, context);
     }
 }
