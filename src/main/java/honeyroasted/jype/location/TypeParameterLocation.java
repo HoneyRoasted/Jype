@@ -28,6 +28,6 @@ public record TypeParameterLocation(TypeParameterHost containing, String name) {
 
     @Override
     public String toString() {
-        return this.containing + ".<" + this.name + ">";
+        return this.containing + ".#" + this.name;
     }
 }

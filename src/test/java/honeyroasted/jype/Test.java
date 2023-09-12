@@ -2,6 +2,10 @@ package honeyroasted.jype;
 
 import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.resolver.reflection.TypeToken;
+
+import java.util.List;
+import java.util.Map;
 
 public class Test {
 
@@ -9,9 +13,10 @@ public class Test {
         test();
     }
 
-    public static <T> void test() {
+    public static <T extends B, B extends List<T>> void test() {
         TypeSystem system = new TypeSystem();
-        System.out.println(system.resolve(ClassLocation.of(int.class)).get());
+        System.out.println(system.resolve(new TypeToken<Map<String, List<? extends T>>>() {}).get());
+        System.out.println(system.resolve(void.class).get());
     }
 
 }
