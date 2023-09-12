@@ -1,18 +1,23 @@
-package honeyroasted.jype.model;
+package honeyroasted.jype.type;
 
-import honeyroasted.jype.model.name.ClassNamespace;
-import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.location.ClassNamespace;
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ClassReference extends PossiblyUnmodifiable {
+public class ClassReference extends AbstractPossiblyUnmodifiableType {
     private ClassNamespace namespace;
     private ClassReference superClass;
-    private List<ClassReference> interfaces;
-    private List<VarType> typeParameters;
+    private List<ClassReference> interfaces = new ArrayList<>();
+    private List<VarType> typeParameters = new ArrayList<>();
+
+    public ClassReference(TypeSystem typeSystem) {
+        super(typeSystem);
+    }
 
     @Override
     protected void makeUnmodifiable() {

@@ -1,9 +1,9 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.model.PossiblyUnmodifiable;
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.Objects;
+import java.util.List;
 
 public abstract class WildType extends AbstractPossiblyUnmodifiableType {
 
@@ -12,81 +12,91 @@ public abstract class WildType extends AbstractPossiblyUnmodifiableType {
     }
 
     public static class Upper extends WildType {
-        private Type upperBound;
+        private List<Type> upperBound;
 
-        public Upper(TypeSystem typeSystem, Type upperBound) {
+        public Upper(TypeSystem typeSystem, List<Type> upperBound) {
             super(typeSystem);
-            this.upperBound = upperBound;
+            this.upperBound = List.copyOf(upperBound);
         }
 
         @Override
-        public Type upperBound() {
+        public List<Type> upperBounds() {
             return this.upperBound;
         }
 
         @Override
-        public Type lowerBound() {
-            return null;
+        public List<Type> lowerBounds() {
+            return List.of(this.typeSystem().constants().nullType());
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Upper upper = (Upper) o;
-            return Objects.equals(upperBound, upper.upperBound);
+            return this == o;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(upperBound);
+            return System.identityHashCode(this);
         }
 
         @Override
         public String toString() {
-            return "? extends " + this.upperBound;
+            StringBuilder sb = new StringBuilder();
+            sb.append("? extends ");
+            for (int i = 0; i < this.upperBound.size(); i++) {
+                sb.append(this.upperBound.get(i));
+                if (i < this.upperBound.size() - 1) {
+                    sb.append(" & ");
+                }
+            }
+            return sb.toString();
         }
     }
 
     public static class Lower extends WildType {
-        private Type lowerBound;
+        private List<Type> lowerBound;
 
-        public Lower(TypeSystem typeSystem, Type lowerBound) {
+        public Lower(TypeSystem typeSystem, List<Type> lowerBound) {
             super(typeSystem);
-            this.lowerBound = lowerBound;
+            this.lowerBound = List.copyOf(lowerBound);
         }
 
         @Override
-        public Type upperBound() {
-            return this.typeSystem().OBJECT;
+        public List<Type> upperBounds() {
+            return List.of(this.typeSystem().constants().object());
         }
 
         @Override
-        public Type lowerBound() {
+        public List<Type> lowerBounds() {
             return this.lowerBound;
         }
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Lower lower = (Lower) o;
-            return Objects.equals(lowerBound, lower.lowerBound);
+            return this == o;
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(lowerBound);
+            return System.identityHashCode(this);
         }
 
         @Override
         public String toString() {
-            return "? super " + this.lowerBound;
+            StringBuilder sb = new StringBuilder();
+            sb.append("? super ");
+            for (int i = 0; i < this.lowerBound.size(); i++) {
+                sb.append(this.lowerBound.get(i));
+                if (i < this.lowerBound.size() - 1) {
+                    sb.append(" & ");
+                }
+            }
+            return sb.toString();
         }
     }
 
-    public abstract Type upperBound();
+    public abstract List<Type> upperBounds();
 
-    public abstract Type lowerBound();
+    public abstract List<Type> lowerBounds();
 
 }

@@ -1,4 +1,4 @@
-package honeyroasted.jype.model.name;
+package honeyroasted.jype.location;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

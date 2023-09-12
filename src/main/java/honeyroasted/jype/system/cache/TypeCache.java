@@ -12,4 +12,6 @@ public interface TypeCache<K, T extends Type> {
 
     void put(K key, T val);
 
+    void remove(K key);
+
 }

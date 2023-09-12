@@ -23,4 +23,9 @@ public class InMemoryTypeCache<K, T extends Type> implements TypeCache<K, T> {
     public void put(K key, T val) {
         this.cache.put(key, val);
     }
+
+    @Override
+    public void remove(K key) {
+        this.cache.remove(key);
+    }
 }

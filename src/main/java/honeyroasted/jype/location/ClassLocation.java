@@ -1,8 +1,8 @@
-package honeyroasted.jype.model.name;
+package honeyroasted.jype.location;
 
-public record ClassLocation(Type type, ClassLocation containing, String value) {
-    public static final ClassLocation NONE = new ClassLocation(Type.CLASS, null, null);
+public record ClassLocation(Type type, ClassLocation containing, String value) implements TypeParameterHost {
     public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
+    public static final ClassLocation VOID = ClassLocation.of(void.class);
 
     public static ClassLocation of(Class<?> cls) {
         if (cls == null) {
@@ -33,6 +33,18 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
         }
     }
 
+    public boolean isArray() {
+        return this.type == Type.ARRAY;
+    }
+
+    public String toRuntimeName() {
+        if (this.containing != null && this.containing.type != Type.MODULE) {
+            return this.containing.toRuntimeName() + "." + this.value;
+        }
+
+        return this.value;
+    }
+
     public String toString(String delim, String moduleDelim) {
         StringBuilder sb = new StringBuilder();
         if (this.containing != null && !this.containing.equals(DEFAULT_MODULE)) {
@@ -53,6 +65,11 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
 
     public String toString() {
         return this.toString(".", "/");
+    }
+
+    @Override
+    public ClassLocation containingClass() {
+        return this;
     }
 
     enum Type {

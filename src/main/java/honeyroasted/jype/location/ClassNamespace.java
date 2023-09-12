@@ -1,4 +1,4 @@
-package honeyroasted.jype.model.name;
+package honeyroasted.jype.location;
 
 public record ClassNamespace(ClassLocation location, ClassName name) {
 

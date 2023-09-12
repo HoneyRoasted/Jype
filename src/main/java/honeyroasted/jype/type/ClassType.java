@@ -1,6 +1,6 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.model.ClassReference;
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.List;

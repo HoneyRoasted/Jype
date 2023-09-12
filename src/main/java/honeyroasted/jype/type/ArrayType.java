@@ -1,5 +1,6 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;

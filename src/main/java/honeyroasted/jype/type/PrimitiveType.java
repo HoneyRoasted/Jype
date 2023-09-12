@@ -1,11 +1,9 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.model.name.ClassLocation;
-import honeyroasted.jype.model.name.ClassName;
-import honeyroasted.jype.model.name.ClassNamespace;
+import honeyroasted.jype.location.ClassNamespace;
+import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.List;
 import java.util.Objects;
 
 public class PrimitiveType extends AbstractType {

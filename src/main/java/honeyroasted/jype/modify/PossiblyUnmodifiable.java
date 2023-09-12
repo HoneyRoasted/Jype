@@ -1,4 +1,4 @@
-package honeyroasted.jype.model;
+package honeyroasted.jype.modify;
 
 public abstract class PossiblyUnmodifiable {
     private boolean unmodifiable;

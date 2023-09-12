@@ -1,14 +1,14 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.List;
 import java.util.Objects;
 
 public class MethodType extends AbstractPossiblyUnmodifiableType {
-    private Type returnType;
+    private MethodReference methodReference;
     private List<Type> typeArguments;
-    private List<VarType> typeParameters;
 
     public MethodType(TypeSystem typeSystem) {
         super(typeSystem);
@@ -17,16 +17,15 @@ public class MethodType extends AbstractPossiblyUnmodifiableType {
     @Override
     protected void makeUnmodifiable() {
         this.typeArguments = List.copyOf(this.typeArguments);
-        this.typeParameters = List.copyOf(this.typeParameters);
     }
 
-    public Type returnType() {
-        return this.returnType;
+    public MethodReference methodReference() {
+        return this.methodReference;
     }
 
-    public void setReturnType(Type returnType) {
+    public void setMethodReference(MethodReference methodReference) {
         super.checkUnmodifiable();
-        this.returnType = returnType;
+        this.methodReference = methodReference;
     }
 
     public List<Type> typeArguments() {
@@ -38,43 +37,24 @@ public class MethodType extends AbstractPossiblyUnmodifiableType {
         this.typeArguments = typeArguments;
     }
 
-    public List<VarType> typeParameters() {
-        return this.typeParameters;
-    }
-
-    public void setTypeParameters(List<VarType> typeParameters) {
-        super.checkUnmodifiable();
-        this.typeParameters = typeParameters;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MethodType that = (MethodType) o;
-        return Objects.equals(returnType, that.returnType) && Objects.equals(typeArguments, that.typeArguments) && Objects.equals(typeParameters, that.typeParameters);
+        return Objects.equals(methodReference, that.methodReference);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(returnType, typeArguments, typeParameters);
+        return Objects.hash(methodReference);
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.returnType).append(" (");
-
-        if (!this.typeParameters().isEmpty() && this.typeArguments().isEmpty()) {
-            sb.append("<");
-            for (int i = 0; i < this.typeParameters().size(); i++) {
-                sb.append(this.typeParameters().get(i));
-                if (i < this.typeParameters().size() - 1) {
-                    sb.append(", ");
-                }
-            }
-            sb.append(">");
-        } else if (!this.typeArguments().isEmpty()) {
+        sb.append(this.methodReference);
+        if (!this.typeArguments().isEmpty()) {
             sb.append("<");
             for (int i = 0; i < this.typeArguments().size(); i++) {
                 sb.append(this.typeArguments().get(i));
@@ -84,7 +64,6 @@ public class MethodType extends AbstractPossiblyUnmodifiableType {
             }
             sb.append(">");
         }
-
         return sb.toString();
     }
 }

@@ -1,5 +1,7 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.location.TypeParameterLocation;
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 
 import java.util.ArrayList;
@@ -7,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class VarType extends AbstractPossiblyUnmodifiableType {
-    private String name;
+    private TypeParameterLocation location;
     private List<Type> bounds = new ArrayList<>();
 
     public VarType(TypeSystem typeSystem) {
@@ -19,14 +21,15 @@ public class VarType extends AbstractPossiblyUnmodifiableType {
         this.bounds = List.copyOf(this.bounds);
     }
 
-    public String name() {
-        return this.name;
+    public TypeParameterLocation location() {
+        return this.location;
     }
 
-    public void setName(String name) {
+    public void setLocation(TypeParameterLocation location) {
         super.checkUnmodifiable();
-        this.name = name;
+        this.location = location;
     }
+
 
     public List<Type> bounds() {
         return this.bounds;
@@ -39,29 +42,19 @@ public class VarType extends AbstractPossiblyUnmodifiableType {
 
     @Override
     public boolean equals(Object o) {
-        return this == o;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VarType varType = (VarType) o;
+        return Objects.equals(location, varType.location);
     }
 
     @Override
     public int hashCode() {
-        return System.identityHashCode(this);
+        return Objects.hash(location);
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.name);
-
-        if (!this.bounds().isEmpty()) {
-            sb.append(" extends ");
-            for (int i = 0; i < this.bounds().size(); i++) {
-                sb.append(this.bounds().get(i));
-                if (i < this.bounds.size() - 1) {
-                    sb.append(" & ");
-                }
-            }
-        }
-
-        return super.toString();
+        return this.location.toString();
     }
 }

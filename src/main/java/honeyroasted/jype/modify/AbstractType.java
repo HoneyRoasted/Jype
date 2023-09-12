@@ -1,6 +1,7 @@
-package honeyroasted.jype.type;
+package honeyroasted.jype.modify;
 
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.Type;
 
 public abstract class AbstractType implements Type {
     private TypeSystem typeSystem;

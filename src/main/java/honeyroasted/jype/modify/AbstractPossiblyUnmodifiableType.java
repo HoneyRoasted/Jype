@@ -1,7 +1,7 @@
-package honeyroasted.jype.type;
+package honeyroasted.jype.modify;
 
-import honeyroasted.jype.model.PossiblyUnmodifiable;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.Type;
 
 public abstract class AbstractPossiblyUnmodifiableType extends PossiblyUnmodifiable implements Type {
     private TypeSystem typeSystem;
