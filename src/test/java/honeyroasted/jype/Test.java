@@ -53,6 +53,7 @@ public class Test {
 
         printName(int.class);
         printName(String[][][].class);
+        printName(Test.class);
     }
 
     private static String fileName(Class<?> cls) {

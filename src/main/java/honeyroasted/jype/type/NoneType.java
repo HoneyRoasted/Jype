@@ -1,14 +1,36 @@
 package honeyroasted.jype.type;
 
-public class NoneType {
-    public static final NoneType VOID = new NoneType("void");
-    public static final NoneType NULL = new NoneType("null");
-    public static final NoneType NONE = new NoneType("none");
-    public static final NoneType ERROR = new NoneType("error");
+import honeyroasted.jype.system.TypeSystem;
 
-    private String name;
+import java.util.Objects;
 
-    private NoneType(String name) {
+public class NoneType extends AbstractType {
+    private final String name;
+
+    public NoneType(TypeSystem system, String name) {
+        super(system);
         this.name = name;
+    }
+
+    public String name() {
+        return this.name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NoneType noneType = (NoneType) o;
+        return Objects.equals(name, noneType.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "#" + this.name;
     }
 }

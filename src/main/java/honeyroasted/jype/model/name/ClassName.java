@@ -33,12 +33,6 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
             containing = of(clazz.getEnclosingConstructor());
         } else if (clazz.getEnclosingClass() != null) {
             containing = of(clazz.getEnclosingClass());
-        } else if (clazz.isArray()) {
-            Class<?> curr = clazz;
-            while (curr.isArray()) {
-                curr = curr.getComponentType();
-            }
-            containing = of(curr.getPackage());
         } else {
             containing = of(clazz.getPackage());
         }

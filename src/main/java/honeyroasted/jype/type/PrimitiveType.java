@@ -1,46 +1,46 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.model.name.ClassLocation;
+import honeyroasted.jype.model.name.ClassName;
 import honeyroasted.jype.model.name.ClassNamespace;
+import honeyroasted.jype.system.TypeSystem;
 
 import java.util.List;
+import java.util.Objects;
 
-public class PrimitiveType implements Type {
-    public static final PrimitiveType BOOLEAN = new PrimitiveType(boolean.class, Boolean.class);
-    public static final PrimitiveType BYTE = new PrimitiveType(byte.class, Byte.class);
-    public static final PrimitiveType CHAR = new PrimitiveType(char.class, Character.class);
-    public static final PrimitiveType SHORT = new PrimitiveType(short.class, Short.class);
-    public static final PrimitiveType INT = new PrimitiveType(int.class, Integer.class);
-    public static final PrimitiveType LONG = new PrimitiveType(long.class, Long.class);
-    public static final PrimitiveType FLOAT = new PrimitiveType(float.class, Float.class);
-    public static final PrimitiveType DOUBLE = new PrimitiveType(double.class, Double.class);
-    public static final List<PrimitiveType> ALL = List.of(BOOLEAN, BYTE, CHAR, SHORT, INT, LONG, FLOAT, DOUBLE);
-
+public class PrimitiveType extends AbstractType {
     private ClassNamespace namespace;
     private ClassNamespace boxNamespace;
-    private Class<?> cls;
-    private Class<?> boxCls;
 
-    private PrimitiveType(Class<?> cls, Class<?> boxCls) {
-        this.namespace = ClassNamespace.of(cls);
-        this.boxNamespace = ClassNamespace.of(boxCls);
-
-        this.cls = cls;
-        this.boxCls = boxCls;
+    public PrimitiveType(TypeSystem typeSystem, ClassNamespace namespace, ClassNamespace boxNamespace) {
+        super(typeSystem);
+        this.namespace = namespace;
+        this.boxNamespace = boxNamespace;
     }
 
     public ClassNamespace namespace() {
-        return namespace;
+        return this.namespace;
     }
 
     public ClassNamespace boxNamespace() {
-        return boxNamespace;
+        return this.boxNamespace;
     }
 
-    public Class<?> cls() {
-        return cls;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PrimitiveType that = (PrimitiveType) o;
+        return Objects.equals(namespace, that.namespace);
     }
 
-    public Class<?> boxCls() {
-        return boxCls;
+    @Override
+    public int hashCode() {
+        return Objects.hash(namespace);
+    }
+
+    @Override
+    public String toString() {
+        return this.namespace().name().toString();
     }
 }
