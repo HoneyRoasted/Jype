@@ -5,7 +5,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
-public class ArrayType extends AbstractType {
+public final class ArrayType extends AbstractType {
     private Type component;
 
     public ArrayType(TypeSystem typeSystem, Type component) {

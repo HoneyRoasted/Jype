@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class VarType extends AbstractPossiblyUnmodifiableType {
+public final class VarType extends AbstractPossiblyUnmodifiableType {
     private TypeParameterLocation location;
     private List<Type> bounds = new ArrayList<>();
 
@@ -19,6 +19,11 @@ public class VarType extends AbstractPossiblyUnmodifiableType {
     @Override
     protected void makeUnmodifiable() {
         this.bounds = List.copyOf(this.bounds);
+    }
+
+    @Override
+    protected void makeModifiable() {
+        this.bounds = new ArrayList<>(this.bounds);
     }
 
     public TypeParameterLocation location() {

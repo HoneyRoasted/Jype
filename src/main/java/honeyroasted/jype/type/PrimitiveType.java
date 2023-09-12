@@ -6,7 +6,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
-public class PrimitiveType extends AbstractType {
+public final class PrimitiveType extends AbstractType {
     private ClassNamespace namespace;
     private ClassNamespace boxNamespace;
 

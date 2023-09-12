@@ -5,7 +5,7 @@ import honeyroasted.jype.system.TypeSystem;
 
 import java.util.Objects;
 
-public class NoneType extends AbstractType {
+public final class NoneType extends AbstractType {
     private final String name;
 
     public NoneType(TypeSystem system, String name) {

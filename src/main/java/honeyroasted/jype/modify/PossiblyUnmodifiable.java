@@ -11,6 +11,8 @@ public abstract class PossiblyUnmodifiable {
 
     protected void makeUnmodifiable() {}
 
+    protected abstract void makeModifiable();
+
     public boolean isUnmodifiable() {
         return this.unmodifiable;
     }
@@ -18,6 +20,8 @@ public abstract class PossiblyUnmodifiable {
     public void setUnmodifiable(boolean unmodifiable) {
         if (!this.unmodifiable && unmodifiable) {
             makeUnmodifiable();
+        } else if (this.unmodifiable && !unmodifiable) {
+            makeModifiable();
         }
         this.unmodifiable = unmodifiable;
     }

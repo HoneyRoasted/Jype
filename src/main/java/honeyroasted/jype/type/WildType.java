@@ -1,17 +1,19 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public abstract class WildType extends AbstractPossiblyUnmodifiableType {
+public abstract sealed class WildType extends AbstractType {
 
     public WildType(TypeSystem typeSystem) {
         super(typeSystem);
     }
 
-    public static class Upper extends WildType {
+    public static final class Upper extends WildType {
         private List<Type> upperBound;
 
         public Upper(TypeSystem typeSystem, List<Type> upperBound) {
@@ -53,7 +55,7 @@ public abstract class WildType extends AbstractPossiblyUnmodifiableType {
         }
     }
 
-    public static class Lower extends WildType {
+    public static final class Lower extends WildType {
         private List<Type> lowerBound;
 
         public Lower(TypeSystem typeSystem, List<Type> lowerBound) {

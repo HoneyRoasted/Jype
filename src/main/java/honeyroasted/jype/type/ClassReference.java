@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class ClassReference extends AbstractPossiblyUnmodifiableType {
+public final class ClassReference extends AbstractPossiblyUnmodifiableType {
     private ClassNamespace namespace;
     private ClassReference superClass;
     private List<ClassReference> interfaces = new ArrayList<>();
@@ -19,10 +19,34 @@ public class ClassReference extends AbstractPossiblyUnmodifiableType {
         super(typeSystem);
     }
 
+    public ClassType asClassType(List<Type> typeArguments) {
+        ClassType classType = new ClassType(this.typeSystem());
+        classType.setClassReference(this);
+        classType.setTypeArguments(typeArguments);
+        classType.setUnmodifiable(true);
+        return classType;
+    }
+
+    public ClassType asClassType(Type... typeArguments) {
+        return asClassType(List.of(typeArguments));
+    }
+
     @Override
     protected void makeUnmodifiable() {
         this.interfaces = List.copyOf(this.interfaces);
         this.typeParameters = List.copyOf(this.typeParameters);
+    }
+
+    @Override
+    protected void makeModifiable() {
+        this.interfaces = new ArrayList<>(this.interfaces);
+        this.typeParameters = new ArrayList<>(this.typeParameters);
+    }
+
+    @Override
+    protected void checkUnmodifiable() {
+        this.interfaces = new ArrayList<>(this.interfaces);
+        this.typeParameters = new ArrayList<>(this.typeParameters);
     }
 
     public ClassNamespace namespace() {

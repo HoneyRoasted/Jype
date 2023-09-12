@@ -3,10 +3,11 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MethodType extends AbstractPossiblyUnmodifiableType {
+public final class MethodType extends AbstractPossiblyUnmodifiableType {
     private MethodReference methodReference;
     private List<Type> typeArguments;
 
@@ -17,6 +18,11 @@ public class MethodType extends AbstractPossiblyUnmodifiableType {
     @Override
     protected void makeUnmodifiable() {
         this.typeArguments = List.copyOf(this.typeArguments);
+    }
+
+    @Override
+    protected void makeModifiable() {
+        this.typeArguments = new ArrayList<>(this.typeArguments);
     }
 
     public MethodReference methodReference() {
