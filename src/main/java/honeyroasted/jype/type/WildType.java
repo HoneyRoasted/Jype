@@ -1,11 +1,9 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract sealed class WildType extends AbstractType {

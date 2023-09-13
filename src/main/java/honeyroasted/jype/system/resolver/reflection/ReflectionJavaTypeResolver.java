@@ -50,17 +50,23 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     return system.constants().allPrimitives().stream().filter(t -> t.namespace().location().equals(ClassLocation.of(cls))).findFirst();
                 }
             } else {
-                ClassReference reference = new ClassReference(system);
-                system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
+                Optional<Type> clsCached = system.storage().cacheFor(ClassLocation.class).get(ClassLocation.of(cls));
+                if (clsCached.isPresent()) {
+                    return clsCached;
+                }
 
+                ClassReference reference = new ClassReference(system);
                 reference.setNamespace(ClassNamespace.of(cls));
+                system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
+                system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);
 
                 if (cls.getSuperclass() != null) {
                     Optional<? extends ClassReference> superCls = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class)
                             .resolve(system, ClassLocation.of(cls.getSuperclass()));
 
                     if (superCls.isEmpty()) {
-                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
                         return Optional.empty();
                     } else {
                         reference.setSuperClass(superCls.get());
@@ -72,7 +78,8 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                             .resolve(system, ClassLocation.of(inter));
 
                     if (interRef.isEmpty()) {
-                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
                         return Optional.empty();
                     } else {
                         reference.interfaces().add(interRef.get());
@@ -85,7 +92,8 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                             .resolve(system, loc);
 
                     if (paramRef.isEmpty()) {
-                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
                         return Optional.empty();
                     } else {
                         reference.typeParameters().add(paramRef.get());

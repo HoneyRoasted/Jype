@@ -6,11 +6,15 @@ import honeyroasted.jype.type.Type;
 import java.util.List;
 import java.util.Optional;
 
-public class MultiTypeResolver<I, O extends Type> implements TypeResolver<I, O> {
+public class MultiTypeResolvers<I, O extends Type> implements TypeResolver<I, O> {
     private List<TypeResolver<I, ? extends O>> resolvers;
 
-    public MultiTypeResolver(List<TypeResolver<I, ? extends O>> resolvers) {
+    public MultiTypeResolvers(List<TypeResolver<I, ? extends O>> resolvers) {
         this.resolvers = resolvers;
+    }
+
+    public MultiTypeResolvers(TypeResolver<I, ? extends O>... resolvers) {
+        this(List.of(resolvers));
     }
 
     @Override

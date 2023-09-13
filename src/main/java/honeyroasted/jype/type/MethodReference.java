@@ -11,6 +11,7 @@ import java.util.List;
 public final class MethodReference extends AbstractPossiblyUnmodifiableType {
     private MethodLocation location;
     private Type returnType;
+    private List<Type> parameters = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
 
     public MethodReference(TypeSystem typeSystem) {
@@ -32,11 +33,13 @@ public final class MethodReference extends AbstractPossiblyUnmodifiableType {
     @Override
     protected void makeUnmodifiable() {
         this.typeParameters = List.copyOf(this.typeParameters);
+        this.parameters = List.copyOf(this.parameters);
     }
 
     @Override
     protected void makeModifiable() {
         this.typeParameters = new ArrayList<>(this.typeParameters);
+        this.parameters = new ArrayList<>(this.parameters);
     }
 
     public MethodLocation location() {
@@ -64,6 +67,15 @@ public final class MethodReference extends AbstractPossiblyUnmodifiableType {
     public void setTypeParameters(List<VarType> typeParameters) {
         super.checkUnmodifiable();
         this.typeParameters = typeParameters;
+    }
+
+    public List<Type> parameters() {
+        return this.parameters;
+    }
+
+    public void setParameters(List<Type> parameters) {
+        super.checkUnmodifiable();
+        this.parameters = parameters;
     }
 
     @Override
