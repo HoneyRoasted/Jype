@@ -4,11 +4,6 @@ import honeyroasted.jype.type.*;
 
 public abstract class DefaultTypeVisitor<R, P> implements TypeVisitor<R, P> {
     @Override
-    public R visit(Type type, P context) {
-        return type.accept(this, context);
-    }
-
-    @Override
     public R visitArray(ArrayType type, P context) {
         return visitType(type, context);
     }

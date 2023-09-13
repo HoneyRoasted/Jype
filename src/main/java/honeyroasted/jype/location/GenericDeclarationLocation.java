@@ -1,6 +1,6 @@
 package honeyroasted.jype.location;
 
-public interface TypeParameterHost {
+public interface GenericDeclarationLocation {
 
     ClassLocation containingClass();
 

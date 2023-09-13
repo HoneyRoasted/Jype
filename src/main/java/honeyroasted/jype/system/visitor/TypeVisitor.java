@@ -4,9 +4,13 @@ import honeyroasted.jype.type.*;
 
 public interface TypeVisitor<R, P> {
 
-    R visit(Type type, P context);
+    default R visit(Type type, P context) {
+        return type.accept(this, context);
+    }
 
-    R visitType(Type type, P context);
+    default R visitType(Type type, P context) {
+        throw new UnsupportedOperationException();
+    }
 
     R visitArray(ArrayType type, P context);
 

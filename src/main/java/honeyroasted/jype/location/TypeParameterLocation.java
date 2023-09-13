@@ -5,10 +5,10 @@ import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.TypeVariable;
 
-public record TypeParameterLocation(TypeParameterHost containing, String name) {
+public record TypeParameterLocation(GenericDeclarationLocation containing, String name) {
 
     public static TypeParameterLocation of(GenericDeclaration declaration, String name) {
-        TypeParameterHost containing;
+        GenericDeclarationLocation containing;
         if (declaration instanceof Class<?> cls) {
             containing = ClassLocation.of(cls);
         } else if (declaration instanceof Method mth) {

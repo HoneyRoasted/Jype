@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record MethodLocation(ClassLocation containing, String name, ClassLocation returnType, List<ClassLocation> parameters) implements TypeParameterHost {
+public record MethodLocation(ClassLocation containing, String name, ClassLocation returnType, List<ClassLocation> parameters) implements GenericDeclarationLocation {
 
     public static final String CONSTRUCTOR_NAME = "<init>";
     public static final String STATIC_INITIALIZER_NAME = "<clinit>";

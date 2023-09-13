@@ -1,6 +1,6 @@
 package honeyroasted.jype.location;
 
-public record ClassLocation(Type type, ClassLocation containing, String value) implements TypeParameterHost {
+public record ClassLocation(Type type, ClassLocation containing, String value) implements GenericDeclarationLocation {
     public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
     public static final ClassLocation VOID = ClassLocation.of(void.class);
 

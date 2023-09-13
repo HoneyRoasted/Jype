@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.resolver.reflection;
 
 import honeyroasted.jype.location.ClassLocation;
+import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
@@ -32,9 +33,52 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                 } else {
                     return system.constants().allPrimitives().stream().filter(t -> t.namespace().location().equals(ClassLocation.of(cls))).findFirst();
                 }
-            }
+            } else {
+                ClassReference reference = new ClassReference(system);
+                system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
 
-            return system.resolvers().resolverFor(ClassLocation.class, ClassReference.class).resolve(system, ClassLocation.of(cls));
+                reference.setNamespace(ClassNamespace.of(cls));
+
+                if (cls.getSuperclass() != null) {
+                    Optional<? extends ClassReference> superCls = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class)
+                            .resolve(system, ClassLocation.of(cls.getSuperclass()));
+
+                    if (superCls.isEmpty()) {
+                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        return Optional.empty();
+                    } else {
+                        reference.setSuperClass(superCls.get());
+                    }
+                }
+
+                for (Class<?> inter : cls.getInterfaces()) {
+                    Optional<? extends ClassReference> interRef = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class)
+                            .resolve(system, ClassLocation.of(inter));
+
+                    if (interRef.isEmpty()) {
+                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        return Optional.empty();
+                    } else {
+                        reference.interfaces().add(interRef.get());
+                    }
+                }
+
+                for (TypeVariable<?> param : cls.getTypeParameters()) {
+                    TypeParameterLocation loc = new TypeParameterLocation(reference.namespace().location(), param.getName());
+                    Optional<? extends VarType> paramRef = system.resolvers().resolverFor(TypeParameterLocation.class, VarType.class)
+                            .resolve(system, loc);
+
+                    if (paramRef.isEmpty()) {
+                        system.storage().cacheFor(ClassLocation.class).remove(value);
+                        return Optional.empty();
+                    } else {
+                        reference.typeParameters().add(paramRef.get());
+                    }
+                }
+
+                reference.setUnmodifiable(true);
+                return Optional.of(reference);
+            }
         } else if (value instanceof GenericArrayType genArrType) {
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
                     .map(t -> new ArrayType(system, t));
