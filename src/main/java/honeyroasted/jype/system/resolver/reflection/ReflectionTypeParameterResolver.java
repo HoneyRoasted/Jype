@@ -67,22 +67,12 @@ public class ReflectionTypeParameterResolver implements TypeResolver<TypeParamet
             }
 
             if (varTarget != null) {
-                VarType varType = new VarType(system);
-                varType.setLocation(value);
-                system.storage().cacheFor(TypeParameterLocation.class).put(value, varType);
-
-                for (java.lang.reflect.Type bound : varTarget.getBounds()) {
-                    Optional<? extends Type> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, bound);
-                    if (param.isPresent()) {
-                        varType.bounds().add(param.get());
-                    } else {
-                        system.storage().cacheFor(TypeParameterLocation.class).remove(value);
-                        return Optional.empty();
-                    }
+                Optional<? extends Type> var = system.resolve(java.lang.reflect.Type.class, Type.class, varTarget);
+                if (var.isPresent() && var.get() instanceof VarType vType) {
+                    return Optional.of(vType);
+                } else {
+                    return Optional.empty();
                 }
-
-                varType.setUnmodifiable(true);
-                return Optional.of(varType);
             } else {
                 return Optional.empty();
             }

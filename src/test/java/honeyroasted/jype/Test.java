@@ -17,10 +17,7 @@ public class Test {
 
     public static <T extends B, B extends List<T>> void test() {
         TypeSystem system = new TypeSystem();
-
-        Function<String, Boolean> func = s -> true;
-        ClassReference ref = (ClassReference) system.resolve(func.getClass()).get();
-        System.out.println(ref);
+        System.out.println(system.resolve(new TypeToken<Function<T, B>>() {}));
     }
 
 }

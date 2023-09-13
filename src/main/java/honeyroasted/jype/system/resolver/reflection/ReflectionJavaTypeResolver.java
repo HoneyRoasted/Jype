@@ -25,7 +25,23 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
         }
 
         if (value instanceof TypeVariable<?> tVar) {
-            return system.resolvers().resolverFor(TypeParameterLocation.class, VarType.class).resolve(system, TypeParameterLocation.of(tVar));
+            TypeParameterLocation location = TypeParameterLocation.of(tVar);
+            VarType varType = new VarType(system);
+            varType.setLocation(location);
+            system.storage().cacheFor(TypeParameterLocation.class).put(value, varType);
+
+            for (java.lang.reflect.Type bound : tVar.getBounds()) {
+                Optional<? extends Type> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, bound);
+                if (param.isPresent()) {
+                    varType.bounds().add(param.get());
+                } else {
+                    system.storage().cacheFor(TypeParameterLocation.class).remove(value);
+                    return Optional.empty();
+                }
+            }
+
+            varType.setUnmodifiable(true);
+            return Optional.of(varType);
         } else if (value instanceof Class<?> cls) {
             if (cls.isPrimitive()) {
                 if (cls.equals(void.class)) {
