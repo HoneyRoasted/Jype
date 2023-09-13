@@ -9,6 +9,8 @@ public record ClassLocation(Type type, ClassLocation containing, String value) i
             return null;
         } else if (cls.isArray()) {
             return new ClassLocation(Type.ARRAY, of(cls.getComponentType()), "[]");
+        } else if (cls.isPrimitive()) {
+            return new ClassLocation(Type.CLASS, DEFAULT_MODULE, cls.getName());
         } else {
             String[] parts = cls.getName().split("\\.");
             return new ClassLocation(Type.CLASS, of(cls.getPackage(), cls.getModule()), parts[parts.length - 1]);

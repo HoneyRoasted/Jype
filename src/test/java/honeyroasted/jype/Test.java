@@ -18,6 +18,7 @@ public class Test {
     public static <T extends B, B extends List<T>> void test() {
         TypeSystem system = new TypeSystem();
         System.out.println(system.resolve(new TypeToken<Function<T, B>>() {}));
+        System.out.println(system.resolve(TypeSystem.class));
     }
 
 }
