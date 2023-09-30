@@ -1,9 +1,12 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-public sealed interface Type permits honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType, honeyroasted.jype.modify.AbstractType {
+public sealed interface Type permits AbstractPossiblyUnmodifiableType, AbstractType, TypeWithMetadata, ClassType, MethodType {
 
     TypeSystem typeSystem();
 

@@ -1,81 +1,64 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.visitor.TypeVisitor;
+import honeyroasted.jype.location.ClassNamespace;
+import honeyroasted.jype.modify.PossiblyUnmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
-public final class ClassType extends AbstractPossiblyUnmodifiableType {
-    private ClassReference classReference;
-    private List<Type> typeArguments;
+public sealed interface ClassType extends Type, PossiblyUnmodifiable permits ClassReference, ParameterizedClassType {
 
-    public ClassType(TypeSystem typeSystem) {
-        super(typeSystem);
-    }
+    ClassNamespace namespace();
 
-    @Override
-    protected void makeUnmodifiable() {
-        this.typeArguments = List.copyOf(this.typeArguments);
-    }
+    void setNamespace(ClassNamespace namespace);
 
-    @Override
-    protected void makeModifiable() {
-        this.typeArguments = new ArrayList<>(this.typeArguments);
-    }
+    ClassType superClass();
 
-    public ClassReference classReference() {
-        return this.classReference;
-    }
+    void setSuperClass(ClassType superClass);
 
-    public void setClassReference(ClassReference classReference) {
-        super.checkUnmodifiable();
-        this.classReference = classReference;
-    }
+    List<ClassType> interfaces();
 
-    public List<Type> typeArguments() {
-        return this.typeArguments;
-    }
+    void setInterfaces(List<ClassType> interfaces);
 
-    public void setTypeArguments(List<Type> typeArguments) {
-        super.checkUnmodifiable();
-        this.typeArguments = typeArguments;
-    }
+    List<VarType> typeParameters();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClassType classType = (ClassType) o;
-        return Objects.equals(classReference, classType.classReference) && Objects.equals(typeArguments, classType.typeArguments);
-    }
+    void setTypeParameters(List<VarType> typeParameters);
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(classReference, typeArguments);
-    }
+    boolean hasSupertype(ClassReference supertype);
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.classReference);
-        if (!this.typeArguments().isEmpty()) {
-            sb.append("<");
-            for (int i = 0; i < this.typeArguments().size(); i++) {
-                sb.append(this.typeArguments().get(i));
-                if (i < this.typeArguments().size() - 1) {
-                    sb.append(", ");
+    ClassReference classReference();
+
+    default boolean buildHierarchyPath(ClassReference supertype, List<ClassType> building) {
+        if (supertype == null) return false;
+
+        if (this.classReference().equals(supertype)) {
+            building.add(0, this);
+            return true;
+        } else {
+            if (this.superClass() != null && this.superClass().buildHierarchyPath(supertype, building)) {
+                building.add(0, this);
+                return true;
+            }
+
+            for (ClassType inter : this.interfaces()) {
+                if (inter.buildHierarchyPath(supertype, building)) {
+                    building.add(0, this);
+                    return true;
                 }
             }
-            sb.append(">");
+
+            return false;
         }
-        return sb.toString();
     }
 
-    @Override
-    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitClass(this, context);
+    default Optional<List<ClassType>> hierarchyPathTo(ClassReference supertype) {
+        List<ClassType> building = new ArrayList<>();
+        if (buildHierarchyPath(supertype, building)) {
+            return Optional.of(building);
+        }
+        return Optional.empty();
     }
+
+
 }

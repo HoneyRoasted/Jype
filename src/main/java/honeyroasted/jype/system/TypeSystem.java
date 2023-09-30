@@ -31,8 +31,7 @@ public class TypeSystem {
 
         this.constants = new TypeConstants(
                 this.resolve(ClassLocation.class, ClassReference.class, ClassLocation.of(Object.class)).orElseThrow(() -> new IllegalStateException("Could not resolve java.lang.Object type")),
-                new NoneType(this, "void"), new NoneType(this, "null"),
-                new NoneType(this, "none"), new NoneType(this, "error"),
+                new NoneType(this, "void"), new NoneType(this, "null"), new NoneType(this, "none"),
                 new PrimitiveType(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class)),
                 new PrimitiveType(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class)),
                 new PrimitiveType(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class)),

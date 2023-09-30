@@ -1,81 +1,26 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.visitor.TypeVisitor;
+import honeyroasted.jype.location.MethodLocation;
+import honeyroasted.jype.modify.PossiblyUnmodifiable;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-public final class MethodType extends AbstractPossiblyUnmodifiableType {
-    private MethodReference methodReference;
-    private List<Type> typeArguments;
+public sealed interface MethodType extends Type, PossiblyUnmodifiable permits MethodReference, ParameterizedMethodType {
 
-    public MethodType(TypeSystem typeSystem) {
-        super(typeSystem);
-    }
+    MethodLocation location();
 
-    @Override
-    protected void makeUnmodifiable() {
-        this.typeArguments = List.copyOf(this.typeArguments);
-    }
+    void setLocation(MethodLocation location);
 
-    @Override
-    protected void makeModifiable() {
-        this.typeArguments = new ArrayList<>(this.typeArguments);
-    }
+    Type returnType();
 
-    public MethodReference methodReference() {
-        return this.methodReference;
-    }
+    void setReturnType(Type returnType);
 
-    public void setMethodReference(MethodReference methodReference) {
-        super.checkUnmodifiable();
-        this.methodReference = methodReference;
-    }
+    List<VarType> typeParameters();
 
-    public List<Type> typeArguments() {
-        return this.typeArguments;
-    }
+    void setTypeParameters(List<VarType> typeParameters);
 
-    public void setTypeArguments(List<Type> typeArguments) {
-        super.checkUnmodifiable();
-        this.typeArguments = typeArguments;
-    }
+    List<Type> parameters();
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MethodType that = (MethodType) o;
-        return Objects.equals(methodReference, that.methodReference);
-    }
+    void setParameters(List<Type> parameters);
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(methodReference);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.methodReference);
-        if (!this.typeArguments().isEmpty()) {
-            sb.append("<");
-            for (int i = 0; i < this.typeArguments().size(); i++) {
-                sb.append(this.typeArguments().get(i));
-                if (i < this.typeArguments().size() - 1) {
-                    sb.append(", ");
-                }
-            }
-            sb.append(">");
-        }
-        return sb.toString();
-    }
-
-    @Override
-    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitMethod(this, context);
-    }
 }

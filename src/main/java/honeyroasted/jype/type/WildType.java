@@ -17,7 +17,7 @@ public abstract sealed class WildType extends AbstractType {
 
         public Upper(TypeSystem typeSystem, List<Type> upperBound) {
             super(typeSystem);
-            this.upperBound = List.copyOf(upperBound);
+            this.upperBound = upperBound.isEmpty() ? List.of(typeSystem.constants().object()) : List.copyOf(upperBound);
         }
 
         @Override
@@ -102,6 +102,6 @@ public abstract sealed class WildType extends AbstractType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitWild(this, context);
+        return visitor.visitWildcardType(this, context);
     }
 }

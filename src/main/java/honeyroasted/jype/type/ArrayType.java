@@ -45,6 +45,6 @@ public final class ArrayType extends AbstractType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitArray(this, context);
+        return visitor.visitArrayType(this, context);
     }
 }

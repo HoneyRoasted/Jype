@@ -38,6 +38,6 @@ public final class NoneType extends AbstractType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitNone(this, context);
+        return visitor.visitType(this, context);
     }
 }

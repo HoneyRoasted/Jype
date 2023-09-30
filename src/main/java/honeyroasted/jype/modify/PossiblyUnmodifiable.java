@@ -1,28 +1,9 @@
 package honeyroasted.jype.modify;
 
-public abstract class PossiblyUnmodifiable {
-    private boolean unmodifiable;
+public interface PossiblyUnmodifiable {
 
-    protected void checkUnmodifiable() {
-        if (this.unmodifiable) {
-            throw new UnsupportedOperationException("This object is currently unmodifiable");
-        }
-    }
+    boolean isUnmodifiable();
 
-    protected void makeUnmodifiable() {}
+    void setUnmodifiable(boolean unmodifiable);
 
-    protected abstract void makeModifiable();
-
-    public boolean isUnmodifiable() {
-        return this.unmodifiable;
-    }
-
-    public void setUnmodifiable(boolean unmodifiable) {
-        if (!this.unmodifiable && unmodifiable) {
-            makeUnmodifiable();
-        } else if (this.unmodifiable && !unmodifiable) {
-            makeModifiable();
-        }
-        this.unmodifiable = unmodifiable;
-    }
 }

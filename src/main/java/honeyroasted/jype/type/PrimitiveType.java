@@ -45,6 +45,6 @@ public final class PrimitiveType extends AbstractType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitPrimitive(this, context);
+        return visitor.visitPrimitiveType(this, context);
     }
 }

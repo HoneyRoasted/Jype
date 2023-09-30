@@ -11,7 +11,8 @@ import java.util.Objects;
 
 public final class VarType extends AbstractPossiblyUnmodifiableType {
     private TypeParameterLocation location;
-    private List<Type> bounds = new ArrayList<>();
+    private List<Type> upperBounds = new ArrayList<>();
+    private List<Type> lowerBounds = new ArrayList<>();
 
     public VarType(TypeSystem typeSystem) {
         super(typeSystem);
@@ -19,12 +20,12 @@ public final class VarType extends AbstractPossiblyUnmodifiableType {
 
     @Override
     protected void makeUnmodifiable() {
-        this.bounds = List.copyOf(this.bounds);
+        this.upperBounds = List.copyOf(this.upperBounds);
     }
 
     @Override
     protected void makeModifiable() {
-        this.bounds = new ArrayList<>(this.bounds);
+        this.upperBounds = new ArrayList<>(this.upperBounds);
     }
 
     public TypeParameterLocation location() {
@@ -36,14 +37,22 @@ public final class VarType extends AbstractPossiblyUnmodifiableType {
         this.location = location;
     }
 
-
-    public List<Type> bounds() {
-        return this.bounds;
+    public List<Type> upperBounds() {
+        return this.upperBounds;
     }
 
-    public void setBounds(List<Type> bounds) {
+    public void setUpperBounds(List<Type> upperBounds) {
         super.checkUnmodifiable();
-        this.bounds = bounds;
+        this.upperBounds = upperBounds;
+    }
+
+    public List<Type> lowerBounds() {
+        return this.lowerBounds;
+    }
+
+    public void setLowerBounds(List<Type> lowerBounds) {
+        super.checkUnmodifiable();
+        this.lowerBounds = lowerBounds;
     }
 
     @Override
@@ -66,6 +75,6 @@ public final class VarType extends AbstractPossiblyUnmodifiableType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitVariable(this, context);
+        return visitor.visitTypeVar(this, context);
     }
 }

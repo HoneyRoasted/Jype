@@ -33,7 +33,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             for (java.lang.reflect.Type bound : tVar.getBounds()) {
                 Optional<? extends Type> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, bound);
                 if (param.isPresent()) {
-                    varType.bounds().add(param.get());
+                    varType.upperBounds().add(param.get());
                 } else {
                     system.storage().cacheFor(TypeParameterLocation.class).remove(value);
                     return Optional.empty();
@@ -57,32 +57,33 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
 
                 ClassReference reference = new ClassReference(system);
                 reference.setNamespace(ClassNamespace.of(cls));
+                reference.setInterface(cls.isInterface());
                 system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
                 system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);
 
                 if (cls.getSuperclass() != null) {
-                    Optional<? extends ClassReference> superCls = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class)
-                            .resolve(system, ClassLocation.of(cls.getSuperclass()));
+                    Optional<? extends Type> superCls = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class)
+                            .resolve(system, cls.getGenericSuperclass());
 
-                    if (superCls.isEmpty()) {
+                    if (superCls.isEmpty() || !(superCls.get() instanceof ClassType)) {
                         system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
                         system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
                         return Optional.empty();
                     } else {
-                        reference.setSuperClass(superCls.get());
+                        reference.setSuperClass((ClassType) superCls.get());
                     }
                 }
 
-                for (Class<?> inter : cls.getInterfaces()) {
-                    Optional<? extends ClassReference> interRef = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class)
-                            .resolve(system, ClassLocation.of(inter));
+                for (java.lang.reflect.Type inter : cls.getGenericInterfaces()) {
+                    Optional<? extends Type> interRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class)
+                            .resolve(system, inter);
 
-                    if (interRef.isEmpty()) {
+                    if (interRef.isEmpty() || !(interRef.get() instanceof ClassType)) {
                         system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
                         system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
                         return Optional.empty();
                     } else {
-                        reference.interfaces().add(interRef.get());
+                        reference.interfaces().add((ClassType) interRef.get());
                     }
                 }
 
@@ -128,7 +129,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             if (pType.getRawType() instanceof Class<?> cls) {
                 Optional<? extends ClassReference> clsRef = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class).resolve(system, ClassLocation.of(cls));
                 if (clsRef.isPresent()) {
-                    ClassType result = new ClassType(system);
+                    ParameterizedClassType result = new ParameterizedClassType(system);
                     system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
                     result.setClassReference(clsRef.get());
 

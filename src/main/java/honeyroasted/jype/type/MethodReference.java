@@ -7,8 +7,9 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public final class MethodReference extends AbstractPossiblyUnmodifiableType {
+public final class MethodReference extends AbstractPossiblyUnmodifiableType implements MethodType {
     private MethodLocation location;
     private Type returnType;
     private List<Type> parameters = new ArrayList<>();
@@ -18,15 +19,15 @@ public final class MethodReference extends AbstractPossiblyUnmodifiableType {
         super(typeSystem);
     }
 
-    public MethodType asMethodType(List<Type> typeArguments) {
-        MethodType methodType = new MethodType(this.typeSystem());
-        methodType.setMethodReference(this);
-        methodType.setTypeArguments(typeArguments);
-        methodType.setUnmodifiable(true);
-        return methodType;
+    public ParameterizedMethodType asMethodType(List<Type> typeArguments) {
+        ParameterizedMethodType parameterizedMethodType = new ParameterizedMethodType(this.typeSystem());
+        parameterizedMethodType.setMethodReference(this);
+        parameterizedMethodType.setTypeArguments(typeArguments);
+        parameterizedMethodType.setUnmodifiable(true);
+        return parameterizedMethodType;
     }
 
-    public MethodType asMethodType(Type... typeArguments) {
+    public ParameterizedMethodType asMethodType(Type... typeArguments) {
         return asMethodType(List.of(typeArguments));
     }
 
@@ -84,7 +85,20 @@ public final class MethodReference extends AbstractPossiblyUnmodifiableType {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MethodReference that = (MethodReference) o;
+        return Objects.equals(location, that.location) && Objects.equals(returnType, that.returnType) && Objects.equals(parameters, that.parameters) && Objects.equals(typeParameters, that.typeParameters);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(location, returnType, parameters, typeParameters);
+    }
+
+    @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitMethodRef(this, context);
+        return visitor.visitMethodType(this, context);
     }
 }

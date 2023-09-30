@@ -8,28 +8,32 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-public final class ClassReference extends AbstractPossiblyUnmodifiableType {
+public final class ClassReference extends AbstractPossiblyUnmodifiableType implements ClassType {
     private ClassNamespace namespace;
-    private ClassReference superClass;
-    private List<ClassReference> interfaces = new ArrayList<>();
+    private boolean isInterface;
+    private ClassType superClass;
+    private List<ClassType> interfaces = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
 
     public ClassReference(TypeSystem typeSystem) {
         super(typeSystem);
     }
 
-    public ClassType asClassType(List<Type> typeArguments) {
-        ClassType classType = new ClassType(this.typeSystem());
-        classType.setClassReference(this);
-        classType.setTypeArguments(typeArguments);
-        classType.setUnmodifiable(true);
-        return classType;
+    public ParameterizedClassType parameterized(List<Type> typeArguments) {
+        ParameterizedClassType parameterizedClassType = new ParameterizedClassType(this.typeSystem());
+        parameterizedClassType.setClassReference(this);
+        parameterizedClassType.setTypeArguments(typeArguments);
+        parameterizedClassType.setUnmodifiable(true);
+        return parameterizedClassType;
     }
 
-    public ClassType asClassType(Type... typeArguments) {
-        return asClassType(List.of(typeArguments));
+    public ParameterizedClassType parameterized(Type... typeArguments) {
+        return parameterized(List.of(typeArguments));
+    }
+
+    public ParameterizedClassType parameterizedWithTypeVars() {
+        return parameterized(this.typeParameters.stream().map(t -> (Type) t).toList());
     }
 
     @Override
@@ -59,20 +63,29 @@ public final class ClassReference extends AbstractPossiblyUnmodifiableType {
         this.namespace = location;
     }
 
-    public ClassReference superClass() {
+    public boolean isInterface() {
+        return this.isInterface;
+    }
+
+    public void setInterface(boolean isInterface) {
+        super.checkUnmodifiable();
+        this.isInterface = isInterface;
+    }
+
+    public ClassType superClass() {
         return superClass;
     }
 
-    public void setSuperClass(ClassReference superClass) {
+    public void setSuperClass(ClassType superClass) {
         super.checkUnmodifiable();
         this.superClass = superClass;
     }
 
-    public List<ClassReference> interfaces() {
+    public List<ClassType> interfaces() {
         return interfaces;
     }
 
-    public void setInterfaces(List<ClassReference> interfaces) {
+    public void setInterfaces(List<ClassType> interfaces) {
         super.checkUnmodifiable();
         this.interfaces = interfaces;
     }
@@ -94,7 +107,7 @@ public final class ClassReference extends AbstractPossiblyUnmodifiableType {
                 return true;
             }
 
-            for (ClassReference inter : this.interfaces) {
+            for (ClassType inter : this.interfaces) {
                 if (inter.hasSupertype(supertype)) {
                     return true;
                 }
@@ -104,35 +117,9 @@ public final class ClassReference extends AbstractPossiblyUnmodifiableType {
         }
     }
 
-    public Optional<List<ClassReference>> pathTo(ClassReference supertype) {
-        List<ClassReference> building = new ArrayList<>();
-        if (pathImpl(supertype, building)) {
-            return Optional.of(building);
-        }
-        return Optional.empty();
-    }
-
-    private boolean pathImpl(ClassReference supertype, List<ClassReference> building) {
-        if (supertype == null) return false;
-
-        if (this.equals(supertype)) {
-            building.add(0, supertype);
-            return true;
-        } else {
-            if (this.pathImpl(this.superClass, building)) {
-                building.add(0, supertype);
-                return true;
-            }
-
-            for (ClassReference inter : this.interfaces) {
-                if (this.pathImpl(inter, building)) {
-                    building.add(0, supertype);
-                    return true;
-                }
-            }
-
-            return false;
-        }
+    @Override
+    public ClassReference classReference() {
+        return this;
     }
 
     @Override
@@ -155,6 +142,6 @@ public final class ClassReference extends AbstractPossiblyUnmodifiableType {
 
     @Override
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitClassRef(this, context);
+        return visitor.visitClassType(this, context);
     }
 }
