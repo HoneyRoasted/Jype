@@ -6,6 +6,7 @@ import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.impl.MethodReferenceImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -39,7 +40,7 @@ public class ReflectionJavaMethodResolver implements TypeResolver<Executable, Me
             return Optional.of(mRef);
         }
 
-        MethodReference mRef = new MethodReference(system);
+        MethodReference mRef = new MethodReferenceImpl(system);
         mRef.setLocation(location);
 
         if (value instanceof Method method) {

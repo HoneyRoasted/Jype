@@ -3,6 +3,8 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeMetadata;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Objects;
@@ -23,6 +25,15 @@ public final class PrimitiveType extends AbstractType {
 
     public ClassNamespace boxNamespace() {
         return this.boxNamespace;
+    }
+
+    @Override
+    public TypeWithMetadata<PrimitiveType> withMetadata(TypeMetadata metadata) {
+        return super.withMetadata(metadata);
+    }
+
+    public String name() {
+        return this.namespace().name().value();
     }
 
     @Override

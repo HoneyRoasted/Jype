@@ -2,6 +2,8 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeMetadata;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Objects;
@@ -16,6 +18,16 @@ public final class NoneType extends AbstractType {
 
     public String name() {
         return this.name;
+    }
+
+    @Override
+    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitType(this, context);
+    }
+
+    @Override
+    public TypeWithMetadata<NoneType> withMetadata(TypeMetadata metadata) {
+        return super.withMetadata(metadata);
     }
 
     @Override
@@ -36,8 +48,4 @@ public final class NoneType extends AbstractType {
         return "@" + this.name;
     }
 
-    @Override
-    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitType(this, context);
-    }
 }

@@ -1,57 +1,94 @@
 package honeyroasted.jype.system.visitor;
 
+import honeyroasted.jype.system.cache.InMemoryTypeCache;
+import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.solver.MetaKind;
 import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.visitors.ErasureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleTypeVisitor;
 import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.impl.*;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public interface TypeVisitors {
     Mapping<Boolean> ERASURE = new ErasureTypeVisitor();
-    Mapping<Object> IDENTITY = new Mapping<>();
+    Mapping<Object> IDENTITY = new Mapping<>() {};
 
     static <T> Mapping<T> identity() {
         return (Mapping<T>) IDENTITY;
     }
 
-    class Mapping<P> extends SimpleTypeVisitor<Type, P> implements Function<Type, Type> {
+    interface Mapping<P> extends SimpleTypeVisitor<Type, P>, Function<Type, Type> {
 
-        public Type visit(Type type) {
+        default Type visit(Type type) {
             return type.accept(this, null);
         }
 
         @Override
-        public Type apply(Type type) {
+        default Type apply(Type type) {
             return visit(type);
         }
 
-        public List<Type> visit(List<Type> types, P context) {
+        default List<Type> visit(List<? extends Type> types, P context) {
             return types.stream().map(t -> visit(t, context)).toList();
         }
 
+        default Set<Type> visit(Set<Type> types, P context) {
+            return types.stream().map(t -> visit(t, context)).collect(Collectors.toCollection(LinkedHashSet::new));
+        }
+
         @Override
-        public Type visitType(Type type, P context) {
+        default Type visitType(Type type, P context) {
             return type;
         }
 
         @Override
-        public <T extends Type> Type visitMetadataType(TypeWithMetadata<T> type, P context) {
-            Type result = super.visitMetadataType(type, context);
-            return result instanceof TypeWithMetadata<?> ? result : new TypeWithMetadata<>(result, type.metadata().copy());
+        default <T extends Type> Type visitMetadataType(TypeWithMetadata<T> type, P context) {
+            Type result;
+            if (type.metadata().has(MetaKind.ERROR)) {
+                result =  visitErrorType(type, context);
+            } else if (type.metadata().has(MetaKind.UNDET_VAR)) {
+                result =  visitUndetVar((TypeWithMetadata<VarType>) type, context);
+            } else if (type.metadata().has(MetaKind.CAPTURED)) {
+                result =  visitCapturedType((TypeWithMetadata<WildType>) type, context);
+            } else {
+                result = type.type().accept(this, context);
+            }
+
+            return result instanceof TypeWithMetadata<?> ? result : result.withMetadata(type.metadata().copy());
+        }
+
+        @Override
+        default Type visitCapturedType(TypeWithMetadata<WildType> type, P context) {
+            return visitWildcardType(type.type(), context).withMetadata(type.metadata().copy());
+        }
+
+        @Override
+        default Type visitUndetVar(TypeWithMetadata<VarType> type, P context) {
+            return visitVarType(type.type(), context).withMetadata(type.metadata().copy());
+        }
+
+        @Override
+        default Type visitErrorType(TypeWithMetadata<? extends Type> type, P context) {
+            return visit(type.type(), context).withMetadata(type.metadata().copy());
         }
     }
 
-    class StructuralMapping<P> extends Mapping<P> {
+    interface StructuralMapping<P> extends Mapping<P> {
         @Override
-        public Type visitClassType(ClassType type, P context) {
+        default Type visitClassType(ClassType type, P context) {
             if (type instanceof ParameterizedClassType pType) {
                 List<Type> args = pType.typeArguments();
                 List<Type> newArgs = visit(args, context);
 
                 if (!args.equals(newArgs)) {
-                    ParameterizedClassType newType = new ParameterizedClassType(pType.typeSystem());
+                    ParameterizedClassType newType = new ParameterizedClassTypeImpl(pType.typeSystem());
                     newType.setClassReference(pType.classReference());
                     newType.setTypeArguments(newArgs);
                     newType.setUnmodifiable(true);
@@ -62,37 +99,46 @@ public interface TypeVisitors {
         }
 
         @Override
-        public Type visitWildcardType(WildType type, P context) {
+        default Type visitWildcardType(WildType type, P context) {
             if (type instanceof WildType.Upper uType) {
-                List<Type> newUpper = visit(uType.upperBounds(), context);
+                Set<Type> newUpper = visit(uType.upperBounds(), context);
                 if (!newUpper.equals(uType.upperBounds())) {
-                    return new WildType.Upper(type.typeSystem(), newUpper);
+                    WildType.Upper newType = new WildTypeUpperImpl(type.typeSystem());
+                    newType.setUpperBounds(newUpper);
+                    newType.setUnmodifiable(true);
+                    return newType;
                 }
             } else if (type instanceof WildType.Lower lType) {
-                List<Type> newLower = visit(lType.lowerBounds(), context);
+                Set<Type> newLower = visit(lType.lowerBounds(), context);
                 if (!newLower.equals(lType.lowerBounds())) {
-                    return new WildType.Lower(type.typeSystem(), newLower);
+                    WildType.Lower newType = new WildTypeLowerImpl(type.typeSystem());
+                    newType.setLowerBounds(newLower);
+                    newType.setUnmodifiable(true);
+                    return newType;
                 }
             }
             return type;
         }
 
         @Override
-        public Type visitArrayType(ArrayType type, P context) {
+        default Type visitArrayType(ArrayType type, P context) {
             Type newComponent = visit(type.component(), context);
             if (!newComponent.equals(type.component())) {
-                return new ArrayType(type.typeSystem(), newComponent);
+                ArrayType newType = new ArrayTypeImpl(type.typeSystem());
+                newType.setComponent(newComponent);
+                newType.setUnmodifiable(true);
+                return newType;
             }
             return type;
         }
 
         @Override
-        public Type visitMethodType(MethodType type, P context) {
+        default Type visitMethodType(MethodType type, P context) {
             if (type instanceof MethodReference rType) {
                 List<Type> newParams = visit(rType.parameters(), context);
                 Type newRet = visit(type.returnType(), context);
                 if (!newParams.equals(rType.parameters()) && !newRet.equals(type.returnType())) {
-                    MethodReference newType = new MethodReference(type.typeSystem());
+                    MethodReference newType = new MethodReferenceImpl(type.typeSystem());
                     newType.setLocation(type.location());
                     newType.setTypeParameters(type.typeParameters());
                     newType.setParameters(newParams);
@@ -100,11 +146,11 @@ public interface TypeVisitors {
                     newType.setUnmodifiable(true);
                     return newType;
                 }
-            } else if (type instanceof ParameterizedMethodType pType) {
+            } else if (type instanceof ParameterizedMethodTypeImpl pType) {
                 Type newRef = visit(pType.methodReference(), context);
                 List<Type> newTypeArgs = visit(pType.typeArguments(), context);
                 if (!newRef.equals(pType.methodReference()) && !newTypeArgs.equals(pType.typeArguments())) {
-                    ParameterizedMethodType newType = new ParameterizedMethodType(type.typeSystem());
+                    ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
                     newType.setMethodReference(newRef instanceof MethodReference ref ? ref : pType.methodReference());
                     newType.setTypeArguments(newTypeArgs);
                     newType.setUnmodifiable(true);
@@ -112,6 +158,147 @@ public interface TypeVisitors {
                 }
             }
             return type;
+        }
+    }
+
+    interface DeepStructuralTypeMapping extends Mapping<TypeCache<Type, Type>> {
+        default boolean overridesClassType(ClassType type) {return false;};
+        default Type classTypeOverride(ClassType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesPrimitiveType(PrimitiveType type) {return false;};
+        default Type primitiveTypeOverride(PrimitiveType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesWildcardType(WildType type) {return false;};
+        default Type wildcardTypeOverride(WildType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesArrayType(ArrayType type) {return false;};
+        default Type arrayTypeOverride(ArrayType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesMethodType(MethodType type) {return false;};
+        default Type methodTypeOverride(MethodType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesVarType(VarType type) {return false;};
+        default Type varTypeOverride(VarType type, TypeCache<Type, Type> cache) {return type;}
+
+        @Override
+        default Type visit(Type type) {
+            return visit(type, new InMemoryTypeCache<>());
+        }
+
+        @Override
+        default Type visitClassType(ClassType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesClassType(type)) return this.classTypeOverride(type, context);
+
+            if (type instanceof ClassReference ref) {
+                ClassReference newRef = new ClassReferenceImpl(ref.typeSystem());
+                context.put(type, newRef);
+                newRef.setNamespace(ref.namespace());
+                newRef.setInterface(ref.isInterface());
+
+                Type newSuper = visit(ref.superClass(), context);
+                newRef.setSuperClass(newSuper instanceof ClassType ct ? ct : ref.superClass());
+
+                newRef.setInterfaces((List<ClassType>) (List) this.visit(ref.interfaces(), context).stream().filter(t -> t instanceof ClassType).toList());
+                newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+                newRef.setUnmodifiable(true);
+
+                return newRef;
+            } else if (type instanceof ParameterizedClassType pt) {
+                ParameterizedClassType newType = new ParameterizedClassTypeImpl(type.typeSystem());
+                context.put(type, newType);
+
+                Type newRef = this.visitClassType(pt.classReference(), context);
+                newType.setClassReference(newRef instanceof ClassReference cr ? cr : pt.classReference());
+                newType.setTypeArguments(this.visit(pt.typeArguments(), context));
+                newType.setUnmodifiable(true);
+
+                return newType;
+            }
+            return type;
+        }
+
+        @Override
+        default Type visitPrimitiveType(PrimitiveType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesPrimitiveType(type)) return this.primitiveTypeOverride(type, context);
+
+            return type;
+        }
+
+        @Override
+        default Type visitWildcardType(WildType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesWildcardType(type)) return this.wildcardTypeOverride(type, context);
+
+            if (type instanceof WildType.Lower lower) {
+                WildType.Lower newLower = new WildTypeLowerImpl(lower.typeSystem());
+                context.put(type, newLower);
+                newLower.setLowerBounds(this.visit(lower.lowerBounds(), context));
+                newLower.setUnmodifiable(true);
+                return newLower;
+            } else if (type instanceof WildType.Upper upper) {
+                WildType.Upper newUpper = new WildTypeUpperImpl(upper.typeSystem());
+                context.put(type, newUpper);
+                newUpper.setUpperBounds(this.visit(upper.upperBounds(), context));
+                newUpper.setUnmodifiable(true);
+                return newUpper;
+            }
+            return type;
+        }
+
+        @Override
+        default Type visitArrayType(ArrayType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesArrayType(type)) return this.arrayTypeOverride(type, context);
+
+            ArrayType newArray = new ArrayTypeImpl(type.typeSystem());
+            context.put(type, newArray);
+            newArray.setComponent(this.visit(newArray.component(), context));
+            newArray.setUnmodifiable(true);
+            return newArray;
+        }
+
+        @Override
+        default Type visitMethodType(MethodType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesMethodType(type)) return this.methodTypeOverride(type, context);
+
+            if (type instanceof MethodReference ref) {
+                MethodReference newRef = new MethodReferenceImpl(ref.typeSystem());
+                context.put(type, newRef);
+                newRef.setLocation(ref.location());
+                newRef.setReturnType(this.visit(ref.returnType(), context));
+                newRef.setParameters(this.visit(ref.parameters(), context));
+                newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+                newRef.setUnmodifiable(true);
+                return newRef;
+            } else if (type instanceof ParameterizedMethodType pt) {
+                ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
+                context.put(type, newType);
+
+                Type newRef = this.visit(newType.methodReference(), context);
+                newType.setMethodReference(newRef instanceof MethodReference mr ? mr : pt.methodReference());
+                newType.setTypeArguments(this.visit(pt.typeArguments(), context));
+                newType.setUnmodifiable(true);
+                return newType;
+            }
+            return type;
+        }
+
+        @Override
+        default Type visitVarType(VarType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesVarType(type)) return this.varTypeOverride(type, context);
+
+            VarType newType = new VarTypeImpl(type.typeSystem());
+            context.put(type, newType);
+            newType.setLocation(type.location());
+            newType.setUpperBounds(this.visit(type.upperBounds(), context));
+            newType.setLowerBounds(this.visit(type.lowerBounds(), context));
+            newType.setUnmodifiable(true);
+            return newType;
         }
     }
 }

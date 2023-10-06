@@ -2,16 +2,23 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.system.solver.TypeMetadata;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public sealed interface ClassType extends Type, PossiblyUnmodifiable permits ClassReference, ParameterizedClassType {
+public interface ClassType extends Type, PossiblyUnmodifiable {
 
     ClassNamespace namespace();
 
     void setNamespace(ClassNamespace namespace);
+
+    boolean isInterface();
+
+    void setInterface(boolean isInterface);
 
     ClassType superClass();
 
@@ -28,6 +35,16 @@ public sealed interface ClassType extends Type, PossiblyUnmodifiable permits Cla
     boolean hasSupertype(ClassReference supertype);
 
     ClassReference classReference();
+
+    @Override
+    default TypeWithMetadata<? extends ClassType> withMetadata(TypeMetadata metadata) {
+        return new TypeWithMetadata<>(this, metadata);
+    }
+
+    @Override
+    default  <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitClassType(this, context);
+    }
 
     default boolean buildHierarchyPath(ClassReference supertype, List<ClassType> building) {
         if (supertype == null) return false;

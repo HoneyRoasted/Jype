@@ -7,6 +7,7 @@ import honeyroasted.jype.type.*;
 public interface TypeVisitor<R, P> {
 
     default R visit(Type type, P context) {
+        if (type == null) return null;
         return type.accept(this, context);
     }
 
@@ -35,7 +36,7 @@ public interface TypeVisitor<R, P> {
 
     R visitMethodType(MethodType type, P context);
 
-    R visitTypeVar(VarType type, P context);
+    R visitVarType(VarType type, P context);
 
     R visitCapturedType(TypeWithMetadata<WildType> type, P context);
 

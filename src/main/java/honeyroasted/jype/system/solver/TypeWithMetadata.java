@@ -38,4 +38,14 @@ public final class TypeWithMetadata<T extends Type> implements Type {
     public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return this.type.accept(visitor, context);
     }
+
+    @Override
+    public TypeWithMetadata<T> withMetadata(TypeMetadata metadata) {
+        return new TypeWithMetadata<>(this.type, metadata);
+    }
+
+    @Override
+    public T stripMetadata() {
+        return this.type;
+    }
 }

@@ -1,9 +1,9 @@
 package honeyroasted.jype.modify;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.Type;
 
-public sealed abstract class AbstractType implements Type permits ArrayType, NoneType, PrimitiveType, WildType {
+public abstract class AbstractType implements Type {
     private TypeSystem typeSystem;
 
     public AbstractType(TypeSystem typeSystem) {

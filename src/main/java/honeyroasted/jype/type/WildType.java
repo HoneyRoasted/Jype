@@ -1,107 +1,50 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.AbstractType;
-import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.system.solver.TypeMetadata;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-public abstract sealed class WildType extends AbstractType {
+public interface WildType extends PossiblyUnmodifiable, Type {
 
-    public WildType(TypeSystem typeSystem) {
-        super(typeSystem);
-    }
+    int identity();
 
-    public static final class Upper extends WildType {
-        private List<Type> upperBound;
+    void setIdentity(int identity);
 
-        public Upper(TypeSystem typeSystem, List<Type> upperBound) {
-            super(typeSystem);
-            this.upperBound = upperBound.isEmpty() ? List.of(typeSystem.constants().object()) : List.copyOf(upperBound);
-        }
+    Set<Type> upperBounds();
 
-        @Override
-        public List<Type> upperBounds() {
-            return this.upperBound;
-        }
+    void setUpperBounds(Set<Type> upperBounds);
 
-        @Override
-        public List<Type> lowerBounds() {
-            return List.of(this.typeSystem().constants().nullType());
-        }
+    Set<Type> lowerBounds();
 
-        @Override
-        public boolean equals(Object o) {
-            return this == o;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("? extends ");
-            for (int i = 0; i < this.upperBound.size(); i++) {
-                sb.append(this.upperBound.get(i));
-                if (i < this.upperBound.size() - 1) {
-                    sb.append(" & ");
-                }
-            }
-            return sb.toString();
-        }
-    }
-
-    public static final class Lower extends WildType {
-        private List<Type> lowerBound;
-
-        public Lower(TypeSystem typeSystem, List<Type> lowerBound) {
-            super(typeSystem);
-            this.lowerBound = List.copyOf(lowerBound);
-        }
-
-        @Override
-        public List<Type> upperBounds() {
-            return List.of(this.typeSystem().constants().object());
-        }
-
-        @Override
-        public List<Type> lowerBounds() {
-            return this.lowerBound;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return this == o;
-        }
-
-        @Override
-        public int hashCode() {
-            return System.identityHashCode(this);
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("? super ");
-            for (int i = 0; i < this.lowerBound.size(); i++) {
-                sb.append(this.lowerBound.get(i));
-                if (i < this.lowerBound.size() - 1) {
-                    sb.append(" & ");
-                }
-            }
-            return sb.toString();
-        }
-    }
-
-    public abstract List<Type> upperBounds();
-
-    public abstract List<Type> lowerBounds();
+    void setLowerBounds(Set<Type> lowerBounds);
 
     @Override
-    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+    default  <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitWildcardType(this, context);
     }
+
+    static <T> Set<T> linkedCopyOf(Collection<T> set) {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(set));
+    }
+
+    interface Upper extends WildType {
+        @Override
+        default TypeWithMetadata<WildType.Upper> withMetadata(TypeMetadata metadata) {
+            return new TypeWithMetadata<>(this, metadata);
+        }
+    }
+
+    interface Lower extends WildType {
+        @Override
+        default TypeWithMetadata<WildType.Lower> withMetadata(TypeMetadata metadata) {
+            return new TypeWithMetadata<>(this, metadata);
+        }
+    }
+
 }

@@ -1,6 +1,8 @@
 open module Jype.main {
     exports honeyroasted.jype.location;
     exports honeyroasted.jype.type;
+    exports honeyroasted.jype.type.impl;
+    exports honeyroasted.jype.type.delegate;
     exports honeyroasted.jype.system;
     exports honeyroasted.jype.system.cache;
     exports honeyroasted.jype.system.resolver;

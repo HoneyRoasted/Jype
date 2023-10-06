@@ -2,10 +2,13 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.system.solver.TypeMetadata;
+import honeyroasted.jype.system.solver.TypeWithMetadata;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.List;
 
-public sealed interface MethodType extends Type, PossiblyUnmodifiable permits MethodReference, ParameterizedMethodType {
+public interface MethodType extends Type, PossiblyUnmodifiable {
 
     MethodLocation location();
 
@@ -23,4 +26,13 @@ public sealed interface MethodType extends Type, PossiblyUnmodifiable permits Me
 
     void setParameters(List<Type> parameters);
 
+    @Override
+    default TypeWithMetadata<? extends MethodType> withMetadata(TypeMetadata metadata) {
+        return new TypeWithMetadata<>(this, metadata);
+    }
+
+    @Override
+    default  <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitMethodType(this, context);
+    }
 }

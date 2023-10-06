@@ -22,6 +22,8 @@ public class TypeResolvers {
 
         if (applicable == null || applicable.isEmpty()) {
             return TypeResolver.none();
+        } else if (applicable.size() == 1) {
+            return (TypeResolver<I, O>) applicable.get(0);
         } else {
             return new MultiTypeResolvers<I, O>((List) applicable);
         }

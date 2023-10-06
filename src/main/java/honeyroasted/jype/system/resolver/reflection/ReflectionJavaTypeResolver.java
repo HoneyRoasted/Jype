@@ -6,14 +6,13 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.impl.*;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflect.Type, Type> {
 
@@ -26,7 +25,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
 
         if (value instanceof TypeVariable<?> tVar) {
             TypeParameterLocation location = TypeParameterLocation.of(tVar);
-            VarType varType = new VarType(system);
+            VarType varType = new VarTypeImpl(system);
             varType.setLocation(location);
             system.storage().cacheFor(TypeParameterLocation.class).put(value, varType);
 
@@ -55,7 +54,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     return clsCached;
                 }
 
-                ClassReference reference = new ClassReference(system);
+                ClassReference reference = new ClassReferenceImpl(system);
                 reference.setNamespace(ClassNamespace.of(cls));
                 reference.setInterface(cls.isInterface());
                 system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
@@ -106,10 +105,15 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             }
         } else if (value instanceof GenericArrayType genArrType) {
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
-                    .map(t -> new ArrayType(system, t));
+                    .map(t -> {
+                        ArrayType result = new ArrayTypeImpl(t.typeSystem());
+                        result.setComponent(t);
+                        result.setUnmodifiable(true);
+                        return result;
+                    });
         } else if (value instanceof WildcardType wType) {
             java.lang.reflect.Type[] bounds = wType.getLowerBounds().length == 0 ? wType.getUpperBounds() : wType.getLowerBounds();
-            List<Type> resolvedBounds = new ArrayList<>();
+            Set<Type> resolvedBounds = new LinkedHashSet<>();
 
             for (java.lang.reflect.Type bound : bounds) {
                 Optional<? extends Type> resolved = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, bound);
@@ -121,17 +125,25 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             }
 
             if (wType.getLowerBounds().length == 0) { //? extends ...
-                return Optional.of(new WildType.Upper(system, resolvedBounds));
+                WildType.Upper upper = new WildTypeUpperImpl(system);
+                upper.setIdentity(System.identityHashCode(wType));
+                upper.upperBounds().addAll(resolvedBounds);
+                upper.setUnmodifiable(true);
+                return Optional.of(upper);
             } else { //? super ...
-                return Optional.of(new WildType.Lower(system, resolvedBounds));
+                WildType.Lower lower = new WildTypeLowerImpl(system);
+                lower.setIdentity(System.identityHashCode(wType));
+                lower.lowerBounds().addAll(resolvedBounds);
+                lower.setUnmodifiable(true);
+                return Optional.of(lower);
             }
         } else if (value instanceof ParameterizedType pType) {
             if (pType.getRawType() instanceof Class<?> cls) {
-                Optional<? extends ClassReference> clsRef = system.resolvers().resolverFor(ClassLocation.class, ClassReference.class).resolve(system, ClassLocation.of(cls));
-                if (clsRef.isPresent()) {
-                    ParameterizedClassType result = new ParameterizedClassType(system);
+                Optional<? extends Type> clsRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, cls);
+                if (clsRef.isPresent() && clsRef.get() instanceof ClassReference) {
+                    ParameterizedClassType result = new ParameterizedClassTypeImpl(system);
                     system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
-                    result.setClassReference(clsRef.get());
+                    result.setClassReference((ClassReference) clsRef.get());
 
                     List<Type> typeArguments = new ArrayList<>();
                     for(java.lang.reflect.Type arg : pType.getActualTypeArguments()) {
