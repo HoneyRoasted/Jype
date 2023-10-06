@@ -125,9 +125,13 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ClassReference)) return false;
-        ClassReference that = (ClassReference) o;
-        return Objects.equals(namespace, that.namespace());
+        if (o == null || !(o instanceof ClassType)) return false;
+        if (o instanceof ClassReference cr) {
+            return Objects.equals(namespace, cr.namespace());
+        } else if (o instanceof ParameterizedClassType pt) {
+            return Objects.equals(namespace, pt.classReference().namespace()) && (pt.typeArguments().isEmpty() || Objects.equals(this.typeParameters, pt.typeArguments()));
+        }
+        return false;
     }
 
     @Override

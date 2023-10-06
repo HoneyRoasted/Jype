@@ -2,6 +2,8 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.*;
 
 import java.util.List;
@@ -102,6 +104,11 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     @Override
     public ParameterizedClassType directSupertype(ClassType supertypeInstance) {
         return this.delegate().directSupertype(supertypeInstance);
+    }
+
+    @Override
+    public TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
+        return this.delegate().varTypeResolver();
     }
 
     @Override

@@ -4,7 +4,9 @@ import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.solver.TypeMetadata;
 import honeyroasted.jype.system.solver.TypeWithMetadata;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public interface ClassReference extends PossiblyUnmodifiable, Type, ClassType {
     ParameterizedClassType parameterized(List<Type> typeArguments);
@@ -12,6 +14,16 @@ public interface ClassReference extends PossiblyUnmodifiable, Type, ClassType {
     ParameterizedClassType parameterized(Type... typeArguments);
 
     ParameterizedClassType parameterizedWithTypeVars();
+
+    @Override
+    default boolean hasTypeArguments() {
+        return false;
+    }
+
+    @Override
+    default boolean hasCyclicTypeVariables(Set<VarType> seen) {
+        return this.typeParameters().stream().anyMatch(v -> v.hasCyclicTypeVariables(new HashSet<>(seen)));
+    }
 
     @Override
     default TypeWithMetadata<ClassReference> withMetadata(TypeMetadata metadata) {

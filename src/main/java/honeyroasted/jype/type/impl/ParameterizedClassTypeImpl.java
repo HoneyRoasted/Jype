@@ -31,6 +31,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
         this.superTypes.clear();
     }
 
+    @Override
     public TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
                 varType -> {
@@ -43,6 +44,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
                 });
     }
 
+    @Override
     public Optional<ClassType> relativeSupertype(ClassReference superType) {
         ClassType result = this.superTypes.get(superType);
         if (result != null) {
@@ -159,9 +161,13 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ParameterizedClassType)) return false;
-        ParameterizedClassType parameterizedClassType = (ParameterizedClassType) o;
-        return Objects.equals(classReference, parameterizedClassType.classReference()) && Objects.equals(typeArguments, parameterizedClassType.typeArguments());
+        if (o == null || !(o instanceof ClassType)) return false;
+        if (o instanceof ParameterizedClassType pct) {
+            return Objects.equals(classReference, pct.classReference()) && Objects.equals(typeArguments, pct.typeArguments());
+        } else if (o instanceof ClassReference cr) {
+            return Objects.equals(classReference, cr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, cr.typeParameters()));
+        }
+        return false;
     }
 
     @Override

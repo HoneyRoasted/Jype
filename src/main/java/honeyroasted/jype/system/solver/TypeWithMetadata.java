@@ -3,6 +3,9 @@ package honeyroasted.jype.system.solver;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+
+import java.util.Set;
 
 public final class TypeWithMetadata<T extends Type> implements Type {
     private T type;
@@ -27,6 +30,11 @@ public final class TypeWithMetadata<T extends Type> implements Type {
 
     public void setMetadata(TypeMetadata metadata) {
         this.metadata = metadata;
+    }
+
+    @Override
+    public boolean hasCyclicTypeVariables(Set<VarType> seen) {
+        return this.type.hasCyclicTypeVariables(seen);
     }
 
     @Override

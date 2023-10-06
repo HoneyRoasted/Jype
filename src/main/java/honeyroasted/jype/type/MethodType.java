@@ -26,6 +26,8 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     void setParameters(List<Type> parameters);
 
+    boolean hasTypeArguments();
+
     @Override
     default TypeWithMetadata<? extends MethodType> withMetadata(TypeMetadata metadata) {
         return new TypeWithMetadata<>(this, metadata);

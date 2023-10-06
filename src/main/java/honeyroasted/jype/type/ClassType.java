@@ -36,6 +36,8 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
 
     ClassReference classReference();
 
+    boolean hasTypeArguments();
+
     @Override
     default TypeWithMetadata<? extends ClassType> withMetadata(TypeMetadata metadata) {
         return new TypeWithMetadata<>(this, metadata);

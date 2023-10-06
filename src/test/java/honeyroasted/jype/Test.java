@@ -2,6 +2,8 @@ package honeyroasted.jype;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
+import honeyroasted.jype.system.solver.TypeBound;
+import honeyroasted.jype.system.solver.solvers.AssignabilityTypeSolver;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
 
@@ -21,11 +23,16 @@ public class Test {
 
         ParameterizedClassType t1 = (ParameterizedClassType) system.resolve(new TypeToken<LinkedHashMap<String, Integer>>() {}).get();
         ClassType t2 = (ClassType) system.resolve(new TypeToken<Map>() {}).get();
-        ClassType t3 = (ClassType) system.resolve(new TypeToken<HashMap>() {}).get();
+        ClassType t3 = (ClassType) system.resolve(new TypeToken<List<String>>() {}).get();
+        ClassType t4 = (ClassType) system.resolve(new TypeToken<List<? extends String>>() {}).get();
 
-        System.out.println(t1.relativeSupertype(t2.classReference()));
-        System.out.println(t1.relativeSupertype(t3.classReference()));
-        System.out.println();
+        AssignabilityTypeSolver solver = new AssignabilityTypeSolver();
+        solver.bind(
+                new TypeBound.Subtype(t1, t2),
+                new TypeBound.Subtype(t3, t4)
+        );
+
+        System.out.println(solver.solve(system));
     }
 
 }

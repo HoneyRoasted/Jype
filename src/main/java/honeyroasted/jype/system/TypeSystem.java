@@ -24,23 +24,7 @@ public class TypeSystem {
     private TypeConstants constants;
 
     public TypeSystem(TypeCacheFactory cacheFactory) {
-        this.storage = new TypeStorage(cacheFactory);
-        this.resolvers = new TypeResolvers();
-
-        this.registerResolvers(ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
-
-        this.constants = new TypeConstants(
-                this.resolve(ClassLocation.class, ClassReference.class, ClassLocation.of(Object.class)).orElseThrow(() -> new IllegalStateException("Could not resolve java.lang.Object type")),
-                new NoneType(this, "void"), new NoneType(this, "null"), new NoneType(this, "none"),
-                new PrimitiveType(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class)),
-                new PrimitiveType(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class)),
-                new PrimitiveType(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class)),
-                new PrimitiveType(this, ClassNamespace.of(char.class), ClassNamespace.of(Character.class)),
-                new PrimitiveType(this, ClassNamespace.of(int.class), ClassNamespace.of(Integer.class)),
-                new PrimitiveType(this, ClassNamespace.of(long.class), ClassNamespace.of(Long.class)),
-                new PrimitiveType(this, ClassNamespace.of(float.class), ClassNamespace.of(Float.class)),
-                new PrimitiveType(this, ClassNamespace.of(double.class), ClassNamespace.of(Double.class))
-        );
+        this(cacheFactory, ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
     }
 
     public TypeSystem() {
@@ -50,6 +34,34 @@ public class TypeSystem {
                 return new InMemoryTypeCache<>();
             }
         });
+    }
+
+    public TypeSystem(TypeCacheFactory cacheFactory, BundledTypeResolvers initialResolvers) {
+        this.storage = new TypeStorage(cacheFactory);
+        this.resolvers = new TypeResolvers();
+        this.registerResolvers(initialResolvers);
+
+        this.constants = new TypeConstants(
+                this.tryResolve(Object.class),
+                new NoneType(this, "void"), new NoneType(this, "null"), new NoneType(this, "none"),
+                this.tryResolve(Void.class),
+                new PrimitiveType(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class)),
+                new PrimitiveType(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class)),
+                new PrimitiveType(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class)),
+                new PrimitiveType(this, ClassNamespace.of(char.class), ClassNamespace.of(Character.class)),
+                new PrimitiveType(this, ClassNamespace.of(int.class), ClassNamespace.of(Integer.class)),
+                new PrimitiveType(this, ClassNamespace.of(long.class), ClassNamespace.of(Long.class)),
+                new PrimitiveType(this, ClassNamespace.of(float.class), ClassNamespace.of(Float.class)),
+                new PrimitiveType(this, ClassNamespace.of(double.class), ClassNamespace.of(Double.class)),
+                this.tryResolve(Boolean.class), this.tryResolve(Byte.class), this.tryResolve(Short.class),
+                this.tryResolve(Character.class), this.tryResolve(Integer.class), this.tryResolve(Long.class),
+                this.tryResolve(Float.class), this.tryResolve(Double.class)
+        );
+    }
+
+    private ClassReference tryResolve(Class<?> cls) {
+        return this.resolve(ClassLocation.class, ClassReference.class, ClassLocation.of(cls))
+                .orElseThrow(() -> new IllegalStateException("Could not resolve " + cls.getName() + " type"));
     }
 
     public TypeConstants constants() {

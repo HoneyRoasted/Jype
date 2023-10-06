@@ -5,10 +5,7 @@ import honeyroasted.jype.system.solver.TypeMetadata;
 import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public interface WildType extends PossiblyUnmodifiable, Type {
 
@@ -35,12 +32,22 @@ public interface WildType extends PossiblyUnmodifiable, Type {
 
     interface Upper extends WildType {
         @Override
+        default boolean hasCyclicTypeVariables(Set<VarType> seen) {
+            return this.upperBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
+        }
+
+        @Override
         default TypeWithMetadata<WildType.Upper> withMetadata(TypeMetadata metadata) {
             return new TypeWithMetadata<>(this, metadata);
         }
     }
 
     interface Lower extends WildType {
+        @Override
+        default boolean hasCyclicTypeVariables(Set<VarType> seen) {
+            return this.lowerBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
+        }
+
         @Override
         default TypeWithMetadata<WildType.Lower> withMetadata(TypeMetadata metadata) {
             return new TypeWithMetadata<>(this, metadata);
