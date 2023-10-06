@@ -3,9 +3,6 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.TypeVisitors;
-import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.*;
 
 import java.util.*;
@@ -29,19 +26,6 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     protected void makeModifiable() {
         this.typeArguments = new ArrayList<>(this.typeArguments);
         this.superTypes.clear();
-    }
-
-    @Override
-    public TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
-        return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
-                varType -> {
-                    for (int i = 0; i < this.typeArguments.size() && i < this.typeParameters().size(); i++) {
-                        if (varType.equals(this.typeParameters().get(i))) {
-                            return this.typeArguments.get(i);
-                        }
-                    }
-                    return varType;
-                });
     }
 
     @Override
