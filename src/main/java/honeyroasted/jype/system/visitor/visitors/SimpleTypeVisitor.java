@@ -1,6 +1,5 @@
 package honeyroasted.jype.system.visitor.visitors;
 
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.*;
 
@@ -40,18 +39,7 @@ public interface SimpleTypeVisitor<R, P> extends TypeVisitor<R, P> {
     }
 
     @Override
-    default R visitCapturedType(TypeWithMetadata<WildType> type, P context) {
+    default R visitNoneType(NoneType type, P context) {
         return visitType(type, context);
     }
-
-    @Override
-    default R visitUndetVar(TypeWithMetadata<VarType> type, P context) {
-        return visitType(type, context);
-    }
-
-    @Override
-    default R visitErrorType(TypeWithMetadata<? extends Type> type, P context) {
-        return visitType(type, context);
-    }
-
 }

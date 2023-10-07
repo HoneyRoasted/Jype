@@ -13,7 +13,12 @@ import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.system.resolver.TypeResolvers;
 import honeyroasted.jype.system.resolver.reflection.ReflectionTypeResolution;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.impl.NoneTypeImpl;
+import honeyroasted.jype.type.impl.PrimitiveTypeImpl;
 
 import java.lang.reflect.Executable;
 import java.util.Optional;
@@ -43,16 +48,16 @@ public class TypeSystem {
 
         this.constants = new TypeConstants(
                 this.tryResolve(Object.class),
-                new NoneType(this, "void"), new NoneType(this, "null"), new NoneType(this, "none"),
+                new NoneTypeImpl(this, "void"), new NoneTypeImpl(this, "null"), new NoneTypeImpl(this, "none"),
                 this.tryResolve(Void.class),
-                new PrimitiveType(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class)),
-                new PrimitiveType(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class)),
-                new PrimitiveType(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class)),
-                new PrimitiveType(this, ClassNamespace.of(char.class), ClassNamespace.of(Character.class)),
-                new PrimitiveType(this, ClassNamespace.of(int.class), ClassNamespace.of(Integer.class)),
-                new PrimitiveType(this, ClassNamespace.of(long.class), ClassNamespace.of(Long.class)),
-                new PrimitiveType(this, ClassNamespace.of(float.class), ClassNamespace.of(Float.class)),
-                new PrimitiveType(this, ClassNamespace.of(double.class), ClassNamespace.of(Double.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(char.class), ClassNamespace.of(Character.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(int.class), ClassNamespace.of(Integer.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(long.class), ClassNamespace.of(Long.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(float.class), ClassNamespace.of(Float.class)),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(double.class), ClassNamespace.of(Double.class)),
                 this.tryResolve(Boolean.class), this.tryResolve(Byte.class), this.tryResolve(Short.class),
                 this.tryResolve(Character.class), this.tryResolve(Integer.class), this.tryResolve(Long.class),
                 this.tryResolve(Float.class), this.tryResolve(Double.class)

@@ -31,4 +31,19 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     public void expireDelegate() {
         this.expired = true;
     }
+
+    @Override
+    public int hashCode() {
+        return this.delegate().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this.delegate().equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return this.delegate().toString();
+    }
 }

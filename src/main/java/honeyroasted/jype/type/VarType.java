@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.HashSet;
@@ -23,16 +21,16 @@ public interface VarType extends PossiblyUnmodifiable, Type {
     void setLowerBounds(Set<Type> lowerBounds);
 
     @Override
+    default VarType stripMetadata() {
+        return this;
+    }
+
+    @Override
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {
         if (seen.contains(this)) return true;
         seen.add(this);
         return this.upperBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)))
                 || this.lowerBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
-    }
-
-    @Override
-    default TypeWithMetadata<VarType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
     }
 
     @Override

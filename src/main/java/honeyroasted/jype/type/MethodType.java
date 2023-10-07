@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.List;
@@ -29,8 +27,8 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
     boolean hasTypeArguments();
 
     @Override
-    default TypeWithMetadata<? extends MethodType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
+    default MethodType stripMetadata() {
+        return this;
     }
 
     @Override

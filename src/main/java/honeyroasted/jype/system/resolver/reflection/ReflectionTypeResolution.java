@@ -222,6 +222,10 @@ public interface ReflectionTypeResolution {
     }
 
     static TypeVariable<?> typeParameterFromLocation(TypeParameterLocation location) throws ResolutionFailedException {
+        if (location.isVirtual()) {
+            throw new ResolutionFailedException("Could not resolve type parameter from virtual location: " + location);
+        }
+
         TypeVariable[] parameters = null;
 
         try {

@@ -2,8 +2,6 @@ package honeyroasted.jype.system.visitor;
 
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.MetaKind;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.visitors.ErasureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleTypeVisitor;
 import honeyroasted.jype.type.*;
@@ -18,8 +16,7 @@ import java.util.stream.Collectors;
 
 public interface TypeVisitors {
     Mapping<Boolean> ERASURE = new ErasureTypeVisitor();
-    Mapping<Object> IDENTITY = new Mapping<>() {
-    };
+    Mapping<Object> IDENTITY = new Mapping<>() {};
 
     static <T> Mapping<T> identity() {
         return (Mapping<T>) IDENTITY;
@@ -47,37 +44,6 @@ public interface TypeVisitors {
         @Override
         default Type visitType(Type type, P context) {
             return type;
-        }
-
-        @Override
-        default <T extends Type> Type visitMetadataType(TypeWithMetadata<T> type, P context) {
-            Type result;
-            if (type.metadata().has(MetaKind.ERROR)) {
-                result = visitErrorType(type, context);
-            } else if (type.metadata().has(MetaKind.UNDET_VAR)) {
-                result = visitUndetVar((TypeWithMetadata<VarType>) type, context);
-            } else if (type.metadata().has(MetaKind.CAPTURED)) {
-                result = visitCapturedType((TypeWithMetadata<WildType>) type, context);
-            } else {
-                result = type.type().accept(this, context);
-            }
-
-            return result instanceof TypeWithMetadata<?> ? result : result.withMetadata(type.metadata().copy());
-        }
-
-        @Override
-        default Type visitCapturedType(TypeWithMetadata<WildType> type, P context) {
-            return visitWildcardType(type.type(), context).withMetadata(type.metadata().copy());
-        }
-
-        @Override
-        default Type visitUndetVar(TypeWithMetadata<VarType> type, P context) {
-            return visitVarType(type.type(), context).withMetadata(type.metadata().copy());
-        }
-
-        @Override
-        default Type visitErrorType(TypeWithMetadata<? extends Type> type, P context) {
-            return visit(type.type(), context).withMetadata(type.metadata().copy());
         }
     }
 
@@ -167,8 +133,6 @@ public interface TypeVisitors {
             return false;
         }
 
-        ;
-
         default Type classTypeOverride(ClassType type, TypeCache<Type, Type> cache) {
             return type;
         }
@@ -176,8 +140,6 @@ public interface TypeVisitors {
         default boolean overridesPrimitiveType(PrimitiveType type) {
             return false;
         }
-
-        ;
 
         default Type primitiveTypeOverride(PrimitiveType type, TypeCache<Type, Type> cache) {
             return type;
@@ -187,8 +149,6 @@ public interface TypeVisitors {
             return false;
         }
 
-        ;
-
         default Type wildcardTypeOverride(WildType type, TypeCache<Type, Type> cache) {
             return type;
         }
@@ -196,8 +156,6 @@ public interface TypeVisitors {
         default boolean overridesArrayType(ArrayType type) {
             return false;
         }
-
-        ;
 
         default Type arrayTypeOverride(ArrayType type, TypeCache<Type, Type> cache) {
             return type;
@@ -207,8 +165,6 @@ public interface TypeVisitors {
             return false;
         }
 
-        ;
-
         default Type methodTypeOverride(MethodType type, TypeCache<Type, Type> cache) {
             return type;
         }
@@ -217,9 +173,16 @@ public interface TypeVisitors {
             return false;
         }
 
-        ;
 
         default Type varTypeOverride(VarType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesNoneType(NoneType type) {
+            return false;
+        }
+
+        default Type noneTypeOverride(NoneType type, TypeCache<Type, Type> cache) {
             return type;
         }
 
@@ -347,6 +310,15 @@ public interface TypeVisitors {
             newType.setLowerBounds(this.visit(type.lowerBounds(), context));
             newType.setUnmodifiable(true);
             return newType;
+        }
+
+        @Override
+        default Type visitNoneType(NoneType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesNoneType(type)) return this.noneTypeOverride(type, context);
+
+            return type;
         }
     }
 }

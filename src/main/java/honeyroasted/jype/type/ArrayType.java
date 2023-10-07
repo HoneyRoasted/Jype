@@ -1,8 +1,6 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Set;
@@ -15,13 +13,13 @@ public interface ArrayType extends PossiblyUnmodifiable, Type {
     int depth();
 
     @Override
-    default boolean hasCyclicTypeVariables(Set<VarType> seen) {
-        return this.component().hasCyclicTypeVariables();
+    default ArrayType stripMetadata() {
+        return this;
     }
 
     @Override
-    default TypeWithMetadata<ArrayType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
+    default boolean hasCyclicTypeVariables(Set<VarType> seen) {
+        return this.component().hasCyclicTypeVariables();
     }
 
     @Override

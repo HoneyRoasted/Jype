@@ -1,8 +1,6 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +14,11 @@ public interface MethodReference extends PossiblyUnmodifiable, Type, MethodType 
     ParameterizedMethodType parameterizedWithTypeVars();
 
     @Override
+    default MethodReference stripMetadata() {
+        return this;
+    }
+
+    @Override
     default boolean hasTypeArguments() {
         return false;
     }
@@ -25,8 +28,4 @@ public interface MethodReference extends PossiblyUnmodifiable, Type, MethodType 
         return this.typeParameters().stream().anyMatch(v -> v.hasCyclicTypeVariables(new HashSet<>(seen)));
     }
 
-    @Override
-    default TypeWithMetadata<MethodReference> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
-    }
 }

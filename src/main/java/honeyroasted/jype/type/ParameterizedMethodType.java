@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 
@@ -19,6 +17,11 @@ public interface ParameterizedMethodType extends PossiblyUnmodifiable, Type, Met
     List<Type> typeArguments();
 
     void setTypeArguments(List<Type> typeArguments);
+
+    @Override
+    default ParameterizedMethodType stripMetadata() {
+        return this;
+    }
 
     default TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
@@ -42,8 +45,4 @@ public interface ParameterizedMethodType extends PossiblyUnmodifiable, Type, Met
         return this.typeArguments().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
     }
 
-    @Override
-    default TypeWithMetadata<ParameterizedMethodType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
-    }
 }

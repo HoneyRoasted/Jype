@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 
@@ -20,6 +18,11 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, Type, Clas
     void setClassReference(ClassReference classReference);
 
     ParameterizedClassType directSupertype(ClassType supertypeInstance);
+
+    @Override
+    default ParameterizedClassType stripMetadata() {
+        return this;
+    }
 
     default TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
@@ -45,8 +48,4 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, Type, Clas
         return this.typeArguments().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
     }
 
-    @Override
-    default TypeWithMetadata<ParameterizedClassType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
-    }
 }

@@ -2,8 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
@@ -39,8 +37,8 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
     boolean hasTypeArguments();
 
     @Override
-    default TypeWithMetadata<? extends ClassType> withMetadata(TypeMetadata metadata) {
-        return new TypeWithMetadata<>(this, metadata);
+    default ClassType stripMetadata() {
+        return this;
     }
 
     @Override

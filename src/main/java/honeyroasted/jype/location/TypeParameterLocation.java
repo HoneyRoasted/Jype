@@ -26,8 +26,12 @@ public record TypeParameterLocation(GenericDeclarationLocation containing, Strin
         return of(tVar.getGenericDeclaration(), tVar.getName());
     }
 
+    public boolean isVirtual() {
+        return this.containing == null;
+    }
+
     @Override
     public String toString() {
-        return this.containing + ".#" + this.name;
+        return this.containing == null ? this.name : this.containing + ".#" + this.name;
     }
 }

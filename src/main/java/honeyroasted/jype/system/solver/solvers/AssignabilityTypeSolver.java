@@ -115,8 +115,8 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Subtype subtype) {
         insights.add(builder);
 
-        Type left = subtype.left().stripMetadata();
-        Type right = subtype.right().stripMetadata();
+        Type left = subtype.left();
+        Type right = subtype.right();
         if (left.hasCyclicTypeVariables() || right.hasCyclicTypeVariables()) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             if (left.hasCyclicTypeVariables()) {

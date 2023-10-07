@@ -1,51 +1,16 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.AbstractType;
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.solver.TypeMetadata;
-import honeyroasted.jype.system.solver.TypeWithMetadata;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-import java.util.Objects;
-
-public final class NoneType extends AbstractType {
-    private final String name;
-
-    public NoneType(TypeSystem system, String name) {
-        super(system);
-        this.name = name;
-    }
-
-    public String name() {
-        return this.name;
-    }
+public interface NoneType extends Type {
+    String name();
 
     @Override
-    public <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
-        return visitor.visitType(this, context);
+    default NoneType stripMetadata() {
+        return this;
     }
 
-    @Override
-    public TypeWithMetadata<NoneType> withMetadata(TypeMetadata metadata) {
-        return super.withMetadata(metadata);
+    default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+        return visitor.visitNoneType(this, context);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        NoneType noneType = (NoneType) o;
-        return Objects.equals(name, noneType.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name);
-    }
-
-    @Override
-    public String toString() {
-        return "@" + this.name;
-    }
-
 }
