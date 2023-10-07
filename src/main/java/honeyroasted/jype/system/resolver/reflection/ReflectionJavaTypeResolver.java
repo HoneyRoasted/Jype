@@ -1,12 +1,14 @@
 package honeyroasted.jype.system.resolver.reflection;
 
 import honeyroasted.jype.location.ClassLocation;
-import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.type.*;
-import honeyroasted.jype.type.impl.*;
+import honeyroasted.jype.type.impl.ArrayTypeImpl;
+import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
+import honeyroasted.jype.type.impl.WildTypeLowerImpl;
+import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -25,22 +27,17 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
 
         if (value instanceof TypeVariable<?> tVar) {
             TypeParameterLocation location = TypeParameterLocation.of(tVar);
-            VarType varType = new VarTypeImpl(system);
-            varType.setLocation(location);
-            system.storage().cacheFor(TypeParameterLocation.class).put(value, varType);
-
-            for (java.lang.reflect.Type bound : tVar.getBounds()) {
-                Optional<? extends Type> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, bound);
-                if (param.isPresent()) {
-                    varType.upperBounds().add(param.get());
-                } else {
-                    system.storage().cacheFor(TypeParameterLocation.class).remove(value);
-                    return Optional.empty();
-                }
+            Optional<Type> varCached = system.storage().cacheFor(TypeParameterLocation.class).get(location);
+            if (varCached.isPresent()) {
+                return varCached;
             }
 
-            varType.setUnmodifiable(true);
-            return Optional.of(varType);
+            Optional<? extends VarType> attemptByLocation = system.resolve(location);
+            if (attemptByLocation.isPresent()) {
+                return attemptByLocation;
+            } else {
+                return ReflectionTypeResolution.createVarType(system, tVar, location);
+            }
         } else if (value instanceof Class<?> cls) {
             if (cls.isPrimitive()) {
                 if (cls.equals(void.class)) {
@@ -49,59 +46,18 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     return system.constants().allPrimitives().stream().filter(t -> t.namespace().location().equals(ClassLocation.of(cls))).findFirst();
                 }
             } else {
-                Optional<Type> clsCached = system.storage().cacheFor(ClassLocation.class).get(ClassLocation.of(cls));
+                ClassLocation location = ClassLocation.of(cls);
+                Optional<Type> clsCached = system.storage().cacheFor(ClassLocation.class).get(location);
                 if (clsCached.isPresent()) {
                     return clsCached;
                 }
 
-                ClassReference reference = new ClassReferenceImpl(system);
-                reference.setNamespace(ClassNamespace.of(cls));
-                reference.setInterface(cls.isInterface());
-                system.storage().cacheFor(java.lang.reflect.Type.class).put(value, reference);
-                system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);
-
-                if (cls.getSuperclass() != null) {
-                    Optional<? extends Type> superCls = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class)
-                            .resolve(system, cls.getGenericSuperclass());
-
-                    if (superCls.isEmpty() || !(superCls.get() instanceof ClassType)) {
-                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
-                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
-                        return Optional.empty();
-                    } else {
-                        reference.setSuperClass((ClassType) superCls.get());
-                    }
+                Optional<? extends ClassReference> attemptByLocation = system.resolve(location);
+                if (attemptByLocation.isPresent()) {
+                    return attemptByLocation;
+                } else {
+                    return ReflectionTypeResolution.createClassReference(system, cls, location);
                 }
-
-                for (java.lang.reflect.Type inter : cls.getGenericInterfaces()) {
-                    Optional<? extends Type> interRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class)
-                            .resolve(system, inter);
-
-                    if (interRef.isEmpty() || !(interRef.get() instanceof ClassType)) {
-                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
-                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
-                        return Optional.empty();
-                    } else {
-                        reference.interfaces().add((ClassType) interRef.get());
-                    }
-                }
-
-                for (TypeVariable<?> param : cls.getTypeParameters()) {
-                    TypeParameterLocation loc = new TypeParameterLocation(reference.namespace().location(), param.getName());
-                    Optional<? extends VarType> paramRef = system.resolvers().resolverFor(TypeParameterLocation.class, VarType.class)
-                            .resolve(system, loc);
-
-                    if (paramRef.isEmpty()) {
-                        system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
-                        system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
-                        return Optional.empty();
-                    } else {
-                        reference.typeParameters().add(paramRef.get());
-                    }
-                }
-
-                reference.setUnmodifiable(true);
-                return Optional.of(reference);
             }
         } else if (value instanceof GenericArrayType genArrType) {
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
@@ -146,7 +102,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     result.setClassReference((ClassReference) clsRef.get());
 
                     List<Type> typeArguments = new ArrayList<>();
-                    for(java.lang.reflect.Type arg : pType.getActualTypeArguments()) {
+                    for (java.lang.reflect.Type arg : pType.getActualTypeArguments()) {
                         Optional<? extends Type> argResolved = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, arg);
                         if (argResolved.isPresent()) {
                             typeArguments.add(argResolved.get());

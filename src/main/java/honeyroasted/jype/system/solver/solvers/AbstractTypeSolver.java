@@ -26,9 +26,10 @@ public abstract class AbstractTypeSolver implements TypeSolver {
 
     @Override
     public TypeSolver bind(TypeBound bound) {
-        if (!this.supports(bound)) throw new IllegalArgumentException(getClass().getName() + " does not support TypeBound of type " +
-                (bound == null ? "null" : bound.getClass().getName()) + ", support bounds are: [" +
-                supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
+        if (!this.supports(bound))
+            throw new IllegalArgumentException(getClass().getName() + " does not support TypeBound of type " +
+                    (bound == null ? "null" : bound.getClass().getName()) + ", support bounds are: [" +
+                    supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
         this.initialBounds.add(bound);
         return this;
     }

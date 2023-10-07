@@ -7,7 +7,6 @@ import honeyroasted.jype.system.resolver.exception.ResolutionFailedException;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 
-import java.lang.reflect.Executable;
 import java.util.Optional;
 
 public class ReflectionMethodReferenceResolver implements TypeResolver<MethodLocation, MethodReference> {
@@ -20,7 +19,7 @@ public class ReflectionMethodReferenceResolver implements TypeResolver<MethodLoc
         }
 
         try {
-            return system.resolve(Executable.class, MethodReference.class, ReflectionTypeResolution.methodFromLocation(value));
+            return ReflectionTypeResolution.createMethodReference(system, ReflectionTypeResolution.methodFromLocation(value), value);
         } catch (ResolutionFailedException e) {
             return Optional.empty();
         }

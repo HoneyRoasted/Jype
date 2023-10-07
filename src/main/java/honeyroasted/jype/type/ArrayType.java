@@ -25,7 +25,7 @@ public interface ArrayType extends PossiblyUnmodifiable, Type {
     }
 
     @Override
-    default  <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+    default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitArrayType(this, context);
     }
 }

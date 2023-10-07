@@ -20,7 +20,8 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         super(typeSystem);
     }
 
-    @Override public ParameterizedClassType parameterized(List<Type> typeArguments) {
+    @Override
+    public ParameterizedClassType parameterized(List<Type> typeArguments) {
         ParameterizedClassType parameterizedClassType = new ParameterizedClassTypeImpl(this.typeSystem());
         parameterizedClassType.setClassReference(this);
         parameterizedClassType.setTypeArguments(typeArguments);
@@ -28,11 +29,13 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         return parameterizedClassType;
     }
 
-    @Override public ParameterizedClassType parameterized(Type... typeArguments) {
+    @Override
+    public ParameterizedClassType parameterized(Type... typeArguments) {
         return parameterized(List.of(typeArguments));
     }
 
-    @Override public ParameterizedClassType parameterizedWithTypeVars() {
+    @Override
+    public ParameterizedClassType parameterizedWithTypeVars() {
         return parameterized((List<Type>) (List) this.typeParameters);
     }
 

@@ -32,29 +32,35 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
         this.lowerBounds = new LinkedHashSet<>(this.lowerBounds);
     }
 
-    @Override public TypeParameterLocation location() {
+    @Override
+    public TypeParameterLocation location() {
         return this.location;
     }
 
-    @Override public void setLocation(TypeParameterLocation location) {
+    @Override
+    public void setLocation(TypeParameterLocation location) {
         super.checkUnmodifiable();
         this.location = location;
     }
 
-    @Override public Set<Type> upperBounds() {
+    @Override
+    public Set<Type> upperBounds() {
         return this.upperBounds;
     }
 
-    @Override public void setUpperBounds(Set<Type> upperBounds) {
+    @Override
+    public void setUpperBounds(Set<Type> upperBounds) {
         super.checkUnmodifiable();
         this.upperBounds = upperBounds;
     }
 
-    @Override public Set<Type> lowerBounds() {
+    @Override
+    public Set<Type> lowerBounds() {
         return this.lowerBounds;
     }
 
-    @Override public void setLowerBounds(Set<Type> lowerBounds) {
+    @Override
+    public void setLowerBounds(Set<Type> lowerBounds) {
         super.checkUnmodifiable();
         this.lowerBounds = lowerBounds;
     }

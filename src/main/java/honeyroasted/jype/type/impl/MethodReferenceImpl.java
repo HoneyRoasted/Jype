@@ -22,7 +22,8 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         super(typeSystem);
     }
 
-    @Override public ParameterizedMethodType asMethodType(List<Type> typeArguments) {
+    @Override
+    public ParameterizedMethodType asMethodType(List<Type> typeArguments) {
         ParameterizedMethodType parameterizedMethodType = new ParameterizedMethodTypeImpl(this.typeSystem());
         parameterizedMethodType.setMethodReference(this);
         parameterizedMethodType.setTypeArguments(typeArguments);
@@ -30,7 +31,8 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         return parameterizedMethodType;
     }
 
-    @Override public ParameterizedMethodType asMethodType(Type... typeArguments) {
+    @Override
+    public ParameterizedMethodType asMethodType(Type... typeArguments) {
         return asMethodType(List.of(typeArguments));
     }
 

@@ -32,6 +32,7 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
         }
         return 1;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

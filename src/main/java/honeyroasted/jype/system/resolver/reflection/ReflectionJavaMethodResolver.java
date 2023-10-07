@@ -5,15 +5,10 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.impl.MethodReferenceImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.lang.reflect.TypeVariable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 public class ReflectionJavaMethodResolver implements TypeResolver<Executable, MethodReference> {
@@ -40,47 +35,12 @@ public class ReflectionJavaMethodResolver implements TypeResolver<Executable, Me
             return Optional.of(mRef);
         }
 
-        MethodReference mRef = new MethodReferenceImpl(system);
-        mRef.setLocation(location);
-
-        if (value instanceof Method method) {
-            Optional<? extends Type> returnType = system.resolve(java.lang.reflect.Type.class, Type.class, method.getGenericReturnType());
-            if (returnType.isPresent()) {
-                mRef.setReturnType(returnType.get());
-            } else {
-                return Optional.empty();
-            }
+        Optional<? extends MethodReference> attemptByLocation = system.resolve(location);
+        if (attemptByLocation.isPresent()) {
+            return attemptByLocation;
         } else {
-            mRef.setReturnType(system.constants().voidType());
+            return ReflectionTypeResolution.createMethodReference(system, value, location);
         }
-
-        List<Type> resolvedParams = new ArrayList<>();
-        for (java.lang.reflect.Type param : value.getGenericParameterTypes()) {
-            Optional<? extends Type> resolved = system.resolve(java.lang.reflect.Type.class, Type.class, param);
-            if (resolved.isPresent()) {
-                resolvedParams.add(resolved.get());
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        List<VarType> resolvedTypeParams = new ArrayList<>();
-        for (TypeVariable<?> tvar : value.getTypeParameters()) {
-            Optional<? extends Type> resolved = system.resolve(java.lang.reflect.Type.class, Type.class, tvar);
-            if (resolved.isPresent() && resolved.get() instanceof VarType res) {
-                resolvedTypeParams.add(res);
-            } else {
-                return Optional.empty();
-            }
-        }
-
-        mRef.setParameters(resolvedParams);
-        mRef.setTypeParameters(resolvedTypeParams);
-        mRef.setUnmodifiable(true);
-        system.storage().cacheFor(MethodLocation.class).put(mRef.location(), mRef);
-        system.storage().cacheFor(Executable.class).put(value, mRef);
-
-        return Optional.of(mRef);
     }
 
 }

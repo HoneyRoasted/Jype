@@ -26,20 +26,20 @@ public interface TypeSolver {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("Insights: ").append(this.insights.size()).append("\n");
+            sb.append("== Insights: ").append(this.insights.size()).append(" ==").append("\n");
             for (TypeBound insight : this.insights) {
                 sb.append(insight).append("\n");
             }
 
             Set<TypeBound.Result> originators = this.originators();
-            sb.append("=".repeat(20)).append("\n")
-                    .append("Detailed Results: ").append(originators.size()).append("\n");
+            sb.append("\n")
+                    .append("== Detailed Results: ").append(originators.size()).append(" ==").append("\n");
 
             Iterator<TypeBound.Result> iter = originators.iterator();
             while (iter.hasNext()) {
                 sb.append(iter.next().toString());
                 if (iter.hasNext()) {
-                    sb.append("\n");
+                    sb.append("\n\n");
                 }
             }
 

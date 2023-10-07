@@ -20,7 +20,7 @@ public record ClassLocation(Type type, ClassLocation containing, String value) i
     public static ClassLocation of(Package pack, Module module) {
         if (pack == null && module == null) {
             return null;
-        }  else {
+        } else {
             ClassLocation curr = module.getName() == null ? DEFAULT_MODULE :
                     new ClassLocation(Type.MODULE, null, module.getName());
 

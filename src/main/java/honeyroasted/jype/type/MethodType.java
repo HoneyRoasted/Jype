@@ -34,7 +34,7 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
     }
 
     @Override
-    default  <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
+    default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitMethodType(this, context);
     }
 }

@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 
 public interface TypeVisitors {
     Mapping<Boolean> ERASURE = new ErasureTypeVisitor();
-    Mapping<Object> IDENTITY = new Mapping<>() {};
+    Mapping<Object> IDENTITY = new Mapping<>() {
+    };
 
     static <T> Mapping<T> identity() {
         return (Mapping<T>) IDENTITY;
@@ -52,11 +53,11 @@ public interface TypeVisitors {
         default <T extends Type> Type visitMetadataType(TypeWithMetadata<T> type, P context) {
             Type result;
             if (type.metadata().has(MetaKind.ERROR)) {
-                result =  visitErrorType(type, context);
+                result = visitErrorType(type, context);
             } else if (type.metadata().has(MetaKind.UNDET_VAR)) {
-                result =  visitUndetVar((TypeWithMetadata<VarType>) type, context);
+                result = visitUndetVar((TypeWithMetadata<VarType>) type, context);
             } else if (type.metadata().has(MetaKind.CAPTURED)) {
-                result =  visitCapturedType((TypeWithMetadata<WildType>) type, context);
+                result = visitCapturedType((TypeWithMetadata<WildType>) type, context);
             } else {
                 result = type.type().accept(this, context);
             }
@@ -162,18 +163,65 @@ public interface TypeVisitors {
     }
 
     interface DeepStructuralTypeMapping extends Mapping<TypeCache<Type, Type>> {
-        default boolean overridesClassType(ClassType type) {return false;};
-        default Type classTypeOverride(ClassType type, TypeCache<Type, Type> cache) {return type;}
-        default boolean overridesPrimitiveType(PrimitiveType type) {return false;};
-        default Type primitiveTypeOverride(PrimitiveType type, TypeCache<Type, Type> cache) {return type;}
-        default boolean overridesWildcardType(WildType type) {return false;};
-        default Type wildcardTypeOverride(WildType type, TypeCache<Type, Type> cache) {return type;}
-        default boolean overridesArrayType(ArrayType type) {return false;};
-        default Type arrayTypeOverride(ArrayType type, TypeCache<Type, Type> cache) {return type;}
-        default boolean overridesMethodType(MethodType type) {return false;};
-        default Type methodTypeOverride(MethodType type, TypeCache<Type, Type> cache) {return type;}
-        default boolean overridesVarType(VarType type) {return false;};
-        default Type varTypeOverride(VarType type, TypeCache<Type, Type> cache) {return type;}
+        default boolean overridesClassType(ClassType type) {
+            return false;
+        }
+
+        ;
+
+        default Type classTypeOverride(ClassType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesPrimitiveType(PrimitiveType type) {
+            return false;
+        }
+
+        ;
+
+        default Type primitiveTypeOverride(PrimitiveType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesWildcardType(WildType type) {
+            return false;
+        }
+
+        ;
+
+        default Type wildcardTypeOverride(WildType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesArrayType(ArrayType type) {
+            return false;
+        }
+
+        ;
+
+        default Type arrayTypeOverride(ArrayType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesMethodType(MethodType type) {
+            return false;
+        }
+
+        ;
+
+        default Type methodTypeOverride(MethodType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
+
+        default boolean overridesVarType(VarType type) {
+            return false;
+        }
+
+        ;
+
+        default Type varTypeOverride(VarType type, TypeCache<Type, Type> cache) {
+            return type;
+        }
 
         @Override
         default Type visit(Type type) {

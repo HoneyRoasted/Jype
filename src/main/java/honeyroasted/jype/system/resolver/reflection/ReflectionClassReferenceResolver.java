@@ -10,7 +10,6 @@ import honeyroasted.jype.type.Type;
 import java.util.Optional;
 
 public class ReflectionClassReferenceResolver implements TypeResolver<ClassLocation, ClassReference> {
-
     @Override
     public Optional<ClassReference> resolve(TypeSystem system, ClassLocation value) {
         Optional<Type> cached = system.storage().cacheFor(ClassLocation.class).get(value);
@@ -19,17 +18,11 @@ public class ReflectionClassReferenceResolver implements TypeResolver<ClassLocat
         }
 
         try {
-            Optional<? extends Type> type = system.resolve(ReflectionTypeResolution.classFromLocation(value));
-            if (type.isPresent() && type.get() instanceof ClassReference ref) {
-                return Optional.of(ref);
-            } else {
-                return Optional.empty();
-            }
+            return ReflectionTypeResolution.createClassReference(system, ReflectionTypeResolution.classFromLocation(value), value);
         } catch (ResolutionFailedException e) {
             return Optional.empty();
         }
     }
-
 
 
 }

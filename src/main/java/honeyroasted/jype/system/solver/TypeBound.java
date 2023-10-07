@@ -253,10 +253,11 @@ public interface TypeBound {
         }
 
         public String toString(int indent) {
-            String ind = "    ".repeat(indent);
+            String primInd = indent == 0 ? "" : "    ".repeat(indent-1) + "|----";
+            String ind = indent == 0 ? "|" : "    ".repeat(indent-1) + "    |";
 
             StringBuilder sb = new StringBuilder();
-            sb.append(ind).append("Bound: ").append(this.bound).append("\n")
+            sb.append(primInd).append("Bound: ").append(this.bound).append("\n")
                     .append(ind).append("Satisfied: ").append(this.satisfied);
 
             if (!this.children.isEmpty()) {

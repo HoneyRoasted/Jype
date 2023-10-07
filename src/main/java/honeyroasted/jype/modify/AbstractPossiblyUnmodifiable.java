@@ -9,9 +9,13 @@ public abstract class AbstractPossiblyUnmodifiable implements PossiblyUnmodifiab
         }
     }
 
-    protected void makeUnmodifiable() {}
+    protected void makeUnmodifiable() {
+    }
 
-    protected void makeModifiable() {};
+    protected void makeModifiable() {
+    }
+
+    ;
 
     public boolean isUnmodifiable() {
         return this.unmodifiable;
