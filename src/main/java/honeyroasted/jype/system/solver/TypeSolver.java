@@ -9,6 +9,8 @@ public interface TypeSolver {
 
     boolean supports(TypeBound bound);
 
+    boolean supportsAssumption(TypeBound bound);
+
     TypeSolver bind(TypeBound bound);
 
     TypeSolver assume(TypeBound bound);

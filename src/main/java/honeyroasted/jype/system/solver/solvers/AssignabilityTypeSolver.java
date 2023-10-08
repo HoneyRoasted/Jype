@@ -25,12 +25,14 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             );
 
     public AssignabilityTypeSolver() {
-        super(TypeBound.Equal.class,
-                TypeBound.Subtype.class,
-                TypeBound.NonCyclic.class,
-                TypeBound.Not.class,
-                TypeBound.And.class,
-                TypeBound.Or.class);
+        super(Set.of(TypeBound.Equal.class,
+                        TypeBound.Subtype.class,
+                        TypeBound.NonCyclic.class,
+                        TypeBound.Not.class,
+                        TypeBound.And.class,
+                        TypeBound.Or.class),
+                Set.of(TypeBound.Equal.class,
+                        TypeBound.Subtype.class));
     }
 
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();
