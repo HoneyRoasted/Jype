@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractTypeSolver implements TypeSolver {
     private Set<Class<? extends TypeBound>> supported;
     protected Set<TypeBound> initialBounds = new LinkedHashSet<>();
+    protected Set<TypeBound> assumedBounds = new LinkedHashSet<>();
 
     public AbstractTypeSolver(Set<Class<? extends TypeBound>> supported) {
         this.supported = supported;
@@ -34,4 +35,13 @@ public abstract class AbstractTypeSolver implements TypeSolver {
         return this;
     }
 
+    @Override
+    public TypeSolver assume(TypeBound bound) {
+        if (!this.supports(bound))
+            throw new IllegalArgumentException(getClass().getName() + " does not support TypeBound of type " +
+                    (bound == null ? "null" : bound.getClass().getName()) + ", support bounds are: [" +
+                    supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
+        this.assumedBounds.add(bound);
+        return this;
+    }
 }

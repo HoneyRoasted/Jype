@@ -240,6 +240,10 @@ public interface TypeBound {
             return this.satisfied;
         }
 
+        public boolean unsatisfied() {
+            return !this.satisfied;
+        }
+
         public Result originator() {
             return this.originator;
         }
@@ -298,13 +302,9 @@ public interface TypeBound {
         public enum Propagation {
             NONE,
             AND,
-            AND_DEEP,
             NAND,
-            NAND_DEEP,
             OR,
-            OR_DEEP,
-            NOR,
-            NOR_DEEP
+            NOR
         }
 
         public static class Builder {
@@ -334,13 +334,9 @@ public interface TypeBound {
                 this.children.forEach(Builder::propagate);
                 switch (this.propagation) {
                     case AND -> this.andChildren();
-                    case AND_DEEP -> this.deepAndChildren();
                     case OR -> this.orChildren();
-                    case OR_DEEP -> this.deepOrChildren();
                     case NAND -> this.andChildren().not();
-                    case NAND_DEEP -> this.deepAndChildren().not();
                     case NOR -> this.orChildren().not();
-                    case NOR_DEEP -> this.deepOrChildren().not();
                 }
                 return this;
             }
@@ -355,27 +351,9 @@ public interface TypeBound {
                 return this;
             }
 
-            public Builder deepAndChildren() {
-                this.satisfied = deepAndImpl();
-                return this;
-            }
-
-            private boolean deepAndImpl() {
-                return this.children.isEmpty() ? this.satisfied : this.children.stream().allMatch(Builder::deepAndImpl);
-            }
-
             public Builder orChildren() {
                 this.satisfied = this.children.stream().anyMatch(Builder::satisfied);
                 return this;
-            }
-
-            public Builder deepOrChildren() {
-                this.satisfied = deepOrImpl();
-                return this;
-            }
-
-            private boolean deepOrImpl() {
-                return this.children.isEmpty() ? this.satisfied : this.children.stream().anyMatch(Builder::deepOrImpl);
             }
 
             public TypeBound bound() {

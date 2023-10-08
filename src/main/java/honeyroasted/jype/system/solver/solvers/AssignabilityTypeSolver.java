@@ -1,8 +1,11 @@
 package honeyroasted.jype.system.solver.solvers;
 
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.exception.TypeSolverUnsolvableException;
+import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.*;
 
 import java.util.*;
@@ -41,12 +44,29 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         return this.solve(system, Long.MAX_VALUE);
     }
 
+    private TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver;
+
     public Result solve(TypeSystem system, long maxIters) {
+        Map<VarType, Type> vars = new HashMap<>();
+
         this.initialBounds.forEach(bound -> {
             TypeBound.Result.Builder builder = TypeBound.Result.builder(bound);
             workingBounds.add(builder);
             results.add(builder);
         });
+
+        this.assumedBounds.forEach(bound -> {
+            this.satisfiedCache.add(bound);
+            if (bound instanceof TypeBound.Equal eq && eq.left() instanceof VarType vt) {
+                vars.put(vt, eq.right());
+            }
+        });
+
+        if (!vars.isEmpty()) {
+            this.varTypeResolver = new VarTypeResolveVisitor(vars);
+        } else {
+            this.varTypeResolver = TypeVisitors.identity();
+        }
 
         for (long c = 0; c < maxIters && !this.workingBounds.isEmpty(); c++) {
             this.iterate(system);
@@ -115,8 +135,8 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Subtype subtype) {
         insights.add(builder);
 
-        Type left = subtype.left();
-        Type right = subtype.right();
+        Type left = this.varTypeResolver.visit(subtype.left());
+        Type right = this.varTypeResolver.visit(subtype.right());
         if (left.hasCyclicTypeVariables() || right.hasCyclicTypeVariables()) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             if (left.hasCyclicTypeVariables()) {
@@ -227,12 +247,13 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Equal equal) {
         insights.add(builder);
-        builder.setSatisfied(equal.left().equals(equal.right()));
+        builder.setSatisfied(this.varTypeResolver.visit(equal.left())
+                .equals(this.varTypeResolver.visit(equal.right())));
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.NonCyclic nonCyclic) {
         insights.add(builder);
-        builder.setSatisfied(nonCyclic.type().hasCyclicTypeVariables());
+        builder.setSatisfied(this.varTypeResolver.visit(nonCyclic.type()).hasCyclicTypeVariables());
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Not not) {

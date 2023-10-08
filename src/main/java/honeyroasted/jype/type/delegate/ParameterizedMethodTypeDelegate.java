@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
@@ -94,5 +95,10 @@ public class ParameterizedMethodTypeDelegate extends AbstractTypeDelegate<Parame
     @Override
     public void setTypeArguments(List<Type> typeArguments) {
         this.delegate().setTypeArguments(typeArguments);
+    }
+
+    @Override
+    public VarTypeResolveVisitor varTypeResolver() {
+        return this.delegate().varTypeResolver();
     }
 }

@@ -21,7 +21,7 @@ public interface ParameterizedMethodType extends PossiblyUnmodifiable, Type, Met
         return this;
     }
 
-    default TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver() {
+    default VarTypeResolveVisitor varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
                 varType -> {
                     for (int i = 0; i < this.typeArguments().size() && i < this.typeParameters().size(); i++) {

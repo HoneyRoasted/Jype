@@ -85,8 +85,8 @@ public class TypeSystem {
         return this.resolvers().resolverFor(keyType, resultType).resolve(this, key);
     }
 
-    public Optional<? extends Type> resolve(TypeToken token) {
-        return this.resolve(TypeToken.class, Type.class, token);
+    public <T extends Type> Optional<T> resolve(TypeToken<?> token) {
+        return (Optional<T>) this.resolve(TypeToken.class, Type.class, token);
     }
 
     public Optional<? extends Type> resolve(java.lang.reflect.Type reflectionType) {

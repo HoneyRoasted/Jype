@@ -5,6 +5,7 @@ import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -15,6 +16,10 @@ public class VarTypeResolveVisitor implements TypeVisitors.DeepStructuralTypeMap
     public VarTypeResolveVisitor(Predicate<VarType> resolves, Function<VarType, Type> resolver) {
         this.resolves = resolves;
         this.resolver = resolver;
+    }
+
+    public VarTypeResolveVisitor(Map<VarType, Type> varMap) {
+        this(varMap::containsKey, varMap::get);
     }
 
     @Override
@@ -31,5 +36,14 @@ public class VarTypeResolveVisitor implements TypeVisitors.DeepStructuralTypeMap
         } else {
             return visit(resolved);
         }
+    }
+
+    public VarTypeResolveVisitor and(VarTypeResolveVisitor other) {
+        return new VarTypeResolveVisitor(this.resolves.or(other.resolves), t -> {
+            if (this.resolves.test(t)) {
+                return this.resolver.apply(t);
+            }
+            return other.resolver.apply(t);
+        });
     }
 }
