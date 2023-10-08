@@ -69,16 +69,6 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
     }
 
     @Override
-    public boolean isInterface() {
-        return this.delegate().isInterface();
-    }
-
-    @Override
-    public void setInterface(boolean isInterface) {
-        this.delegate().setInterface(isInterface);
-    }
-
-    @Override
     public ClassType superClass() {
         return this.delegate().superClass();
     }

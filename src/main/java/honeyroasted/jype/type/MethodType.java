@@ -12,6 +12,10 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     void setLocation(MethodLocation location);
 
+    int modifiers();
+
+    void setModifiers(int modifiers);
+
     Type returnType();
 
     void setReturnType(Type returnType);

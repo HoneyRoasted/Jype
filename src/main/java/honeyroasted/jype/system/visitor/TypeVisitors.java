@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public interface TypeVisitors {
     Mapping<Boolean> ERASURE = new ErasureTypeVisitor();
     Mapping<Object> IDENTITY = new Mapping<>() {};
+    Mapping<TypeCache<Type, Type>> COPY = new DeepStructuralTypeMapping() {};
 
     static <T> Mapping<T> identity() {
         return (Mapping<T>) IDENTITY;
@@ -54,9 +55,12 @@ public interface TypeVisitors {
                 List<Type> args = pType.typeArguments();
                 List<Type> newArgs = visit(args, context);
 
-                if (!args.equals(newArgs)) {
+                Type newOuter = visit(pType.outerType(), context);
+
+                if (!args.equals(newArgs) || !newOuter.equals(pType.outerType())) {
                     ParameterizedClassType newType = new ParameterizedClassTypeImpl(pType.typeSystem());
                     newType.setClassReference(pType.classReference());
+                    newType.setOuterType(newOuter instanceof ClassType ct ? ct : pType.outerType());
                     newType.setTypeArguments(newArgs);
                     newType.setUnmodifiable(true);
                     return newType;
@@ -201,10 +205,13 @@ public interface TypeVisitors {
                 ClassReference newRef = new ClassReferenceImpl(ref.typeSystem());
                 context.put(type, newRef);
                 newRef.setNamespace(ref.namespace());
-                newRef.setInterface(ref.isInterface());
+                newRef.setModifiers(ref.modifiers());
 
                 Type newSuper = visit(ref.superClass(), context);
                 newRef.setSuperClass(newSuper instanceof ClassType ct ? ct : ref.superClass());
+
+                Type newOuter = visit(ref.outerClass(), context);
+                newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : ref.outerClass());
 
                 newRef.setInterfaces((List<ClassType>) (List) this.visit(ref.interfaces(), context).stream().filter(t -> t instanceof ClassType).toList());
                 newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
@@ -215,8 +222,12 @@ public interface TypeVisitors {
                 ParameterizedClassType newType = new ParameterizedClassTypeImpl(type.typeSystem());
                 context.put(type, newType);
 
-                Type newRef = this.visitClassType(pt.classReference(), context);
+                Type newRef = visit(pt.classReference(), context);
                 newType.setClassReference(newRef instanceof ClassReference cr ? cr : pt.classReference());
+
+                Type newOuter = visit(pt.outerType(), context);
+                newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
+
                 newType.setTypeArguments(this.visit(pt.typeArguments(), context));
                 newType.setUnmodifiable(true);
 
@@ -279,6 +290,7 @@ public interface TypeVisitors {
                 MethodReference newRef = new MethodReferenceImpl(ref.typeSystem());
                 context.put(type, newRef);
                 newRef.setLocation(ref.location());
+                newRef.setModifiers(ref.modifiers());
                 newRef.setReturnType(this.visit(ref.returnType(), context));
                 newRef.setParameters(this.visit(ref.parameters(), context));
                 newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());

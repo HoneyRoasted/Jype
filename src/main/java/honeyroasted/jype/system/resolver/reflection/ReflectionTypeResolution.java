@@ -110,6 +110,7 @@ public interface ReflectionTypeResolution {
     static Optional<MethodReference> createMethodReference(TypeSystem system, Executable executable, MethodLocation location) {
         MethodReference mRef = new MethodReferenceImpl(system);
         mRef.setLocation(location);
+        mRef.setModifiers(executable.getModifiers());
 
         if (executable instanceof Method method) {
             Optional<? extends honeyroasted.jype.type.Type> returnType = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, method.getGenericReturnType());
@@ -154,7 +155,6 @@ public interface ReflectionTypeResolution {
     static Optional<ClassReference> createClassReference(TypeSystem system, Class<?> cls, ClassLocation location) {
         ClassReference reference = new ClassReferenceImpl(system);
         reference.setNamespace(ClassNamespace.of(cls));
-        reference.setInterface(cls.isInterface());
         reference.setModifiers(cls.getModifiers());
         system.storage().cacheFor(java.lang.reflect.Type.class).put(location, reference);
         system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);

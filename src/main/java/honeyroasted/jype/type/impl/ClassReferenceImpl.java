@@ -13,7 +13,6 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     private ClassNamespace namespace;
     private ClassReference outerClass;
     private int modifiers;
-    private boolean isInterface;
     private ClassType superClass;
     private List<ClassType> interfaces = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
@@ -88,15 +87,6 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     public void setOuterClass(ClassReference outerClass) {
         this.checkUnmodifiable();
         this.outerClass = outerClass;
-    }
-
-    public boolean isInterface() {
-        return this.isInterface;
-    }
-
-    public void setInterface(boolean isInterface) {
-        super.checkUnmodifiable();
-        this.isInterface = isInterface;
     }
 
     public ClassType superClass() {

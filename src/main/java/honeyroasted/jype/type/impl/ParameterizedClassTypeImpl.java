@@ -128,17 +128,6 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     public void setOuterClass(ClassReference outerClass) {
         classReference.setOuterClass(outerClass);
     }
-
-    @Override
-    public boolean isInterface() {
-        return this.classReference.isInterface();
-    }
-
-    @Override
-    public void setInterface(boolean isInterface) {
-        this.classReference.setInterface(isInterface);
-    }
-
     @Override
     public ClassType superClass() {
         return classReference.superClass();

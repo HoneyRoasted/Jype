@@ -62,6 +62,16 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     }
 
     @Override
+    public int modifiers() {
+        return methodReference.modifiers();
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        methodReference.setModifiers(modifiers);
+    }
+
+    @Override
     public Type returnType() {
         return methodReference.returnType();
     }

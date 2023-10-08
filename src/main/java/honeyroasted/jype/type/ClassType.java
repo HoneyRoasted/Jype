@@ -22,10 +22,6 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
 
     void setOuterClass(ClassReference outerClass);
 
-    boolean isInterface();
-
-    void setInterface(boolean isInterface);
-
     ClassType superClass();
 
     void setSuperClass(ClassType superClass);

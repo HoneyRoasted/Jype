@@ -14,6 +14,7 @@ import java.util.Objects;
 
 public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType implements MethodReference {
     private MethodLocation location;
+    private int modifiers;
     private Type returnType;
     private List<Type> parameters = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
@@ -60,6 +61,17 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     public void setLocation(MethodLocation location) {
         super.checkUnmodifiable();
         this.location = location;
+    }
+
+    @Override
+    public int modifiers() {
+        return this.modifiers;
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        this.checkUnmodifiable();
+        this.modifiers = modifiers;
     }
 
     public Type returnType() {
