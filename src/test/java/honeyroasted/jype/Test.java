@@ -27,13 +27,13 @@ public class Test {
     public static <T> void main(String[] args) {
         TypeSystem system = new TypeSystem();
         VarType vt = system.<VarType>resolve(new TypeToken<T>() {}).get();
-        ClassType ct1 = system.<ClassType>resolve(new TypeToken<ArrayList<T>>() {}).get();
-        ClassType ct2 = system.<ClassType>resolve(new TypeToken<List<String>>() {}).get();
+        Type ct1 = system.resolve(new TypeToken<T>() {}).get();
+        ClassType ct2 = system.<ClassType>resolve(new TypeToken<CharSequence>() {}).get();
         ClassType ct3 = system.<ClassType>resolve(new TypeToken<String>(){}).get();
 
         System.out.println(new AssignabilityTypeSolver()
                 .bind(new TypeBound.Subtype(ct1, ct2))
-                .assume(new TypeBound.Equal(vt, ct3)).solve(system));
+                .assume(new TypeBound.Subtype(vt, ct3)).solve(system));
     }
 
 }

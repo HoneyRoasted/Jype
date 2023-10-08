@@ -197,11 +197,16 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "and(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
+            return "or(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
         }
     }
 
     record And(List<TypeBound> children) implements TypeBound {
+
+        public And(TypeBound... bounds) {
+            this(List.of(bounds));
+        }
+
         @Override
         public List<?> parameters() {
             return this.children;
@@ -209,7 +214,7 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "or(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
+            return "and(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
         }
     }
 

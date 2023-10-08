@@ -33,11 +33,13 @@ public interface TypeSolver {
         private final boolean success;
         private final Set<TypeBound.Result> bounds;
         private final Set<TypeBound> insights;
+        private final Set<TypeBound> assumptions;
 
-        public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights) {
+        public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights, Set<TypeBound> assumptions) {
             this.success = success;
             this.bounds =  Collections.unmodifiableSet(bounds);
             this.insights = Collections.unmodifiableSet(insights);
+            this.assumptions = assumptions;
         }
 
         private Set<TypeBound.Result> originators;
@@ -141,17 +143,24 @@ public interface TypeSolver {
             return insights;
         }
 
+        public Set<TypeBound> assumptions() {
+            return assumptions;
+        }
+
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
-            sb.append("== Insights: ").append(this.insights.size()).append(" ==").append("\n");
-            for (TypeBound insight : this.insights) {
-                sb.append(insight).append("\n");
+            sb.append("== Insights: ").append(this.insights.size()).append(" ==\n");
+            this.insights.forEach(t -> sb.append(t).append("\n"));
+
+            if (!this.assumptions.isEmpty()) {
+                sb.append("\n== Assumptions: ").append(this.assumptions.size()).append(" ==\n");
+                this.assumptions.forEach(t -> sb.append(t).append("\n"));
             }
 
             Set<TypeBound.Result> originators = this.originators();
             sb.append("\n")
-                    .append("== Detailed Results: ").append(originators.size()).append(" ==").append("\n");
+                    .append("== Detailed Results: ").append(originators.size()).append(" ==\n");
 
             Iterator<TypeBound.Result> iter = originators.iterator();
             while (iter.hasNext()) {

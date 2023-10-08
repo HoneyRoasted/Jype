@@ -2,8 +2,6 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.*;
 
