@@ -6,7 +6,7 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 public interface PrimitiveType extends Type {
     ClassNamespace namespace();
 
-    ClassNamespace boxNamespace();
+    ClassReference box();
 
     String name();
 

@@ -4,10 +4,7 @@ import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.PrimitiveType;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class TypeConstants {
     private final ClassReference object;
@@ -23,23 +20,12 @@ public final class TypeConstants {
     private final PrimitiveType longType;
     private final PrimitiveType floatType;
     private final PrimitiveType doubleType;
-    private final ClassReference booleanBox;
-    private final ClassReference byteBox;
-    private final ClassReference shortBox;
-    private final ClassReference charBox;
-    private final ClassReference intBox;
-    private final ClassReference longBox;
-    private final ClassReference floatBox;
-    private final ClassReference doubleBox;
 
     public TypeConstants(ClassReference object,
                          NoneType voidType, NoneType nullType, NoneType noneType, ClassReference voidBox,
                          PrimitiveType booleanType, PrimitiveType byteType, PrimitiveType shortType,
                          PrimitiveType charType, PrimitiveType intType, PrimitiveType longType,
-                         PrimitiveType floatType, PrimitiveType doubleType,
-                         ClassReference booleanBox, ClassReference byteBox, ClassReference shortBox,
-                         ClassReference charBox, ClassReference intBox, ClassReference longBox,
-                         ClassReference floatBox, ClassReference doubleBox) {
+                         PrimitiveType floatType, PrimitiveType doubleType) {
         this.object = object;
         this.voidType = voidType;
         this.nullType = nullType;
@@ -53,23 +39,18 @@ public final class TypeConstants {
         this.longType = longType;
         this.floatType = floatType;
         this.doubleType = doubleType;
-        this.booleanBox = booleanBox;
-        this.byteBox = byteBox;
-        this.shortBox = shortBox;
-        this.charBox = charBox;
-        this.intBox = intBox;
-        this.longBox = longBox;
-        this.floatBox = floatBox;
-        this.doubleBox = doubleBox;
 
         this.allPrimitives = List.of(booleanType, byteType, shortType, charType, intType, longType, floatType, doubleType);
-        this.allBoxes = List.of(booleanBox, byteBox, shortBox, charBox, intBox, longBox, floatBox, doubleBox);
+        List<ClassReference> allBoxes = new ArrayList<>();
 
-        for (int i = 0; i < allPrimitives.size(); i++) {
-            boxByPrimitive.put(allPrimitives.get(i), allBoxes.get(i));
-            primitiveByBox.put(allBoxes.get(i), allPrimitives.get(i));
-            primitivesByName.put(allPrimitives.get(i).name(), allPrimitives.get(i));
+        for (PrimitiveType type : this.allPrimitives) {
+            allBoxes.add(type.box());
+            boxByPrimitive.put(type, type.box());
+            primitiveByBox.put(type.box(), type);
+            primitivesByName.put(type.name(), type);
         }
+
+        this.allBoxes = Collections.unmodifiableList(allBoxes);
         this.boxByPrimitive = Collections.unmodifiableMap(boxByPrimitive);
         this.primitivesByName = Collections.unmodifiableMap(primitivesByName);
         this.primitiveByBox = Collections.unmodifiableMap(primitiveByBox);
@@ -155,34 +136,34 @@ public final class TypeConstants {
     }
 
     public ClassReference booleanBox() {
-        return booleanBox;
+        return booleanType.box();
     }
 
     public ClassReference byteBox() {
-        return byteBox;
+        return byteType.box();
     }
 
     public ClassReference shortBox() {
-        return shortBox;
+        return shortType.box();
     }
 
     public ClassReference charBox() {
-        return charBox;
+        return charType.box();
     }
 
     public ClassReference intBox() {
-        return intBox;
+        return intType.box();
     }
 
     public ClassReference longBox() {
-        return longBox;
+        return longType.box();
     }
 
     public ClassReference floatBox() {
-        return floatBox;
+        return floatType.box();
     }
 
     public ClassReference doubleBox() {
-        return doubleBox;
+        return doubleType.box();
     }
 }

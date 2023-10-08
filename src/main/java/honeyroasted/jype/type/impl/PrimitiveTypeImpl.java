@@ -3,19 +3,20 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.PrimitiveType;
 
 import java.util.Objects;
 
 public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveType {
     private ClassNamespace namespace;
-    private ClassNamespace boxNamespace;
+    private ClassReference box;
     private String descriptor;
 
-    public PrimitiveTypeImpl(TypeSystem typeSystem, ClassNamespace namespace, ClassNamespace boxNamespace, String descriptor) {
+    public PrimitiveTypeImpl(TypeSystem typeSystem, ClassNamespace namespace, ClassReference box, String descriptor) {
         super(typeSystem);
         this.namespace = namespace;
-        this.boxNamespace = boxNamespace;
+        this.box = box;
         this.descriptor = descriptor;
     }
 
@@ -25,8 +26,8 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
     }
 
     @Override
-    public ClassNamespace boxNamespace() {
-        return this.boxNamespace;
+    public ClassReference box() {
+        return this.box;
     }
 
     @Override

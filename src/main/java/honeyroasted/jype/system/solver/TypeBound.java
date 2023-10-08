@@ -26,6 +26,18 @@ public interface TypeBound {
         public List<?> parameters() {
             return List.of(this.type);
         }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.type);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null || getClass() != obj.getClass()) return false;
+            Unary<?> other = (Unary<?>) obj;
+            return Objects.equals(this.type, other.type);
+        }
     }
 
     abstract class Binary<L extends Type, R extends Type> implements TypeBound {
@@ -46,66 +58,37 @@ public interface TypeBound {
         }
 
         @Override
-        public List<Object> parameters() {
-            return List.of(this.right);
-        }
-    }
-
-    class Infer extends Unary<Type> {
-        public Infer(Type type) {
-            super(type);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(this.type);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Infer o && Objects.equals(this.type, o.type);
-        }
-
-        @Override
-        public String toString() {
-            return "infer(" + this.type + ")";
-        }
-    }
-
-    class NonCyclic extends Unary<Type> {
-        public NonCyclic(Type type) {
-            super(type);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(this.type);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof NonCyclic o && Objects.equals(this.type, o.type);
-        }
-
-        @Override
-        public String toString() {
-            return "non-cyclic(" + this.type + ")";
-        }
-    }
-
-    class Equal extends Binary<Type, Type> {
-        public Equal(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
         public int hashCode() {
             return Objects.hash(this.left, this.right);
         }
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Equal o && Objects.equals(this.left, o.left) && Objects.equals(this.right, o.right);
+            if (obj == null || obj.getClass() != getClass()) return false;
+            Binary<?, ?> other = (Binary<?, ?>) obj;
+            return Objects.equals(this.left, other.left) && Objects.equals(this.right, other.right);
+        }
+
+        @Override
+        public List<Object> parameters() {
+            return List.of(this.left, this.right);
+        }
+    }
+
+    final class NonCyclic extends Unary<Type> {
+        public NonCyclic(Type type) {
+            super(type);
+        }
+
+        @Override
+        public String toString() {
+            return this.type + " DOES NOT HAVE CYCLIC TYPE VARIABLES";
+        }
+    }
+
+    final class Equal extends Binary<Type, Type> {
+        public Equal(Type left, Type right) {
+            super(left, right);
         }
 
         @Override
@@ -120,16 +103,6 @@ public interface TypeBound {
         }
 
         @Override
-        public int hashCode() {
-            return Objects.hash(this.left, this.right);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Subtype o && Objects.equals(this.left, o.left) && Objects.equals(this.right, o.right);
-        }
-
-        @Override
         public String toString() {
             return this.left + " IS A SUBTYPE OF " + this.right;
         }
@@ -141,34 +114,14 @@ public interface TypeBound {
         }
 
         @Override
-        public int hashCode() {
-            return Objects.hash(this.left, this.right);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof GenericParameter o && Objects.equals(this.left, o.left) && Objects.equals(this.right, o.right);
-        }
-
-        @Override
         public String toString() {
-            return this.left + " IS COMPATIBLE GENERIC ARGUMENT WITH " + this.right;
+            return this.left + " IS A COMPATIBLE GENERIC ARGUMENT WITH " + this.right;
         }
     }
 
     class Unchecked extends Binary<Type, Type> {
         public Unchecked(Type left, Type right) {
             super(left, right);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(this.left, this.right);
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof Unchecked o && Objects.equals(this.left, o.left) && Objects.equals(this.right, o.right);
         }
 
         @Override
@@ -185,7 +138,7 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "not(" + this.child + ")";
+            return "NOT(" + this.child + ")";
         }
     }
 
@@ -197,7 +150,7 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "or(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
+            return "OR(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
         }
     }
 
@@ -214,7 +167,7 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "and(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
+            return "AND(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
         }
     }
 
@@ -261,30 +214,34 @@ public interface TypeBound {
             return new Builder().setBound(bound);
         }
 
-        public String toString(int indent) {
-            String primInd = indent == 0 ? "" : "    ".repeat(indent-1) + "|----";
-            String ind = indent == 0 ? "|" : "    ".repeat(indent-1) + "    |";
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(primInd).append("Bound: ").append(this.bound).append("\n")
-                    .append(ind).append("Satisfied: ").append(this.satisfied);
+        private void toString(List<String> building) {
+            String ind = "    ";
+            building.add("Bound: " + this.bound);
+            building.add("Satisfied: " + this.satisfied);
 
             if (!this.children.isEmpty()) {
-                sb.append("\n").append(ind).append("Propagation: ").append(this.propagation).append("\n")
-                        .append(ind).append("Children:\n");
-                for (int i = 0; i < this.children.size(); i++) {
-                    sb.append(this.children.get(i).toString(indent + 1));
-                    if (i < this.children.size() - 1) {
-                        sb.append("\n");
-                    }
+                building.add("Propagation: " + this.propagation);
+                building.add("Children: " + this.children.size());
+
+                List<String> children = new ArrayList<>();
+                this.children.forEach(r -> r.toString(children));
+
+                int maxLen = children.stream().mapToInt(String::length).max().getAsInt();
+                String content = "-".repeat(maxLen + 8);
+                String top = "+" + content + "+";
+                building.add(top);
+                for (String c : children) {
+                    building.add("|" + ind + c + (" ".repeat(maxLen - c.length() + 4)) + "|");
                 }
+                building.add(top);
             }
-            return sb.toString();
         }
 
         @Override
         public String toString() {
-            return this.toString(0);
+            List<String> building = new ArrayList<>();
+            this.toString(building);
+            return String.join("\n", building);
         }
 
         public static Builder builder(TypeBound bound, Propagation propagation) {
@@ -409,6 +366,30 @@ public interface TypeBound {
             public Builder setPropagation(Propagation propagation) {
                 this.propagation = propagation;
                 return this;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (o == null || getClass() != o.getClass()) return false;
+                Builder builder = (Builder) o;
+                return satisfied == builder.satisfied && propagation == builder.propagation && Objects.equals(bound, builder.bound) && Objects.equals(originator, builder.originator) && Objects.equals(children, builder.children);
+            }
+
+            @Override
+            public int hashCode() {
+                return Objects.hash(propagation, bound, satisfied, originator, children);
+            }
+
+            @Override
+            public String toString() {
+                return "TypeBound.Result.Builder{" +
+                        "propagation=" + propagation +
+                        ", bound=" + bound +
+                        ", satisfied=" + satisfied +
+                        ", originator=" + originator +
+                        ", children=" + children +
+                        '}';
             }
         }
 

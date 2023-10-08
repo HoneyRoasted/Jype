@@ -50,17 +50,14 @@ public class TypeSystem {
                 this.tryResolve(Object.class),
                 new NoneTypeImpl(this, "void"), new NoneTypeImpl(this, "null"), new NoneTypeImpl(this, "none"),
                 this.tryResolve(Void.class),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), ClassNamespace.of(Boolean.class), "Z"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(byte.class), ClassNamespace.of(Byte.class), "B"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(short.class), ClassNamespace.of(Short.class), "S"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(char.class), ClassNamespace.of(Character.class), "C"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(int.class), ClassNamespace.of(Integer.class), "I"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(long.class), ClassNamespace.of(Long.class), "J"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(float.class), ClassNamespace.of(Float.class), "F"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(double.class), ClassNamespace.of(Double.class), "D"),
-                this.tryResolve(Boolean.class), this.tryResolve(Byte.class), this.tryResolve(Short.class),
-                this.tryResolve(Character.class), this.tryResolve(Integer.class), this.tryResolve(Long.class),
-                this.tryResolve(Float.class), this.tryResolve(Double.class)
+                new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), this.tryResolve(Boolean.class), "Z"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(byte.class), this.tryResolve(Byte.class), "B"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(short.class), this.tryResolve(Short.class), "S"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(char.class), this.tryResolve(Character.class), "C"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(int.class), this.tryResolve(Integer.class), "I"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(long.class), this.tryResolve(Long.class), "J"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(float.class), this.tryResolve(Float.class), "F"),
+                new PrimitiveTypeImpl(this, ClassNamespace.of(double.class), this.tryResolve(Double.class), "D")
         );
     }
 
