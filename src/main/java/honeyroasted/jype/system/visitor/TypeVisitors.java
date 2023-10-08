@@ -307,7 +307,6 @@ public interface TypeVisitors {
             context.put(type, newType);
             newType.setLocation(type.location());
             newType.setUpperBounds(this.visit(type.upperBounds(), context));
-            newType.setLowerBounds(this.visit(type.lowerBounds(), context));
             newType.setUnmodifiable(true);
             return newType;
         }

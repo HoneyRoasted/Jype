@@ -10,6 +10,8 @@ public interface PrimitiveType extends Type {
 
     String name();
 
+    String descriptor();
+
     @Override
     default PrimitiveType stripMetadata() {
         return this;

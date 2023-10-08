@@ -26,6 +26,8 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     boolean hasTypeArguments();
 
+    List<Type> typeArguments();
+
     @Override
     default MethodType stripMetadata() {
         return this;

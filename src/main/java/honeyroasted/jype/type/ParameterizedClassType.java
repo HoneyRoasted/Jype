@@ -11,11 +11,14 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface ParameterizedClassType extends PossiblyUnmodifiable, Type, ClassType {
-    List<Type> typeArguments();
 
     void setTypeArguments(List<Type> typeArguments);
 
     void setClassReference(ClassReference classReference);
+
+    ClassType outerType();
+
+    void setOuterType(ClassType outerType);
 
     ParameterizedClassType directSupertype(ClassType supertypeInstance);
 

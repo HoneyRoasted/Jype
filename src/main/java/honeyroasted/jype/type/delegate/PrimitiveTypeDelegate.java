@@ -26,4 +26,9 @@ public class PrimitiveTypeDelegate extends AbstractTypeDelegate<PrimitiveType> i
     public String name() {
         return this.delegate().name();
     }
+
+    @Override
+    public String descriptor() {
+        return this.delegate().descriptor();
+    }
 }

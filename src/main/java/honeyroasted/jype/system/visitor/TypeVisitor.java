@@ -10,7 +10,7 @@ public interface TypeVisitor<R, P> {
     }
 
     default R visitType(Type type, P context) {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Unimplemented");
     }
 
     R visitClassType(ClassType type, P context);

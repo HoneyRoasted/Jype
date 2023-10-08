@@ -43,14 +43,4 @@ public class VarTypeDelegate extends AbstractTypeDelegate<VarType> implements Va
     public void setUpperBounds(Set<Type> upperBounds) {
         this.delegate().setUpperBounds(upperBounds);
     }
-
-    @Override
-    public Set<Type> lowerBounds() {
-        return this.delegate().lowerBounds();
-    }
-
-    @Override
-    public void setLowerBounds(Set<Type> lowerBounds) {
-        this.delegate().setLowerBounds(lowerBounds);
-    }
 }

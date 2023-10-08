@@ -1,6 +1,6 @@
 [Project Page](https://honeyroasted.github.io/jype/landing.html)
 
-STILL HEAVILY WIP, CURRENTLY JUST DOESN'T WORK
+Still heavily WIP. Currently missing type inference functionality.
 
 # Jype
 Jype is a library providing a set of classes fully representing Java's type system, including its

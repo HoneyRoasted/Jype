@@ -14,8 +14,6 @@ public interface ParameterizedMethodType extends PossiblyUnmodifiable, Type, Met
 
     void setMethodReference(MethodReference methodReference);
 
-    List<Type> typeArguments();
-
     void setTypeArguments(List<Type> typeArguments);
 
     @Override

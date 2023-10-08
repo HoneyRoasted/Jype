@@ -14,6 +14,14 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
 
     void setNamespace(ClassNamespace namespace);
 
+    int modifiers();
+
+    void setModifiers(int modifiers);
+
+    ClassReference outerClass();
+
+    void setOuterClass(ClassReference outerClass);
+
     boolean isInterface();
 
     void setInterface(boolean isInterface);
@@ -35,6 +43,8 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
     ClassReference classReference();
 
     boolean hasTypeArguments();
+
+    List<Type> typeArguments();
 
     @Override
     default ClassType stripMetadata() {

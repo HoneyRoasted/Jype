@@ -39,6 +39,26 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
     }
 
     @Override
+    public ClassReference outerClass() {
+        return this.delegate().outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.delegate().setOuterClass(outerClass);
+    }
+
+    @Override
+    public int modifiers() {
+        return this.delegate().modifiers();
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        this.delegate().setModifiers(modifiers);
+    }
+
+    @Override
     public ClassNamespace namespace() {
         return this.delegate().namespace();
     }

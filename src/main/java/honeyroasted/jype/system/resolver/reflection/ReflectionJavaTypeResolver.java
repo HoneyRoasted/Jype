@@ -113,6 +113,17 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     }
 
                     result.setTypeArguments(typeArguments);
+
+                    if (pType.getOwnerType() != null) {
+                        Optional<? extends Type> owner = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, pType.getOwnerType());
+                        if (owner.isPresent() && owner.get() instanceof ClassType ct) {
+                            result.setOuterType(ct);
+                        } else {
+                            system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                            return Optional.empty();
+                        }
+                    }
+
                     result.setUnmodifiable(true);
 
                     return Optional.of(result);

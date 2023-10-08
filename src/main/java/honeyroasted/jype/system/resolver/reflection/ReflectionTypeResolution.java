@@ -155,6 +155,7 @@ public interface ReflectionTypeResolution {
         ClassReference reference = new ClassReferenceImpl(system);
         reference.setNamespace(ClassNamespace.of(cls));
         reference.setInterface(cls.isInterface());
+        reference.setModifiers(cls.getModifiers());
         system.storage().cacheFor(java.lang.reflect.Type.class).put(location, reference);
         system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);
 
@@ -168,6 +169,19 @@ public interface ReflectionTypeResolution {
                 return Optional.empty();
             } else {
                 reference.setSuperClass((ClassType) superCls.get());
+            }
+        }
+
+        if (cls.getEnclosingClass() != null) {
+            Optional<? extends honeyroasted.jype.type.Type> enclosing = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class)
+                    .resolve(system, cls.getEnclosingClass());
+
+            if (enclosing.isEmpty() || !(enclosing.get() instanceof ClassType)) {
+                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
+                return Optional.empty();
+            } else {
+                reference.setOuterClass(((ClassType) enclosing.get()).classReference());
             }
         }
 

@@ -11,6 +11,8 @@ import java.util.Objects;
 
 public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType implements ClassReference {
     private ClassNamespace namespace;
+    private ClassReference outerClass;
+    private int modifiers;
     private boolean isInterface;
     private ClassType superClass;
     private List<ClassType> interfaces = new ArrayList<>();
@@ -64,6 +66,28 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     public void setNamespace(ClassNamespace location) {
         super.checkUnmodifiable();
         this.namespace = location;
+    }
+
+    @Override
+    public int modifiers() {
+        return this.modifiers;
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        this.checkUnmodifiable();
+        this.modifiers = modifiers;
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return this.outerClass;
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.checkUnmodifiable();
+        this.outerClass = outerClass;
     }
 
     public boolean isInterface() {

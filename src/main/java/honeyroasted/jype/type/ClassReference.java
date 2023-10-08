@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,11 @@ public interface ClassReference extends PossiblyUnmodifiable, Type, ClassType {
     @Override
     default boolean hasTypeArguments() {
         return false;
+    }
+
+    @Override
+    default List<Type> typeArguments() {
+        return Collections.emptyList();
     }
 
     @Override

@@ -6,9 +6,6 @@ import honeyroasted.jype.type.*;
 public interface SimpleTypeVisitor<R, P> extends TypeVisitor<R, P> {
 
     @Override
-    R visitType(Type type, P context);
-
-    @Override
     default R visitClassType(ClassType type, P context) {
         return visitType(type, context);
     }

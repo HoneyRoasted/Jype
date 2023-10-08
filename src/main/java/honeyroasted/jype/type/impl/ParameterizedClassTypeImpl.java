@@ -9,6 +9,7 @@ import java.util.*;
 
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
     private ClassReference classReference;
+    private ClassType outerType;
     private List<Type> typeArguments;
 
     private final transient Map<ClassReference, ParameterizedClassType> superTypes = new HashMap<>();
@@ -77,6 +78,17 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
+    public ClassType outerType() {
+        return this.outerType;
+    }
+
+    @Override
+    public void setOuterType(ClassType outerType) {
+        this.checkUnmodifiable();
+        this.outerType = outerType;
+    }
+
+    @Override
     public List<Type> typeArguments() {
         return this.typeArguments;
     }
@@ -95,6 +107,26 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     @Override
     public void setNamespace(ClassNamespace location) {
         classReference.setNamespace(location);
+    }
+
+    @Override
+    public int modifiers() {
+        return classReference.modifiers();
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        classReference.setModifiers(modifiers);
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return classReference.outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        classReference.setOuterClass(outerClass);
     }
 
     @Override

@@ -14,7 +14,6 @@ import java.util.Set;
 public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implements VarType {
     private TypeParameterLocation location;
     private Set<Type> upperBounds = new LinkedHashSet<>();
-    private Set<Type> lowerBounds = new LinkedHashSet<>();
 
     public VarTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
@@ -23,13 +22,11 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
     @Override
     protected void makeUnmodifiable() {
         this.upperBounds = WildType.linkedCopyOf(this.upperBounds);
-        this.lowerBounds = WildType.linkedCopyOf(this.lowerBounds);
     }
 
     @Override
     protected void makeModifiable() {
         this.upperBounds = new LinkedHashSet<>(this.upperBounds);
-        this.lowerBounds = new LinkedHashSet<>(this.lowerBounds);
     }
 
     @Override
@@ -52,17 +49,6 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
     public void setUpperBounds(Set<Type> upperBounds) {
         super.checkUnmodifiable();
         this.upperBounds = upperBounds;
-    }
-
-    @Override
-    public Set<Type> lowerBounds() {
-        return this.lowerBounds;
-    }
-
-    @Override
-    public void setLowerBounds(Set<Type> lowerBounds) {
-        super.checkUnmodifiable();
-        this.lowerBounds = lowerBounds;
     }
 
     @Override

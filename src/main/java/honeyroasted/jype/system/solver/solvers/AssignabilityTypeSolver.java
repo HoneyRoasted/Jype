@@ -174,14 +174,10 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             vt.upperBounds().forEach(vbound ->
                     this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(vbound, right), builder)));
-            vt.lowerBounds().forEach(vbound ->
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(right, vbound), builder)));
         } else if (right instanceof VarType vt) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             vt.upperBounds().forEach(vbound ->
                     this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(right, vbound), builder)));
-            vt.lowerBounds().forEach(vbound ->
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(vbound, right), builder)));
         } else if (left instanceof ArrayType lat && right instanceof ArrayType rat) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), rat.component())));

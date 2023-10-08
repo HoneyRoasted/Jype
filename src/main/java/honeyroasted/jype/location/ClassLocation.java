@@ -39,9 +39,17 @@ public record ClassLocation(Type type, ClassLocation containing, String value) i
         return this.type == Type.ARRAY;
     }
 
+    public String toInternalName() {
+        return this.toName("/");
+    }
+
     public String toRuntimeName() {
+        return this.toName(".");
+    }
+
+    public String toName(String delim) {
         if (this.containing != null && this.containing.type != Type.MODULE) {
-            return this.containing.toRuntimeName() + "." + this.value;
+            return this.containing.toName(delim) + delim + this.value;
         }
 
         return this.value;

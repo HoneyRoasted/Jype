@@ -10,24 +10,35 @@ import java.util.Objects;
 public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveType {
     private ClassNamespace namespace;
     private ClassNamespace boxNamespace;
+    private String descriptor;
 
-    public PrimitiveTypeImpl(TypeSystem typeSystem, ClassNamespace namespace, ClassNamespace boxNamespace) {
+    public PrimitiveTypeImpl(TypeSystem typeSystem, ClassNamespace namespace, ClassNamespace boxNamespace, String descriptor) {
         super(typeSystem);
         this.namespace = namespace;
         this.boxNamespace = boxNamespace;
+        this.descriptor = descriptor;
     }
 
-    @Override public ClassNamespace namespace() {
+    @Override
+    public ClassNamespace namespace() {
         return this.namespace;
     }
 
-    @Override public ClassNamespace boxNamespace() {
+    @Override
+    public ClassNamespace boxNamespace() {
         return this.boxNamespace;
     }
 
-    @Override public String name() {
+    @Override
+    public String descriptor() {
+        return this.descriptor;
+    }
+
+    @Override
+    public String name() {
         return this.namespace().name().value();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

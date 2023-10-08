@@ -37,6 +37,26 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     }
 
     @Override
+    public int modifiers() {
+        return this.delegate().modifiers();
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        this.delegate().setModifiers(modifiers);
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return this.delegate().outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.delegate().setOuterClass(outerClass);
+    }
+
+    @Override
     public boolean isInterface() {
         return this.delegate().isInterface();
     }
@@ -99,6 +119,16 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     @Override
     public void setClassReference(ClassReference classReference) {
         this.delegate().setClassReference(classReference);
+    }
+
+    @Override
+    public ClassType outerType() {
+        return this.delegate().outerType();
+    }
+
+    @Override
+    public void setOuterType(ClassType outerType) {
+        this.delegate().setOuterType(outerType);
     }
 
     @Override
