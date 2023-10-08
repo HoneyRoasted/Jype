@@ -52,6 +52,16 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
     }
 
     @Override
+    public int modifiers() {
+        return this.delegate().modifiers();
+    }
+
+    @Override
+    public void setModifiers(int modifiers) {
+        this.delegate().setModifiers(modifiers);
+    }
+
+    @Override
     public Type returnType() {
         return this.delegate().returnType();
     }
