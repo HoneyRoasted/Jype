@@ -3,6 +3,7 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
@@ -11,16 +12,36 @@ import honeyroasted.jype.type.VarType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType implements MethodReference {
     private MethodLocation location;
     private int modifiers;
     private Type returnType;
+    private List<Type> exceptionTypes = new ArrayList<>();
     private List<Type> parameters = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
 
     public MethodReferenceImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        MethodReference copy = new MethodReferenceImpl(this.typeSystem());
+        cache.put(this, copy);
+
+        copy.setLocation(this.location);
+        copy.setModifiers(this.modifiers);
+        copy.setReturnType(this.returnType.copy(cache));
+        copy.setExceptionTypes(this.exceptionTypes.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setParameters(this.parameters.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setTypeParameters(this.typeParameters.stream().map(t -> (VarType) t.copy(cache)).toList());
+        copy.setUnmodifiable(true);
+        return (T) copy;
     }
 
     @Override
@@ -46,12 +67,14 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     protected void makeUnmodifiable() {
         this.typeParameters = List.copyOf(this.typeParameters);
         this.parameters = List.copyOf(this.parameters);
+        this.exceptionTypes = List.copyOf(this.exceptionTypes);
     }
 
     @Override
     protected void makeModifiable() {
         this.typeParameters = new ArrayList<>(this.typeParameters);
         this.parameters = new ArrayList<>(this.parameters);
+        this.exceptionTypes = new ArrayList<>(this.exceptionTypes);
     }
 
     public MethodLocation location() {
@@ -83,6 +106,17 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         this.returnType = returnType;
     }
 
+    @Override
+    public List<Type> exceptionTypes() {
+        return this.exceptionTypes;
+    }
+
+    @Override
+    public void setExceptionTypes(List<Type> exceptionTypes) {
+        this.checkUnmodifiable();;
+        this.exceptionTypes = exceptionTypes;
+    }
+
     public List<VarType> typeParameters() {
         return this.typeParameters;
     }
@@ -111,12 +145,12 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         if (this == o) return true;
         if (o == null || !(o instanceof MethodReference)) return false;
         MethodReference that = (MethodReference) o;
-        return Objects.equals(location, that.location()) && Objects.equals(returnType, that.returnType()) && Objects.equals(parameters, that.parameters()) && Objects.equals(typeParameters, that.typeParameters());
+        return Objects.equals(location, that.location()) && Objects.equals(returnType, that.returnType()) && Objects.equals(parameters, that.parameters()) && Objects.equals(typeParameters, that.typeParameters()) && Objects.equals(exceptionTypes, that.exceptionTypes());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, returnType, parameters, typeParameters);
+        return Objects.hash(location, returnType, parameters, typeParameters, exceptionTypes);
     }
 
 }

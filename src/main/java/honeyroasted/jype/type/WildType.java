@@ -20,11 +20,6 @@ public interface WildType extends PossiblyUnmodifiable, Type {
     void setLowerBounds(Set<Type> lowerBounds);
 
     @Override
-    default WildType stripMetadata() {
-        return this;
-    }
-
-    @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitWildcardType(this, context);
     }

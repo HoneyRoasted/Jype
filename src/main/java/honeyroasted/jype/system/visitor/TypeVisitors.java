@@ -3,7 +3,9 @@ package honeyroasted.jype.system.visitor;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.visitors.ErasureTypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.SignatureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleTypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.StripExceptionsTypeVisitor;
 import honeyroasted.jype.type.*;
 import honeyroasted.jype.type.impl.*;
 
@@ -17,11 +19,14 @@ import java.util.stream.Collectors;
 public interface TypeVisitors {
     Mapping<Boolean> ERASURE = new ErasureTypeVisitor();
     Mapping<Object> IDENTITY = new Mapping<>() {};
-    Mapping<TypeCache<Type, Type>> COPY = new DeepStructuralTypeMapping() {};
+    Mapping<TypeCache<Type, Type>> ERASE_EXCEPTIONS = new StripExceptionsTypeVisitor();
+    TypeVisitor<String, SignatureTypeVisitor.Mode> SIGNATURE = new SignatureTypeVisitor();
+    TypeVisitor<String, SignatureTypeVisitor.Mode> DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(SIGNATURE, true));
 
     static <T> Mapping<T> identity() {
         return (Mapping<T>) IDENTITY;
     }
+
 
     interface Mapping<P> extends SimpleTypeVisitor<Type, P>, Function<Type, Type> {
 
@@ -45,6 +50,24 @@ public interface TypeVisitors {
         @Override
         default Type visitType(Type type, P context) {
             return type;
+        }
+
+        default <K, R> TypeVisitor<R, K> andThen(TypeVisitor<R, K> visitor, P newContext) {
+            return new SimpleTypeVisitor<>() {
+                @Override
+                public R visitType(Type type, K context) {
+                    return visitor.visit(Mapping.this.visit(type, newContext), context);
+                }
+            };
+        }
+
+        default <K, R> TypeVisitor<R, K> andThen(TypeVisitor<R, K> visitor) {
+            return new SimpleTypeVisitor<>() {
+                @Override
+                public R visitType(Type type, K context) {
+                    return visitor.visit(Mapping.this.visit(type), context);
+                }
+            };
         }
     }
 
@@ -106,11 +129,13 @@ public interface TypeVisitors {
         @Override
         default Type visitMethodType(MethodType type, P context) {
             if (type instanceof MethodReference rType) {
+                List<Type> newExcept = visit(rType.exceptionTypes(), context);
                 List<Type> newParams = visit(rType.parameters(), context);
                 Type newRet = visit(type.returnType(), context);
-                if (!newParams.equals(rType.parameters()) && !newRet.equals(type.returnType())) {
+                if (!newParams.equals(rType.parameters()) || !newRet.equals(type.returnType()) || !newExcept.equals(type.exceptionTypes())) {
                     MethodReference newType = new MethodReferenceImpl(type.typeSystem());
                     newType.setLocation(type.location());
+                    newType.setExceptionTypes(newExcept);
                     newType.setTypeParameters(type.typeParameters());
                     newType.setParameters(newParams);
                     newType.setReturnType(newRet);
@@ -120,7 +145,7 @@ public interface TypeVisitors {
             } else if (type instanceof ParameterizedMethodTypeImpl pType) {
                 Type newRef = visit(pType.methodReference(), context);
                 List<Type> newTypeArgs = visit(pType.typeArguments(), context);
-                if (!newRef.equals(pType.methodReference()) && !newTypeArgs.equals(pType.typeArguments())) {
+                if (!newRef.equals(pType.methodReference()) || !newTypeArgs.equals(pType.typeArguments())) {
                     ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
                     newType.setMethodReference(newRef instanceof MethodReference ref ? ref : pType.methodReference());
                     newType.setTypeArguments(newTypeArgs);
@@ -237,15 +262,6 @@ public interface TypeVisitors {
         }
 
         @Override
-        default Type visitPrimitiveType(PrimitiveType type, TypeCache<Type, Type> context) {
-            Optional<Type> cached = context.get(type);
-            if (cached.isPresent()) return cached.get();
-            if (this.overridesPrimitiveType(type)) return this.primitiveTypeOverride(type, context);
-
-            return type;
-        }
-
-        @Override
         default Type visitWildcardType(WildType type, TypeCache<Type, Type> context) {
             Optional<Type> cached = context.get(type);
             if (cached.isPresent()) return cached.get();
@@ -291,6 +307,7 @@ public interface TypeVisitors {
                 context.put(type, newRef);
                 newRef.setLocation(ref.location());
                 newRef.setModifiers(ref.modifiers());
+                newRef.setExceptionTypes(this.visit(ref.exceptionTypes(), context));
                 newRef.setReturnType(this.visit(ref.returnType(), context));
                 newRef.setParameters(this.visit(ref.parameters(), context));
                 newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
@@ -328,6 +345,15 @@ public interface TypeVisitors {
             Optional<Type> cached = context.get(type);
             if (cached.isPresent()) return cached.get();
             if (this.overridesNoneType(type)) return this.noneTypeOverride(type, context);
+
+            return type;
+        }
+
+        @Override
+        default Type visitPrimitiveType(PrimitiveType type, TypeCache<Type, Type> context) {
+            Optional<Type> cached = context.get(type);
+            if (cached.isPresent()) return cached.get();
+            if (this.overridesPrimitiveType(type)) return this.primitiveTypeOverride(type, context);
 
             return type;
         }

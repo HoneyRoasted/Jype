@@ -1,6 +1,7 @@
 package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 
 import java.util.function.Function;
@@ -9,7 +10,6 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     private TypeSystem system;
     private T delegate;
     private Function<TypeSystem, T> factory;
-    private boolean expired = false;
 
     public AbstractTypeDelegate(TypeSystem system, Function<TypeSystem, T> factory) {
         this.factory = factory;
@@ -22,14 +22,19 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     }
 
     public T delegate() {
-        if (this.delegate == null || expired) {
+        if (this.delegate == null) {
             this.delegate = this.factory.apply(this.system);
         }
         return delegate;
     }
 
     public void expireDelegate() {
-        this.expired = true;
+        this.delegate = null;
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        return this.delegate().copy();
     }
 
     @Override

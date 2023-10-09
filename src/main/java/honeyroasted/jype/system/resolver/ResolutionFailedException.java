@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.resolver.exception;
+package honeyroasted.jype.system.resolver;
 
 public class ResolutionFailedException extends Exception {
     public ResolutionFailedException() {

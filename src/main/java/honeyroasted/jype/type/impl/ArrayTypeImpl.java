@@ -2,16 +2,29 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implements ArrayType {
     private Type component;
 
     public ArrayTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        ArrayType copy = new ArrayTypeImpl(this.typeSystem());
+        copy.setComponent(this.component.copy());
+        return (T) copy;
     }
 
     @Override

@@ -3,7 +3,7 @@ package honeyroasted.jype.system.resolver.reflection;
 import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
-import honeyroasted.jype.system.resolver.exception.ResolutionFailedException;
+import honeyroasted.jype.system.resolver.ResolutionFailedException;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.Type;
 

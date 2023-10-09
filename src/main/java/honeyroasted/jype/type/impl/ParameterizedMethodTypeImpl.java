@@ -3,6 +3,7 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
@@ -11,6 +12,7 @@ import honeyroasted.jype.type.VarType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedMethodType {
     private MethodReference methodReference;
@@ -18,6 +20,20 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
 
     public ParameterizedMethodTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        ParameterizedMethodType copy = new ParameterizedMethodTypeImpl(this.typeSystem());
+        cache.put(this, copy);
+
+        copy.setMethodReference(this.methodReference.copy(cache));
+        copy.setTypeArguments(this.typeArguments.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setUnmodifiable(true);
+        return (T) copy;
     }
 
     @Override
@@ -79,6 +95,16 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     @Override
     public void setReturnType(Type returnType) {
         methodReference.setReturnType(returnType);
+    }
+
+    @Override
+    public List<Type> exceptionTypes() {
+        return this.methodReference.exceptionTypes();
+    }
+
+    @Override
+    public void setExceptionTypes(List<Type> exceptionTypes) {
+        this.methodReference.setExceptionTypes(exceptionTypes);
     }
 
     @Override

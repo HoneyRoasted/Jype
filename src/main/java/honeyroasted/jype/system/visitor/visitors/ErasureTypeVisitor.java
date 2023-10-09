@@ -7,21 +7,21 @@ public class ErasureTypeVisitor implements TypeVisitors.StructuralMapping<Boolea
 
     @Override
     public Type visitWildcardType(WildType type, Boolean recurse) {
-        return visit(wildUpperBound(type), recurse);
-    }
-
-    private static Type wildUpperBound(Type t) {
-        if (t instanceof WildType wType) {
-            return wildUpperBound(wType.upperBounds().iterator().next());
-        } else {
-            return t;
-        }
+        return visit(type.upperBounds().iterator().next(), recurse);
     }
 
     @Override
     public Type visitClassType(ClassType type, Boolean recurse) {
         if (type instanceof ParameterizedClassType pType) {
-            return pType.classReference();
+            ClassReference ref = pType.classReference();
+            if (!recurse) {
+                ParameterizedClassType ct = ref.parameterized();
+                ct.setUnmodifiable(false);
+                ct.setOuterType(pType.outerType());
+                ct.setUnmodifiable(true);
+                return ct;
+            }
+            return ref;
         }
         return type;
     }

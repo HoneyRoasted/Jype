@@ -6,7 +6,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
-import honeyroasted.jype.system.resolver.exception.ResolutionFailedException;
+import honeyroasted.jype.system.resolver.ResolutionFailedException;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
@@ -123,6 +123,16 @@ public interface ReflectionTypeResolution {
             mRef.setReturnType(system.constants().voidType());
         }
 
+        List<honeyroasted.jype.type.Type> resolvedExceptions = new ArrayList<>();
+        for (java.lang.reflect.Type except : executable.getGenericExceptionTypes()) {
+            Optional<? extends honeyroasted.jype.type.Type> resolved = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, except);
+            if (resolved.isPresent()) {
+                resolvedExceptions.add(resolved.get());
+            } else {
+                return Optional.empty();
+            }
+        }
+
         List<honeyroasted.jype.type.Type> resolvedParams = new ArrayList<>();
         for (java.lang.reflect.Type param : executable.getGenericParameterTypes()) {
             Optional<? extends honeyroasted.jype.type.Type> resolved = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, param);
@@ -143,6 +153,7 @@ public interface ReflectionTypeResolution {
             }
         }
 
+        mRef.setExceptionTypes(resolvedExceptions);
         mRef.setParameters(resolvedParams);
         mRef.setTypeParameters(resolvedTypeParams);
         mRef.setUnmodifiable(true);

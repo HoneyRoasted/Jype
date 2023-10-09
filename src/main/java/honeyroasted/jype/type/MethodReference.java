@@ -7,17 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface MethodReference extends PossiblyUnmodifiable, Type, MethodType {
+public interface MethodReference extends PossiblyUnmodifiable, MethodType {
     ParameterizedMethodType asMethodType(List<Type> typeArguments);
 
     ParameterizedMethodType asMethodType(Type... typeArguments);
 
     ParameterizedMethodType parameterizedWithTypeVars();
-
-    @Override
-    default MethodReference stripMetadata() {
-        return this;
-    }
 
     @Override
     default boolean hasTypeArguments() {

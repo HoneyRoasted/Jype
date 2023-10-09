@@ -1,7 +1,10 @@
 package honeyroasted.jype.type.meta;
 
+import honeyroasted.jype.modify.Copyable;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ParameterizedMethodType;
+import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.delegate.ParameterizedMethodTypeDelegate;
 
 import java.util.function.Function;
@@ -26,5 +29,12 @@ public class ParameterizedMethodTypeMeta<T> extends ParameterizedMethodTypeDeleg
     @Override
     public ParameterizedMethodType stripMetadata() {
         return this.delegate().stripMetadata();
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        ParameterizedMethodTypeMeta<T> copy = new ParameterizedMethodTypeMeta<>(this.typeSystem(), this.delegate().copy(cache));
+        copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
+        return (K) copy;
     }
 }

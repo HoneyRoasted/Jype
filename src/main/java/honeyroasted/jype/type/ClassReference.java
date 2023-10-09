@@ -7,17 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface ClassReference extends PossiblyUnmodifiable, Type, ClassType {
+public interface ClassReference extends PossiblyUnmodifiable, ClassType {
     ParameterizedClassType parameterized(List<Type> typeArguments);
 
     ParameterizedClassType parameterized(Type... typeArguments);
 
     ParameterizedClassType parameterizedWithTypeVars();
-
-    @Override
-    default ClassReference stripMetadata() {
-        return this;
-    }
 
     @Override
     default boolean hasTypeArguments() {

@@ -3,8 +3,10 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Type;
 
 import java.util.Objects;
 
@@ -58,4 +60,8 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
         return this.namespace().name().toString();
     }
 
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        return (T) this;
+    }
 }

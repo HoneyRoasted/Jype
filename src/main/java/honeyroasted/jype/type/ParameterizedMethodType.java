@@ -7,17 +7,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface ParameterizedMethodType extends PossiblyUnmodifiable, Type, MethodType {
+public interface ParameterizedMethodType extends PossiblyUnmodifiable, MethodType {
     MethodReference methodReference();
 
     void setMethodReference(MethodReference methodReference);
 
     void setTypeArguments(List<Type> typeArguments);
-
-    @Override
-    default ParameterizedMethodType stripMetadata() {
-        return this;
-    }
 
     default VarTypeResolveVisitor varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),

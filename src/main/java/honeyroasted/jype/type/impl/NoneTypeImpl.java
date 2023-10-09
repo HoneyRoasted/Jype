@@ -2,7 +2,9 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.NoneType;
+import honeyroasted.jype.type.Type;
 
 import java.util.Objects;
 
@@ -36,4 +38,8 @@ public final class NoneTypeImpl extends AbstractType implements NoneType {
         return "@" + this.name;
     }
 
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        return (T) this;
+    }
 }

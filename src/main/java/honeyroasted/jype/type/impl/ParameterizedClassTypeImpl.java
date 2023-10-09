@@ -3,8 +3,10 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.*;
 
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
@@ -16,6 +18,21 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
     public ParameterizedClassTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        ParameterizedClassType copy = new ParameterizedClassTypeImpl(this.typeSystem());
+        cache.put(this, copy);
+
+        copy.setClassReference(this.classReference.copy(cache));
+        copy.setOuterType(this.outerType == null ? outerType : outerType.copy(cache));
+        copy.setTypeArguments(this.typeArguments.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setUnmodifiable(true);
+        return (T) copy;
     }
 
     @Override
@@ -168,9 +185,9 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
         if (this == o) return true;
         if (o == null || !(o instanceof ClassType)) return false;
         if (o instanceof ParameterizedClassType pct) {
-            return Objects.equals(classReference, pct.classReference()) && Objects.equals(typeArguments, pct.typeArguments());
+            return Objects.equals(classReference, pct.classReference()) && Objects.equals(typeArguments, pct.typeArguments()) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, pct.outerType()));
         } else if (o instanceof ClassReference cr) {
-            return Objects.equals(classReference, cr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, cr.typeParameters()));
+            return Objects.equals(classReference, cr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, cr.typeParameters())) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, cr.outerClass()));
         }
         return false;
     }

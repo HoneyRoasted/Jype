@@ -14,16 +14,15 @@ public interface VarType extends PossiblyUnmodifiable, Type {
         return this.location().name();
     }
 
+    default boolean isVirtual() {
+        return this.location().isVirtual();
+    }
+
     void setLocation(TypeParameterLocation location);
 
     Set<Type> upperBounds();
 
     void setUpperBounds(Set<Type> upperBounds);
-
-    @Override
-    default VarType stripMetadata() {
-        return this;
-    }
 
     @Override
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {

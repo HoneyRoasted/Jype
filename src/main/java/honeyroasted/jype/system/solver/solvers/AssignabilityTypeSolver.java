@@ -107,6 +107,8 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
 
         if (bound instanceof TypeBound.Equal eq) {
             this.solve(system, builder, eq);
+        } else if (bound instanceof TypeBound.NonCyclic nc) {
+            this.solve(system, builder, nc);
         } else if (bound instanceof TypeBound.Subtype st) {
             this.solve(system, builder, st);
         } else if (bound instanceof TypeBound.Not nt) {

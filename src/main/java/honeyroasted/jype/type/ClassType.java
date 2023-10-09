@@ -2,6 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;
@@ -30,6 +31,10 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
 
     void setInterfaces(List<ClassType> interfaces);
 
+    default boolean hasTypeParameters() {
+        return !this.typeParameters().isEmpty();
+    }
+
     List<VarType> typeParameters();
 
     void setTypeParameters(List<VarType> typeParameters);
@@ -41,11 +46,6 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
     boolean hasTypeArguments();
 
     List<Type> typeArguments();
-
-    @Override
-    default ClassType stripMetadata() {
-        return this;
-    }
 
     @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {

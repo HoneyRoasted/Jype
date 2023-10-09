@@ -13,11 +13,6 @@ public interface PrimitiveType extends Type {
     String descriptor();
 
     @Override
-    default PrimitiveType stripMetadata() {
-        return this;
-    }
-
-    @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitPrimitiveType(this, context);
     }

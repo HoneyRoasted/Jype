@@ -3,22 +3,42 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType implements ClassReference {
     private ClassNamespace namespace;
-    private ClassReference outerClass;
     private int modifiers;
+    private ClassReference outerClass;
     private ClassType superClass;
     private List<ClassType> interfaces = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
 
     public ClassReferenceImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        ClassReference copy = new ClassReferenceImpl(this.typeSystem());
+        cache.put(this, copy);
+
+        copy.setNamespace(this.namespace);
+        copy.setModifiers(this.modifiers);
+        copy.setOuterClass(this.outerClass == null ? this.outerClass : this.outerClass.copy(cache));
+        copy.setSuperClass(this.superClass == null ? this.superClass : this.superClass.copy(cache));
+        copy.setInterfaces(this.interfaces.stream().map(c -> (ClassType) c.copy(cache)).toList());
+        copy.setTypeParameters(this.typeParameters.stream().map(v -> (VarType) v.copy(cache)).toList());
+        copy.setUnmodifiable(true);
+        return (T) copy;
     }
 
     @Override

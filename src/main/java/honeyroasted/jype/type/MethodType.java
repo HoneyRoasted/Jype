@@ -20,6 +20,14 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     void setReturnType(Type returnType);
 
+    default boolean hasTypeParameters() {
+        return !this.typeParameters().isEmpty();
+    }
+
+    List<Type> exceptionTypes();
+
+    void setExceptionTypes(List<Type> exceptionTypes);
+
     List<VarType> typeParameters();
 
     void setTypeParameters(List<VarType> typeParameters);
@@ -31,11 +39,6 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
     boolean hasTypeArguments();
 
     List<Type> typeArguments();
-
-    @Override
-    default MethodType stripMetadata() {
-        return this;
-    }
 
     @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {

@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +11,15 @@ import java.util.stream.Collectors;
 
 public interface TypeBound {
     List<?> parameters();
+
+    interface Compound extends TypeBound {
+        List<TypeBound> children();
+
+        @Override
+        default List<?> parameters() {
+            return this.children();
+        }
+    }
 
     abstract class Unary<T extends Type> implements TypeBound {
         protected T type;
@@ -86,6 +96,18 @@ public interface TypeBound {
         }
     }
 
+    final class NeedsInference extends Unary<VarType> {
+
+        public NeedsInference(VarType type) {
+            super(type);
+        }
+
+        @Override
+        public String toString() {
+            return this.type + " NEEDS INFERENCE";
+        }
+    }
+
     final class Equal extends Binary<Type, Type> {
         public Equal(Type left, Type right) {
             super(left, right);
@@ -130,39 +152,31 @@ public interface TypeBound {
         }
     }
 
-    record Not(TypeBound child) implements TypeBound {
-        @Override
-        public List<?> parameters() {
-            return List.of(child);
-        }
-
+    record Not(TypeBound child) implements Compound {
         @Override
         public String toString() {
             return "NOT(" + this.child + ")";
         }
+
+        @Override
+        public List<TypeBound> children() {
+            return List.of(child);
+        }
     }
 
-    record Or(List<TypeBound> children) implements TypeBound {
-        @Override
-        public List<?> parameters() {
-            return this.children;
+    record Or(List<TypeBound> children) implements Compound {
+        public Or(TypeBound... bounds) {
+            this(List.of(bounds));
         }
-
         @Override
         public String toString() {
             return "OR(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
         }
     }
 
-    record And(List<TypeBound> children) implements TypeBound {
-
+    record And(List<TypeBound> children) implements Compound {
         public And(TypeBound... bounds) {
             this(List.of(bounds));
-        }
-
-        @Override
-        public List<?> parameters() {
-            return this.children;
         }
 
         @Override
@@ -378,7 +392,7 @@ public interface TypeBound {
 
             @Override
             public int hashCode() {
-                return Objects.hash(propagation, bound, satisfied, originator, children);
+                return Objects.hash(propagation, bound, satisfied, children);
             }
 
             @Override
@@ -387,7 +401,6 @@ public interface TypeBound {
                         "propagation=" + propagation +
                         ", bound=" + bound +
                         ", satisfied=" + satisfied +
-                        ", originator=" + originator +
                         ", children=" + children +
                         '}';
             }

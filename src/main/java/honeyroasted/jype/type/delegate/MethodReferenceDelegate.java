@@ -72,6 +72,16 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
     }
 
     @Override
+    public List<Type> exceptionTypes() {
+        return this.delegate().exceptionTypes();
+    }
+
+    @Override
+    public void setExceptionTypes(List<Type> exceptionTypes) {
+        this.delegate().setExceptionTypes(exceptionTypes);
+    }
+
+    @Override
     public List<VarType> typeParameters() {
         return this.delegate().typeParameters();
     }

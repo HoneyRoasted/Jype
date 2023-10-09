@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ParameterizedClassType extends PossiblyUnmodifiable, Type, ClassType {
+public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType {
 
     void setTypeArguments(List<Type> typeArguments);
 
@@ -19,11 +19,6 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, Type, Clas
     void setOuterType(ClassType outerType);
 
     ParameterizedClassType directSupertype(ClassType supertypeInstance);
-
-    @Override
-    default ParameterizedClassType stripMetadata() {
-        return this;
-    }
 
     default VarTypeResolveVisitor varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),

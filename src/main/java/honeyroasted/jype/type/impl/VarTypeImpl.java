@@ -3,13 +3,16 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
 import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implements VarType {
     private TypeParameterLocation location;
@@ -17,6 +20,20 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public VarTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
+        VarType copy = new VarTypeImpl(this.typeSystem());
+        cache.put(this, copy);
+
+        copy.setLocation(this.location);
+        copy.setUpperBounds(this.upperBounds.stream().map(t -> (Type) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        copy.setUnmodifiable(true);
+        return (T) copy;
     }
 
     @Override

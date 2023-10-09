@@ -1,9 +1,9 @@
 package honeyroasted.jype;
 
-public class Foo<T> {
+public class Foo {
     private String val;
 
-    public static class Bar<K> {
+    public class Bar<K> {
 
         public void test() {
             System.out.println();

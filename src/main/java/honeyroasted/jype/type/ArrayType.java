@@ -13,11 +13,6 @@ public interface ArrayType extends PossiblyUnmodifiable, Type {
     int depth();
 
     @Override
-    default ArrayType stripMetadata() {
-        return this;
-    }
-
-    @Override
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {
         return this.component().hasCyclicTypeVariables();
     }

@@ -2,12 +2,21 @@ package honeyroasted.jype.system.cache;
 
 import honeyroasted.jype.type.Type;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class InMemoryTypeCache<K, T extends Type> implements TypeCache<K, T> {
-    private final Map<K, T> cache = new LinkedHashMap<>();
+    private final Map<K, T> cache;
+
+    public InMemoryTypeCache(Map<K, T> cache) {
+        this.cache = cache;
+    }
+
+    public InMemoryTypeCache() {
+        this(new HashMap<>());
+    }
 
     @Override
     public boolean contains(K key) {

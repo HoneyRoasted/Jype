@@ -1,8 +1,18 @@
 package honeyroasted.jype.system.visitor;
 
+import honeyroasted.jype.system.visitor.visitors.SimpleTypeVisitor;
 import honeyroasted.jype.type.*;
 
 public interface TypeVisitor<R, P> {
+
+    default TypeVisitor<R, Void> withContext(P newContext) {
+        return new SimpleTypeVisitor<>() {
+            @Override
+            public R visitClassType(ClassType type, Void context) {
+                return TypeVisitor.this.visit(type, newContext);
+            }
+        };
+    }
 
     default R visit(Type type, P context) {
         if (type == null) return null;

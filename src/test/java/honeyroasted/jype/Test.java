@@ -10,6 +10,7 @@ import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.util.TraceClassVisitor;
 
 import java.io.IOException;
@@ -24,7 +25,7 @@ import java.util.Map;
 
 public class Test {
 
-    public static <T> void main(String[] args) {
+    public static <T> void main(String[] args) throws NoSuchMethodException {
         TypeSystem system = new TypeSystem();
         VarType vt = system.<VarType>resolve(new TypeToken<T>() {}).get();
         Type ct1 = system.resolve(new TypeToken<T>() {}).get();
@@ -34,6 +35,9 @@ public class Test {
         System.out.println(new AssignabilityTypeSolver()
                 .bind(new TypeBound.Subtype(ct1, ct2))
                 .assume(new TypeBound.Subtype(vt, ct3)).solve(system));
+
+        ClassWriter writer = null;
+        System.out.println(org.objectweb.asm.Type.getMethodDescriptor(Baf.class.getMethod("test")));
     }
 
 }
