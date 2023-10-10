@@ -15,7 +15,11 @@ import honeyroasted.jype.type.impl.ClassReferenceImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
 import honeyroasted.jype.type.impl.VarTypeImpl;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

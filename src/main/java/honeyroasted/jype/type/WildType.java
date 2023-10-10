@@ -3,7 +3,11 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public interface WildType extends PossiblyUnmodifiable, Type {
 

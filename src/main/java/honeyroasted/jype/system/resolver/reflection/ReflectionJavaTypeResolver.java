@@ -4,7 +4,13 @@ import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.WildType;
 import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 import honeyroasted.jype.type.impl.WildTypeLowerImpl;
@@ -14,7 +20,11 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflect.Type, Type> {
 

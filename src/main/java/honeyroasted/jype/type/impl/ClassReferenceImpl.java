@@ -4,7 +4,11 @@ import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
 import java.util.List;
