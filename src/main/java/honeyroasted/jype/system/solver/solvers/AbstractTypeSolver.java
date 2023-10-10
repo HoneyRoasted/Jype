@@ -4,6 +4,7 @@ import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.TypeSolver;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,21 +23,42 @@ public abstract class AbstractTypeSolver implements TypeSolver {
         this(Set.of(supported), Set.of(supported));
     }
 
+    private static TypeBound supportsImpl(TypeBound bound, Set<Class<? extends TypeBound>> supported) {
+        if (supported.stream().noneMatch(c -> c.isInstance(bound))) {
+            return bound;
+        }
+
+        if (bound instanceof TypeBound.Compound cmp) {
+            for (TypeBound child : cmp.children()) {
+                TypeBound subSupported = supportsImpl(child, supported);
+                if (subSupported != null) {
+                    return subSupported;
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public boolean supports(TypeBound bound) {
-        return this.supported.stream().anyMatch(c -> c.isInstance(bound));
+        if (bound == null) return false;
+        return supportsImpl(bound, this.supported) == null;
     }
 
     @Override
     public boolean supportsAssumption(TypeBound bound) {
-        return this.supportedAssumptions.stream().anyMatch(c -> c.isInstance(bound));
+        if (bound == null) return false;
+        return supportsImpl(bound, this.supportedAssumptions) == null;
     }
 
     @Override
     public TypeSolver bind(TypeBound bound) {
-        if (!this.supports(bound))
+        Objects.requireNonNull(bound);
+        TypeBound check = supportsImpl(bound, this.supported);
+        if (check != null)
             throw new IllegalArgumentException(getClass().getName() + " does not support TypeBound of type " +
-                    (bound == null ? "null" : bound.getClass().getName()) + ", support bounds are: [" +
+                    check.getClass().getName() + ", support bounds are: [" +
                     supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
         this.initialBounds.add(bound);
         return this;
@@ -44,9 +66,11 @@ public abstract class AbstractTypeSolver implements TypeSolver {
 
     @Override
     public TypeSolver assume(TypeBound bound) {
-        if (!this.supportsAssumption(bound))
+        Objects.requireNonNull(bound);
+        TypeBound check = supportsImpl(bound, this.supportedAssumptions);
+        if (check != null)
             throw new IllegalArgumentException(getClass().getName() + " does not support assumption TypeBound of type " +
-                    (bound == null ? "null" : bound.getClass().getName()) + ", support assumption bounds are: [" +
+                    check + ", support assumption bounds are: [" +
                     supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
         this.assumedBounds.add(bound);
         return this;
