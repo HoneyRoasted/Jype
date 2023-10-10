@@ -39,13 +39,13 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
 
     public AssignabilityTypeSolver() {
         super(Set.of(TypeBound.Equal.class,
-                        TypeBound.Subtype.class,
+                        TypeBound.Compatible.class,
                         TypeBound.NonCyclic.class,
                         TypeBound.Not.class,
                         TypeBound.And.class,
                         TypeBound.Or.class),
                 Set.of(TypeBound.Equal.class,
-                        TypeBound.Subtype.class));
+                        TypeBound.Compatible.class));
     }
 
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();
@@ -122,7 +122,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             this.solve(system, builder, eq);
         } else if (bound instanceof TypeBound.NonCyclic nc) {
             this.solve(system, builder, nc);
-        } else if (bound instanceof TypeBound.Subtype st) {
+        } else if (bound instanceof TypeBound.Compatible st) {
             this.solve(system, builder, st);
         } else if (bound instanceof TypeBound.Not nt) {
             this.solve(system, builder, nt);
@@ -150,7 +150,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         }
     }
 
-    private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Subtype subtype) {
+    private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Compatible subtype) {
         insights.add(builder);
 
         Type left = this.varTypeResolver.visit(subtype.left());

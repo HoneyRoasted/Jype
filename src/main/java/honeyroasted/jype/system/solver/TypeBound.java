@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver;
 
+import honeyroasted.jype.system.solver.solvers.inference.ExpressionInformation;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -45,7 +46,7 @@ public interface TypeBound {
         }
     }
 
-    abstract class Unary<T extends Type> implements TypeBound {
+    abstract class Unary<T> implements TypeBound {
         protected T type;
 
         public Unary(T type) {
@@ -74,7 +75,7 @@ public interface TypeBound {
         }
     }
 
-    abstract class Binary<L extends Type, R extends Type> implements TypeBound {
+    abstract class Binary<L, R> implements TypeBound {
         protected L left;
         protected R right;
 
@@ -154,6 +155,17 @@ public interface TypeBound {
         }
     }
 
+    final class ExpressionCompatible extends Binary<ExpressionInformation, Type> {
+        public ExpressionCompatible(ExpressionInformation left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " IS COMPATIBLE WITH " + this.right;
+        }
+    }
+
     final class Contains extends Binary<VarType, VarType> {
         public Contains(VarType left, VarType right) {
             super(left, right);
@@ -165,34 +177,10 @@ public interface TypeBound {
         }
     }
 
-    final class MethodThrows extends Binary<MethodReference, Type> {
-        private int expressionId;
+    final class LambdaThrows extends Binary<ExpressionInformation, Type> {
 
-        public MethodThrows(MethodReference left, Type right, int expressionId) {
+        public LambdaThrows(ExpressionInformation left, Type right) {
             super(left, right);
-            this.expressionId = expressionId;
-        }
-
-        public MethodThrows(MethodReference left, Type right) {
-            this(left, right, 0);
-        }
-
-        public int expressionId() {
-            return this.expressionId;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            if (!super.equals(o)) return false;
-            MethodThrows aThrows = (MethodThrows) o;
-            return expressionId == aThrows.expressionId;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(super.hashCode(), expressionId);
         }
 
         @Override

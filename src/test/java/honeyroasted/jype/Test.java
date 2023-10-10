@@ -8,6 +8,8 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
+import java.util.function.Function;
+
 public class Test {
 
     public static void main(String[] args) throws NoSuchMethodException {
@@ -16,7 +18,7 @@ public class Test {
         ClassType ct3 = system.<ClassType>resolve(new TypeToken<String>(){}).get();
 
         System.out.println(new AssignabilityTypeSolver()
-                .bind(new TypeBound.Subtype(ct3, ct2)).solve(system));
+                .bind(new TypeBound.Compatible(ct3, ct2)).solve(system));
     }
 
 }

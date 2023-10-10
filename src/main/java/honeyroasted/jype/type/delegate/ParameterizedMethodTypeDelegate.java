@@ -3,6 +3,8 @@ package honeyroasted.jype.type.delegate;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
@@ -45,6 +47,16 @@ public class ParameterizedMethodTypeDelegate extends AbstractTypeDelegate<Parame
     @Override
     public void setModifiers(int modifiers) {
         this.delegate().setModifiers(modifiers);
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return this.delegate().outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.delegate().setOuterClass(outerClass);
     }
 
     @Override
@@ -91,6 +103,16 @@ public class ParameterizedMethodTypeDelegate extends AbstractTypeDelegate<Parame
     @Override
     public MethodReference methodReference() {
         return this.delegate().methodReference();
+    }
+
+    @Override
+    public ClassType outerType() {
+        return this.delegate().outerType();
+    }
+
+    @Override
+    public void setOuterType(ClassType outerType) {
+        this.delegate().setOuterType(outerType);
     }
 
     @Override

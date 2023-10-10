@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
@@ -59,6 +60,16 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
     @Override
     public void setModifiers(int modifiers) {
         this.delegate().setModifiers(modifiers);
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return this.delegate().outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.delegate().setOuterClass(outerClass);
     }
 
     @Override

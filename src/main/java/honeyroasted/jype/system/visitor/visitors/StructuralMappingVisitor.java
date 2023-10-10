@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.visitor.visitors;
 
 import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
@@ -79,9 +80,11 @@ public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
             List<Type> newExcept = visit(rType.exceptionTypes(), context);
             List<Type> newParams = visit(rType.parameters(), context);
             Type newRet = visit(type.returnType(), context);
-            if (!newParams.equals(rType.parameters()) || !newRet.equals(type.returnType()) || !newExcept.equals(type.exceptionTypes())) {
+            Type newOuter = visit(type.outerClass(), context);
+            if (!newParams.equals(rType.parameters()) || !newRet.equals(type.returnType()) || !newExcept.equals(type.exceptionTypes()) || !newOuter.equals(type.outerClass())) {
                 MethodReference newType = new MethodReferenceImpl(type.typeSystem());
                 newType.setLocation(type.location());
+                newType.setOuterClass(newOuter instanceof ClassReference cr ? cr : rType.outerClass());
                 newType.setExceptionTypes(newExcept);
                 newType.setTypeParameters(type.typeParameters());
                 newType.setParameters(newParams);
@@ -91,10 +94,12 @@ public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
             }
         } else if (type instanceof ParameterizedMethodTypeImpl pType) {
             Type newRef = visit(pType.methodReference(), context);
+            Type newOuter = visit(pType.outerType(), context);
             List<Type> newTypeArgs = visit(pType.typeArguments(), context);
-            if (!newRef.equals(pType.methodReference()) || !newTypeArgs.equals(pType.typeArguments())) {
+            if (!newRef.equals(pType.methodReference()) || !newTypeArgs.equals(pType.typeArguments()) || !newOuter.equals(pType.outerType())) {
                 ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
                 newType.setMethodReference(newRef instanceof MethodReference ref ? ref : pType.methodReference());
+                newType.setOuterType(newOuter instanceof ClassType ct ? ct : pType.outerType());
                 newType.setTypeArguments(newTypeArgs);
                 newType.setUnmodifiable(true);
                 return newType;

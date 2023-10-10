@@ -183,6 +183,10 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
             MethodReference newRef = new MethodReferenceImpl(ref.typeSystem());
             context.put(type, newRef);
             newRef.setLocation(ref.location());
+
+            Type newOuter = this.visit(ref.outerClass(), context);
+            newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : newRef.outerClass());
+
             newRef.setModifiers(ref.modifiers());
             newRef.setExceptionTypes(this.visit(ref.exceptionTypes(), context));
             newRef.setReturnType(this.visit(ref.returnType(), context));
@@ -194,8 +198,12 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
             ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
             context.put(type, newType);
 
-            Type newRef = this.visit(newType.methodReference(), context);
+            Type newRef = this.visit(pt.methodReference(), context);
             newType.setMethodReference(newRef instanceof MethodReference mr ? mr : pt.methodReference());
+
+            Type newOuter = this.visit(pt.outerType(), context);
+            newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
+
             newType.setTypeArguments(this.visit(pt.typeArguments(), context));
             newType.setUnmodifiable(true);
             return newType;

@@ -16,6 +16,10 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     void setModifiers(int modifiers);
 
+    ClassReference outerClass();
+
+    void setOuterClass(ClassReference outerClass);
+
     Type returnType();
 
     void setReturnType(Type returnType);

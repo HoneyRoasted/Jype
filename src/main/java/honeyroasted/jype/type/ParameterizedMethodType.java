@@ -10,6 +10,10 @@ import java.util.Set;
 public interface ParameterizedMethodType extends PossiblyUnmodifiable, MethodType {
     MethodReference methodReference();
 
+    ClassType outerType();
+
+    void setOuterType(ClassType outerType);
+
     void setMethodReference(MethodReference methodReference);
 
     void setTypeArguments(List<Type> typeArguments);

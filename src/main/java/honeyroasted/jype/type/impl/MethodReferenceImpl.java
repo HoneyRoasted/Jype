@@ -4,7 +4,9 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -17,6 +19,7 @@ import java.util.Optional;
 public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType implements MethodReference {
     private MethodLocation location;
     private int modifiers;
+    private ClassReference outerClass;
     private Type returnType;
     private List<Type> exceptionTypes = new ArrayList<>();
     private List<Type> parameters = new ArrayList<>();
@@ -36,6 +39,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
 
         copy.setLocation(this.location);
         copy.setModifiers(this.modifiers);
+        copy.setOuterClass(this.outerClass.copy(cache));
         copy.setReturnType(this.returnType.copy(cache));
         copy.setExceptionTypes(this.exceptionTypes.stream().map(t -> (Type) t.copy(cache)).toList());
         copy.setParameters(this.parameters.stream().map(t -> (Type) t.copy(cache)).toList());
@@ -97,6 +101,17 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         this.modifiers = modifiers;
     }
 
+    @Override
+    public ClassReference outerClass() {
+        return this.outerClass;
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        this.checkUnmodifiable();
+        this.outerClass = outerClass;
+    }
+
     public Type returnType() {
         return this.returnType;
     }
@@ -144,14 +159,18 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof MethodReference)) return false;
-        MethodReference that = (MethodReference) o;
-        return Objects.equals(location, that.location()) && Objects.equals(returnType, that.returnType()) && Objects.equals(parameters, that.parameters()) && Objects.equals(typeParameters, that.typeParameters()) && Objects.equals(exceptionTypes, that.exceptionTypes());
+        if (o == null || !(o instanceof MethodType)) return false;
+        if (o instanceof MethodReference mr) {
+            return Objects.equals(location, mr.location()) && Objects.equals(returnType, mr.returnType()) && Objects.equals(outerClass, mr.outerClass()) && Objects.equals(parameters, mr.parameters()) && Objects.equals(typeParameters, mr.typeParameters()) && modifiers == mr.modifiers();
+        } else if (o instanceof ParameterizedMethodType pt) {
+            return pt.equals(this);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, returnType, parameters, typeParameters, exceptionTypes);
+        return Objects.hash(location, returnType, outerClass, parameters, typeParameters, exceptionTypes);
     }
 
 }

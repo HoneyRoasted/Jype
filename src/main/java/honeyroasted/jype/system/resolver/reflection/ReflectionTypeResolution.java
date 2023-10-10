@@ -115,6 +115,10 @@ public interface ReflectionTypeResolution {
         MethodReference mRef = new MethodReferenceImpl(system);
         mRef.setLocation(location);
         mRef.setModifiers(executable.getModifiers());
+        Optional<? extends honeyroasted.jype.type.Type> outerClass = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, executable.getDeclaringClass());
+        if (outerClass.isPresent() && outerClass.get() instanceof ClassReference cr) {
+            mRef.setOuterClass(cr);
+        }
 
         if (executable instanceof Method method) {
             Optional<? extends honeyroasted.jype.type.Type> returnType = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, method.getGenericReturnType());

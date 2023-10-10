@@ -4,11 +4,15 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,6 +20,7 @@ import java.util.Optional;
 
 public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedMethodType {
     private MethodReference methodReference;
+    private ClassType outerType;
     private List<Type> typeArguments;
 
     public ParameterizedMethodTypeImpl(TypeSystem typeSystem) {
@@ -48,6 +53,16 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
 
     public MethodReference methodReference() {
         return this.methodReference;
+    }
+
+    @Override
+    public ClassType outerType() {
+        return this.outerType;
+    }
+
+    @Override
+    public void setOuterType(ClassType outerType) {
+        this.outerType = outerType;
     }
 
     @Override
@@ -85,6 +100,16 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     @Override
     public void setModifiers(int modifiers) {
         methodReference.setModifiers(modifiers);
+    }
+
+    @Override
+    public ClassReference outerClass() {
+        return methodReference.outerClass();
+    }
+
+    @Override
+    public void setOuterClass(ClassReference outerClass) {
+        methodReference.setOuterClass(outerClass);
     }
 
     @Override
@@ -129,9 +154,13 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
 
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ParameterizedMethodType)) return false;
-        ParameterizedMethodType that = (ParameterizedMethodType) o;
-        return Objects.equals(methodReference, that.methodReference()) && Objects.equals(typeArguments, that.typeArguments());
+        if (o == null || !(o instanceof MethodType)) return false;
+        if (o instanceof ParameterizedMethodType pt) {
+            return Objects.equals(methodReference, pt.methodReference()) && Objects.equals(typeArguments, pt.typeArguments()) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, pt.outerType()));
+        } else if (o instanceof MethodReference mr) {
+            return Objects.equals(methodReference, mr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, mr.typeParameters())) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, mr.outerClass()));
+        }
+        return false;
     }
 
     @Override
