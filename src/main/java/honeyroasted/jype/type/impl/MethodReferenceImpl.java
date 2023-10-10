@@ -113,7 +113,8 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
 
     @Override
     public void setExceptionTypes(List<Type> exceptionTypes) {
-        this.checkUnmodifiable();;
+        this.checkUnmodifiable();
+        ;
         this.exceptionTypes = exceptionTypes;
     }
 

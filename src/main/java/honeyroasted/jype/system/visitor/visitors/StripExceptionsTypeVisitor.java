@@ -1,14 +1,13 @@
 package honeyroasted.jype.system.visitor.visitors;
 
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
 
-public class StripExceptionsTypeVisitor implements TypeVisitors.DeepStructuralTypeMapping {
+public class StripExceptionsTypeVisitor implements DeepStructuralMappingVisitor {
 
     @Override
     public boolean overridesMethodType(MethodType type) {

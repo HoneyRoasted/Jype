@@ -33,7 +33,7 @@ public class WildTypeUpperMeta<T> extends WildTypeUpperDelegate implements Metad
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        WildTypeUpperMeta<T> copy = new WildTypeUpperMeta<>(this.typeSystem(), this.delegate().copy(cache));
+        WildTypeUpperMeta<T> copy = new WildTypeUpperMeta<>(this.typeSystem(), MetadataType.delayAndCache(t -> this.delegate().copy(cache)));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

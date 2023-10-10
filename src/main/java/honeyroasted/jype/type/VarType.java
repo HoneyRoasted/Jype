@@ -14,10 +14,6 @@ public interface VarType extends PossiblyUnmodifiable, Type {
         return this.location().name();
     }
 
-    default boolean isVirtual() {
-        return this.location().isVirtual();
-    }
-
     void setLocation(TypeParameterLocation location);
 
     Set<Type> upperBounds();

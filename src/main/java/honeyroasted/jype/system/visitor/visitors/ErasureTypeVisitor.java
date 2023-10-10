@@ -1,9 +1,13 @@
 package honeyroasted.jype.system.visitor.visitors;
 
-import honeyroasted.jype.system.visitor.TypeVisitors;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.WildType;
 
-public class ErasureTypeVisitor implements TypeVisitors.StructuralMapping<Boolean> {
+public class ErasureTypeVisitor implements StructuralMappingVisitor<Boolean> {
 
     @Override
     public Type visitWildcardType(WildType type, Boolean recurse) {

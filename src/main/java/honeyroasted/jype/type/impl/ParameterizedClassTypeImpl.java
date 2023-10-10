@@ -4,10 +4,20 @@ import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
     private ClassReference classReference;
@@ -145,6 +155,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     public void setOuterClass(ClassReference outerClass) {
         classReference.setOuterClass(outerClass);
     }
+
     @Override
     public ClassType superClass() {
         return classReference.superClass();

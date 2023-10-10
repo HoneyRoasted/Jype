@@ -2,8 +2,8 @@ package honeyroasted.jype.system.resolver.reflection;
 
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.system.resolver.ResolutionFailedException;
+import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.type.VarType;
 
 import java.util.Optional;

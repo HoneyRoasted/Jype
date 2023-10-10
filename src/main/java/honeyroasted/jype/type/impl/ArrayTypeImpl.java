@@ -3,7 +3,6 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 

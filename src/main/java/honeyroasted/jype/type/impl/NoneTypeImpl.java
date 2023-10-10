@@ -16,14 +16,15 @@ public final class NoneTypeImpl extends AbstractType implements NoneType {
         this.name = name;
     }
 
-    @Override public String name() {
+    @Override
+    public String name() {
         return this.name;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !( o instanceof NoneType)) return false;
+        if (o == null || !(o instanceof NoneType)) return false;
         NoneType noneType = (NoneType) o;
         return Objects.equals(name, noneType.name());
     }

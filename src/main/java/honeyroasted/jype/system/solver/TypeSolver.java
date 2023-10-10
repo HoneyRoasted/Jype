@@ -2,7 +2,11 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface TypeSolver {
@@ -39,12 +43,13 @@ public interface TypeSolver {
 
         public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights, Set<TypeBound> assumptions) {
             this.success = success;
-            this.bounds =  Collections.unmodifiableSet(bounds);
+            this.bounds = Collections.unmodifiableSet(bounds);
             this.insights = Collections.unmodifiableSet(insights);
             this.assumptions = assumptions;
         }
 
         private Set<TypeBound.Result> originators;
+
         public Set<TypeBound.Result> originators() {
             if (this.originators == null) {
                 Set<TypeBound.Result> originators = new LinkedHashSet<>();
@@ -61,6 +66,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> leaves;
+
         public Set<TypeBound.Result> leaves() {
             if (this.leaves == null) {
                 Set<TypeBound.Result> leaves = new LinkedHashSet<>();
@@ -79,6 +85,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> all;
+
         public Set<TypeBound.Result> all() {
             if (this.all == null) {
                 Set<TypeBound.Result> all = new LinkedHashSet<>();
@@ -94,6 +101,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> satisfied;
+
         public Set<TypeBound.Result> satisfied() {
             if (this.satisfied == null) {
                 this.satisfied = this.originators().stream()
@@ -104,6 +112,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> unsatisfied;
+
         public Set<TypeBound.Result> unsatisfied() {
             if (this.unsatisfied == null) {
                 this.unsatisfied = this.originators().stream()
@@ -114,6 +123,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> allSatisfied;
+
         public Set<TypeBound.Result> allSatisfied() {
             if (this.allSatisfied == null) {
                 this.allSatisfied = this.all().stream()
@@ -124,6 +134,7 @@ public interface TypeSolver {
         }
 
         private Set<TypeBound.Result> allUnsatisfied;
+
         public Set<TypeBound.Result> allUnsatisfied() {
             if (this.allUnsatisfied == null) {
                 this.allUnsatisfied = this.all().stream()

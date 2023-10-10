@@ -2,7 +2,6 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.ArrayList;

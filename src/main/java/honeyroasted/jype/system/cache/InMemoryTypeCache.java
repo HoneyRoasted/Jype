@@ -3,7 +3,6 @@ package honeyroasted.jype.system.cache;
 import honeyroasted.jype.type.Type;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 

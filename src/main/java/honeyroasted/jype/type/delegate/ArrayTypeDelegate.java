@@ -1,7 +1,6 @@
 package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 

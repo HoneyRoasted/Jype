@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.visitor.visitors;
 
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -9,7 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class VarTypeResolveVisitor implements TypeVisitors.DeepStructuralTypeMapping {
+public class VarTypeResolveVisitor implements DeepStructuralMappingVisitor {
     private Predicate<VarType> resolves;
     private Function<VarType, Type> resolver;
 

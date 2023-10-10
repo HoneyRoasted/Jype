@@ -31,6 +31,7 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
         copy.setUnmodifiable(true);
         return (T) copy;
     }
+
     @Override
     protected void makeUnmodifiable() {
         this.upperBound = WildType.linkedCopyOf(this.upperBound);

@@ -5,10 +5,23 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.exception.TypeSolverUnsolvableException;
 import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.MappingVisitor;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.NoneType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.WildType;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class AssignabilityTypeSolver extends AbstractTypeSolver {
@@ -46,7 +59,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         return this.solve(system, Long.MAX_VALUE);
     }
 
-    private TypeVisitors.Mapping<TypeCache<Type, Type>> varTypeResolver;
+    private MappingVisitor<TypeCache<Type, Type>> varTypeResolver;
 
     public Result solve(TypeSystem system, long maxIters) {
         Map<VarType, Type> vars = new HashMap<>();

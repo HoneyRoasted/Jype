@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver;
 
+import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -11,6 +12,29 @@ import java.util.stream.Collectors;
 
 public interface TypeBound {
     List<?> parameters();
+
+    final class False implements TypeBound {
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof False;
+        }
+
+        @Override
+        public String toString() {
+            return "FALSE";
+        }
+
+        @Override
+        public List<?> parameters() {
+            return Collections.EMPTY_LIST;
+        }
+    }
 
     interface Compound extends TypeBound {
         List<TypeBound> children();
@@ -119,6 +143,86 @@ public interface TypeBound {
         }
     }
 
+    final class Compatible extends Binary<Type, Type> {
+        public Compatible(Type left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " IS COMPATIBLE WITH " + this.right;
+        }
+    }
+
+    final class Contains extends Binary<VarType, VarType> {
+        public Contains(VarType left, VarType right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " IS CONTAINED BY " + this.right;
+        }
+    }
+
+    final class MethodThrows extends Binary<MethodReference, Type> {
+        private int expressionId;
+
+        public MethodThrows(MethodReference left, Type right, int expressionId) {
+            super(left, right);
+            this.expressionId = expressionId;
+        }
+
+        public MethodThrows(MethodReference left, Type right) {
+            this(left, right, 0);
+        }
+
+        public int expressionId() {
+            return this.expressionId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            MethodThrows aThrows = (MethodThrows) o;
+            return expressionId == aThrows.expressionId;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), expressionId);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " THROWS " + this.right;
+        }
+    }
+
+    final class Throws extends Unary<VarType> {
+        public Throws(VarType type) {
+            super(type);
+        }
+
+        @Override
+        public String toString() {
+            return "THROWS " + this.type;
+        }
+    }
+
+    class Captures extends Binary<Type, Type> {
+        public Captures(Type left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " CAPTURES " + this.right;
+        }
+    }
+
     class Subtype extends Binary<Type, Type> {
         public Subtype(Type left, Type right) {
             super(left, right);
@@ -168,6 +272,7 @@ public interface TypeBound {
         public Or(TypeBound... bounds) {
             this(List.of(bounds));
         }
+
         @Override
         public String toString() {
             return "OR(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
