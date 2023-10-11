@@ -4,6 +4,7 @@ import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.TypeResolver;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -15,6 +16,10 @@ import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 import honeyroasted.jype.type.impl.WildTypeLowerImpl;
 import honeyroasted.jype.type.impl.WildTypeUpperImpl;
+import honeyroasted.jype.type.meta.ArrayTypeMeta;
+import honeyroasted.jype.type.meta.ParameterizedClassTypeMeta;
+import honeyroasted.jype.type.meta.WildTypeLowerMeta;
+import honeyroasted.jype.type.meta.WildTypeUpperMeta;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -73,9 +78,12 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
                     .map(t -> {
                         ArrayType result = new ArrayTypeImpl(t.typeSystem());
+                        ArrayTypeMeta<GenericArrayType> attached = new ArrayTypeMeta<>(system, k -> result);
+                        attached.setMetadata(genArrType);
+
                         result.setComponent(t);
                         result.setUnmodifiable(true);
-                        return result;
+                        return attached;
                     });
         } else if (value instanceof WildcardType wType) {
             java.lang.reflect.Type[] bounds = wType.getLowerBounds().length == 0 ? wType.getUpperBounds() : wType.getLowerBounds();
@@ -92,30 +100,38 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
 
             if (wType.getLowerBounds().length == 0) { //? extends ...
                 WildType.Upper upper = new WildTypeUpperImpl(system);
+                WildTypeUpperMeta<WildcardType> attached = new WildTypeUpperMeta<>(system, t -> upper);
+                attached.setMetadata(wType);
+
                 upper.setIdentity(System.identityHashCode(wType));
                 upper.upperBounds().addAll(resolvedBounds);
                 upper.setUnmodifiable(true);
-                return Optional.of(upper);
+                return Optional.of(attached);
             } else { //? super ...
                 WildType.Lower lower = new WildTypeLowerImpl(system);
+                WildTypeLowerMeta<WildcardType> attached = new WildTypeLowerMeta<>(system, t -> lower);
+                attached.setMetadata(wType);
+
                 lower.setIdentity(System.identityHashCode(wType));
                 lower.lowerBounds().addAll(resolvedBounds);
                 lower.setUnmodifiable(true);
-                return Optional.of(lower);
+                return Optional.of(attached);
             }
         } else if (value instanceof ParameterizedType pType) {
             if (pType.getRawType() instanceof Class<?> cls) {
                 Optional<? extends Type> clsRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, cls);
                 if (clsRef.isPresent() && clsRef.get() instanceof ClassReference) {
                     ParameterizedClassType result = new ParameterizedClassTypeImpl(system);
-                    system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
+                    ParameterizedClassTypeMeta<ParameterizedType> attached = new ParameterizedClassTypeMeta<>(system, t -> result);
+
+                    system.storage().cacheFor(java.lang.reflect.Type.class).put(value, attached);
                     result.setClassReference((ClassReference) clsRef.get());
 
-                    List<Type> typeArguments = new ArrayList<>();
+                    List<ArgumentType> typeArguments = new ArrayList<>();
                     for (java.lang.reflect.Type arg : pType.getActualTypeArguments()) {
                         Optional<? extends Type> argResolved = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, arg);
-                        if (argResolved.isPresent()) {
-                            typeArguments.add(argResolved.get());
+                        if (argResolved.isPresent() && argResolved.get() instanceof ArgumentType at) {
+                            typeArguments.add(at);
                         } else {
                             system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
                             return Optional.empty();
@@ -135,8 +151,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     }
 
                     result.setUnmodifiable(true);
-
-                    return Optional.of(result);
+                    return Optional.of(attached);
                 }
             }
         }

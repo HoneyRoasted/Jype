@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public interface ClassType extends Type, PossiblyUnmodifiable {
+public interface ClassType extends InstantiableType, PossiblyUnmodifiable, ArgumentType {
 
     ClassNamespace namespace();
 
@@ -44,7 +44,7 @@ public interface ClassType extends Type, PossiblyUnmodifiable {
 
     boolean hasTypeArguments();
 
-    List<Type> typeArguments();
+    List<ArgumentType> typeArguments();
 
     @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {

@@ -130,7 +130,7 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
             Type newOuter = visit(pt.outerType(), context);
             newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
 
-            newType.setTypeArguments(this.visit(pt.typeArguments(), context));
+            newType.setTypeArguments((List) this.visit(pt.typeArguments(), context));
             newType.setUnmodifiable(true);
 
             return newType;
@@ -204,7 +204,7 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
             Type newOuter = this.visit(pt.outerType(), context);
             newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
 
-            newType.setTypeArguments(this.visit(pt.typeArguments(), context));
+            newType.setTypeArguments((List) this.visit(pt.typeArguments(), context));
             newType.setUnmodifiable(true);
             return newType;
         }

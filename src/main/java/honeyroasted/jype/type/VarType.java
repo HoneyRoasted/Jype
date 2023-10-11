@@ -7,7 +7,7 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 import java.util.HashSet;
 import java.util.Set;
 
-public interface VarType extends PossiblyUnmodifiable, Type {
+public interface VarType extends PossiblyUnmodifiable, Type, ArgumentType {
     TypeParameterLocation location();
 
     default String name() {
@@ -19,6 +19,11 @@ public interface VarType extends PossiblyUnmodifiable, Type {
     Set<Type> upperBounds();
 
     void setUpperBounds(Set<Type> upperBounds);
+
+    @Override
+    default Set<Type> knownDirectSupertypes() {
+        return this.upperBounds();
+    }
 
     @Override
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {

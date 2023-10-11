@@ -17,7 +17,7 @@ public class VarTypeResolveVisitor implements DeepStructuralMappingVisitor {
         this.resolver = resolver;
     }
 
-    public VarTypeResolveVisitor(Map<VarType, Type> varMap) {
+    public VarTypeResolveVisitor(Map<VarType, ? extends Type> varMap) {
         this(varMap::containsKey, varMap::get);
     }
 

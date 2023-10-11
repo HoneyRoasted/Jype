@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 public interface MethodReference extends PossiblyUnmodifiable, MethodType {
-    ParameterizedMethodType asMethodType(List<Type> typeArguments);
+    ParameterizedMethodType asMethodType(List<ArgumentType> typeArguments);
 
-    ParameterizedMethodType asMethodType(Type... typeArguments);
+    ParameterizedMethodType asMethodType(ArgumentType... typeArguments);
 
     ParameterizedMethodType parameterizedWithTypeVars();
 
@@ -20,7 +20,7 @@ public interface MethodReference extends PossiblyUnmodifiable, MethodType {
     }
 
     @Override
-    default List<Type> typeArguments() {
+    default List<ArgumentType> typeArguments() {
         return Collections.emptyList();
     }
 

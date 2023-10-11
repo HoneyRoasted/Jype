@@ -6,6 +6,8 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Objects;
+
 public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     private int identity;
     private String name;
@@ -35,5 +37,23 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         return (T) this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MetaVarTypeImpl that = (MetaVarTypeImpl) o;
+        return identity == that.identity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(identity);
+    }
+
+    @Override
+    public String toString() {
+        return "%" + this.name + "/" + Integer.toString(this.identity, 16);
     }
 }

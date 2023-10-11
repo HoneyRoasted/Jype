@@ -6,22 +6,27 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type, List<R>>> {
     private TypeVisitor<R, C> visitor;
+    private boolean visitStructural;
     private C context;
 
-    public RecursiveTypeVisitor(TypeVisitor<R, C> visitor, C context) {
+    public RecursiveTypeVisitor(TypeVisitor<R, C> visitor, C context, boolean visitStructural) {
         this.visitor = visitor;
         this.context = context;
+        this.visitStructural = visitStructural;
     }
 
     @Override
@@ -32,16 +37,25 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
 
         result.add(this.visitor.visitClassType(type, this.context));
 
-        if (type.outerClass() != null) {
-            result.addAll(this.visit(type.outerClass(), context));
+        if (type instanceof ParameterizedClassType ct) {
+            if (ct.outerType() != null && (this.visitStructural || !Modifier.isStatic(ct.modifiers()))) {
+                result.addAll(this.visit(ct.outerClass(), context));
+            }
         }
 
-        if (type.superClass() != null) {
-            result.addAll(this.visit(type.superClass(), context));
+        if (this.visitStructural) {
+            if (type.outerClass() != null) {
+                result.addAll(this.visit(type.outerClass(), context));
+            }
+
+            if (type.superClass() != null) {
+                result.addAll(this.visit(type.superClass(), context));
+            }
+
+            type.interfaces().forEach(t -> result.addAll(this.visit(t, context)));
+            type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
         }
 
-        type.interfaces().forEach(t -> result.addAll(this.visit(t, context)));
-        type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
         type.typeArguments().forEach(t -> result.addAll(this.visit(t, context)));
         return result;
     }
@@ -87,8 +101,21 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         result.addAll(this.visit(type.returnType(), context));
         type.parameters().forEach(t -> result.addAll(this.visit(t, context)));
         type.exceptionTypes().forEach(t -> result.addAll(this.visit(t, context)));
-        type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
         type.typeArguments().forEach(t -> result.addAll(this.visit(t, context)));
+
+        if (type instanceof ParameterizedMethodType mt) {
+            if (mt.outerType() != null && (this.visitStructural || !Modifier.isStatic(mt.modifiers()))) {
+                result.addAll(this.visit(mt.outerType(), context));
+            }
+        }
+
+        if (this.visitStructural) {
+            type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
+            if (type.outerClass() != null) {
+                result.addAll(this.visit(type.outerClass(), context));
+            }
+        }
+
         return result;
     }
 

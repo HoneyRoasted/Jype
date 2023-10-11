@@ -42,7 +42,7 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     boolean hasTypeArguments();
 
-    List<Type> typeArguments();
+    List<ArgumentType> typeArguments();
 
     @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {

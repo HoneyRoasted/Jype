@@ -24,6 +24,8 @@ import java.lang.reflect.Executable;
 import java.util.Optional;
 
 public class TypeSystem {
+    public static TypeSystem RUNTIME = new TypeSystem();
+
     private TypeStorage storage;
     private TypeResolvers resolvers;
     private TypeConstants constants;
@@ -115,4 +117,5 @@ public class TypeSystem {
     public void registerResolvers(BundledTypeResolvers bundle) {
         bundle.resolvers().forEach(this.resolvers()::register);
     }
+
 }

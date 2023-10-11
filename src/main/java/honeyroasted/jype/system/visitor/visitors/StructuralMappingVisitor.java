@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.visitor.visitors;
 
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -23,8 +24,8 @@ public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
     @Override
     default Type visitClassType(ClassType type, P context) {
         if (type instanceof ParameterizedClassType pType) {
-            List<Type> args = pType.typeArguments();
-            List<Type> newArgs = visit(args, context);
+            List<ArgumentType> args = pType.typeArguments();
+            List<ArgumentType> newArgs = (List) visit(args, context);
 
             Type newOuter = visit(pType.outerType(), context);
 
@@ -95,7 +96,7 @@ public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
         } else if (type instanceof ParameterizedMethodTypeImpl pType) {
             Type newRef = visit(pType.methodReference(), context);
             Type newOuter = visit(pType.outerType(), context);
-            List<Type> newTypeArgs = visit(pType.typeArguments(), context);
+            List<ArgumentType> newTypeArgs = (List) visit(pType.typeArguments(), context);
             if (!newRef.equals(pType.methodReference()) || !newTypeArgs.equals(pType.typeArguments()) || !newOuter.equals(pType.outerType())) {
                 ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
                 newType.setMethodReference(newRef instanceof MethodReference ref ? ref : pType.methodReference());

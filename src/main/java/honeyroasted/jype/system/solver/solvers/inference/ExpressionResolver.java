@@ -6,4 +6,13 @@ public interface ExpressionResolver {
 
     boolean isFunctionalInterface(ClassReference ref);
 
+    default ExpressionResolver or(ExpressionResolver other) {
+        return new ExpressionResolver() {
+            @Override
+            public boolean isFunctionalInterface(ClassReference ref) {
+                return ExpressionResolver.this.isFunctionalInterface(ref) || other.isFunctionalInterface(ref);
+            }
+        };
+    }
+
 }

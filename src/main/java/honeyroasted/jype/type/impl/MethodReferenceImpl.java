@@ -4,6 +4,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
@@ -49,7 +50,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(List<Type> typeArguments) {
+    public ParameterizedMethodType asMethodType(List<ArgumentType> typeArguments) {
         ParameterizedMethodType parameterizedMethodType = new ParameterizedMethodTypeImpl(this.typeSystem());
         parameterizedMethodType.setMethodReference(this);
         parameterizedMethodType.setTypeArguments(typeArguments);
@@ -58,13 +59,13 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(Type... typeArguments) {
+    public ParameterizedMethodType asMethodType(ArgumentType... typeArguments) {
         return asMethodType(List.of(typeArguments));
     }
 
     @Override
     public ParameterizedMethodType parameterizedWithTypeVars() {
-        return this.asMethodType((List<Type>) (List) this.typeParameters);
+        return this.asMethodType((List<ArgumentType>) (List) this.typeParameters);
     }
 
     @Override

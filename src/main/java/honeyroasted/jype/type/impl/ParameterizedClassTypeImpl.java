@@ -4,6 +4,8 @@ import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -22,7 +24,7 @@ import java.util.Optional;
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
     private ClassReference classReference;
     private ClassType outerType;
-    private List<Type> typeArguments;
+    private List<ArgumentType> typeArguments;
 
     private final transient Map<ClassReference, ParameterizedClassType> superTypes = new HashMap<>();
 
@@ -40,7 +42,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
         copy.setClassReference(this.classReference.copy(cache));
         copy.setOuterType(this.outerType == null ? outerType : outerType.copy(cache));
-        copy.setTypeArguments(this.typeArguments.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setTypeArguments(this.typeArguments.stream().map(t -> (ArgumentType) t.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -86,8 +88,9 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
     public ParameterizedClassType directSupertype(ClassType supertypeInstance) {
         if (supertypeInstance instanceof ParameterizedClassType pType) {
+            VarTypeResolveVisitor varTypeResolver = this.varTypeResolver();
             return pType.classReference()
-                    .parameterized(pType.typeArguments().stream().map(this.varTypeResolver()).toList());
+                    .parameterized(pType.typeArguments().stream().map(t -> (ArgumentType) varTypeResolver.visit(t)).toList());
         } else if (supertypeInstance instanceof ClassReference rType) {
             return rType.parameterized();
         }
@@ -116,12 +119,12 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
-    public List<Type> typeArguments() {
+    public List<ArgumentType> typeArguments() {
         return this.typeArguments;
     }
 
     @Override
-    public void setTypeArguments(List<Type> typeArguments) {
+    public void setTypeArguments(List<ArgumentType> typeArguments) {
         super.checkUnmodifiable();
         this.typeArguments = typeArguments;
     }

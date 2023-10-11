@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.solvers.TypeSolverListener;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -10,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface TypeSolver {
+
+    TypeSolver addListener(TypeSolverListener listener);
 
     boolean supports(TypeBound bound);
 
@@ -36,7 +39,7 @@ public interface TypeSolver {
     Result solve(TypeSystem system);
 
     final class Result {
-        private final boolean success;
+        private boolean success;
         private final Set<TypeBound.Result> bounds;
         private final Set<TypeBound> insights;
         private final Set<TypeBound> assumptions;
@@ -45,24 +48,46 @@ public interface TypeSolver {
             this.success = success;
             this.bounds = Collections.unmodifiableSet(bounds);
             this.insights = Collections.unmodifiableSet(insights);
-            this.assumptions = assumptions;
+            this.assumptions = Collections.unmodifiableSet(assumptions);
         }
 
-        private Set<TypeBound.Result> originators;
+        public Result(Set<TypeBound.Result> bounds, Set<TypeBound> insights, Set<TypeBound> assumptions) {
+            this(false, bounds, insights, assumptions);
+            this.success = this.parents().stream().allMatch(TypeBound.Result::satisfied);
+        }
 
-        public Set<TypeBound.Result> originators() {
-            if (this.originators == null) {
-                Set<TypeBound.Result> originators = new LinkedHashSet<>();
-                for (TypeBound.Result bound : this.bounds) {
-                    TypeBound.Result curr = bound;
-                    while (curr.originator() != null) {
-                        curr = curr.originator();
-                    }
-                    originators.add(curr);
-                }
-                this.originators = Collections.unmodifiableSet(originators);
+        public Result and(Result other) {
+            Set<TypeBound.Result> bounds = new LinkedHashSet<>();
+            Set<TypeBound> insights = new LinkedHashSet<>();
+            Set<TypeBound> assumptions = new LinkedHashSet<>();
+
+            bounds.addAll(this.bounds);
+            bounds.addAll(other.bounds());
+            insights.addAll(this.insights);
+            insights.addAll(other.insights());
+            assumptions.addAll(this.assumptions);
+            assumptions.addAll(other.assumptions());
+
+            return new Result(this.success && other.success(), bounds, insights, assumptions);
+        }
+
+        private Set<TypeBound.Result> parents;
+
+        public Set<TypeBound.Result> parents() {
+            if (this.parents == null) {
+                Set<TypeBound.Result> parents = new LinkedHashSet<>();
+                this.bounds.forEach(r -> parentsImpl(r, parents));
+                this.parents = Collections.unmodifiableSet(parents);
             }
-            return this.originators;
+            return this.parents;
+        }
+
+        private void parentsImpl(TypeBound.Result result, Set<TypeBound.Result> building) {
+            if (result.parents().isEmpty()) {
+                building.add(result);
+            } else {
+                result.parents().forEach(r -> parentsImpl(r, building));
+            }
         }
 
         private Set<TypeBound.Result> leaves;
@@ -89,7 +114,7 @@ public interface TypeSolver {
         public Set<TypeBound.Result> all() {
             if (this.all == null) {
                 Set<TypeBound.Result> all = new LinkedHashSet<>();
-                this.originators().forEach(r -> allResultsImpl(r, all));
+                this.parents().forEach(r -> allResultsImpl(r, all));
                 this.all = Collections.unmodifiableSet(all);
             }
             return this.all;
@@ -104,7 +129,7 @@ public interface TypeSolver {
 
         public Set<TypeBound.Result> satisfied() {
             if (this.satisfied == null) {
-                this.satisfied = this.originators().stream()
+                this.satisfied = this.parents().stream()
                         .filter(TypeBound.Result::satisfied)
                         .collect(Collectors.toCollection(() -> Collections.unmodifiableSet(new LinkedHashSet<>())));
             }
@@ -115,7 +140,7 @@ public interface TypeSolver {
 
         public Set<TypeBound.Result> unsatisfied() {
             if (this.unsatisfied == null) {
-                this.unsatisfied = this.originators().stream()
+                this.unsatisfied = this.parents().stream()
                         .filter(TypeBound.Result::unsatisfied)
                         .collect(Collectors.toCollection(() -> Collections.unmodifiableSet(new LinkedHashSet<>())));
             }
@@ -171,7 +196,7 @@ public interface TypeSolver {
                 this.assumptions.forEach(t -> sb.append(t).append("\n"));
             }
 
-            Set<TypeBound.Result> originators = this.originators();
+            Set<TypeBound.Result> originators = this.parents();
             sb.append("\n")
                     .append("== Detailed Results: ").append(originators.size()).append(" ==\n");
 
@@ -192,12 +217,12 @@ public interface TypeSolver {
             if (obj == null || obj.getClass() != this.getClass()) return false;
             var that = (Result) obj;
             return this.success == that.success &&
-                    Objects.equals(this.originators(), that.originators());
+                    Objects.equals(this.parents(), that.parents());
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(success, this.originators());
+            return Objects.hash(success, this.parents());
         }
 
     }

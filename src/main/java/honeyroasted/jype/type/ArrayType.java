@@ -5,12 +5,17 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Set;
 
-public interface ArrayType extends PossiblyUnmodifiable, Type {
+public interface ArrayType extends PossiblyUnmodifiable, InstantiableType, ArgumentType {
     Type component();
 
     void setComponent(Type component);
 
     int depth();
+
+    @Override
+    default Set<Type> knownDirectSupertypes() {
+        return Set.of(typeSystem().constants().object());
+    }
 
     @Override
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {

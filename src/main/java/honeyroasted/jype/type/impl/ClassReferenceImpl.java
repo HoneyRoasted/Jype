@@ -4,6 +4,7 @@ import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -46,7 +47,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
-    public ParameterizedClassType parameterized(List<Type> typeArguments) {
+    public ParameterizedClassType parameterized(List<ArgumentType> typeArguments) {
         ParameterizedClassType parameterizedClassType = new ParameterizedClassTypeImpl(this.typeSystem());
         parameterizedClassType.setClassReference(this);
         parameterizedClassType.setTypeArguments(typeArguments);
@@ -55,13 +56,13 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
-    public ParameterizedClassType parameterized(Type... typeArguments) {
+    public ParameterizedClassType parameterized(ArgumentType... typeArguments) {
         return parameterized(List.of(typeArguments));
     }
 
     @Override
     public ParameterizedClassType parameterizedWithTypeVars() {
-        return parameterized((List<Type>) (List) this.typeParameters);
+        return parameterized((List<ArgumentType>) (List) this.typeParameters);
     }
 
     @Override

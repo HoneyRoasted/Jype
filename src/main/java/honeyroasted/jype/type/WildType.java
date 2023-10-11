@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public interface WildType extends PossiblyUnmodifiable, Type {
+public interface WildType extends PossiblyUnmodifiable, Type, ArgumentType {
 
     int identity();
 
@@ -22,6 +22,11 @@ public interface WildType extends PossiblyUnmodifiable, Type {
     Set<Type> lowerBounds();
 
     void setLowerBounds(Set<Type> lowerBounds);
+
+    @Override
+    default Set<Type> knownDirectSupertypes() {
+        return this.upperBounds();
+    }
 
     @Override
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {

@@ -2,7 +2,7 @@ package honeyroasted.jype.type;
 
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
-public interface MetaVarType extends Type {
+public interface MetaVarType extends Type, ArgumentType {
 
     int identity();
 

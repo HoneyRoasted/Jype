@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedMethodType;
@@ -28,12 +29,12 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(List<Type> typeArguments) {
+    public ParameterizedMethodType asMethodType(List<ArgumentType> typeArguments) {
         return new ParameterizedMethodTypeDelegate(this.typeSystem(), ts -> this.delegate().asMethodType(typeArguments));
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(Type... typeArguments) {
+    public ParameterizedMethodType asMethodType(ArgumentType... typeArguments) {
         return new ParameterizedMethodTypeDelegate(this.typeSystem(), ts -> this.delegate().asMethodType(typeArguments));
     }
 

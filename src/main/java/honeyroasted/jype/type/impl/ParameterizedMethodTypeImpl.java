@@ -4,6 +4,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
@@ -21,7 +22,7 @@ import java.util.Optional;
 public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedMethodType {
     private MethodReference methodReference;
     private ClassType outerType;
-    private List<Type> typeArguments;
+    private List<ArgumentType> typeArguments;
 
     public ParameterizedMethodTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
@@ -36,7 +37,8 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
         cache.put(this, copy);
 
         copy.setMethodReference(this.methodReference.copy(cache));
-        copy.setTypeArguments(this.typeArguments.stream().map(t -> (Type) t.copy(cache)).toList());
+        copy.setOuterType(this.outerType.copy(cache));
+        copy.setTypeArguments(this.typeArguments.stream().map(t -> (ArgumentType) t.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -72,12 +74,12 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     }
 
     @Override
-    public List<Type> typeArguments() {
+    public List<ArgumentType> typeArguments() {
         return this.typeArguments;
     }
 
     @Override
-    public void setTypeArguments(List<Type> typeArguments) {
+    public void setTypeArguments(List<ArgumentType> typeArguments) {
         super.checkUnmodifiable();
         this.typeArguments = typeArguments;
     }

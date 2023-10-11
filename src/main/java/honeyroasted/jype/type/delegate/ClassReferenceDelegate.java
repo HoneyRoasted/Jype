@@ -2,10 +2,10 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
-import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.List;
@@ -28,12 +28,12 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
     }
 
     @Override
-    public ParameterizedClassType parameterized(List<Type> typeArguments) {
+    public ParameterizedClassType parameterized(List<ArgumentType> typeArguments) {
         return new ParameterizedClassTypeDelegate(this.typeSystem(), ts -> this.delegate().parameterized(typeArguments));
     }
 
     @Override
-    public ParameterizedClassType parameterized(Type... typeArguments) {
+    public ParameterizedClassType parameterized(ArgumentType... typeArguments) {
         return new ParameterizedClassTypeDelegate(this.typeSystem(), ts -> this.delegate().parameterized(typeArguments));
     }
 

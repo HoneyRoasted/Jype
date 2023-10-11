@@ -40,10 +40,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     public AssignabilityTypeSolver() {
         super(Set.of(TypeBound.Equal.class,
                         TypeBound.Compatible.class,
-                        TypeBound.NonCyclic.class,
-                        TypeBound.Not.class,
-                        TypeBound.And.class,
-                        TypeBound.Or.class),
+                        TypeBound.NonCyclic.class),
                 Set.of(TypeBound.Equal.class,
                         TypeBound.Compatible.class));
     }
@@ -51,7 +48,6 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();
     private Set<TypeBound.Result.Builder> results = new LinkedHashSet<>();
     private Set<TypeBound.Result.Builder> insights = new LinkedHashSet<>();
-
     private Set<TypeBound> satisfiedCache = new HashSet<>();
 
     @Override
@@ -65,13 +61,13 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         Map<VarType, Type> vars = new HashMap<>();
 
         this.initialBounds.forEach(bound -> {
-            TypeBound.Result.Builder builder = TypeBound.Result.builder(bound);
+            TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(bound));
             workingBounds.add(builder);
             results.add(builder);
         });
 
         this.assumedBounds.forEach(bound -> {
-            this.satisfiedCache.add(bound);
+            this.satisfiedCache.add(this.eventAssumptionCreated(bound));
             if (bound instanceof TypeBound.Equal eq && eq.left() instanceof VarType vt) {
                 vars.put(vt, eq.right());
             }
@@ -98,11 +94,11 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             success &= result.satisfied();
             built.add(result);
         }
-        return new Result(success, built,
+        return this.eventSolved(new Result(success, built,
                 this.insights.stream().map(TypeBound.Result.Builder::build)
                         .filter(TypeBound.Result::satisfied)
                         .map(TypeBound.Result::bound).collect(Collectors.toCollection(LinkedHashSet::new)),
-                new LinkedHashSet<>(this.assumedBounds));
+                new LinkedHashSet<>(this.assumedBounds)));
     }
 
     public void iterate(TypeSystem system) {
@@ -124,12 +120,6 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             this.solve(system, builder, nc);
         } else if (bound instanceof TypeBound.Compatible st) {
             this.solve(system, builder, st);
-        } else if (bound instanceof TypeBound.Not nt) {
-            this.solve(system, builder, nt);
-        } else if (bound instanceof TypeBound.And and) {
-            this.solve(system, builder, and);
-        } else if (bound instanceof TypeBound.Or or) {
-            this.solve(system, builder, or);
         } else {
             throw new IllegalStateException("Unsupported TypeBound: " + (bound == null ? null : bound.getClass().getName()));
         }
@@ -144,14 +134,14 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         }
 
         if (builder.satisfied()) {
-            this.satisfiedCache.add(bound);
-        } else if (builder.originator() != null) {
-            cacheResults(builder.originator());
+            this.satisfiedCache.add(this.eventBoundSatisfied(builder).bound());
+        } else if (!builder.parents().isEmpty()) {
+            builder.parents().forEach(this::cacheResults);
         }
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Compatible subtype) {
-        insights.add(builder);
+        insights.add(this.eventInsightDiscovered(builder));
 
         Type left = this.varTypeResolver.visit(subtype.left());
         Type right = this.varTypeResolver.visit(subtype.right());
@@ -159,41 +149,49 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         if (left.hasCyclicTypeVariables() || right.hasCyclicTypeVariables()) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
             if (left.hasCyclicTypeVariables()) {
-                TypeBound.Result.builder(new TypeBound.NonCyclic(left), builder).setSatisfied(false);
+                TypeBound.Result.Builder created = TypeBound.Result.builder(new TypeBound.NonCyclic(left), builder).setSatisfied(false);
+                this.eventBoundCreated(created);
+                this.eventBoundUnsatisfied(created);
             }
 
             if (right.hasCyclicTypeVariables()) {
-                TypeBound.Result.builder(new TypeBound.NonCyclic(right), builder).setSatisfied(false);
+                TypeBound.Result.Builder created = TypeBound.Result.builder(new TypeBound.NonCyclic(right), builder).setSatisfied(false);
+                this.eventBoundCreated(created);
+                this.eventBoundUnsatisfied(created);
             }
         } else {
             if (left instanceof NoneType || right instanceof NoneType) {
                 if (left instanceof NoneType lnt && right instanceof NoneType rnt) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(lnt, system.constants().nullType())));
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(rnt, system.constants().nullType())));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lnt, system.constants().nullType()))));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(rnt, system.constants().nullType()))));
                 } else if (left instanceof NoneType lnt) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(lnt, system.constants().nullType())));
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(right, system.constants().object())));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lnt, system.constants().nullType()))));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(right, system.constants().object()))));
                 } else {
                     builder.setSatisfied(false);
+                    this.eventBoundUnsatisfied(builder);
                 }
             } else if (left.equals(right)) {
                 builder.setPropagation(TypeBound.Result.Propagation.AND);
-                this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(left, right), builder));
+                this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(left, right), builder)));
             } else if (right instanceof VarType || right instanceof WildType.Upper) {
                 builder.setSatisfied(false);
             } else {
+                boolean assumptionFound = false;
                 for (TypeBound t : this.assumedBounds) { //Respect assumed subtypes
                     if (t instanceof TypeBound.Subtype st) {
+                        assumptionFound = true;
                         builder.setPropagation(TypeBound.Result.Propagation.OR);
-                        TypeBound.Result.Builder newBuilder = TypeBound.Result.builder(subtype, builder);
-                        this.workingBounds.add(TypeBound.Result.builder(new TypeBound.And(
-                                new TypeBound.Subtype(left, st.left()),
-                                new TypeBound.Subtype(st.right(), right)
-                        ), builder));
-                        builder = newBuilder;
+                        TypeBound.Result.Builder newBuilder = TypeBound.Result.builder(subtype, TypeBound.Result.Propagation.AND, builder);
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, st.left()), newBuilder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(st.right(), right), newBuilder)));
                     }
+                }
+
+                if (assumptionFound) {
+                    builder = TypeBound.Result.builder(subtype, TypeBound.Result.Propagation.NONE, builder);
                 }
 
                 TypeBound.Result.Builder finalBuilder = builder;
@@ -201,42 +199,42 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
                     if (left instanceof PrimitiveType lpt && right instanceof PrimitiveType rpt) {
                         builder.setPropagation(TypeBound.Result.Propagation.OR);
                         PRIM_SUPERS.get(lpt.name()).stream().map(s -> system.constants().primitivesByName().get(s))
-                                .forEach(pspr -> this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(rpt, pspr), finalBuilder)));
+                                .forEach(pspr -> this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(rpt, pspr), finalBuilder))));
                     } else if (left instanceof PrimitiveType lpt) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().boxByPrimitive().get(lpt), right), builder));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().boxByPrimitive().get(lpt), right), builder)));
                     } else if (right instanceof PrimitiveType rpt) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(left, system.constants().boxByPrimitive().get(rpt)), builder));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, system.constants().boxByPrimitive().get(rpt)), builder)));
                     }
                 } else if (left instanceof WildType) {
                     if (left instanceof WildType.Upper wtu) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
                         wtu.upperBounds().forEach(wbound ->
-                                this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(wbound, right), finalBuilder)));
+                                this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(wbound, right), finalBuilder))));
                     } else if (left instanceof WildType.Lower) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().object(), right), builder));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().object(), right), builder)));
                     }
                 } else if (right instanceof WildType.Lower wtl) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
                     wtl.lowerBounds().forEach(wbound ->
-                            this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(left, wbound), finalBuilder)));
+                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, wbound), finalBuilder))));
                 } else if (left instanceof VarType vt) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
                     vt.upperBounds().forEach(vbound ->
-                            this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(vbound, right), finalBuilder)));
+                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(vbound, right), finalBuilder))));
                 } else if (left instanceof ArrayType lat && right instanceof ArrayType rat) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
-                    this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), rat.component())));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), rat.component()))));
                 } else if (left instanceof ClassType lcls && right instanceof ClassType rcls) {
                     if (!lcls.hasTypeArguments() && !rcls.hasTypeArguments()) {
                         builder.setSatisfied(lcls.hasSupertype(rcls.classReference()));
                     } else if ((!rcls.hasTypeArguments() && lcls.hasTypeArguments()) ||
                             (rcls.hasTypeArguments() && !lcls.hasTypeArguments())) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.insights.add(TypeBound.Result.builder(new TypeBound.Unchecked(left, rcls), builder)
-                                .setSatisfied(lcls.hasSupertype(rcls.classReference())));
+                        this.insights.add(this.eventInsightDiscovered(TypeBound.Result.builder(new TypeBound.Unchecked(left, rcls), builder)
+                                .setSatisfied(lcls.hasSupertype(rcls.classReference()))));
                     } else if (left instanceof ParameterizedClassType lpct && right instanceof ParameterizedClassType rpct) {
                         Optional<ClassType> relativeOpt = lpct.relativeSupertype(rpct.classReference());
                         TypeBound.Result.builder(new TypeBound.Subtype(lpct.classReference(), rpct.classReference()), builder)
@@ -249,22 +247,22 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
                                     Type ti = relative.typeArguments().get(i);
                                     Type si = rpct.typeArguments().get(i);
 
-                                    TypeBound.Result.Builder argMatch = TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), builder, TypeBound.Result.Propagation.AND);
+                                    TypeBound.Result.Builder argMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), builder, TypeBound.Result.Propagation.AND));
 
                                     if (si instanceof WildType.Upper siwtu) {
                                         rpct.typeParameters().get(i).upperBounds().stream().map(rpct.varTypeResolver())
-                                                .forEach(bound -> TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
                                         siwtu.upperBounds()
-                                                .forEach(bound -> TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
                                         this.workingBounds.addAll(argMatch.children());
                                     } else if (si instanceof WildType.Lower siwtl) {
                                         rpct.typeParameters().get(i).upperBounds().stream().map(rpct.varTypeResolver())
-                                                .forEach(bound -> TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
                                         siwtl.lowerBounds()
-                                                .forEach(bound -> TypeBound.Result.builder(new TypeBound.Subtype(bound, ti), argMatch));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound, ti), argMatch)));
                                         this.workingBounds.addAll(argMatch.children());
                                     } else {
-                                        this.workingBounds.add(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argMatch));
+                                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argMatch)));
                                     }
                                 }
                             }
@@ -276,30 +274,16 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Equal equal) {
-        insights.add(builder);
+        insights.add(this.eventInsightDiscovered(builder));
         builder.setSatisfied(this.varTypeResolver.visit(equal.left())
                 .equals(this.varTypeResolver.visit(equal.right())));
+        this.eventBoundSatisfiedOrUnsatisfied(builder);
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.NonCyclic nonCyclic) {
         insights.add(builder);
         builder.setSatisfied(this.varTypeResolver.visit(nonCyclic.type()).hasCyclicTypeVariables());
-    }
-
-    private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Not not) {
-        builder.setPropagation(TypeBound.Result.Propagation.NAND);
-        workingBounds.add(TypeBound.Result.builder(not.child(), builder));
-    }
-
-    private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.And and) {
-        builder.setPropagation(TypeBound.Result.Propagation.AND);
-        and.children().forEach(c -> workingBounds.add(TypeBound.Result.builder(c, builder)));
-
-    }
-
-    private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Or or) {
-        builder.setPropagation(TypeBound.Result.Propagation.OR);
-        or.children().forEach(c -> workingBounds.add(TypeBound.Result.builder(c, builder)));
+        this.eventBoundSatisfiedOrUnsatisfied(builder);
     }
 
 }

@@ -38,6 +38,10 @@ public interface TypeVisitor<R, P> {
         return type.accept(this, context);
     }
 
+    default R visit(Type type) {
+        return this.visit(type, null);
+    }
+
     default R visitType(Type type, P context) {
         return null;
     }

@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.solver.solvers.inference.ExpressionInformation;
-import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public interface TypeBound {
     List<?> parameters();
@@ -142,6 +141,16 @@ public interface TypeBound {
         public String toString() {
             return this.left + " EQUALS " + this.right;
         }
+
+        @Override
+        public int hashCode() {
+            return Set.of(this.left, this.right).hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof Equal eq && Set.of(this.left, this.right).equals(Set.of(eq.left, eq.right));
+        }
     }
 
     final class Compatible extends Binary<Type, Type> {
@@ -244,61 +253,39 @@ public interface TypeBound {
         }
     }
 
-    record Not(TypeBound child) implements Compound {
-        @Override
-        public String toString() {
-            return "NOT(" + this.child + ")";
-        }
-
-        @Override
-        public List<TypeBound> children() {
-            return List.of(child);
-        }
+    interface ResultView {
+        boolean satisfied();
+        TypeBound bound();
+        Result.Propagation propagation();
+        List<? extends ResultView> parents();
+        List<? extends ResultView> children();
     }
 
-    record Or(List<TypeBound> children) implements Compound {
-        public Or(TypeBound... bounds) {
-            this(List.of(bounds));
-        }
-
-        @Override
-        public String toString() {
-            return "OR(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
-        }
-    }
-
-    record And(List<TypeBound> children) implements Compound {
-        public And(TypeBound... bounds) {
-            this(List.of(bounds));
-        }
-
-        @Override
-        public String toString() {
-            return "AND(" + this.children.stream().map(Objects::toString).collect(Collectors.joining(", ")) + ")";
-        }
-    }
-
-    final class Result {
+    final class Result implements ResultView {
         private TypeBound bound;
         private Propagation propagation;
         private boolean satisfied;
-        private Result originator;
+        private List<Result> parents;
         private List<Result> children;
 
-        public Result(TypeBound bound, Propagation propagation, boolean satisfied, Result originator, List<Result> children) {
+        public Result(TypeBound bound, Propagation propagation, boolean satisfied, List<Result> parents, List<Result> children) {
             this.bound = bound;
             this.propagation = propagation;
             this.satisfied = satisfied;
-            this.originator = originator;
+            this.parents = parents;
             this.children = children;
         }
 
-        void setOriginator(Result originator) {
-            this.originator = originator;
+        void setParents(List<Result> parents) {
+            this.parents = parents;
         }
 
         public TypeBound bound() {
             return this.bound;
+        }
+
+        public Propagation propagation() {
+            return this.propagation;
         }
 
         public boolean satisfied() {
@@ -309,8 +296,8 @@ public interface TypeBound {
             return !this.satisfied;
         }
 
-        public Result originator() {
-            return this.originator;
+        public List<Result> parents() {
+            return this.parents;
         }
 
         public List<Result> children() {
@@ -356,14 +343,30 @@ public interface TypeBound {
         }
 
         public static Builder builder(TypeBound bound, Builder originator, Propagation propagation) {
-            Builder builder = new Builder().setBound(bound).setOriginator(originator).setPropagation(propagation);
+            Builder builder = new Builder().setBound(bound).addParents(originator).setPropagation(propagation);
             originator.addChildren(builder);
             return builder;
         }
 
         public static Builder builder(TypeBound bound, Builder originator) {
-            Builder builder = new Builder().setBound(bound).setOriginator(originator);
+            Builder builder = new Builder().setBound(bound).addParents(originator);
             originator.addChildren(builder);
+            return builder;
+        }
+
+        public static Builder builder(TypeBound bound, Builder... originators) {
+            Builder builder = new Builder().setBound(bound).addParents(originators);
+            for (Builder originator : originators) {
+                originator.addChildren(builder);
+            }
+            return builder;
+        }
+
+        public static Builder builder(TypeBound bound, Propagation propagation, Builder... originators) {
+            Builder builder = new Builder().setBound(bound).addParents(originators).setPropagation(propagation);
+            for (Builder originator : originators) {
+                originator.addChildren(builder);
+            }
             return builder;
         }
 
@@ -376,13 +379,13 @@ public interface TypeBound {
             NOR
         }
 
-        public static class Builder {
+        public static class Builder implements ResultView {
             private Result built;
             private Propagation propagation = Propagation.NONE;
 
             private TypeBound bound;
             private boolean satisfied;
-            private Builder originator;
+            private List<Builder> parents = new ArrayList<>();
             private List<Builder> children = new ArrayList<>();
 
             public Result build() {
@@ -391,12 +394,18 @@ public interface TypeBound {
 
                     List<Result> builtChildren = new ArrayList<>();
                     this.built = new Result(this.bound, this.propagation, this.satisfied, null, Collections.unmodifiableList(builtChildren));
-                    if (this.originator != null) {
-                        this.built.setOriginator(this.originator.build());
+                    if (!this.parents.isEmpty()) {
+                        this.built.setParents(this.parents.stream().map(Builder::build).toList());
                     }
                     this.children.forEach(b -> builtChildren.add(b.build()));
                 }
                 return this.built;
+            }
+
+            public Builder deepSetPropagation(Propagation propagation) {
+                this.propagation = propagation;
+                this.children.forEach(b -> b.deepSetPropagation(propagation));
+                return this;
             }
 
             public Builder propagate() {
@@ -443,12 +452,17 @@ public interface TypeBound {
                 return this;
             }
 
-            public Builder originator() {
-                return this.originator;
+            public List<Builder> parents() {
+                return this.parents;
             }
 
-            public Builder setOriginator(Builder originator) {
-                this.originator = originator;
+            public Builder setParents(List<Builder> parents) {
+                this.parents = parents;
+                return this;
+            }
+
+            public Builder addParents(Builder... parents) {
+                Collections.addAll(this.parents, parents);
                 return this;
             }
 
@@ -480,7 +494,7 @@ public interface TypeBound {
                 if (this == o) return true;
                 if (o == null || getClass() != o.getClass()) return false;
                 Builder builder = (Builder) o;
-                return satisfied == builder.satisfied && propagation == builder.propagation && Objects.equals(bound, builder.bound) && Objects.equals(originator, builder.originator) && Objects.equals(children, builder.children);
+                return satisfied == builder.satisfied && propagation == builder.propagation && Objects.equals(bound, builder.bound) && Objects.equals(children, builder.children);
             }
 
             @Override

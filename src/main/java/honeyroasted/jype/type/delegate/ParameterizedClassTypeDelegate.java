@@ -3,10 +3,10 @@ package honeyroasted.jype.type.delegate;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
-import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.List;
@@ -100,12 +100,12 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     }
 
     @Override
-    public List<Type> typeArguments() {
+    public List<ArgumentType> typeArguments() {
         return this.delegate().typeArguments();
     }
 
     @Override
-    public void setTypeArguments(List<Type> typeArguments) {
+    public void setTypeArguments(List<ArgumentType> typeArguments) {
         this.delegate().setTypeArguments(typeArguments);
     }
 

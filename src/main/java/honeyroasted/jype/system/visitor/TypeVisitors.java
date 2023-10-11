@@ -16,7 +16,7 @@ public interface TypeVisitors {
     MappingVisitor<Void> ERASE_EXCEPTIONS = new StripExceptionsTypeVisitor().withContext(() -> new InMemoryTypeCache<>());
     TypeVisitor<String, SignatureTypeVisitor.Mode> SIGNATURE = new SignatureTypeVisitor();
     TypeVisitor<String, SignatureTypeVisitor.Mode> DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(SIGNATURE, true));
-    TypeVisitor<Boolean, Void> IS_PROPER_TYPE = new RecursiveTypeVisitor<Boolean, Void>((TypeVisitor.Default) (type, context) -> !(type instanceof MetaVarType), null)
+    TypeVisitor<Boolean, Void> IS_PROPER_TYPE = new RecursiveTypeVisitor<Boolean, Void>((TypeVisitor.Default) (type, context) -> !(type instanceof MetaVarType), null, false)
             .mapResult(ls -> ls.stream().allMatch(b -> b != null && b)).withContext(HashMap::new);
 
     static <T> MappingVisitor<T> identity() {

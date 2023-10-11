@@ -16,7 +16,7 @@ public interface ParameterizedMethodType extends PossiblyUnmodifiable, MethodTyp
 
     void setMethodReference(MethodReference methodReference);
 
-    void setTypeArguments(List<Type> typeArguments);
+    void setTypeArguments(List<ArgumentType> typeArguments);
 
     default VarTypeResolveVisitor varTypeResolver() {
         return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
