@@ -25,7 +25,7 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
     private ExpressionResolver expressionResolver;
 
     public InferenceTypeSolver(ExpressionResolver expressionResolver) {
-        super(Set.of(TypeBound.False.class, TypeBound.Equal.class,
+        super(Set.of(TypeBound.Equal.class,
                         TypeBound.Compatible.class, TypeBound.ExpressionCompatible.class,
                         TypeBound.Contains.class, TypeBound.LambdaThrows.class,
                         TypeBound.Throws.class, TypeBound.Captures.class,
