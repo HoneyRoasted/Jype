@@ -12,28 +12,7 @@ import java.util.Objects;
 public interface TypeBound {
     List<?> parameters();
 
-    final class False implements TypeBound {
-
-        @Override
-        public int hashCode() {
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return obj instanceof False;
-        }
-
-        @Override
-        public String toString() {
-            return "FALSE";
-        }
-
-        @Override
-        public List<?> parameters() {
-            return Collections.EMPTY_LIST;
-        }
-    }
+    String simpleName();
 
     interface Compound extends TypeBound {
         List<TypeBound> children();
@@ -117,6 +96,11 @@ public interface TypeBound {
         public String toString() {
             return this.type + " DOES NOT HAVE CYCLIC TYPE VARIABLES";
         }
+
+        @Override
+        public String simpleName() {
+            return "non-cyclic(" + this.type.simpleName() + ")";
+        }
     }
 
     final class NeedsInference extends Unary<VarType> {
@@ -128,6 +112,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.type + " NEEDS INFERENCE";
+        }
+
+        @Override
+        public String simpleName() {
+            return "infer(" + this.type.simpleName() + ")";
         }
     }
 
@@ -152,6 +141,11 @@ public interface TypeBound {
                     ((Objects.equals(this.left, eq.left) && Objects.equals(this.right, eq.right)) ||
                             (Objects.equals(this.left, eq.right) && Objects.equals(this.right, eq.left)));
         }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " = " + this.right.simpleName();
+        }
     }
 
     final class Compatible extends Binary<Type, Type> {
@@ -162,6 +156,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS COMPATIBLE WITH " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " -> " + this.right.simpleName();
         }
     }
 
@@ -174,6 +173,11 @@ public interface TypeBound {
         public String toString() {
             return this.left + " IS COMPATIBLE WITH " + this.right;
         }
+
+        @Override
+        public String simpleName() {
+            return "*expr -> " + this.right.simpleName();
+        }
     }
 
     final class Contains extends Binary<VarType, VarType> {
@@ -184,6 +188,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS CONTAINED BY " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " contains " + this.right.simpleName();
         }
     }
 
@@ -197,6 +206,11 @@ public interface TypeBound {
         public String toString() {
             return this.left + " THROWS " + this.right;
         }
+
+        @Override
+        public String simpleName() {
+            return "*expr throws(" + this.right.simpleName() + ")";
+        }
     }
 
     final class Throws extends Unary<VarType> {
@@ -207,6 +221,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return "THROWS " + this.type;
+        }
+
+        @Override
+        public String simpleName() {
+            return "throws(" + this.type.simpleName() + ")";
         }
     }
 
@@ -219,6 +238,11 @@ public interface TypeBound {
         public String toString() {
             return this.left + " CAPTURES " + this.right;
         }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " captures " + this.right.simpleName();
+        }
     }
 
     class Subtype extends Binary<Type, Type> {
@@ -229,6 +253,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS A SUBTYPE OF " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " <: " + this.right.simpleName();
         }
     }
 
@@ -241,6 +270,11 @@ public interface TypeBound {
         public String toString() {
             return this.left + " IS A COMPATIBLE GENERIC ARGUMENT WITH " + this.right;
         }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " compatible " + this.right.simpleName();
+        }
     }
 
     class Unchecked extends Binary<Type, Type> {
@@ -251,6 +285,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS AN UNCHECKED SUBTYPE OF " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " <: " + this.right.simpleName();
         }
     }
 
