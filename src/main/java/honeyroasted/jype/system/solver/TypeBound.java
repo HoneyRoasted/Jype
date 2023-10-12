@@ -437,7 +437,7 @@ public interface TypeBound {
                     this.propagate();
 
                     List<Result> builtChildren = new ArrayList<>();
-                    this.built = new Result(this.bound, this.propagation, this.satisfied, null, Collections.unmodifiableList(builtChildren));
+                    this.built = new Result(this.bound, this.propagation, this.satisfied, Collections.emptyList(), Collections.unmodifiableList(builtChildren));
                     if (!this.parents.isEmpty()) {
                         this.built.setParents(this.parents.stream().map(Builder::build).toList());
                     }
