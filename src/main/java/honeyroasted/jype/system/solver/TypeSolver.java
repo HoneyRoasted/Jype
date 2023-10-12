@@ -16,22 +16,11 @@ public interface TypeSolver {
 
     boolean supports(TypeBound bound);
 
-    boolean supportsAssumption(TypeBound bound);
-
     TypeSolver bind(TypeBound bound);
-
-    TypeSolver assume(TypeBound bound);
 
     default TypeSolver bind(TypeBound... bounds) {
         for (TypeBound bound : bounds) {
             this.bind(bound);
-        }
-        return this;
-    }
-
-    default TypeSolver assume(TypeBound... bounds) {
-        for (TypeBound bound : bounds) {
-            this.assume(bound);
         }
         return this;
     }
@@ -42,33 +31,28 @@ public interface TypeSolver {
         private boolean success;
         private final Set<TypeBound.Result> bounds;
         private final Set<TypeBound> insights;
-        private final Set<TypeBound> assumptions;
 
-        public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights, Set<TypeBound> assumptions) {
+        public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights) {
             this.success = success;
             this.bounds = Collections.unmodifiableSet(bounds);
             this.insights = Collections.unmodifiableSet(insights);
-            this.assumptions = Collections.unmodifiableSet(assumptions);
         }
 
-        public Result(Set<TypeBound.Result> bounds, Set<TypeBound> insights, Set<TypeBound> assumptions) {
-            this(false, bounds, insights, assumptions);
+        public Result(Set<TypeBound.Result> bounds, Set<TypeBound> insights) {
+            this(false, bounds, insights);
             this.success = this.parents().stream().allMatch(TypeBound.Result::satisfied);
         }
 
         public Result and(Result other) {
             Set<TypeBound.Result> bounds = new LinkedHashSet<>();
             Set<TypeBound> insights = new LinkedHashSet<>();
-            Set<TypeBound> assumptions = new LinkedHashSet<>();
 
             bounds.addAll(this.bounds);
             bounds.addAll(other.bounds());
             insights.addAll(this.insights);
             insights.addAll(other.insights());
-            assumptions.addAll(this.assumptions);
-            assumptions.addAll(other.assumptions());
 
-            return new Result(this.success && other.success(), bounds, insights, assumptions);
+            return new Result(this.success && other.success(), bounds, insights);
         }
 
         private Set<TypeBound.Result> parents;
@@ -181,20 +165,11 @@ public interface TypeSolver {
             return insights;
         }
 
-        public Set<TypeBound> assumptions() {
-            return assumptions;
-        }
-
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("== Insights: ").append(this.insights.size()).append(" ==\n");
             this.insights.forEach(t -> sb.append(t).append("\n"));
-
-            if (!this.assumptions.isEmpty()) {
-                sb.append("\n== Assumptions: ").append(this.assumptions.size()).append(" ==\n");
-                this.assumptions.forEach(t -> sb.append(t).append("\n"));
-            }
 
             Set<TypeBound.Result> originators = this.parents();
             sb.append("\n")

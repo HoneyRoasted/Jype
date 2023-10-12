@@ -4,9 +4,7 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.exception.TypeSolverUnsolvableException;
-import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.MappingVisitor;
-import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.NoneType;
@@ -16,7 +14,6 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -40,9 +37,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     public AssignabilityTypeSolver() {
         super(Set.of(TypeBound.Equal.class,
                         TypeBound.Compatible.class,
-                        TypeBound.NonCyclic.class),
-                Set.of(TypeBound.Equal.class,
-                        TypeBound.Compatible.class));
+                        TypeBound.NonCyclic.class));
     }
 
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();
@@ -58,26 +53,11 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private MappingVisitor<TypeCache<Type, Type>> varTypeResolver;
 
     public Result solve(TypeSystem system, long maxIters) {
-        Map<VarType, Type> vars = new HashMap<>();
-
         this.initialBounds.forEach(bound -> {
             TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(bound));
             workingBounds.add(builder);
             results.add(builder);
         });
-
-        this.assumedBounds.forEach(bound -> {
-            this.satisfiedCache.add(this.eventAssumptionCreated(bound));
-            if (bound instanceof TypeBound.Equal eq && eq.left() instanceof VarType vt) {
-                vars.put(vt, eq.right());
-            }
-        });
-
-        if (!vars.isEmpty()) {
-            this.varTypeResolver = new VarTypeResolveVisitor(vars);
-        } else {
-            this.varTypeResolver = TypeVisitors.identity();
-        }
 
         for (long c = 0; c < maxIters && !this.workingBounds.isEmpty(); c++) {
             this.iterate(system);
@@ -97,8 +77,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         return this.eventSolved(new Result(success, built,
                 this.insights.stream().map(TypeBound.Result.Builder::build)
                         .filter(TypeBound.Result::satisfied)
-                        .map(TypeBound.Result::bound).collect(Collectors.toCollection(LinkedHashSet::new)),
-                new LinkedHashSet<>(this.assumedBounds)));
+                        .map(TypeBound.Result::bound).collect(Collectors.toCollection(LinkedHashSet::new))));
     }
 
     public void iterate(TypeSystem system) {
@@ -179,21 +158,6 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             } else if (right instanceof VarType || right instanceof WildType.Upper) {
                 builder.setSatisfied(false);
             } else {
-                boolean assumptionFound = false;
-                for (TypeBound t : this.assumedBounds) { //Respect assumed subtypes
-                    if (t instanceof TypeBound.Compatible st) {
-                        assumptionFound = true;
-                        builder.setPropagation(TypeBound.Result.Propagation.OR);
-                        TypeBound.Result.Builder newBuilder = TypeBound.Result.builder(subtype, TypeBound.Result.Propagation.AND, builder);
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(left, st.left()), newBuilder)));
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(st.right(), right), newBuilder)));
-                    }
-                }
-
-                if (assumptionFound) {
-                    builder = TypeBound.Result.builder(subtype, TypeBound.Result.Propagation.NONE, builder);
-                }
-
                 TypeBound.Result.Builder finalBuilder = builder;
                 if (left instanceof PrimitiveType || right instanceof PrimitiveType) {
                     if (left instanceof PrimitiveType lpt && right instanceof PrimitiveType rpt) {
@@ -274,14 +238,12 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Equal equal) {
-        insights.add(this.eventInsightDiscovered(builder));
         builder.setSatisfied(this.varTypeResolver.visit(equal.left())
                 .equals(this.varTypeResolver.visit(equal.right())));
         this.eventBoundSatisfiedOrUnsatisfied(builder);
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.NonCyclic nonCyclic) {
-        insights.add(builder);
         builder.setSatisfied(this.varTypeResolver.visit(nonCyclic.type()).hasCyclicTypeVariables());
         this.eventBoundSatisfiedOrUnsatisfied(builder);
     }

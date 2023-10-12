@@ -12,19 +12,12 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractTypeSolver implements TypeSolver {
     private Set<Class<? extends TypeBound>> supported;
-    private Set<Class<? extends TypeBound>> supportedAssumptions;
     protected Set<TypeBound> initialBounds = new LinkedHashSet<>();
-    protected Set<TypeBound> assumedBounds = new LinkedHashSet<>();
 
     protected List<TypeSolverListener> listeners = new ArrayList<>();
 
-    public AbstractTypeSolver(Set<Class<? extends TypeBound>> supported, Set<Class<? extends TypeBound>> supportedAssumptions) {
+    public AbstractTypeSolver(Set<Class<? extends TypeBound>> supported) {
         this.supported = supported;
-        this.supportedAssumptions = supportedAssumptions;
-    }
-
-    public AbstractTypeSolver(Class<? extends TypeBound>... supported) {
-        this(Set.of(supported), Set.of(supported));
     }
 
     private static TypeBound supportsImpl(TypeBound bound, Set<Class<? extends TypeBound>> supported) {
@@ -42,11 +35,6 @@ public abstract class AbstractTypeSolver implements TypeSolver {
         }
 
         return null;
-    }
-
-    protected TypeBound eventAssumptionCreated(TypeBound bound) {
-        this.listeners.forEach(l -> l.assumptionCreated(bound));
-        return bound;
     }
 
     protected TypeBound.Result.Builder eventBoundCreated(TypeBound.Result.Builder bound) {
@@ -95,12 +83,6 @@ public abstract class AbstractTypeSolver implements TypeSolver {
     }
 
     @Override
-    public boolean supportsAssumption(TypeBound bound) {
-        if (bound == null) return false;
-        return supportsImpl(bound, this.supportedAssumptions) == null;
-    }
-
-    @Override
     public TypeSolver bind(TypeBound bound) {
         Objects.requireNonNull(bound);
         TypeBound check = supportsImpl(bound, this.supported);
@@ -112,15 +94,4 @@ public abstract class AbstractTypeSolver implements TypeSolver {
         return this;
     }
 
-    @Override
-    public TypeSolver assume(TypeBound bound) {
-        Objects.requireNonNull(bound);
-        TypeBound check = supportsImpl(bound, this.supportedAssumptions);
-        if (check != null)
-            throw new IllegalArgumentException(getClass().getName() + " does not support assumption TypeBound of type " +
-                    check + ", support assumption bounds are: [" +
-                    supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
-        this.assumedBounds.add(bound);
-        return this;
-    }
 }

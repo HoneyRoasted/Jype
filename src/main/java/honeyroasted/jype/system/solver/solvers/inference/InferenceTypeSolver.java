@@ -29,9 +29,7 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
                         TypeBound.Compatible.class, TypeBound.ExpressionCompatible.class,
                         TypeBound.Contains.class, TypeBound.LambdaThrows.class,
                         TypeBound.Throws.class, TypeBound.Captures.class,
-                        TypeBound.Subtype.class),
-                Set.of(TypeBound.NeedsInference.class,
-                        TypeBound.Equal.class));
+                        TypeBound.Subtype.class));
         this.expressionResolver = expressionResolver;
     }
 
