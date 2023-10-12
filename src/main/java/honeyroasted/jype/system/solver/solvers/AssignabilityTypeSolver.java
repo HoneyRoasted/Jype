@@ -168,7 +168,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
                 } else if (left instanceof NoneType lnt) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
                     this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lnt, system.constants().nullType()))));
-                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(right, system.constants().object()))));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(right, system.constants().object()))));
                 } else {
                     builder.setSatisfied(false);
                     this.eventBoundUnsatisfied(builder);
@@ -181,12 +181,12 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
             } else {
                 boolean assumptionFound = false;
                 for (TypeBound t : this.assumedBounds) { //Respect assumed subtypes
-                    if (t instanceof TypeBound.Subtype st) {
+                    if (t instanceof TypeBound.Compatible st) {
                         assumptionFound = true;
                         builder.setPropagation(TypeBound.Result.Propagation.OR);
                         TypeBound.Result.Builder newBuilder = TypeBound.Result.builder(subtype, TypeBound.Result.Propagation.AND, builder);
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, st.left()), newBuilder)));
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(st.right(), right), newBuilder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(left, st.left()), newBuilder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(st.right(), right), newBuilder)));
                     }
                 }
 
@@ -202,31 +202,31 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
                                 .forEach(pspr -> this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(rpt, pspr), finalBuilder))));
                     } else if (left instanceof PrimitiveType lpt) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().boxByPrimitive().get(lpt), right), builder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(system.constants().boxByPrimitive().get(lpt), right), builder)));
                     } else if (right instanceof PrimitiveType rpt) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, system.constants().boxByPrimitive().get(rpt)), builder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(left, system.constants().boxByPrimitive().get(rpt)), builder)));
                     }
                 } else if (left instanceof WildType) {
                     if (left instanceof WildType.Upper wtu) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
                         wtu.upperBounds().forEach(wbound ->
-                                this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(wbound, right), finalBuilder))));
+                                this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(wbound, right), finalBuilder))));
                     } else if (left instanceof WildType.Lower) {
                         builder.setPropagation(TypeBound.Result.Propagation.AND);
-                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(system.constants().object(), right), builder)));
+                        this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(system.constants().object(), right), builder)));
                     }
                 } else if (right instanceof WildType.Lower wtl) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
                     wtl.lowerBounds().forEach(wbound ->
-                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(left, wbound), finalBuilder))));
+                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(left, wbound), finalBuilder))));
                 } else if (left instanceof VarType vt) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
                     vt.upperBounds().forEach(vbound ->
-                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(vbound, right), finalBuilder))));
+                            this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(vbound, right), finalBuilder))));
                 } else if (left instanceof ArrayType lat && right instanceof ArrayType rat) {
                     builder.setPropagation(TypeBound.Result.Propagation.AND);
-                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), rat.component()))));
+                    this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(lat.component(), rat.component()))));
                 } else if (left instanceof ClassType lcls && right instanceof ClassType rcls) {
                     if (!lcls.hasTypeArguments() && !rcls.hasTypeArguments()) {
                         builder.setSatisfied(lcls.hasSupertype(rcls.classReference()));
@@ -237,7 +237,7 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
                                 .setSatisfied(lcls.hasSupertype(rcls.classReference()))));
                     } else if (left instanceof ParameterizedClassType lpct && right instanceof ParameterizedClassType rpct) {
                         Optional<ClassType> relativeOpt = lpct.relativeSupertype(rpct.classReference());
-                        TypeBound.Result.builder(new TypeBound.Subtype(lpct.classReference(), rpct.classReference()), builder)
+                        TypeBound.Result.builder(new TypeBound.Compatible(lpct.classReference(), rpct.classReference()), builder)
                                 .setSatisfied(relativeOpt.isPresent());
 
                         if (relativeOpt.isPresent() && relativeOpt.get() instanceof ParameterizedClassType relative) {
@@ -251,15 +251,15 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
 
                                     if (si instanceof WildType.Upper siwtu) {
                                         rpct.typeParameters().get(i).upperBounds().stream().map(rpct.varTypeResolver())
-                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(ti, bound), argMatch)));
                                         siwtu.upperBounds()
-                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(ti, bound), argMatch)));
                                         this.workingBounds.addAll(argMatch.children());
                                     } else if (si instanceof WildType.Lower siwtl) {
                                         rpct.typeParameters().get(i).upperBounds().stream().map(rpct.varTypeResolver())
-                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(ti, bound), argMatch)));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(ti, bound), argMatch)));
                                         siwtl.lowerBounds()
-                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound, ti), argMatch)));
+                                                .forEach(bound -> this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(bound, ti), argMatch)));
                                         this.workingBounds.addAll(argMatch.children());
                                     } else {
                                         this.workingBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argMatch)));
