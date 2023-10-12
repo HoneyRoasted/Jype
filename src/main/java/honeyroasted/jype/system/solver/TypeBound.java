@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public interface TypeBound {
     List<?> parameters();
@@ -144,12 +143,14 @@ public interface TypeBound {
 
         @Override
         public int hashCode() {
-            return Set.of(this.left, this.right).hashCode();
+            return this.left.hashCode() + this.right.hashCode();
         }
 
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof Equal eq && Set.of(this.left, this.right).equals(Set.of(eq.left, eq.right));
+            return obj instanceof Equal eq &&
+                    ((Objects.equals(this.left, eq.left) && Objects.equals(this.right, eq.right)) ||
+                            (Objects.equals(this.left, eq.right) && Objects.equals(this.right, eq.left)));
         }
     }
 
@@ -255,9 +256,13 @@ public interface TypeBound {
 
     interface ResultView {
         boolean satisfied();
+
         TypeBound bound();
+
         Result.Propagation propagation();
+
         List<? extends ResultView> parents();
+
         List<? extends ResultView> children();
     }
 
