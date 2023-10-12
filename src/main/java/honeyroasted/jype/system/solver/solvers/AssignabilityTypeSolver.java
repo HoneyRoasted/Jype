@@ -50,8 +50,6 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
         return this.solve(system, Long.MAX_VALUE);
     }
 
-    private MappingVisitor<TypeCache<Type, Type>> varTypeResolver;
-
     public Result solve(TypeSystem system, long maxIters) {
         this.initialBounds.forEach(bound -> {
             TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(bound));
@@ -122,8 +120,8 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Compatible subtype) {
         insights.add(this.eventInsightDiscovered(builder));
 
-        Type left = this.varTypeResolver.visit(subtype.left());
-        Type right = this.varTypeResolver.visit(subtype.right());
+        Type left = subtype.left();
+        Type right = subtype.right();
 
         if (left.hasCyclicTypeVariables() || right.hasCyclicTypeVariables()) {
             builder.setPropagation(TypeBound.Result.Propagation.AND);
@@ -238,13 +236,13 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.Equal equal) {
-        builder.setSatisfied(this.varTypeResolver.visit(equal.left())
-                .equals(this.varTypeResolver.visit(equal.right())));
+        builder.setSatisfied(equal.left()
+                .equals(equal.right()));
         this.eventBoundSatisfiedOrUnsatisfied(builder);
     }
 
     private void solve(TypeSystem system, TypeBound.Result.Builder builder, TypeBound.NonCyclic nonCyclic) {
-        builder.setSatisfied(this.varTypeResolver.visit(nonCyclic.type()).hasCyclicTypeVariables());
+        builder.setSatisfied(!nonCyclic.type().hasCyclicTypeVariables());
         this.eventBoundSatisfiedOrUnsatisfied(builder);
     }
 
