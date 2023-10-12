@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType implements MethodReference {
     private MethodLocation location;
@@ -28,6 +29,13 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
 
     public MethodReferenceImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public String simpleName() {
+        return this.location.simpleName() + "(" +
+                this.parameters.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ") -> " +
+                this.returnType.simpleName();
     }
 
     @Override

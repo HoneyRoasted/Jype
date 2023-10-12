@@ -449,6 +449,7 @@ public interface TypeBound {
             }
 
             public boolean satisfied() {
+                this.propagate();
                 return this.satisfied;
             }
 

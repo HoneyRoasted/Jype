@@ -35,6 +35,11 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     }
 
     @Override
+    public String simpleName() {
+        return this.name + "/" + Integer.toString(this.identity, 16);
+    }
+
+    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         return (T) this;
     }

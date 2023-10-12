@@ -29,6 +29,11 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
+    public String simpleName() {
+        return this.namespace.name().simpleName();
+    }
+
+    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();

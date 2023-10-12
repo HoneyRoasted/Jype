@@ -116,7 +116,7 @@ public interface ReflectionTypeResolution {
     static Executable methodFromLocation(MethodLocation location) throws ResolutionFailedException {
         Class<?> targetCls;
         try {
-            targetCls = classFromLocation(location.containing());
+            targetCls = classFromLocation(location.containing().location());
         } catch (ResolutionFailedException ex) {
             throw new ResolutionFailedException("Could not resolve method: " + location, ex);
         }
@@ -260,7 +260,7 @@ public interface ReflectionTypeResolution {
         }
 
         for (TypeVariable<?> param : cls.getTypeParameters()) {
-            TypeParameterLocation loc = new TypeParameterLocation(reference.namespace().location(), param.getName());
+            TypeParameterLocation loc = new TypeParameterLocation(reference.namespace(), param.getName());
             Optional<? extends VarType> paramRef = system.resolvers().resolverFor(TypeParameterLocation.class, VarType.class)
                     .resolve(system, loc);
 
@@ -307,8 +307,8 @@ public interface ReflectionTypeResolution {
         TypeVariable[] parameters = null;
 
         try {
-            if (location.containing() instanceof ClassLocation containing) {
-                parameters = ReflectionTypeResolution.classFromLocation(containing).getTypeParameters();
+            if (location.containing() instanceof ClassNamespace containing) {
+                parameters = ReflectionTypeResolution.classFromLocation(containing.location()).getTypeParameters();
             } else if (location.containing() instanceof MethodLocation containing) {
                 parameters = ReflectionTypeResolution.methodFromLocation(containing).getTypeParameters();
             }

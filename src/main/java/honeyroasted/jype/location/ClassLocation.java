@@ -1,6 +1,6 @@
 package honeyroasted.jype.location;
 
-public record ClassLocation(Type type, ClassLocation containing, String value) implements GenericDeclarationLocation {
+public record ClassLocation(Type type, ClassLocation containing, String value) {
     public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
     public static final ClassLocation VOID = ClassLocation.of(void.class);
 
@@ -75,11 +75,6 @@ public record ClassLocation(Type type, ClassLocation containing, String value) i
 
     public String toString() {
         return this.toString(".", "/");
-    }
-
-    @Override
-    public ClassLocation containingClass() {
-        return this;
     }
 
     enum Type {

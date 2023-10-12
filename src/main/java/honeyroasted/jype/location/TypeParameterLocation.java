@@ -10,7 +10,7 @@ public record TypeParameterLocation(GenericDeclarationLocation containing, Strin
     public static TypeParameterLocation of(GenericDeclaration declaration, String name) {
         GenericDeclarationLocation containing;
         if (declaration instanceof Class<?> cls) {
-            containing = ClassLocation.of(cls);
+            containing = ClassNamespace.of(cls);
         } else if (declaration instanceof Method mth) {
             containing = MethodLocation.of(mth);
         } else if (declaration instanceof Constructor<?> cons) {

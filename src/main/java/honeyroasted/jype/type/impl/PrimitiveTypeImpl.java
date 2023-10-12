@@ -61,6 +61,11 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
     }
 
     @Override
+    public String simpleName() {
+        return this.toString();
+    }
+
+    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         return (T) this;
     }

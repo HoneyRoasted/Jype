@@ -1,6 +1,6 @@
 package honeyroasted.jype.location;
 
-public record ClassNamespace(ClassLocation location, ClassName name) {
+public record ClassNamespace(ClassLocation location, ClassName name) implements GenericDeclarationLocation {
 
     public static ClassNamespace of(Class<?> cls) {
         return new ClassNamespace(ClassLocation.of(cls), ClassName.of(cls));
@@ -19,5 +19,10 @@ public record ClassNamespace(ClassLocation location, ClassName name) {
     @Override
     public String toString() {
         return this.location().toString();
+    }
+
+    @Override
+    public ClassNamespace containingClass() {
+        return this;
     }
 }

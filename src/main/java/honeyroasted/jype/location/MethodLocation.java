@@ -5,22 +5,26 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Stream;
 
-public record MethodLocation(ClassLocation containing, String name, ClassLocation returnType,
+public record MethodLocation(ClassNamespace containing, String name, ClassLocation returnType,
                              List<ClassLocation> parameters) implements GenericDeclarationLocation {
 
     public static final String CONSTRUCTOR_NAME = "<init>";
     public static final String STATIC_INITIALIZER_NAME = "<clinit>";
 
-    public MethodLocation(ClassLocation containing, String name, ClassLocation returnType, List<ClassLocation> parameters) {
+    public MethodLocation(ClassNamespace containing, String name, ClassLocation returnType, List<ClassLocation> parameters) {
         this.containing = containing;
         this.name = name;
         this.returnType = returnType;
         this.parameters = List.copyOf(parameters);
     }
 
+    public String simpleName() {
+        return this.containing.name().simpleName() + "." + this.name;
+    }
+
     public static MethodLocation of(Method method) {
         return new MethodLocation(
-                ClassLocation.of(method.getDeclaringClass()),
+                ClassNamespace.of(method.getDeclaringClass()),
                 method.getName(),
                 ClassLocation.of(method.getReturnType()),
                 Stream.of(method.getParameterTypes()).map(ClassLocation::of).toList());
@@ -28,14 +32,14 @@ public record MethodLocation(ClassLocation containing, String name, ClassLocatio
 
     public static MethodLocation of(Constructor cons) {
         return new MethodLocation(
-                ClassLocation.of(cons.getDeclaringClass()),
+                ClassNamespace.of(cons.getDeclaringClass()),
                 "<init>",
                 ClassLocation.VOID,
                 Stream.of(cons.getParameterTypes()).map(ClassLocation::of).toList());
     }
 
     @Override
-    public ClassLocation containingClass() {
+    public ClassNamespace containingClass() {
         return this.containing;
     }
 

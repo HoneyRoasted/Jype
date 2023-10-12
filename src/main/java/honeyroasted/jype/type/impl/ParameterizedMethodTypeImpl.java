@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedMethodType {
     private MethodReference methodReference;
@@ -26,6 +27,12 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
 
     public ParameterizedMethodTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public String simpleName() {
+        return (this.hasTypeArguments() ? "<" + typeArguments.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">" : "")
+                + this.methodReference.simpleName();
     }
 
     @Override

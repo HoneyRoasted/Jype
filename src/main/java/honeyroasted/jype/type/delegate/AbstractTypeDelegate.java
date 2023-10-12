@@ -38,6 +38,11 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     }
 
     @Override
+    public String simpleName() {
+        return this.delegate.simpleName();
+    }
+
+    @Override
     public int hashCode() {
         return this.delegate().hashCode();
     }

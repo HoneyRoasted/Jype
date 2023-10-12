@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
     private ClassReference classReference;
@@ -30,6 +31,12 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
     public ParameterizedClassTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
+    }
+
+    @Override
+    public String simpleName() {
+        return this.classReference.simpleName() +
+                (this.hasTypeArguments() ? "<" + this.typeArguments.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">" : "");
     }
 
     @Override

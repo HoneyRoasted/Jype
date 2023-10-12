@@ -12,6 +12,14 @@ public record ClassName(Type type, SubType subType, ClassName containing, String
         this(type, subType, null, value);
     }
 
+    public String simpleName() {
+        if (this.containing != null && this.containing.type != Type.PACKAGE) {
+            return this.containing.simpleName() + "." + this.value;
+        } else {
+            return this.value;
+        }
+    }
+
     public static ClassName of(Class<?> clazz) {
         if (clazz == null) {
             return null;

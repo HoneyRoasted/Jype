@@ -21,6 +21,13 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
+    public String simpleName() {
+        return "?" +
+                ((!this.upperBound.isEmpty() && !this.upperBound.equals(Set.of(this.typeSystem().constants().object()))) ?
+                        " extends " + this.upperBound.stream().map(Type::simpleName).collect(Collectors.joining(" & ")) : "");
+    }
+
+    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();

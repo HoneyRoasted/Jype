@@ -15,6 +15,8 @@ public interface Type extends Copyable<Type> {
 
     TypeSystem typeSystem();
 
+    String simpleName();
+
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
 
     default Set<Type> knownDirectSupertypes() {
