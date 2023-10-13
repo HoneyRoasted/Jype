@@ -20,6 +20,10 @@ public interface VarType extends PossiblyUnmodifiable, Type, ArgumentType {
 
     void setUpperBounds(Set<Type> upperBounds);
 
+    default boolean hasDefaultBounds() {
+        return this.upperBounds().isEmpty() || this.upperBounds().equals(Set.of(this.typeSystem().constants().object()));
+    }
+
     @Override
     default Set<Type> knownDirectSupertypes() {
         return this.upperBounds();

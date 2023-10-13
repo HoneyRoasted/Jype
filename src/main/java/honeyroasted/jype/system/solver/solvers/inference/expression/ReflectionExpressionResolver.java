@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.solver.solvers.inference;
+package honeyroasted.jype.system.solver.solvers.inference.expression;
 
 import honeyroasted.jype.system.resolver.reflection.ReflectionTypeResolution;
 import honeyroasted.jype.type.ClassReference;

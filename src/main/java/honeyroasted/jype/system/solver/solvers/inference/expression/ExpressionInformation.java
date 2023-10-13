@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.solver.solvers.inference;
+package honeyroasted.jype.system.solver.solvers.inference.expression;
 
 import honeyroasted.jype.type.InstantiableType;
 import honeyroasted.jype.type.MethodType;
@@ -7,6 +7,8 @@ import honeyroasted.jype.type.Type;
 import java.util.List;
 
 public interface ExpressionInformation {
+
+    String simpleName();
 
     interface Standalone extends ExpressionInformation {
         Type type();

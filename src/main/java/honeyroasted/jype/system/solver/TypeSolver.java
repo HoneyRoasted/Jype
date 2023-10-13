@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface TypeSolver {
+public interface TypeSolver extends TypeSolverListener {
 
     TypeSolver addListener(TypeSolverListener listener);
 

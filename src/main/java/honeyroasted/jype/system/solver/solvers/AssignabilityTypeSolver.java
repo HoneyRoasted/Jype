@@ -1,10 +1,8 @@
 package honeyroasted.jype.system.solver.solvers;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.exception.TypeSolverUnsolvableException;
-import honeyroasted.jype.system.visitor.visitors.MappingVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.NoneType;

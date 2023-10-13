@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public abstract class AbstractTypeSolver implements TypeSolver {
+public abstract class AbstractTypeSolver implements TypeSolver, TypeSolverListener {
     private Set<Class<? extends TypeBound>> supported;
     protected Set<TypeBound> initialBounds = new LinkedHashSet<>();
 
@@ -37,8 +37,33 @@ public abstract class AbstractTypeSolver implements TypeSolver {
         return null;
     }
 
-    protected TypeBound.Result.Builder eventBoundCreated(TypeBound.Result.Builder bound) {
+    @Override
+    public void boundCreated(TypeBound.ResultView bound) {
         this.listeners.forEach(l -> l.boundCreated(bound));
+    }
+
+    @Override
+    public void boundSatisfied(TypeBound.ResultView bound) {
+        this.listeners.forEach(l -> l.boundSatisfied(bound));
+    }
+
+    @Override
+    public void boundUnsatisfied(TypeBound.ResultView bound) {
+        this.listeners.forEach(l -> l.boundUnsatisfied(bound));
+    }
+
+    @Override
+    public void insightDiscovered(TypeBound.ResultView bound) {
+        this.listeners.forEach(l -> l.insightDiscovered(bound));
+    }
+
+    @Override
+    public void solved(Result result) {
+        this.listeners.forEach(l -> l.solved(result));
+    }
+
+    protected TypeBound.Result.Builder eventBoundCreated(TypeBound.Result.Builder bound) {
+        this.boundCreated(bound);
         return bound;
     }
 
@@ -51,22 +76,22 @@ public abstract class AbstractTypeSolver implements TypeSolver {
     }
 
     protected TypeBound.Result.Builder eventBoundSatisfied(TypeBound.Result.Builder bound) {
-        this.listeners.forEach(l -> l.boundSatisfied(bound));
+        this.boundSatisfied(bound);
         return bound;
     }
 
     protected TypeBound.Result.Builder eventBoundUnsatisfied(TypeBound.Result.Builder bound) {
-        this.listeners.forEach(l -> l.boundUnsatisfied(bound));
+        this.boundUnsatisfied(bound);
         return bound;
     }
 
     protected TypeBound.Result.Builder eventInsightDiscovered(TypeBound.Result.Builder bound) {
-        this.listeners.forEach(l -> l.insightDiscovered(bound));
+        this.insightDiscovered(bound);
         return bound;
     }
 
     protected TypeSolver.Result eventSolved(TypeSolver.Result result) {
-        this.listeners.forEach(l -> l.solved(result));
+        this.solved(result);
         return result;
     }
 

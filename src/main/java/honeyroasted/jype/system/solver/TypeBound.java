@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver;
 
-import honeyroasted.jype.system.solver.solvers.inference.ExpressionInformation;
+import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionInformation;
+import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -13,6 +14,24 @@ public interface TypeBound {
     List<?> parameters();
 
     String simpleName();
+
+    class False implements TypeBound {
+
+        @Override
+        public List<?> parameters() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public String simpleName() {
+            return "false";
+        }
+
+        @Override
+        public String toString() {
+            return "false";
+        }
+    }
 
     interface Compound extends TypeBound {
         List<TypeBound> children();
@@ -103,23 +122,6 @@ public interface TypeBound {
         }
     }
 
-    final class NeedsInference extends Unary<VarType> {
-
-        public NeedsInference(VarType type) {
-            super(type);
-        }
-
-        @Override
-        public String toString() {
-            return this.type + " NEEDS INFERENCE";
-        }
-
-        @Override
-        public String simpleName() {
-            return "infer(" + this.type.simpleName() + ")";
-        }
-    }
-
     final class Equal extends Binary<Type, Type> {
         public Equal(Type left, Type right) {
             super(left, right);
@@ -160,7 +162,7 @@ public interface TypeBound {
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " -> " + this.right.simpleName();
+            return this.left.simpleName() + " ~<: " + this.right.simpleName();
         }
     }
 
@@ -176,7 +178,7 @@ public interface TypeBound {
 
         @Override
         public String simpleName() {
-            return "*expr -> " + this.right.simpleName();
+            return this.left.simpleName() + " ~<: " + this.right.simpleName();
         }
     }
 
@@ -187,12 +189,12 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return this.left + " IS CONTAINED BY " + this.right;
+            return this.left + " IS CONTAINED IN " + this.right;
         }
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " contains " + this.right.simpleName();
+            return this.left.simpleName() + " c " + this.right.simpleName();
         }
     }
 
@@ -209,7 +211,7 @@ public interface TypeBound {
 
         @Override
         public String simpleName() {
-            return "*expr throws(" + this.right.simpleName() + ")";
+            return this.left.simpleName() + " throws(" + this.right.simpleName() + ")";
         }
     }
 
@@ -229,8 +231,8 @@ public interface TypeBound {
         }
     }
 
-    class Captures extends Binary<Type, Type> {
-        public Captures(Type left, Type right) {
+    class Capture extends Binary<ParameterizedClassType, ParameterizedClassType> {
+        public Capture(ParameterizedClassType left, ParameterizedClassType right) {
             super(left, right);
         }
 
@@ -241,7 +243,7 @@ public interface TypeBound {
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " captures " + this.right.simpleName();
+            return this.left.simpleName() + " = capture(" + this.right.simpleName() + ")";
         }
     }
 
@@ -273,7 +275,7 @@ public interface TypeBound {
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " compatible " + this.right.simpleName();
+            return this.left.simpleName() + " ~= " + this.right.simpleName();
         }
     }
 

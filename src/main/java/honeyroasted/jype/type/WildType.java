@@ -38,6 +38,11 @@ public interface WildType extends PossiblyUnmodifiable, Type, ArgumentType {
     }
 
     interface Upper extends WildType {
+
+        default boolean hasDefaultBounds() {
+            return this.upperBounds().isEmpty() || this.upperBounds().equals(Set.of(this.typeSystem().constants().object()));
+        }
+
         @Override
         default WildType.Upper stripMetadata() {
             return this;
