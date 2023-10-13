@@ -17,6 +17,10 @@ public interface TypeBound {
 
     class False implements TypeBound {
 
+        public static final False INSTANCE = new False();
+
+        private False() {}
+
         @Override
         public List<?> parameters() {
             return Collections.emptyList();
