@@ -44,6 +44,15 @@ public class AssignabilityTypeSolver extends AbstractTypeSolver {
     private Set<TypeBound> satisfiedCache = new HashSet<>();
 
     @Override
+    public void reset() {
+        this.initialBounds.clear();
+        this.workingBounds.clear();
+        this.results.clear();
+        this.insights.clear();
+        this.satisfiedCache.clear();
+    }
+
+    @Override
     public Result solve(TypeSystem system) {
         return this.solve(system, Long.MAX_VALUE);
     }

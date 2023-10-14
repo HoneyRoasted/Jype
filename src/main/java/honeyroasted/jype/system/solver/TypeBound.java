@@ -6,9 +6,13 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public interface TypeBound {
     List<?> parameters();
@@ -309,6 +313,8 @@ public interface TypeBound {
         List<? extends ResultView> parents();
 
         List<? extends ResultView> children();
+
+        Result.Builder toBuilder();
     }
 
     final class Result implements ResultView {
@@ -352,6 +358,25 @@ public interface TypeBound {
 
         public List<Result> children() {
             return this.children;
+        }
+
+        @Override
+        public Builder toBuilder() {
+            return this.toBuilder(new IdentityHashMap<>());
+        }
+
+        private Builder toBuilder(Map<Result, Builder> createdMap) {
+            if (createdMap.containsKey(this)) {
+                return createdMap.get(this);
+            }
+
+            Builder builder = builder(this.bound);
+            createdMap.put(this, builder);
+            builder.setPropagation(this.propagation)
+                    .setSatisfied(this.satisfied)
+                    .setChildren(this.children.stream().map(r -> r.toBuilder(createdMap)).collect(Collectors.toCollection(ArrayList::new)))
+                    .setParents(this.parents.stream().map(r -> r.toBuilder(createdMap)).collect(Collectors.toCollection(ArrayList::new)));
+            return builder;
         }
 
         public static Builder builder(TypeBound bound) {
@@ -519,6 +544,11 @@ public interface TypeBound {
 
             public List<Builder> children() {
                 return this.children;
+            }
+
+            @Override
+            public Builder toBuilder() {
+                return this;
             }
 
             public Builder setChildren(List<Builder> children) {

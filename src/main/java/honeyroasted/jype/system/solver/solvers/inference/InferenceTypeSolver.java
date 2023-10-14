@@ -38,6 +38,15 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
     private Set<TypeBound.Result.Builder> workingConstrains = new LinkedHashSet<>();
 
     @Override
+    public void reset() {
+        this.workingBounds.clear();
+        this.workingConstrains.clear();
+
+        this.incorporater.reset();
+        this.initialBoundBuilder.reset();
+    }
+
+    @Override
     public Result solve(TypeSystem system) {
         return null;
     }

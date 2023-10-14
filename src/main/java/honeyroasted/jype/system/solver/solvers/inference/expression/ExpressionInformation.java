@@ -25,7 +25,7 @@ public interface ExpressionInformation {
     }
 
     interface Invocation extends ExpressionInformation {
-        MethodType type();
+        ExpressionInformation source();
 
         List<ExpressionInformation> parameters();
     }

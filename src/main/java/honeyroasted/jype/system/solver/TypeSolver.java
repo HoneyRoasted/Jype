@@ -18,6 +18,8 @@ public interface TypeSolver extends TypeSolverListener {
 
     TypeSolver bind(TypeBound bound);
 
+    void reset();
+
     default TypeSolver bind(TypeBound... bounds) {
         for (TypeBound bound : bounds) {
             this.bind(bound);
