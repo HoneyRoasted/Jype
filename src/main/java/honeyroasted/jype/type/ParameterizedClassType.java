@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType {
-
-    void setTypeArguments(List<ArgumentType> typeArguments);
+public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType, ParameterizedType {
 
     void setClassReference(ClassReference classReference);
 
@@ -29,18 +27,6 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType 
         }
         this.interfaces().forEach(c -> supertypes.add(this.directSupertype(c)));
         return supertypes;
-    }
-
-    default VarTypeResolveVisitor varTypeResolver() {
-        return new VarTypeResolveVisitor(varType -> this.typeParameters().contains(varType),
-                varType -> {
-                    for (int i = 0; i < this.typeArguments().size() && i < this.typeParameters().size(); i++) {
-                        if (varType.equals(this.typeParameters().get(i))) {
-                            return this.typeArguments().get(i);
-                        }
-                    }
-                    return varType;
-                });
     }
 
     Optional<ClassType> relativeSupertype(ClassReference superType);
