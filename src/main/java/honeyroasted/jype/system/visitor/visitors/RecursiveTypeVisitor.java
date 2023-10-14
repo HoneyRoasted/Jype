@@ -15,6 +15,7 @@ import honeyroasted.jype.type.WildType;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +36,10 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         List<R> result = new ArrayList<>();
         context.put(type, result);
 
-        result.add(this.visitor.visitClassType(type, this.context));
+        R r = this.visitor.visitClassType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
 
         if (type instanceof ParameterizedClassType ct) {
             if (ct.outerType() != null && (this.visitStructural || !Modifier.isStatic(ct.modifiers()))) {
@@ -62,7 +66,12 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
 
     @Override
     public List<R> visitPrimitiveType(PrimitiveType type, Map<Type, List<R>> context) {
-        return List.of(this.visitor.visitPrimitiveType(type, this.context));
+        R r = this.visitor.visitPrimitiveType(type, this.context);
+        if (r != null) {
+            return Collections.singletonList(r);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -71,7 +80,10 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         List<R> result = new ArrayList<>();
         context.put(type, result);
 
-        result.add(this.visitor.visitWildcardType(type, this.context));
+        R r = this.visitor.visitWildcardType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
         if (type instanceof WildType.Upper wtu) {
             wtu.upperBounds().forEach(t -> result.addAll(this.visit(t, context)));
         } else if (type instanceof WildType.Lower wtl) {
@@ -86,7 +98,10 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         List<R> result = new ArrayList<>();
         context.put(type, result);
 
-        result.add(this.visitor.visitArrayType(type, this.context));
+        R r = this.visitor.visitArrayType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
         result.addAll(this.visit(type.component(), context));
         return result;
     }
@@ -97,7 +112,10 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         List<R> result = new ArrayList<>();
         context.put(type, result);
 
-        result.add(this.visitor.visitMethodType(type, this.context));
+        R r = this.visitor.visitMethodType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
         result.addAll(this.visit(type.returnType(), context));
         type.parameters().forEach(t -> result.addAll(this.visit(t, context)));
         type.exceptionTypes().forEach(t -> result.addAll(this.visit(t, context)));
@@ -125,18 +143,31 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
         List<R> result = new ArrayList<>();
         context.put(type, result);
 
-        result.add(this.visitor.visitVarType(type, this.context));
+        R r = this.visitor.visitVarType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
         type.upperBounds().forEach(t -> result.addAll(this.visit(t, context)));
         return result;
     }
 
     @Override
     public List<R> visitMetaVarType(MetaVarType type, Map<Type, List<R>> context) {
-        return List.of(this.visitor.visitMetaVarType(type, this.context));
+        R r = this.visitor.visitMetaVarType(type, this.context);
+        if (r != null) {
+            return Collections.singletonList(r);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public List<R> visitNoneType(NoneType type, Map<Type, List<R>> context) {
-        return List.of(this.visitor.visitNoneType(type, this.context));
+        R r = this.visitor.visitNoneType(type, this.context);
+        if (r != null) {
+            return Collections.singletonList(r);
+        } else {
+            return Collections.emptyList();
+        }
     }
 }
