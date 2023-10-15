@@ -33,7 +33,7 @@ public class Test {
                 )
                 .solve(system);
 
-        System.out.println(result);
+        System.out.println(result.toString(true));
     }
 
     private static Type resolve(TypeToken<?> token) {

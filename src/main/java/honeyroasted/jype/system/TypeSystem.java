@@ -64,7 +64,7 @@ public class TypeSystem {
     }
 
     private ClassReference tryResolve(Class<?> cls) {
-        return this.resolve(ClassLocation.class, ClassReference.class, ClassLocation.of(cls))
+        return (ClassReference) this.resolve(ClassLocation.class, Type.class, ClassLocation.of(cls))
                 .orElseThrow(() -> new IllegalStateException("Could not resolve " + cls.getName() + " type"));
     }
 
@@ -92,8 +92,8 @@ public class TypeSystem {
         return this.resolve(java.lang.reflect.Type.class, Type.class, reflectionType);
     }
 
-    public Optional<? extends ClassReference> resolve(ClassLocation classLocation) {
-        return this.resolve(ClassLocation.class, ClassReference.class, classLocation);
+    public Optional<? extends Type> resolve(ClassLocation classLocation) {
+        return this.resolve(ClassLocation.class, Type.class, classLocation);
     }
 
     public Optional<? extends MethodReference> resolve(Executable executable) {

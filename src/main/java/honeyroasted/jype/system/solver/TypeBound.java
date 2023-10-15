@@ -383,9 +383,9 @@ public interface TypeBound {
             return new Builder().setBound(bound);
         }
 
-        private void toString(List<String> building) {
+        private void toString(List<String> building, boolean useSimpleName) {
             String ind = "    ";
-            building.add("Bound: " + this.bound);
+            building.add("Bound: " + (useSimpleName ? this.bound.simpleName() : this.bound.toString()));
             building.add("Satisfied: " + this.satisfied);
 
             if (!this.children.isEmpty()) {
@@ -393,7 +393,7 @@ public interface TypeBound {
                 building.add("Children: " + this.children.size());
 
                 List<String> children = new ArrayList<>();
-                this.children.forEach(r -> r.toString(children));
+                this.children.forEach(r -> r.toString(children, useSimpleName));
 
                 int maxLen = children.stream().mapToInt(String::length).max().getAsInt();
                 String content = "-".repeat(maxLen + 8);
@@ -406,11 +406,15 @@ public interface TypeBound {
             }
         }
 
+        public String toString(boolean useSimpleName) {
+            List<String> building = new ArrayList<>();
+            this.toString(building, useSimpleName);
+            return String.join("\n", building);
+        }
+
         @Override
         public String toString() {
-            List<String> building = new ArrayList<>();
-            this.toString(building);
-            return String.join("\n", building);
+            return this.toString(false);
         }
 
         public static Builder builder(TypeBound bound, Propagation propagation) {

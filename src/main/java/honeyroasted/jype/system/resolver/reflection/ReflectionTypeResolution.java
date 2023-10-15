@@ -7,11 +7,8 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
 import honeyroasted.jype.system.resolver.ResolutionFailedException;
-import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.ClassType;
-import honeyroasted.jype.type.MethodReference;
-import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ClassReferenceImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
 import honeyroasted.jype.type.impl.VarTypeImpl;
@@ -210,7 +207,16 @@ public interface ReflectionTypeResolution {
         return Optional.of(attached);
     }
 
-    static Optional<ClassReference> createClassReference(TypeSystem system, Class<?> cls, ClassLocation location) {
+    static Optional<Type> createClassReference(TypeSystem system, Class<?> cls, ClassLocation location) {
+        if (cls.isArray()) {
+            return createClassReference(system, cls.componentType(), location.containing()).map(c -> {
+                ArrayType type = new ArrayTypeImpl(system);
+                type.setComponent(c);
+                type.setUnmodifiable(true);
+                return type;
+            });
+        }
+
         ClassReference reference = new ClassReferenceImpl(system);
         ClassReferenceMeta<Class<?>> attached = new ClassReferenceMeta<>(system, t -> reference);
         attached.setMetadata(cls);
@@ -230,6 +236,13 @@ public interface ReflectionTypeResolution {
                 return Optional.empty();
             } else {
                 reference.setSuperClass((ClassType) superCls.get());
+            }
+        } else if (!cls.equals(Object.class)) {
+            Optional<? extends Type> objClass = system.resolve(Object.class);
+            if (objClass.isPresent() && objClass.get() instanceof ClassType ct) {
+                reference.setSuperClass(ct);
+            } else {
+                return Optional.empty();
             }
         }
 

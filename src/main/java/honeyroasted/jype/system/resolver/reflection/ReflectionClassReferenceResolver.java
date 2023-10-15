@@ -9,9 +9,9 @@ import honeyroasted.jype.type.Type;
 
 import java.util.Optional;
 
-public class ReflectionClassReferenceResolver implements TypeResolver<ClassLocation, ClassReference> {
+public class ReflectionClassReferenceResolver implements TypeResolver<ClassLocation, Type> {
     @Override
-    public Optional<ClassReference> resolve(TypeSystem system, ClassLocation value) {
+    public Optional<Type> resolve(TypeSystem system, ClassLocation value) {
         Optional<Type> cached = system.storage().cacheFor(ClassLocation.class).get(value);
         if (cached.isPresent() && cached.get() instanceof ClassReference cRef) {
             return Optional.of(cRef);

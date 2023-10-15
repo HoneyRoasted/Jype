@@ -67,7 +67,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     return clsCached;
                 }
 
-                Optional<? extends ClassReference> attemptByLocation = system.resolve(location);
+                Optional<? extends Type> attemptByLocation = system.resolve(location);
                 if (attemptByLocation.isPresent()) {
                     return attemptByLocation;
                 } else {

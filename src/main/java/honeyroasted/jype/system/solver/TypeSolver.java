@@ -169,9 +169,13 @@ public interface TypeSolver extends TypeSolverListener {
 
         @Override
         public String toString() {
+            return toString(false);
+        }
+
+        public String toString(boolean useSimpleName) {
             StringBuilder sb = new StringBuilder();
             sb.append("== Insights: ").append(this.insights.size()).append(" ==\n");
-            this.insights.forEach(t -> sb.append(t).append("\n"));
+            this.insights.forEach(t -> sb.append(useSimpleName ? t.simpleName() : t.toString()).append("\n"));
 
             Set<TypeBound.Result> originators = this.parents();
             sb.append("\n")
@@ -179,7 +183,7 @@ public interface TypeSolver extends TypeSolverListener {
 
             Iterator<TypeBound.Result> iter = originators.iterator();
             while (iter.hasNext()) {
-                sb.append(iter.next().toString());
+                sb.append(iter.next().toString(useSimpleName));
                 if (iter.hasNext()) {
                     sb.append("\n\n");
                 }
