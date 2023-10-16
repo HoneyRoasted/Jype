@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MethodReference;
@@ -111,5 +112,10 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
     @Override
     public void setParameters(List<Type> parameters) {
         this.delegate().setParameters(parameters);
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        return (K) new MethodReferenceDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
     }
 }

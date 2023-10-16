@@ -4,6 +4,7 @@ import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -11,12 +12,14 @@ import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 import honeyroasted.jype.type.impl.ArrayTypeImpl;
+import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
 import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 import honeyroasted.jype.type.impl.ParameterizedMethodTypeImpl;
 import honeyroasted.jype.type.impl.WildTypeLowerImpl;
 import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -69,6 +72,20 @@ public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
         if (!newComponent.equals(type.component())) {
             ArrayType newType = new ArrayTypeImpl(type.typeSystem());
             newType.setComponent(newComponent);
+            newType.setUnmodifiable(true);
+            return newType;
+        }
+        return type;
+    }
+
+    @Override
+    default Type visitIntersectionType(IntersectionType type, P context) {
+        Set<Type> newChildren = new LinkedHashSet<>();
+        type.children().forEach(t -> newChildren.add(this.visit(t, context)));
+
+        if (!newChildren.equals(type.children())) {
+            IntersectionType newType = new IntersectionTypeImpl(type.typeSystem());
+            newType.setChildren(newChildren);
             newType.setUnmodifiable(true);
             return newType;
         }

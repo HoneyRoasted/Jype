@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -42,5 +43,10 @@ public class VarTypeDelegate extends AbstractTypeDelegate<VarType> implements Va
     @Override
     public void setUpperBounds(Set<Type> upperBounds) {
         this.delegate().setUpperBounds(upperBounds);
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        return (K) new VarTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
     }
 }

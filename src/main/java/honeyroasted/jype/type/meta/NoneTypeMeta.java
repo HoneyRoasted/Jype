@@ -5,6 +5,7 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.delegate.DelegateType;
 import honeyroasted.jype.type.delegate.NoneTypeDelegate;
 
 import java.util.function.Function;
@@ -33,7 +34,7 @@ public class NoneTypeMeta<T> extends NoneTypeDelegate implements MetadataType<No
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        NoneTypeMeta<T> copy = new NoneTypeMeta<>(this.typeSystem(), MetadataType.delayAndCache(t -> this.delegate().copy(cache)));
+        NoneTypeMeta<T> copy = new NoneTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

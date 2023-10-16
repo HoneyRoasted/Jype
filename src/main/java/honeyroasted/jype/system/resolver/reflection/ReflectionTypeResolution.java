@@ -7,7 +7,12 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
 import honeyroasted.jype.system.resolver.ResolutionFailedException;
-import honeyroasted.jype.type.*;
+import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ClassReferenceImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
@@ -60,10 +65,10 @@ public interface ReflectionTypeResolution {
 
     static <T> Optional<T> getReflectionType(Type type) {
         try {
-            if (type instanceof MetadataType<?, ?> mt && mt.metadata() instanceof java.lang.reflect.Type t) {
-                return (Optional<T>) Optional.of(t);
-            } else if (type instanceof MetadataType<?, ?> mt && mt.metadata() instanceof java.lang.reflect.Executable t) {
-                return (Optional<T>) Optional.of(t);
+            if (type instanceof MetadataType<?, ?> mt && mt.hasMetadata(java.lang.reflect.Type.class)) {
+                return (Optional<T>) Optional.of(mt.getMetadata(java.lang.reflect.Type.class));
+            } else if (type instanceof MetadataType<?, ?> mt && mt.hasMetadata(java.lang.reflect.Executable.class)) {
+                return (Optional<T>) Optional.of(mt.getMetadata(java.lang.reflect.Executable.class));
             } else if (type instanceof ClassReference cr) {
                 return (Optional<T>) Optional.of(classFromLocation(cr.namespace().location()));
             } else if (type instanceof MethodReference mr) {

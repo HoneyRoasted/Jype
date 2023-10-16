@@ -1,11 +1,9 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

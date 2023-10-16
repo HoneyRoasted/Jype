@@ -6,7 +6,6 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -114,6 +113,23 @@ public interface TypeBound {
         }
     }
 
+    final class NonCyclicSubtype extends Binary<Type, Type> {
+
+        public NonCyclicSubtype(Type left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return "SUBTYPING " + left + " <: " + right + " IS NON-CYCLIC";
+        }
+
+        @Override
+        public String simpleName() {
+            return "non-cyclic(" + this.left.simpleName() + " <: " + this.right.simpleName() + ")";
+        }
+    }
+
     final class NonCyclic extends Unary<Type> {
         public NonCyclic(Type type) {
             super(type);
@@ -159,34 +175,94 @@ public interface TypeBound {
     }
 
     final class Compatible extends Binary<Type, Type> {
+        public enum Context {
+            SUBTYPE("<:"),
+            ASSIGNMENT("~<:"),
+            STRICT_INVOCATION("<:"),
+            LOOSE_INVOCATION("~<:"),
+            EXPLICIT_CAST("~:>");
+
+            private final String symbol;
+
+            Context(String symbol) {
+                this.symbol = symbol;
+            }
+
+            public String symbol() {
+                return this.symbol;
+            }
+        }
+
+        private Context context;
+
         public Compatible(Type left, Type right) {
+            this(left, right, Context.LOOSE_INVOCATION);
+        }
+
+        public Compatible(Type left, Type right, Context context) {
             super(left, right);
+            this.context = context;
         }
 
         @Override
         public String toString() {
-            return this.left + " IS COMPATIBLE WITH " + this.right;
+            return this.left + " IS COMPATIBLE WITH " + this.right + " IN " + this.context;
         }
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " ~<: " + this.right.simpleName();
+            return this.left.simpleName() + " " + this.context.symbol() + " " + this.right.simpleName();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            Compatible that = (Compatible) o;
+            return context == that.context;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), context);
         }
     }
 
     final class ExpressionCompatible extends Binary<ExpressionInformation, Type> {
+        private Compatible.Context context;
+
         public ExpressionCompatible(ExpressionInformation left, Type right) {
+            this(left, right, Compatible.Context.LOOSE_INVOCATION);
+        }
+
+        public ExpressionCompatible(ExpressionInformation left, Type right, Compatible.Context context) {
             super(left, right);
+            this.context = context;
         }
 
         @Override
         public String toString() {
-            return this.left + " IS COMPATIBLE WITH " + this.right;
+            return this.left + " IS COMPATIBLE WITH " + this.right + " IN " + this.context;
         }
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " ~<: " + this.right.simpleName();
+            return this.left.simpleName() + " " + this.context.symbol() + " " + this.right.simpleName();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            if (!super.equals(o)) return false;
+            ExpressionCompatible that = (ExpressionCompatible) o;
+            return context == that.context;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(super.hashCode(), context);
         }
     }
 
@@ -268,6 +344,23 @@ public interface TypeBound {
         @Override
         public String simpleName() {
             return this.left.simpleName() + " <: " + this.right.simpleName();
+        }
+    }
+
+    class TypeArgumentsMatch extends Binary<Type, Type> {
+
+        public TypeArgumentsMatch(Type left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " HAS COMPATIBLE GENERIC ARGUMENTS WITH " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " <...>=<...> " + this.right.simpleName();
         }
     }
 

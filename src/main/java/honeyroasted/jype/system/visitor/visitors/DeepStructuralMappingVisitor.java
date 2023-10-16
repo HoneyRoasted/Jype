@@ -5,6 +5,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
@@ -17,6 +18,7 @@ import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ClassReferenceImpl;
+import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
 import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 import honeyroasted.jype.type.impl.ParameterizedMethodTypeImpl;
@@ -57,6 +59,14 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
     }
 
     default Type arrayTypeOverride(ArrayType type, TypeCache<Type, Type> cache) {
+        return type;
+    }
+
+    default boolean overridesIntersectionType(IntersectionType type) {
+        return false;
+    }
+
+    default Type intersectionTypeOverride(IntersectionType type, TypeCache<Type, Type> cache) {
         return type;
     }
 
@@ -171,6 +181,18 @@ public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<T
         newArray.setComponent(this.visit(newArray.component(), context));
         newArray.setUnmodifiable(true);
         return newArray;
+    }
+
+    @Override
+    default Type visitIntersectionType(IntersectionType type, TypeCache<Type, Type> context) {
+        Optional<Type> cached = context.get(type);
+        if (cached.isPresent()) return cached.get();
+        if (this.overridesIntersectionType(type)) return this.intersectionTypeOverride(type, context);
+
+        IntersectionType newType = new IntersectionTypeImpl(type.typeSystem());
+        newType.setChildren(this.visit(type.children(), context));
+        newType.setUnmodifiable(true);
+        return newType;
     }
 
     @Override

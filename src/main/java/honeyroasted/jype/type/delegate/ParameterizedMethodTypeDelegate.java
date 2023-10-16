@@ -2,6 +2,7 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
@@ -134,5 +135,10 @@ public class ParameterizedMethodTypeDelegate extends AbstractTypeDelegate<Parame
     @Override
     public VarTypeResolveVisitor varTypeResolver() {
         return this.delegate().varTypeResolver();
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        return (K) new ParameterizedMethodTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
     }
 }

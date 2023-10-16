@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
@@ -103,6 +104,20 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
             result.add(r);
         }
         result.addAll(this.visit(type.component(), context));
+        return result;
+    }
+
+    @Override
+    public List<R> visitIntersectionType(IntersectionType type, Map<Type, List<R>> context) {
+        if (context.containsKey(type)) return context.get(type);
+        List<R> result = new ArrayList<>();
+        context.put(type, result);
+
+        R r = this.visitor.visitIntersectionType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
+        type.children().forEach(t -> result.addAll(this.visit(t, context)));
         return result;
     }
 

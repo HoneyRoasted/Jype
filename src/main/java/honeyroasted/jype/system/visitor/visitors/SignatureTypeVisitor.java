@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
@@ -108,6 +109,11 @@ public class SignatureTypeVisitor implements TypeVisitor<String, SignatureTypeVi
     @Override
     public String visitArrayType(ArrayType type, Mode context) {
         return "[" + visit(type, context);
+    }
+
+    @Override
+    public String visitIntersectionType(IntersectionType type, Mode context) {
+        return type.children().stream().map(t -> this.visit(t, context)).collect(Collectors.joining(":"));
     }
 
     @Override

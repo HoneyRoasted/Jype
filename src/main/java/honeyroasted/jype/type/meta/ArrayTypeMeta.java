@@ -6,6 +6,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.delegate.ArrayTypeDelegate;
+import honeyroasted.jype.type.delegate.DelegateType;
 
 import java.util.function.Function;
 
@@ -33,7 +34,7 @@ public class ArrayTypeMeta<T> extends ArrayTypeDelegate implements MetadataType<
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        ArrayTypeMeta<T> copy = new ArrayTypeMeta<>(this.typeSystem(), MetadataType.delayAndCache(t -> this.delegate().copy(cache)));
+        ArrayTypeMeta<T> copy = new ArrayTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

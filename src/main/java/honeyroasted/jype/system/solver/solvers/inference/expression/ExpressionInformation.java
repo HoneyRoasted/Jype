@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver.solvers.inference.expression;
 
 import honeyroasted.jype.type.InstantiableType;
-import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.Type;
 
 import java.util.List;

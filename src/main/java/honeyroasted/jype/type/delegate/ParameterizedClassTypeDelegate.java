@@ -2,11 +2,13 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.List;
@@ -137,5 +139,10 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     @Override
     public Optional<ClassType> relativeSupertype(ClassReference superType) {
         return this.delegate().relativeSupertype(superType);
+    }
+
+    @Override
+    public <K extends Type> K copy(TypeCache<Type, Type> cache) {
+        return (K) new ParameterizedClassTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
     }
 }

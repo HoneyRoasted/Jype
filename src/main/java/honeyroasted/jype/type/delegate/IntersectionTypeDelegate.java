@@ -2,14 +2,15 @@ package honeyroasted.jype.type.delegate;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Set;
 import java.util.function.Function;
 
-public class ArrayTypeDelegate extends AbstractTypeDelegate<ArrayType> implements ArrayType {
+public class IntersectionTypeDelegate extends AbstractTypeDelegate<IntersectionType> implements IntersectionType {
 
-    public ArrayTypeDelegate(TypeSystem system, Function<TypeSystem, ArrayType> factory) {
+    public IntersectionTypeDelegate(TypeSystem system, Function<TypeSystem, IntersectionType> factory) {
         super(system, factory);
     }
 
@@ -24,23 +25,17 @@ public class ArrayTypeDelegate extends AbstractTypeDelegate<ArrayType> implement
     }
 
     @Override
-    public Type component() {
-        return this.delegate().component();
+    public Set<Type> children() {
+        return this.delegate().children();
     }
 
     @Override
-    public void setComponent(Type component) {
-        this.delegate().setComponent(component);
-    }
-
-    @Override
-    public int depth() {
-        return this.delegate().depth();
+    public void setChildren(Set<Type> children) {
+        this.delegate().setChildren(children);
     }
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new ArrayTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new IntersectionTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
     }
-
 }

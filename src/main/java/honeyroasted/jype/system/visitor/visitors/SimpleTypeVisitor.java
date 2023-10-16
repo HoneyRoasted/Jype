@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
@@ -29,6 +30,11 @@ public interface SimpleTypeVisitor<R, P> extends TypeVisitor<R, P> {
 
     @Override
     default R visitArrayType(ArrayType type, P context) {
+        return visitType(type, context);
+    }
+
+    @Override
+    default R visitIntersectionType(IntersectionType type, P context) {
         return visitType(type, context);
     }
 

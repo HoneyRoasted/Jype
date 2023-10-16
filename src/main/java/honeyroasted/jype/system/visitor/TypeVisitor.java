@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleTypeVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
@@ -53,6 +54,8 @@ public interface TypeVisitor<R, P> {
     R visitWildcardType(WildType type, P context);
 
     R visitArrayType(ArrayType type, P context);
+
+    R visitIntersectionType(IntersectionType type, P context);
 
     R visitMethodType(MethodType type, P context);
 

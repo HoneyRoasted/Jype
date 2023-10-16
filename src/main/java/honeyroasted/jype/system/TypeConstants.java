@@ -12,6 +12,8 @@ import java.util.Map;
 
 public final class TypeConstants {
     private final ClassReference object;
+    private ClassReference cloneable;
+    private ClassReference serializable;
     private final NoneType voidType;
     private final NoneType nullType;
     private final NoneType noneType;
@@ -25,12 +27,14 @@ public final class TypeConstants {
     private final PrimitiveType floatType;
     private final PrimitiveType doubleType;
 
-    public TypeConstants(ClassReference object,
+    public TypeConstants(ClassReference object, ClassReference cloneable, ClassReference serializable,
                          NoneType voidType, NoneType nullType, NoneType noneType, ClassReference voidBox,
                          PrimitiveType booleanType, PrimitiveType byteType, PrimitiveType shortType,
                          PrimitiveType charType, PrimitiveType intType, PrimitiveType longType,
                          PrimitiveType floatType, PrimitiveType doubleType) {
         this.object = object;
+        this.cloneable = cloneable;
+        this.serializable = serializable;
         this.voidType = voidType;
         this.nullType = nullType;
         this.noneType = noneType;
@@ -89,6 +93,14 @@ public final class TypeConstants {
 
     public ClassReference object() {
         return object;
+    }
+
+    public ClassReference cloneable() {
+        return this.cloneable;
+    }
+
+    public ClassReference serializable() {
+        return this.serializable;
     }
 
     public NoneType voidType() {

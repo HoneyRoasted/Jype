@@ -1,10 +1,8 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public interface ParameterizedMethodType extends PossiblyUnmodifiable, MethodType, ParameterizedType {

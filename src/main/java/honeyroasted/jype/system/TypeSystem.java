@@ -20,6 +20,7 @@ import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.impl.NoneTypeImpl;
 import honeyroasted.jype.type.impl.PrimitiveTypeImpl;
 
+import java.io.Serializable;
 import java.lang.reflect.Executable;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public class TypeSystem {
         this.registerResolvers(initialResolvers);
 
         this.constants = new TypeConstants(
-                this.tryResolve(Object.class),
+                this.tryResolve(Object.class), this.tryResolve(Cloneable.class), this.tryResolve(Serializable.class),
                 new NoneTypeImpl(this, "void"), new NoneTypeImpl(this, "null"), new NoneTypeImpl(this, "none"),
                 this.tryResolve(Void.class),
                 new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), this.tryResolve(Boolean.class), "Z"),
