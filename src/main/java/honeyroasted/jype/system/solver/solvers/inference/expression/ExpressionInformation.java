@@ -8,14 +8,33 @@ import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface ExpressionInformation {
 
     String simpleName();
 
+    default boolean isStandalone() {
+        return false;
+    }
+
+    default Optional<Type> getStandaloneType(TypeSystem system) {
+        return Optional.empty();
+    }
+
     interface Standalone extends ExpressionInformation {
         Type type();
+
+        @Override
+        default boolean isStandalone() {
+            return true;
+        }
+
+        @Override
+        default Optional<Type> getStandaloneType(TypeSystem system) {
+            return Optional.of(this.type());
+        }
     }
 
     interface Constant extends Standalone {
@@ -27,15 +46,21 @@ public interface ExpressionInformation {
     interface Poly extends ExpressionInformation {
         List<ExpressionInformation> children();
 
+        @Override
         default boolean isStandalone() {
             return this.children().stream().allMatch(e -> e instanceof Standalone || (e instanceof Poly p && p.isStandalone()));
         }
 
-        default Type getStandaloneType(TypeSystem system) {
+        @Override
+        default Optional<Type> getStandaloneType(TypeSystem system) {
+            if (!this.isStandalone()) {
+                return Optional.empty();
+            }
+
             if (this.children().isEmpty()) {
-                return system.constants().nullType();
+                return Optional.of(system.constants().nullType());
             } else if (this.children().size() == 1) {
-                return this.children().get(0) instanceof Standalone st ? st.type() : ((Poly) this.children().get(0)).getStandaloneType(system);
+                return this.children().get(0) instanceof Standalone st ? Optional.of(st.type()) : this.children().get(0).getStandaloneType(system);
             } else {
                 IntersectionType type = new IntersectionTypeImpl(system);
                 Set<Type> childrenTypes = new LinkedHashSet<>();
@@ -44,7 +69,7 @@ public interface ExpressionInformation {
                     if (c instanceof Standalone st) {
                         childType = st.type();
                     } else if (c instanceof Poly p) {
-                        childType = p.getStandaloneType(system);
+                        childType = p.getStandaloneType(system).get();
                     }
 
                     if (childType instanceof IntersectionType it) {
@@ -56,7 +81,7 @@ public interface ExpressionInformation {
 
                 type.setChildren(childrenTypes);
                 type.setUnmodifiable(true);
-                return type;
+                return Optional.of(type);
             }
         }
     }

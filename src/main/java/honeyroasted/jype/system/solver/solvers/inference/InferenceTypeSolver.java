@@ -4,8 +4,9 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.solvers.AbstractTypeSolver;
 import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionResolver;
-import honeyroasted.jype.system.solver.solvers.inference.helper.InitialBoundBuilder;
-import honeyroasted.jype.system.solver.solvers.inference.helper.TypeIncorporater;
+import honeyroasted.jype.system.solver.solvers.inference.helper.TypeInitialBoundBuilder;
+import honeyroasted.jype.system.solver.solvers.inference.helper.TypeCompatibilityChecker;
+import honeyroasted.jype.system.solver.solvers.inference.helper.TypeBoundIncorporater;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
 import honeyroasted.jype.type.MetaVarType;
@@ -19,19 +20,22 @@ import java.util.Set;
 
 public class InferenceTypeSolver extends AbstractTypeSolver {
     private ExpressionResolver expressionResolver;
-    private TypeIncorporater incorporater;
-    private InitialBoundBuilder initialBoundBuilder;
+    private TypeBoundIncorporater incorporater;
+    private TypeInitialBoundBuilder initialBoundBuilder;
+    private TypeCompatibilityChecker compatibilityChecker;
 
     public InferenceTypeSolver(ExpressionResolver expressionResolver) {
-        super(Set.of(TypeBound.Equal.class,
-                TypeBound.Compatible.class, TypeBound.ExpressionCompatible.class,
-                TypeBound.Contains.class, TypeBound.LambdaThrows.class,
-                TypeBound.Throws.class, TypeBound.Capture.class,
-                TypeBound.Subtype.class));
+        super(Set.of(TypeBound.ExpressionCompatible.class,
+                TypeBound.Compatible.class,
+                TypeBound.Subtype.class,
+                TypeBound.Contains.class,
+                TypeBound.Equal.class,
+                TypeBound.LambdaThrows.class));
         this.expressionResolver = expressionResolver;
 
-        this.incorporater = new TypeIncorporater(this);
-        this.initialBoundBuilder = new InitialBoundBuilder(this);
+        this.incorporater = new TypeBoundIncorporater(this);
+        this.initialBoundBuilder = new TypeInitialBoundBuilder(this);
+        this.compatibilityChecker = new TypeCompatibilityChecker(this);
     }
 
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();

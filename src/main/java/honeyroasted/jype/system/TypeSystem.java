@@ -22,6 +22,8 @@ import honeyroasted.jype.type.impl.PrimitiveTypeImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.Executable;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public class TypeSystem {
@@ -31,20 +33,23 @@ public class TypeSystem {
     private TypeResolvers resolvers;
     private TypeConstants constants;
 
+    public TypeSystem() {
+        this(TypeCacheFactory.IN_MEMORY_FACTORY);
+    }
+
     public TypeSystem(TypeCacheFactory cacheFactory) {
         this(cacheFactory, ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
     }
 
-    public TypeSystem() {
-        this(new TypeCacheFactory() {
-            @Override
-            public <K, T extends Type> TypeCache<K, T> createCache(Class<K> keyType) {
-                return new InMemoryTypeCache<>();
-            }
-        });
+    public TypeSystem(TypeResolver... initialResolvers) {
+        this(TypeCacheFactory.IN_MEMORY_FACTORY, initialResolvers);
     }
 
-    public TypeSystem(TypeCacheFactory cacheFactory, BundledTypeResolvers initialResolvers) {
+    public TypeSystem(TypeCacheFactory cacheFactory, TypeResolver... initialResolvers) {
+        this(cacheFactory, List.of(initialResolvers));
+    }
+
+    public TypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers) {
         this.storage = new TypeStorage(cacheFactory);
         this.resolvers = new TypeResolvers();
         this.registerResolvers(initialResolvers);
@@ -111,12 +116,22 @@ public class TypeSystem {
 
     public void registerResolvers(TypeResolver... resolvers) {
         for (TypeResolver resolver : resolvers) {
-            this.resolvers().register(resolver);
+            this.registerResolver(resolver);
         }
     }
 
-    public void registerResolvers(BundledTypeResolvers bundle) {
-        bundle.resolvers().forEach(this.resolvers()::register);
+    public void registerResolvers(Collection<? extends TypeResolver> resolvers) {
+        for (TypeResolver resolver : resolvers) {
+            this.registerResolver(resolver);
+        }
+    }
+
+    public void registerResolver(TypeResolver resolver) {
+        if (resolver instanceof BundledTypeResolvers bundle) {
+            this.registerResolvers(bundle.resolvers());
+        } else {
+            this.resolvers().register(resolver);
+        }
     }
 
 }

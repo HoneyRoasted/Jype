@@ -315,12 +315,12 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return this.left + " IS CONTAINED IN " + this.right;
+            return this.left + " IS CONTAINED BY " + this.right;
         }
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " c " + this.right.simpleName();
+            return this.left.simpleName() + " <= " + this.right.simpleName();
         }
     }
 

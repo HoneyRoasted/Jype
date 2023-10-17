@@ -9,16 +9,17 @@ import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Signature;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
 import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;
 
-public class SignatureTypeVisitor implements TypeVisitor<String, SignatureTypeVisitor.Mode> {
+public class SignatureTypeVisitor implements TypeVisitor<Signature, SignatureTypeVisitor.Mode> {
 
     @Override
-    public String visitClassType(ClassType type, Mode context) {
+    public Signature visitClassType(ClassType type, Mode context) {
         StringBuilder sb = new StringBuilder();
         if (context.useDelims()) sb.append("L");
 
@@ -34,6 +35,9 @@ public class SignatureTypeVisitor implements TypeVisitor<String, SignatureTypeVi
             }
 
             type.interfaces().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
+            if (context.useDelims()) sb.append(";");
+
+            return new Signature.Class(sb.toString());
         } else {
             ClassType outerType = type instanceof ParameterizedClassType pct ? pct.outerType() : type.outerClass();
             if (outerType != null && !Modifier.isStatic(type.modifiers()) && outerType.hasTypeArguments()) {
@@ -48,14 +52,14 @@ public class SignatureTypeVisitor implements TypeVisitor<String, SignatureTypeVi
                 type.typeArguments().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
                 sb.append(">");
             }
-        }
+            if (context.useDelims()) sb.append(";");
 
-        if (context.useDelims()) sb.append(";");
-        return sb.toString();
+            return new Signature.Type(sb.toString());
+        }
     }
 
     @Override
-    public String visitMethodType(MethodType type, Mode context) {
+    public Signature visitMethodType(MethodType type, Mode context) {
         StringBuilder sb = new StringBuilder();
         if (context == Mode.DECLARATION) {
             if (type.hasTypeParameters()) {
@@ -68,62 +72,65 @@ public class SignatureTypeVisitor implements TypeVisitor<String, SignatureTypeVi
             sb.append(")");
             sb.append(this.visit(type.returnType(), Mode.USAGE));
             type.exceptionTypes().forEach(t -> sb.append("^").append(this.visit(t, Mode.USAGE)));
+
+            return new Signature.Method(sb.toString());
         } else {
             sb.append("(");
             type.parameters().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
             sb.append(")");
             sb.append(this.visit(type.returnType(), Mode.USAGE));
+
+            return new Signature.Type(sb.toString());
         }
-        return sb.toString();
     }
 
     @Override
-    public String visitWildcardType(WildType type, Mode context) {
+    public Signature visitWildcardType(WildType type, Mode context) {
         if (type instanceof WildType.Upper wtu) {
             if ((wtu.upperBounds().size() == 1 && type.typeSystem().constants().object().equals(wtu.upperBounds().iterator().next())) ||
                     wtu.upperBounds().isEmpty()) {
-                return "*";
+                return new Signature.Type("*");
             }
-            return "+" + this.visit(wtu.upperBounds().iterator().next(), Mode.USAGE);
+            return new Signature.Type("+" + this.visit(wtu.upperBounds().iterator().next(), Mode.USAGE));
         } else if (type instanceof WildType.Lower wtl) {
-            return "-" + this.visit(wtl.lowerBounds().iterator().next(), Mode.USAGE);
+            return new Signature.Type("-" + this.visit(wtl.lowerBounds().iterator().next(), Mode.USAGE));
         }
-        return null;
+        return new Signature.Type("*");
     }
 
     @Override
-    public String visitVarType(VarType type, Mode context) {
+    public Signature visitVarType(VarType type, Mode context) {
         if (context == Mode.DECLARATION) {
-            return type.name() + ":" +
-                    type.upperBounds().stream().map(t -> visit(t, Mode.USAGE)).collect(Collectors.joining(":"));
+            return new Signature.Type(type.name() + ":" +
+                    type.upperBounds().stream().map(t -> visit(t, Mode.USAGE).value()).collect(Collectors.joining(":")));
         } else {
-            return "T" + type.name() + ";";
+            return new Signature.Type("T" + type.name() + ";");
         }
     }
 
     @Override
-    public String visitMetaVarType(MetaVarType type, Mode context) {
-        return "T" + type.name() + ";";
+    public Signature visitMetaVarType(MetaVarType type, Mode context) {
+        return new Signature.Type("T" + type.name() + ";");
     }
 
     @Override
-    public String visitArrayType(ArrayType type, Mode context) {
-        return "[" + visit(type, context);
+    public Signature visitArrayType(ArrayType type, Mode context) {
+        return new Signature.Type("[" + visit(type, context));
     }
 
     @Override
-    public String visitIntersectionType(IntersectionType type, Mode context) {
-        return type.children().stream().map(t -> this.visit(t, context)).collect(Collectors.joining(":"));
+    public Signature visitIntersectionType(IntersectionType type, Mode context) {
+        return new Signature.Type(type.children().stream().map(t -> this.visit(t, context).value()).collect(Collectors.joining(":")));
     }
 
     @Override
-    public String visitPrimitiveType(PrimitiveType type, Mode context) {
-        return type.descriptor();
+    public Signature visitPrimitiveType(PrimitiveType type, Mode context) {
+        return new Signature.Type(type.descriptor());
     }
 
     @Override
-    public String visitNoneType(NoneType type, Mode context) {
-        return "V";
+    public Signature visitNoneType(NoneType type, Mode context) {
+        return new Signature.Type("V");
     }
 
     public enum Mode {

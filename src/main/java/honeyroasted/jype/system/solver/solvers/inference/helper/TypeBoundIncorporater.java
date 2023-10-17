@@ -20,20 +20,21 @@ import java.util.Map;
 import java.util.Set;
 
 //Implements incorporation as defined in 18.3
-public class TypeIncorporater extends AbstractInferenceHelper {
+public class TypeBoundIncorporater extends AbstractInferenceHelper {
     private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
     private Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
 
-    private InitialBoundBuilder initialBoundBuilder;
+    private TypeInitialBoundBuilder initialBoundBuilder;
 
-    public TypeIncorporater(TypeSolver solver) {
+    public TypeBoundIncorporater(TypeSolver solver) {
         super(solver);
-        this.initialBoundBuilder = new InitialBoundBuilder(solver);
+        this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
     }
 
     public void reset() {
         this.bounds.clear();
         this.constraints.clear();
+        this.initialBoundBuilder.reset();
     }
 
     public Set<TypeBound.Result.Builder> bounds() {
@@ -42,16 +43,6 @@ public class TypeIncorporater extends AbstractInferenceHelper {
 
     public Set<TypeBound.Result.Builder> constraints() {
         return this.constraints;
-    }
-
-    public TypeIncorporater setBounds(Set<TypeBound.Result.Builder> bounds) {
-        this.bounds = bounds;
-        return this;
-    }
-
-    public TypeIncorporater setConstraints(Set<TypeBound.Result.Builder> constraints) {
-        this.constraints = constraints;
-        return this;
     }
 
     public void incorporate(Set<TypeBound.Result.Builder> bounds) {

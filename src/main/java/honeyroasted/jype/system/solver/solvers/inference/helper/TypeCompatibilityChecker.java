@@ -54,10 +54,8 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
     public TypeBound.Result.Builder check(TypeBound.ExpressionCompatible compatible, TypeBound.Result.Builder... parents) {
         Type expr;
 
-        if (compatible.left() instanceof ExpressionInformation.Standalone stl) {
-            expr = stl.type();
-        } else if (compatible.left() instanceof ExpressionInformation.Poly ply && ply.isStandalone()) {
-            expr = ply.getStandaloneType(compatible.right().typeSystem());
+        if (compatible.left().isStandalone()) {
+            expr = compatible.left().getStandaloneType(compatible.right().typeSystem()).get();
         } else {
             return this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Standalone(compatible.left()), parents))
                     .setSatisfied(false));

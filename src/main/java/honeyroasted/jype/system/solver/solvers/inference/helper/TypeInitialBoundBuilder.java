@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 //Implements creating an initial bounds set as defined in 18.3.1
-public class InitialBoundBuilder extends AbstractInferenceHelper {
+public class TypeInitialBoundBuilder extends AbstractInferenceHelper {
     private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
 
-    public InitialBoundBuilder(TypeSolver solver) {
+    public TypeInitialBoundBuilder(TypeSolver solver) {
         super(solver);
     }
 
@@ -54,7 +54,7 @@ public class InitialBoundBuilder extends AbstractInferenceHelper {
         return this.bounds;
     }
 
-    public InitialBoundBuilder setBounds(Set<TypeBound.Result.Builder> bounds) {
+    public TypeInitialBoundBuilder setBounds(Set<TypeBound.Result.Builder> bounds) {
         this.bounds = bounds;
         return this;
     }

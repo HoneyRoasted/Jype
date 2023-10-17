@@ -2,11 +2,19 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.solvers.TypeSolverListener;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
+import honeyroasted.jype.type.IntersectionType;
+import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
+import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +49,40 @@ public interface TypeSolver extends TypeSolverListener {
         public Result(Set<TypeBound.Result> bounds) {
             this(false, bounds);
             this.success = this.parents().stream().allMatch(TypeBound.Result::satisfied);
+        }
+
+        public boolean satisfied(TypeBound bound) {
+            return this.all().stream().anyMatch(r -> r.satisfied() && r.bound().equals(bound));
+        }
+
+        public VarTypeResolveVisitor varTypeResolver() {
+            Map<VarType, Type> cache = new LinkedHashMap<>();
+            return new VarTypeResolveVisitor(v -> {
+                Optional<Type> res = resolution(v);
+                if (res.isPresent()) {
+                    cache.put(v, res.get());
+                    return true;
+                }
+                return false;
+            }, v -> cache.computeIfAbsent(v, k -> resolution(v).get()));
+        }
+
+        public Optional<Type> resolution(VarType var) {
+            Set<Type> results = this.all().stream().filter(r -> r.satisfied() && r.bound() instanceof TypeBound.Equal eq &&
+                    (eq.left().equals(var) || eq.right().equals(var))).map(r -> (TypeBound.Equal) r.bound())
+                    .map(eq -> eq.left().equals(var) ? eq.right() : eq.left())
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+
+            if (results.isEmpty()) {
+                return Optional.empty();
+            } else if (results.size() == 1) {
+                return Optional.of(results.iterator().next());
+            } else {
+                IntersectionType type = new IntersectionTypeImpl(var.typeSystem());
+                type.setChildren(IntersectionType.flatten(results));
+                type.setUnmodifiable(true);
+                return Optional.of(type);
+            }
         }
 
         public Result and(Result other) {
