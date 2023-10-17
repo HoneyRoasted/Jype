@@ -13,6 +13,12 @@ public interface ExpressionInformation {
         Type type();
     }
 
+    interface Constant extends Standalone {
+
+        Object value();
+
+    }
+
     interface Poly extends ExpressionInformation {
         List<ExpressionInformation> children();
     }
