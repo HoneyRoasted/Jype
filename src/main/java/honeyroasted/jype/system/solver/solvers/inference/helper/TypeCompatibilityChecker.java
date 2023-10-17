@@ -1,7 +1,9 @@
 package honeyroasted.jype.system.solver.solvers.inference.helper;
 
+import honeyroasted.jype.system.TypeConstants;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.TypeSolver;
+import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionInformation;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.IntersectionType;
@@ -34,49 +36,168 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         super(solver);
     }
 
-    private void strictSubtype(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parents) {
+    public TypeBound.Result.Builder check(TypeBound.Subtype subtype, TypeBound.Result.Builder... parents) {
+        return strictSubtype(subtype.left(), subtype.right(), new HashSet<>(), parents);
+    }
+
+    public TypeBound.Result.Builder check(TypeBound.Compatible compatible, TypeBound.Result.Builder... parents) {
+        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(compatible, parents));
+        switch (compatible.context()) {
+            case SUBTYPE, STRICT_INVOCATION -> strictSubtype(compatible.left(), compatible.right(), new HashSet<>(), builder);
+            case ASSIGNMENT, LOOSE_INVOCATION -> looseInvocation(compatible.left(), compatible.right(), builder);
+            case EXPLICIT_CAST -> explicitCast(compatible.left(), compatible.right(), builder);
+        }
+        this.eventBoundSatisfiedOrUnsatisfied(builder);
+        return builder;
+    }
+
+    public TypeBound.Result.Builder check(TypeBound.ExpressionCompatible compatible, TypeBound.Result.Builder... parents) {
+        Type expr;
+
+        if (compatible.left() instanceof ExpressionInformation.Standalone stl) {
+            expr = stl.type();
+        } else if (compatible.left() instanceof ExpressionInformation.Poly ply && ply.isStandalone()) {
+            expr = ply.getStandaloneType(compatible.right().typeSystem());
+        } else {
+            return this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Standalone(compatible.left()), parents))
+                    .setSatisfied(false));
+        }
+
+        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(compatible, parents));
+        switch (compatible.context()) {
+            case SUBTYPE, STRICT_INVOCATION -> strictSubtype(expr, compatible.right(), new HashSet<>(), builder);
+            case LOOSE_INVOCATION -> looseInvocation(expr, compatible.right(), builder);
+            case EXPLICIT_CAST -> explicitCast(expr, compatible.right(), builder);
+            case ASSIGNMENT -> {
+                if (compatible.left() instanceof ExpressionInformation.Constant cnst) {
+                    assignment(expr, compatible.right(), cnst, builder);
+                } else {
+                    looseInvocation(expr, compatible.right(), builder);
+                }
+            }
+        }
+        this.eventBoundSatisfiedOrUnsatisfied(builder);
+        return builder;
+    }
+
+    private void explicitCast(Type value, Type cast, TypeBound.Result.Builder parent) {
+        parent.setPropagation(TypeBound.Result.Propagation.OR);
+        looseInvocation(value, cast, parent);
+        looseInvocation(cast, value, parent);
+    }
+
+    private void assignment(Type subtype, Type target, ExpressionInformation.Constant constantExpression, TypeBound.Result.Builder parent) {
+        parent.setPropagation(TypeBound.Result.Propagation.OR);
+
+        TypeConstants c = subtype.typeSystem().constants();
+
+        Type cnst = constantExpression.type();
+        Object val = constantExpression.value();
+
+        if (cnst.equals(c.byteType()) || cnst.equals(c.shortType()) || cnst.equals(c.charType()) || cnst.equals(c.intType())) {
+            if (target.equals(c.charType()) || target.equals(c.charBox())) {
+                if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
+                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(true));
+                } else {
+                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(true));
+                }
+            } else if (target.equals(c.byteType()) || target.equals(c.byteBox())) {
+                if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
+                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(true));
+                } else {
+                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(false));
+                }
+            } else if (target.equals(c.shortType()) || target.equals(c.shortBox())) {
+                if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
+                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(true));
+                } else {
+                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
+                            .setSatisfied(false));
+                }
+            }
+        }
+
+        looseInvocation(subtype, target, parent);
+    }
+
+    private static boolean fits(Object obj, int min, int max) {
+        if (obj instanceof Number n) {
+            return min <= n.intValue() && n.intValue() <= max;
+        } else if (obj instanceof Character c) {
+            return min <= c && c <= max;
+        }
+        return false;
+    }
+
+    private void looseInvocation(Type subtype, Type supertype, TypeBound.Result.Builder parent) {
+        parent.setPropagation(TypeBound.Result.Propagation.OR);
+
+        strictSubtype(subtype, supertype, new HashSet<>(), parent);
+
+        if (subtype instanceof PrimitiveType l && !(supertype instanceof PrimitiveType)) {
+            strictSubtype(l.box(), supertype, new HashSet<>(), parent);
+        } else if (!(subtype instanceof PrimitiveType) && supertype instanceof PrimitiveType r) {
+            strictSubtype(subtype, r.box(), new HashSet<>(), parent);
+        }
+
+    }
+
+    private TypeBound.Result.Builder strictSubtype(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parent) {
         TypeBound.Subtype bound = new TypeBound.Subtype(subtype, subtype);
+        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parent));
+
         if (!subtype.equals(supertype) && seen.contains(bound)) {
             //Subtype is cyclic, cannot handle without inference
-            this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NonCyclicSubtype(subtype, subtype), parents)).setSatisfied(false));
+            this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NonCyclicSubtype(subtype, subtype), builder)).setSatisfied(false));
         } else {
             seen = new HashSet<>(seen);
             seen.add(bound);
             Set<TypeBound.Subtype> finalSeen = seen;
 
             if (supertype instanceof NoneType) {
-                setSatisfied(false, parents);
+                builder.setSatisfied(false);
+                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof NoneType l) {
-                setSatisfied(l.equals(l.typeSystem().constants().nullType()) && !(supertype instanceof PrimitiveType), parents);
-            }  else if (subtype instanceof PrimitiveType l && supertype instanceof PrimitiveType r) {
-                setSatisfied(PRIM_SUPERS.get(l.name()).contains(r.name()), parents);
+                builder.setSatisfied(l.equals(l.typeSystem().constants().nullType()) && !(supertype instanceof PrimitiveType));
+                this.eventBoundSatisfiedOrUnsatisfied(builder);
+            } else if (subtype instanceof PrimitiveType l && supertype instanceof PrimitiveType r) {
+                builder.setSatisfied(PRIM_SUPERS.get(l.name()).contains(r.name()));
+                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype.equals(supertype)) {
-                setSatisfied(true, parents);
+                builder.setSatisfied(true);
+                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof ClassType l && supertype instanceof ClassType r) {
-                if (!l.hasTypeArguments() || !r.hasTypeArguments()) {
-                    setSatisfied(l.hasSupertype(r.classReference()), parents);
-                } else if (l instanceof ParameterizedClassType pcl && supertype instanceof ParameterizedClassType pcr) {
-                    Optional<ClassType> superTypeOpt = pcl.relativeSupertype(pcr.classReference());
+                if (!l.hasTypeArguments() && !r.hasTypeArguments()) {
+                    builder.setSatisfied(l.hasSupertype(r.classReference()));
+                    this.eventBoundSatisfiedOrUnsatisfied(builder);
+                } else if (supertype instanceof ParameterizedClassType pcr) {
+                    Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
+                            .relativeSupertype(pcr.classReference());
                     if (superTypeOpt.isPresent()) {
                         ClassType relative = superTypeOpt.get();
                         if (relative.typeArguments().size() == pcr.typeArguments().size()) {
-                            TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, supertype), TypeBound.Result.Propagation.AND));
+                            TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, supertype), TypeBound.Result.Propagation.AND, builder));
                             for (int i = 0; i < relative.typeArguments().size(); i++) {
                                 Type ti = relative.typeArguments().get(i);
-                                Type si = pcr.typeParameters().get(i);
+                                Type si = pcr.typeArguments().get(i);
 
                                 if (si instanceof WildType) {
                                     TypeBound.Result.Builder argMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), TypeBound.Result.Propagation.AND, argsMatch));
                                     if (si instanceof WildType.Upper siwtu) {
                                         pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
-                                                .forEach(argBound -> strictSubtypeWithBound(ti, argBound, finalSeen, argMatch));
+                                                .forEach(argBound -> strictSubtype(ti, argBound, finalSeen, argMatch));
                                         siwtu.upperBounds()
-                                                .forEach(wildBound -> strictSubtypeWithBound(ti, wildBound, finalSeen, argMatch));
+                                                .forEach(wildBound -> strictSubtype(ti, wildBound, finalSeen, argMatch));
                                     } else if (si instanceof WildType.Lower siwtl) {
                                         pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
-                                                .forEach(argBound -> strictSubtypeWithBound(ti, argBound, finalSeen, argMatch));
+                                                .forEach(argBound -> strictSubtype(ti, argBound, finalSeen, argMatch));
                                         siwtl.lowerBounds()
-                                                .forEach(wildBound -> strictSubtypeWithBound(wildBound, ti, finalSeen, argMatch));
+                                                .forEach(wildBound -> strictSubtype(wildBound, ti, finalSeen, argMatch));
                                     }
                                 } else {
                                     TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch)
@@ -84,57 +205,45 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                 }
                             }
                         } else {
-                            setSatisfied(false, parents);
+                            builder.setSatisfied(false);
+                            this.eventBoundSatisfiedOrUnsatisfied(builder);
                         }
                     } else {
-                        setSatisfied(false, parents);
+                        builder.setSatisfied(false);
+                        this.eventBoundSatisfiedOrUnsatisfied(builder);
                     }
                 } else {
-                    //Should be unreachable
-                    setSatisfied(false, parents);
+                    builder.setSatisfied(false);
+                    this.eventBoundSatisfiedOrUnsatisfied(builder);
                 }
             } else if (subtype instanceof ArrayType l) {
                 if (supertype instanceof ArrayType r) {
                     if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
-                        setSatisfied(r.component().equals(l.component()), parents);
+                        builder.setSatisfied(r.component().equals(l.component()));
+                        this.eventBoundSatisfiedOrUnsatisfied(builder);
                     } else {
-                        strictSubtypeWithBound(l.component(), r.component(), seen, parents);
+                        strictSubtype(l.component(), r.component(), seen, builder);
                     }
                 } else {
-                    TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.OR, parents));
-                    strictSubtypeWithBound(subtype.typeSystem().constants().object(), supertype, seen, builder);
-                    strictSubtypeWithBound(subtype.typeSystem().constants().cloneable(), supertype, seen, builder);
-                    strictSubtypeWithBound(subtype.typeSystem().constants().serializable(), supertype, seen, builder);
+                    builder.setPropagation(TypeBound.Result.Propagation.OR);
+                    strictSubtype(subtype.typeSystem().constants().object(), supertype, seen, builder);
+                    strictSubtype(subtype.typeSystem().constants().cloneable(), supertype, seen, builder);
+                    strictSubtype(subtype.typeSystem().constants().serializable(), supertype, seen, builder);
                 }
             } else if (subtype instanceof VarType l) {
-                TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l, subtype), TypeBound.Result.Propagation.AND, parents));
-                l.upperBounds().forEach(t -> strictSubtypeWithBound(t, supertype, finalSeen, builder));
+                l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
             } else if (subtype instanceof WildType.Upper l) {
-                TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l, subtype), TypeBound.Result.Propagation.AND, parents));
-                l.upperBounds().forEach(t -> strictSubtypeWithBound(t, supertype, finalSeen, builder));
+                l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
+            } else if (subtype instanceof WildType.Lower r) {
+                r.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
             } else if (subtype instanceof IntersectionType l) {
-                TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l, subtype), TypeBound.Result.Propagation.OR, parents));
-                l.children().forEach(t -> strictSubtypeWithBound(t, supertype, finalSeen, builder));
+                builder.setPropagation(TypeBound.Result.Propagation.OR);
+                l.children().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
             } else if (supertype instanceof IntersectionType r) {
-                TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, r), TypeBound.Result.Propagation.AND, parents));
-                r.children().forEach(t -> strictSubtypeWithBound(subtype, t, finalSeen, builder));
+                r.children().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
             }
         }
-    }
-
-    private void strictSubtypeWithBound(Type subtype, Type supertype, TypeBound.Subtype bound, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parents) {
-        strictSubtype(subtype, supertype, seen, this.eventBoundCreated(TypeBound.Result.builder(bound, TypeBound.Result.Propagation.AND, parents)));
-    }
-
-    private void strictSubtypeWithBound(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parents) {
-        strictSubtype(subtype, supertype, seen, this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parents)));
-    }
-
-    private void setSatisfied(boolean satisfied, TypeBound.Result.Builder... parents) {
-        for (TypeBound.Result.Builder parent : parents) {
-            parent.setSatisfied(satisfied);
-            this.eventBoundSatisfiedOrUnsatisfied(parent);
-        }
+        return builder;
     }
 
 }

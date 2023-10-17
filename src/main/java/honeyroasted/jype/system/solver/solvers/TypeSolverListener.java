@@ -11,8 +11,6 @@ public interface TypeSolverListener {
 
     void boundUnsatisfied(TypeBound.ResultView bound);
 
-    void insightDiscovered(TypeBound.ResultView bound);
-
     void solved(TypeSolver.Result result);
 
 }

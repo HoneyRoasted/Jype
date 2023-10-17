@@ -33,11 +33,6 @@ public class AbstractInferenceHelper {
         return bound;
     }
 
-    protected TypeBound.Result.Builder eventInsightDiscovered(TypeBound.Result.Builder bound) {
-        this.solver.insightDiscovered(bound);
-        return bound;
-    }
-
     protected TypeSolver.Result eventSolved(TypeSolver.Result result) {
         this.solver.solved(result);
         return result;

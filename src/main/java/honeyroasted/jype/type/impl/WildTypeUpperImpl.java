@@ -3,6 +3,7 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 
@@ -82,6 +83,10 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
 
     @Override
     public boolean equals(Object o) {
+        if (o instanceof IntersectionType it) {
+            return it.equals(this);
+        }
+
         return o != null && o instanceof WildType wt && wt.identity() == this.identity;
     }
 

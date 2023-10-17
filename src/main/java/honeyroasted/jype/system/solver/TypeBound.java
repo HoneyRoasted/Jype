@@ -50,31 +50,31 @@ public interface TypeBound {
     }
 
     abstract class Unary<T> implements TypeBound {
-        protected T type;
+        protected T value;
 
-        public Unary(T type) {
-            this.type = type;
+        public Unary(T value) {
+            this.value = value;
         }
 
-        public T type() {
-            return this.type;
+        public T value() {
+            return this.value;
         }
 
         @Override
         public List<?> parameters() {
-            return List.of(this.type);
+            return List.of(this.value);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(this.type);
+            return Objects.hashCode(this.value);
         }
 
         @Override
         public boolean equals(Object obj) {
             if (obj == null || getClass() != obj.getClass()) return false;
             Unary<?> other = (Unary<?>) obj;
-            return Objects.equals(this.type, other.type);
+            return Objects.equals(this.value, other.value);
         }
     }
 
@@ -113,6 +113,40 @@ public interface TypeBound {
         }
     }
 
+    final class Standalone extends Unary<ExpressionInformation> {
+
+        public Standalone(ExpressionInformation type) {
+            super(type);
+        }
+
+        @Override
+        public String simpleName() {
+            return "standalone(" + this.value.simpleName() + ")";
+        }
+
+        @Override
+        public String toString() {
+            return this.value + " IS STANDALONE";
+        }
+    }
+
+    final class NarrowConstant extends Binary<ExpressionInformation.Constant, Type> {
+
+        public NarrowConstant(ExpressionInformation.Constant left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " FITS IN " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " <: " + this.right.simpleName();
+        }
+    }
+
     final class NonCyclicSubtype extends Binary<Type, Type> {
 
         public NonCyclicSubtype(Type left, Type right) {
@@ -137,12 +171,12 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return this.type + " DOES NOT HAVE CYCLIC TYPE VARIABLES";
+            return this.value + " DOES NOT HAVE CYCLIC TYPE VARIABLES";
         }
 
         @Override
         public String simpleName() {
-            return "non-cyclic(" + this.type.simpleName() + ")";
+            return "non-cyclic(" + this.value.simpleName() + ")";
         }
     }
 
@@ -204,6 +238,10 @@ public interface TypeBound {
             this.context = context;
         }
 
+        public Context context() {
+            return this.context;
+        }
+
         @Override
         public String toString() {
             return this.left + " IS COMPATIBLE WITH " + this.right + " IN " + this.context;
@@ -239,6 +277,10 @@ public interface TypeBound {
         public ExpressionCompatible(ExpressionInformation left, Type right, Compatible.Context context) {
             super(left, right);
             this.context = context;
+        }
+
+        public Compatible.Context context() {
+            return this.context;
         }
 
         @Override
@@ -306,12 +348,12 @@ public interface TypeBound {
 
         @Override
         public String toString() {
-            return "THROWS " + this.type;
+            return "THROWS " + this.value;
         }
 
         @Override
         public String simpleName() {
-            return "throws(" + this.type.simpleName() + ")";
+            return "throws(" + this.value.simpleName() + ")";
         }
     }
 
@@ -486,7 +528,12 @@ public interface TypeBound {
                 building.add("Children: " + this.children.size());
 
                 List<String> children = new ArrayList<>();
-                this.children.forEach(r -> r.toString(children, useSimpleName));
+                for (int i = 0; i < this.children.size(); i++) {
+                    this.children.get(i).toString(children, useSimpleName);
+                    if (i < this.children.size() - 1) {
+                        children.add("");
+                    }
+                }
 
                 int maxLen = children.stream().mapToInt(String::length).max().getAsInt();
                 String content = "-".repeat(maxLen + 8);

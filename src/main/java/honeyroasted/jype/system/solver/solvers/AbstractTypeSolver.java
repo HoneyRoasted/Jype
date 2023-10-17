@@ -53,11 +53,6 @@ public abstract class AbstractTypeSolver implements TypeSolver, TypeSolverListen
     }
 
     @Override
-    public void insightDiscovered(TypeBound.ResultView bound) {
-        this.listeners.forEach(l -> l.insightDiscovered(bound));
-    }
-
-    @Override
     public void solved(Result result) {
         this.listeners.forEach(l -> l.solved(result));
     }
@@ -82,11 +77,6 @@ public abstract class AbstractTypeSolver implements TypeSolver, TypeSolverListen
 
     protected TypeBound.Result.Builder eventBoundUnsatisfied(TypeBound.Result.Builder bound) {
         this.boundUnsatisfied(bound);
-        return bound;
-    }
-
-    protected TypeBound.Result.Builder eventInsightDiscovered(TypeBound.Result.Builder bound) {
-        this.insightDiscovered(bound);
         return bound;
     }
 

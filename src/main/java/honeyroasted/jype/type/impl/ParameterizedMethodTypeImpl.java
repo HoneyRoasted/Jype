@@ -7,6 +7,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.ParameterizedMethodType;
@@ -162,6 +163,10 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     }
 
     public boolean equals(Object o) {
+        if (o instanceof IntersectionType it) {
+            return it.equals(this);
+        }
+
         if (this == o) return true;
         if (o == null || !(o instanceof MethodType)) return false;
         if (o instanceof ParameterizedMethodType pt) {

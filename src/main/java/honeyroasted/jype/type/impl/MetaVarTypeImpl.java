@@ -3,6 +3,7 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
@@ -46,6 +47,10 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
 
     @Override
     public boolean equals(Object o) {
+        if (o instanceof IntersectionType it) {
+            return it.equals(this);
+        }
+
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MetaVarTypeImpl that = (MetaVarTypeImpl) o;

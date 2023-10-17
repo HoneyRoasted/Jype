@@ -8,6 +8,7 @@ import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,10 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
 
     @Override
     public void setChildren(Set<Type> children) {
+        if (children.stream().anyMatch(t -> t instanceof IntersectionType)) {
+            throw new IllegalArgumentException("Intersection type may not be nested");
+        }
+
         this.children = children;
     }
 
@@ -54,5 +59,26 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
         copy.setChildren((Set) this.children.stream().map(Type::copy).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
         return (T) copy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this.children.size() == 1) {
+            return this.children.iterator().next().equals(o);
+        }
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntersectionTypeImpl that = (IntersectionTypeImpl) o;
+        return Objects.equals(children, that.children);
+    }
+
+    @Override
+    public int hashCode() {
+        if (this.children.size() == 1) {
+            return this.children.iterator().next().hashCode();
+        }
+
+        return Objects.hash(children);
     }
 }

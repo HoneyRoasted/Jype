@@ -32,29 +32,24 @@ public interface TypeSolver extends TypeSolverListener {
     final class Result {
         private boolean success;
         private final Set<TypeBound.Result> bounds;
-        private final Set<TypeBound> insights;
 
-        public Result(boolean success, Set<TypeBound.Result> bounds, Set<TypeBound> insights) {
+        public Result(boolean success, Set<TypeBound.Result> bounds) {
             this.success = success;
             this.bounds = Collections.unmodifiableSet(bounds);
-            this.insights = Collections.unmodifiableSet(insights);
         }
 
-        public Result(Set<TypeBound.Result> bounds, Set<TypeBound> insights) {
-            this(false, bounds, insights);
+        public Result(Set<TypeBound.Result> bounds) {
+            this(false, bounds);
             this.success = this.parents().stream().allMatch(TypeBound.Result::satisfied);
         }
 
         public Result and(Result other) {
             Set<TypeBound.Result> bounds = new LinkedHashSet<>();
-            Set<TypeBound> insights = new LinkedHashSet<>();
 
             bounds.addAll(this.bounds);
             bounds.addAll(other.bounds());
-            insights.addAll(this.insights);
-            insights.addAll(other.insights());
 
-            return new Result(this.success && other.success(), bounds, insights);
+            return new Result(this.success && other.success(), bounds);
         }
 
         private Set<TypeBound.Result> parents;
@@ -163,10 +158,6 @@ public interface TypeSolver extends TypeSolverListener {
             return bounds;
         }
 
-        public Set<TypeBound> insights() {
-            return insights;
-        }
-
         @Override
         public String toString() {
             return toString(false);
@@ -174,12 +165,9 @@ public interface TypeSolver extends TypeSolverListener {
 
         public String toString(boolean useSimpleName) {
             StringBuilder sb = new StringBuilder();
-            sb.append("== Insights: ").append(this.insights.size()).append(" ==\n");
-            this.insights.forEach(t -> sb.append(useSimpleName ? t.simpleName() : t.toString()).append("\n"));
-
             Set<TypeBound.Result> originators = this.parents();
             sb.append("\n")
-                    .append("== Detailed Results: ").append(originators.size()).append(" ==\n");
+                    .append("== Results: ").append(originators.size()).append(" ==\n");
 
             Iterator<TypeBound.Result> iter = originators.iterator();
             while (iter.hasNext()) {
