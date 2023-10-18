@@ -18,6 +18,7 @@ import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -39,10 +40,14 @@ public class TypeLubFinder extends AbstractInferenceHelper {
     }
 
     public Type find(TypeSystem system, Set<Type> types) {
-        return this.findLub(system, types);
+        return this.findLub(system, types, new HashMap<>());
     }
 
-    private Type findLub(TypeSystem system, Set<Type> types) {
+    private Type findLub(TypeSystem system, Set<Type> types, Map<Set<Type>, Type> lubCache) {
+        if (lubCache.containsKey(types)) {
+            return lubCache.get(types);
+        }
+
         if (types.isEmpty()) {
             return system.constants().nullType();
         } else if (types.size() == 1) {
@@ -90,31 +95,34 @@ public class TypeLubFinder extends AbstractInferenceHelper {
                 }
             }
 
+            IntersectionType type = new IntersectionTypeImpl(system);
+            lubCache.put(types, type);
+
             Set<Type> lub = new LinkedHashSet<>();
             for (Type candidate : minimalErasedCandidates) {
                 if (relevantParams.containsKey(candidate)) {
-                    lub.add(leastContainingParameterization(relevantParams.get(candidate)));
+                    lub.add(leastContainingParameterization(lubCache, relevantParams.get(candidate)));
                 } else {
                     lub.add(candidate);
                 }
             }
+
+            type.setChildren(IntersectionType.flatten(lub));
+            type.setUnmodifiable(true);
 
             if (lub.isEmpty()) {
                 return system.constants().nullType();
             } else if (lub.size() == 1) {
                 return lub.iterator().next();
             } else {
-                IntersectionType type = new IntersectionTypeImpl(system);
-                type.setChildren(IntersectionType.flatten(lub));
-                type.setUnmodifiable(true);
                 return type;
             }
         }
     }
 
-    private ParameterizedClassType leastContainingParameterization(Set<ParameterizedClassType> params) {
+    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, Set<ParameterizedClassType> params) {
         if (params.size() == 1) {
-            return leastContainingParameterization(params.iterator().next());
+            return leastContainingParameterization(lubCache, params.iterator().next());
         }
 
         Iterator<ParameterizedClassType> iter = params.iterator();
@@ -122,22 +130,22 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         ParameterizedClassType curr = iter.next();
         while (iter.hasNext()) {
             ParameterizedClassType next = iter.next();
-            curr = leastContainingParameterization(curr, next);
+            curr = leastContainingParameterization(lubCache, curr, next);
         }
         return curr;
     }
 
-    private ParameterizedClassType leastContainingParameterization(ParameterizedClassType pct) {
+    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, ParameterizedClassType pct) {
         ParameterizedClassType lcta = new ParameterizedClassTypeImpl(pct.typeSystem());
         lcta.setClassReference(pct.classReference());
 
         if (pct.outerType() instanceof ParameterizedClassType outer) {
-            lcta.setOuterType(leastContainingParameterization(outer));
+            lcta.setOuterType(leastContainingParameterization(lubCache, outer));
         }
 
         List<ArgumentType> generated = new ArrayList<>();
         for (int i = 0; i < pct.typeArguments().size(); i++) {
-            generated.add(singleLeastContainingTypeArgument(pct.typeArguments().get(i), pct.typeParameters().get(i)));
+            generated.add(singleLeastContainingTypeArgument(lubCache, pct.typeArguments().get(i), pct.typeParameters().get(i)));
         }
 
         lcta.setTypeArguments(generated);
@@ -146,22 +154,22 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return lcta;
     }
 
-    private ParameterizedClassType leastContainingParameterization(ParameterizedClassType left, ParameterizedClassType right) {
+    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, ParameterizedClassType left, ParameterizedClassType right) {
         ParameterizedClassType lcta = new ParameterizedClassTypeImpl(left.typeSystem());
         lcta.setClassReference(left.classReference());
 
         if (left.outerType() instanceof ParameterizedClassType lo && right.outerType() instanceof ParameterizedClassType ro) {
-            lcta.setOuterType(leastContainingParameterization(lo, ro));
+            lcta.setOuterType(leastContainingParameterization(lubCache, lo, ro));
         }
 
         List<ArgumentType> generatedArguments = new ArrayList<>();
         for (int i = 0; i < Math.max(left.typeArguments().size(), right.typeArguments().size()); i++) {
             if (i < left.typeArguments().size() && i < right.typeArguments().size()) {
-                generatedArguments.add(leastContainingTypeArgument(left.typeArguments().get(i), right.typeArguments().get(i)));
+                generatedArguments.add(leastContainingTypeArgument(lubCache, left.typeArguments().get(i), right.typeArguments().get(i)));
             } else if (i < left.typeArguments().size()) {
-                generatedArguments.add(singleLeastContainingTypeArgument(left.typeArguments().get(i), left.typeParameters().get(i)));
+                generatedArguments.add(singleLeastContainingTypeArgument(lubCache, left.typeArguments().get(i), left.typeParameters().get(i)));
             } else {
-                generatedArguments.add(singleLeastContainingTypeArgument(right.typeArguments().get(i), right.typeParameters().get(i)));
+                generatedArguments.add(singleLeastContainingTypeArgument(lubCache, right.typeArguments().get(i), right.typeParameters().get(i)));
             }
         }
         lcta.setTypeArguments(generatedArguments);
@@ -170,7 +178,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return lcta;
     }
 
-    private ArgumentType singleLeastContainingTypeArgument(Type u, VarType corresponding) {
+    private ArgumentType singleLeastContainingTypeArgument(Map<Set<Type>, Type> lubCache, Type u, VarType corresponding) {
         if (u instanceof WildType.Upper wtu && wtu.hasDefaultBounds()) {
             return wildType(u.typeSystem());
         } else if (u instanceof VarType vt && vt.hasDefaultBounds()) {
@@ -179,10 +187,10 @@ public class TypeLubFinder extends AbstractInferenceHelper {
             return wildType(u.typeSystem());
         }
 
-        return this.lubWild(u.typeSystem(), u, u.typeSystem().constants().object());
+        return this.lubWild(lubCache, u.typeSystem(), u, u.typeSystem().constants().object());
     }
 
-    private ArgumentType leastContainingTypeArgument(ArgumentType u, ArgumentType v) {
+    private ArgumentType leastContainingTypeArgument(Map<Set<Type>, Type> lubCache, ArgumentType u, ArgumentType v) {
         if (u.equals(v)) return u;
 
         TypeSystem system = u.typeSystem();
@@ -192,11 +200,11 @@ public class TypeLubFinder extends AbstractInferenceHelper {
 
             if (wild instanceof WildType.Upper wtu) {
                 if (other instanceof WildType.Upper owt) {
-                    return lubWild(system, wtu.upperBounds(), owt.upperBounds());
+                    return lubWild(lubCache, system, wtu.upperBounds(), owt.upperBounds());
                 } else if (other instanceof WildType.Lower owl) {
                     return wildType(system);
                 } else {
-                    return lubWild(system, wtu.upperBounds(), v);
+                    return lubWild(lubCache, system, wtu.upperBounds(), v);
                 }
             } else if (wild instanceof WildType.Lower wtl) {
                 if (other instanceof WildType.Upper owt) {
@@ -204,13 +212,13 @@ public class TypeLubFinder extends AbstractInferenceHelper {
                 } else if (other instanceof WildType.Lower owl) {
                     return glbWild(system, wtl.lowerBounds(), owl.lowerBounds());
                 } else {
-                    return lubWild(system, wtl.lowerBound(), other);
+                    return lubWild(lubCache, system, wtl.lowerBound(), other);
                 }
             } else {
-                return lubWild(system, u, v);
+                return lubWild(lubCache, system, u, v);
             }
         } else {
-            return lubWild(system, u, v);
+            return lubWild(lubCache, system, u, v);
         }
     }
 
@@ -243,29 +251,29 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return wild;
     }
 
-    private WildType.Upper lubWild(TypeSystem system, Type... types) {
+    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Type... types) {
         WildType.Upper result = new WildTypeUpperImpl(system);
-        result.setUpperBounds(Set.of(this.findLub(system, Set.of(types))));
+        result.setUpperBounds(Set.of(this.findLub(system, Set.of(types), lubCache)));
         result.setUnmodifiable(true);
         return result;
     }
 
-    private WildType.Upper lubWild(TypeSystem system, Set<Type> set, Type... types) {
+    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Set<Type> set, Type... types) {
         Set<Type> bounds = new LinkedHashSet<>(set);
         Collections.addAll(bounds, types);
 
         WildType.Upper result = new WildTypeUpperImpl(system);
-        result.setUpperBounds(Set.of(this.findLub(system, bounds)));
+        result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
         result.setUnmodifiable(true);
         return result;
     }
 
-    private WildType.Upper lubWild(TypeSystem system, Set<Type> set, Set<Type> other) {
+    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Set<Type> set, Set<Type> other) {
         Set<Type> bounds = new LinkedHashSet<>(set);
         bounds.addAll(other);
 
         WildType.Upper result = new WildTypeUpperImpl(system);
-        result.setUpperBounds(Set.of(this.findLub(system, bounds)));
+        result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
         result.setUnmodifiable(true);
         return result;
     }

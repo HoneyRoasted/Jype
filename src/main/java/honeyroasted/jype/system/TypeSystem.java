@@ -4,8 +4,6 @@ import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
-import honeyroasted.jype.system.cache.InMemoryTypeCache;
-import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.cache.TypeCacheFactory;
 import honeyroasted.jype.system.cache.TypeStorage;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
