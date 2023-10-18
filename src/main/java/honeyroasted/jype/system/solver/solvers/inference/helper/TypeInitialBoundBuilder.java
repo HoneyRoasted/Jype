@@ -19,11 +19,15 @@ public class TypeInitialBoundBuilder extends AbstractInferenceHelper {
         super(solver);
     }
 
+    public TypeInitialBoundBuilder() {
+        super();
+    }
+
     public void reset() {
         this.bounds.clear();
     }
 
-    public void buildInitialBounds(Map<VarType, MetaVarType> metaVars) {
+    public TypeInitialBoundBuilder buildInitialBounds(Map<VarType, MetaVarType> metaVars) {
         VarTypeResolveVisitor resolver = new VarTypeResolveVisitor(metaVars);
 
         metaVars.forEach((vt, mvt) -> {
@@ -48,6 +52,7 @@ public class TypeInitialBoundBuilder extends AbstractInferenceHelper {
                 }
             }
         });
+        return this;
     }
 
     public Set<TypeBound.Result.Builder> bounds() {

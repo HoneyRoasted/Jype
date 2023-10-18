@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 
 public interface TypeSolver extends TypeSolverListener {
 
+    TypeSolver NO_OP = new NoOpTypeSolver();
+
     TypeSolver addListener(TypeSolverListener listener);
 
     boolean supports(TypeBound bound);

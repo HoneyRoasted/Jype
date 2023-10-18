@@ -10,6 +10,11 @@ import honeyroasted.jype.type.WildType;
 public class ErasureTypeVisitor implements StructuralMappingVisitor<Boolean> {
 
     @Override
+    public Type visit(Type type) {
+        return this.visit(type, true);
+    }
+
+    @Override
     public Type visitWildcardType(WildType type, Boolean recurse) {
         return visit(type.upperBounds().iterator().next(), recurse);
     }

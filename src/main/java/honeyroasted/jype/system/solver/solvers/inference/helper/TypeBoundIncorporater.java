@@ -31,6 +31,10 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
     }
 
+    public TypeBoundIncorporater() {
+        this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
+    }
+
     public void reset() {
         this.bounds.clear();
         this.constraints.clear();
@@ -45,7 +49,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         return this.constraints;
     }
 
-    public void incorporate(Set<TypeBound.Result.Builder> bounds) {
+    public TypeBoundIncorporater incorporate(Set<TypeBound.Result.Builder> bounds) {
         this.bounds.addAll(bounds);
 
         Set<TypeBound.Result.Builder> current;
@@ -53,6 +57,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
             current = new HashSet<>(this.bounds);
             this.incorporateOnce(current);
         } while (!this.bounds.equals(current) && this.bounds.stream().noneMatch(b -> b.bound().equals(TypeBound.False.INSTANCE)));
+        return this;
     }
 
     public void incorporateOnce(Set<TypeBound.Result.Builder> bounds) {
@@ -145,8 +150,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
 
                     //Initial bounds generated from G<P_1...P_n> per 18.1.3
                     this.initialBoundBuilder.reset();
-                    this.initialBoundBuilder.buildInitialBounds(varMap);
-                    Set<TypeBound.Result.Builder> initialBounds = this.initialBoundBuilder.bounds();
+                    Set<TypeBound.Result.Builder> initialBounds = this.initialBoundBuilder.buildInitialBounds(varMap).bounds();
                     initialBounds.forEach(b -> b.addParents(boundBuilder));
                     this.bounds.addAll(initialBounds);
 
