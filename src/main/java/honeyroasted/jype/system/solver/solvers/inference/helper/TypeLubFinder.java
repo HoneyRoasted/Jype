@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.solvers.inference.helper;
 
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.visitor.TypeVisitors;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -43,11 +45,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return this.findLub(system, types, new HashMap<>());
     }
 
-    private Type findLub(TypeSystem system, Set<Type> types, Map<Set<Type>, Type> lubCache) {
-        if (lubCache.containsKey(types)) {
-            return lubCache.get(types);
-        }
-
+    private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {
         if (types.isEmpty()) {
             return system.constants().nullType();
         } else if (types.size() == 1) {
@@ -82,6 +80,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
             }
 
             Map<ClassType, Set<ParameterizedClassType>> relevantParams = new LinkedHashMap<>();
+            Set<Type> paramKeyPart = new HashSet<>();
             for (Type candidate : minimalErasedCandidates) {
                 if (candidate instanceof ClassType ct && ct.hasTypeParameters()) {
                     for (Set<Type> supertypes : supertypeSets) {
@@ -89,14 +88,19 @@ public class TypeLubFinder extends AbstractInferenceHelper {
                             if (supertype instanceof ParameterizedClassType pct && ct.classReference().equals(pct.classReference())) {
                                 relevantParams.computeIfAbsent(ct, k -> new LinkedHashSet<>())
                                         .add(pct);
+                                paramKeyPart.add(pct);
                             }
                         }
                     }
                 }
             }
 
+            Pair<Set<Type>, Set<Type>> key = Pair.of(minimalErasedCandidates, paramKeyPart);
+            
+            if (lubCache.containsKey(key)) return lubCache.get(key);
+            
             IntersectionType type = new IntersectionTypeImpl(system);
-            lubCache.put(types, type);
+            lubCache.put(key, type);
 
             Set<Type> lub = new LinkedHashSet<>();
             for (Type candidate : minimalErasedCandidates) {
@@ -120,7 +124,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         }
     }
 
-    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, Set<ParameterizedClassType> params) {
+    private ParameterizedClassType leastContainingParameterization(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, Set<ParameterizedClassType> params) {
         if (params.size() == 1) {
             return leastContainingParameterization(lubCache, params.iterator().next());
         }
@@ -135,7 +139,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return curr;
     }
 
-    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, ParameterizedClassType pct) {
+    private ParameterizedClassType leastContainingParameterization(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ParameterizedClassType pct) {
         ParameterizedClassType lcta = new ParameterizedClassTypeImpl(pct.typeSystem());
         lcta.setClassReference(pct.classReference());
 
@@ -154,7 +158,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return lcta;
     }
 
-    private ParameterizedClassType leastContainingParameterization(Map<Set<Type>, Type> lubCache, ParameterizedClassType left, ParameterizedClassType right) {
+    private ParameterizedClassType leastContainingParameterization(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ParameterizedClassType left, ParameterizedClassType right) {
         ParameterizedClassType lcta = new ParameterizedClassTypeImpl(left.typeSystem());
         lcta.setClassReference(left.classReference());
 
@@ -178,7 +182,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return lcta;
     }
 
-    private ArgumentType singleLeastContainingTypeArgument(Map<Set<Type>, Type> lubCache, Type u, VarType corresponding) {
+    private ArgumentType singleLeastContainingTypeArgument(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, Type u, VarType corresponding) {
         if (u instanceof WildType.Upper wtu && wtu.hasDefaultBounds()) {
             return wildType(u.typeSystem());
         } else if (u instanceof VarType vt && vt.hasDefaultBounds()) {
@@ -190,7 +194,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return this.lubWild(lubCache, u.typeSystem(), u, u.typeSystem().constants().object());
     }
 
-    private ArgumentType leastContainingTypeArgument(Map<Set<Type>, Type> lubCache, ArgumentType u, ArgumentType v) {
+    private ArgumentType leastContainingTypeArgument(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ArgumentType u, ArgumentType v) {
         if (u.equals(v)) return u;
 
         TypeSystem system = u.typeSystem();
@@ -251,14 +255,14 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return wild;
     }
 
-    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Type... types) {
+    private WildType.Upper lubWild(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, TypeSystem system, Type... types) {
         WildType.Upper result = new WildTypeUpperImpl(system);
         result.setUpperBounds(Set.of(this.findLub(system, Set.of(types), lubCache)));
         result.setUnmodifiable(true);
         return result;
     }
 
-    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Set<Type> set, Type... types) {
+    private WildType.Upper lubWild(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, TypeSystem system, Set<Type> set, Type... types) {
         Set<Type> bounds = new LinkedHashSet<>(set);
         Collections.addAll(bounds, types);
 
@@ -268,7 +272,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return result;
     }
 
-    private WildType.Upper lubWild(Map<Set<Type>, Type> lubCache, TypeSystem system, Set<Type> set, Set<Type> other) {
+    private WildType.Upper lubWild(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, TypeSystem system, Set<Type> set, Set<Type> other) {
         Set<Type> bounds = new LinkedHashSet<>(set);
         bounds.addAll(other);
 
