@@ -598,7 +598,8 @@ public interface TypeBound {
             AND,
             NAND,
             OR,
-            NOR
+            NOR,
+            INHERIT
         }
 
         public static class Builder implements ResultView {
@@ -615,7 +616,8 @@ public interface TypeBound {
                     this.propagate();
 
                     List<Result> builtChildren = new ArrayList<>();
-                    this.built = new Result(this.bound, this.propagation, this.satisfied, Collections.emptyList(), Collections.unmodifiableList(builtChildren));
+                    this.built = new Result(this.bound, this.children.isEmpty() ? Propagation.NONE :
+                            this.children.size() == 1 ? Propagation.INHERIT : this.propagation, this.satisfied, Collections.emptyList(), Collections.unmodifiableList(builtChildren));
                     if (!this.parents.isEmpty()) {
                         this.built.setParents(this.parents.stream().map(Builder::build).toList());
                     }
@@ -631,12 +633,14 @@ public interface TypeBound {
             }
 
             public Builder propagate() {
-                this.children.forEach(Builder::propagate);
-                switch (this.propagation) {
-                    case AND -> this.andChildren();
-                    case OR -> this.orChildren();
-                    case NAND -> this.andChildren().not();
-                    case NOR -> this.orChildren().not();
+                if (!this.children.isEmpty()) {
+                    this.children.forEach(Builder::propagate);
+                    switch (this.propagation) {
+                        case AND, INHERIT -> this.andChildren();
+                        case OR -> this.orChildren();
+                        case NAND -> this.andChildren().not();
+                        case NOR -> this.orChildren().not();
+                    }
                 }
                 return this;
             }

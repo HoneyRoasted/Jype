@@ -192,7 +192,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                             this.eventBoundUnsatisfied(builder);
                         }
                     } else {
-                        builder.setSatisfied(l.hasSupertype(r.classReference()));
+                        builder.setSatisfied(l.classReference().hasSupertype(r.classReference()));
                         this.eventBoundSatisfiedOrUnsatisfied(builder);
                     }
                 } else if (supertype instanceof ParameterizedClassType pcr) {

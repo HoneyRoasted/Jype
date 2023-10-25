@@ -7,6 +7,7 @@ import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.solvers.CompatibilityTypeSolver;
 import honeyroasted.jype.type.Type;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -19,7 +20,7 @@ public class Test {
         TypeSystem system = TypeSystem.RUNTIME;
         TypeSolver.Result result = new CompatibilityTypeSolver()
                 .bind(
-                        new TypeBound.Subtype(new TypeToken<LinkedHashMap<String, Integer>>() {}.resolve(), new TypeToken<Map<String, ? extends Integer>>() {}.resolve())
+                        new TypeBound.Compatible(new TypeToken<ArrayList>() {}.resolve(), new TypeToken<Number>() {}.resolve())
                 )
                 .solve(system);
 
