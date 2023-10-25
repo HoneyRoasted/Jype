@@ -40,6 +40,7 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
 
     private Set<TypeBound.Result.Builder> workingBounds = new LinkedHashSet<>();
     private Set<TypeBound.Result.Builder> workingConstrains = new LinkedHashSet<>();
+    private Set<MetaVarType> metaVars = new LinkedHashSet<>();
 
     @Override
     public void reset() {
@@ -55,10 +56,39 @@ public class InferenceTypeSolver extends AbstractTypeSolver {
         return null;
     }
 
+    private void updateMetavarBounds() {
+        this.workingBounds.forEach(builder -> {
+            TypeBound bound = builder.bound();
+            if (bound instanceof TypeBound.Subtype st) {
+                if (st.left() instanceof MetaVarType || st.right() instanceof MetaVarType) {
+                    this.metaVars.forEach(mv -> {
+                        if (st.left().typeEquals(mv)) {
+                            mv.upperBounds().add(st.right());
+                        }
 
-    public static void discoverVarTypes(Type visit, Map<VarType, MetaVarType> metaVars) {
+                        if (st.right().typeEquals(mv)) {
+                            mv.lowerBounds().add(st.right());
+                        }
+                    });
+                }
+            } else if (bound instanceof TypeBound.Equal eq) {
+                if (eq.left() instanceof MetaVarType || eq.right() instanceof MetaVarType) {
+                    this.metaVars.forEach(mv -> {
+                        if (eq.left().typeEquals(mv)) {
+                            mv.equalities().add(eq.right());
+                        } else if (eq.right().typeEquals(mv)) {
+                            mv.equalities().add(eq.left());
+                        }
+                        mv.equalities().remove(mv);
+                    });
+                }
+            }
+        });
+    }
+
+    public static void discoverVarTypes(Type visit, Map<VarType, MetaVarType> metaVars, Set<VarType> ignore) {
         new RecursiveTypeVisitor<>((TypeVisitor.Default) (type, context) -> {
-            if (type instanceof VarType vt && !metaVars.containsKey(vt)) {
+            if (type instanceof VarType vt && !ignore.contains(vt) && !metaVars.containsKey(vt)) {
                 metaVars.put(vt, new MetaVarTypeImpl(vt.typeSystem(), System.identityHashCode(vt), vt.name()));
             }
             return null;

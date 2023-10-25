@@ -68,7 +68,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
                 boolean permitted = true;
 
                 for (Type otherCand : erasedCandidates) {
-                    if (!erasedCandidate.equals(otherCand) && this.typeCompatibilityChecker.isSubtype(erasedCandidate, otherCand)) {
+                    if (!erasedCandidate.typeEquals(otherCand) && this.typeCompatibilityChecker.isSubtype(erasedCandidate, otherCand)) {
                         permitted = false;
                         break;
                     }
@@ -85,7 +85,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
                 if (candidate instanceof ClassType ct && ct.hasTypeParameters()) {
                     for (Set<Type> supertypes : supertypeSets) {
                         for (Type supertype : supertypes) {
-                            if (supertype instanceof ParameterizedClassType pct && ct.classReference().equals(pct.classReference())) {
+                            if (supertype instanceof ParameterizedClassType pct && ct.classReference().typeEquals(pct.classReference())) {
                                 relevantParams.computeIfAbsent(ct, k -> new LinkedHashSet<>())
                                         .add(pct);
                                 paramKeyPart.add(pct);
@@ -195,7 +195,7 @@ public class TypeLubFinder extends AbstractInferenceHelper {
     }
 
     private ArgumentType leastContainingTypeArgument(Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ArgumentType u, ArgumentType v) {
-        if (u.equals(v)) return u;
+        if (u.typeEquals(v)) return u;
 
         TypeSystem system = u.typeSystem();
         if (u instanceof WildType || v instanceof WildType) {
@@ -230,17 +230,6 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         Set<Type> bounds = new LinkedHashSet<>();
         bounds.addAll(left);
         bounds.addAll(right);
-
-        WildType.Lower lower = new WildTypeLowerImpl(system);
-        lower.setLowerBounds(bounds);
-        lower.setUnmodifiable(true);
-        return lower;
-    }
-
-    private WildType.Lower glbWild(TypeSystem system, Set<Type> left, Type... types) {
-        Set<Type> bounds = new LinkedHashSet<>();
-        bounds.addAll(left);
-        Collections.addAll(bounds, types);
 
         WildType.Lower lower = new WildTypeLowerImpl(system);
         lower.setLowerBounds(bounds);

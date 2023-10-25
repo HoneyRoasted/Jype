@@ -56,6 +56,6 @@ public class WildTypeUpperDelegate extends AbstractTypeDelegate<WildType.Upper> 
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new WildTypeUpperDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new WildTypeUpperDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 }

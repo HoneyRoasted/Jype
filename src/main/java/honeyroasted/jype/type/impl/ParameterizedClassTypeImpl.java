@@ -8,7 +8,6 @@ import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
-import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -204,10 +203,6 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof IntersectionType it) {
-            return it.equals(this);
-        }
-
         if (this == o) return true;
         if (o == null || !(o instanceof ClassType)) return false;
         if (o instanceof ParameterizedClassType pct) {

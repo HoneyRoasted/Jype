@@ -34,7 +34,7 @@ public class ParameterizedClassTypeMeta<T> extends ParameterizedClassTypeDelegat
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        ParameterizedClassTypeMeta<T> copy = new ParameterizedClassTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        ParameterizedClassTypeMeta<T> copy = new ParameterizedClassTypeMeta<>(this.typeSystem(), t -> this.delegate().copy(cache));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

@@ -116,6 +116,6 @@ public class MethodReferenceDelegate extends AbstractTypeDelegate<MethodReferenc
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new MethodReferenceDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new MethodReferenceDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 }

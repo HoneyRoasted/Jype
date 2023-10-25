@@ -34,7 +34,7 @@ public class MetaVarTypeMeta<T> extends MetaVarTypeDelegate implements MetadataT
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        MetaVarTypeMeta<T> copy = new MetaVarTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        MetaVarTypeMeta<T> copy = new MetaVarTypeMeta<>(this.typeSystem(), t -> this.delegate().copy(cache));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

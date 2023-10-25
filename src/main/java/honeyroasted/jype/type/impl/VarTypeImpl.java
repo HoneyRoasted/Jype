@@ -4,7 +4,6 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
@@ -76,10 +75,6 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof IntersectionType it) {
-            return it.equals(this);
-        }
-
         if (this == o) return true;
         if (o == null || !(o instanceof VarType)) return false;
         VarType varType = (VarType) o;

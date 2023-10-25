@@ -30,7 +30,7 @@ public class VarTypeResolveVisitor implements DeepStructuralMappingVisitor {
     public Type varTypeOverride(VarType type, TypeCache<Type, Type> cache) {
         Type resolved = this.resolver.apply(type);
         cache.put(type, resolved);
-        if (resolved.equals(type)) {
+        if (resolved.typeEquals(type)) {
             return resolved;
         } else {
             return visit(resolved);

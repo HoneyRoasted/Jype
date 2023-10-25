@@ -40,7 +40,7 @@ public class ArrayTypeDelegate extends AbstractTypeDelegate<ArrayType> implement
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new ArrayTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new ArrayTypeDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 
 }

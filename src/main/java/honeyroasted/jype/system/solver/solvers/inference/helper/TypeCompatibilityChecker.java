@@ -7,6 +7,7 @@ import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionIn
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.IntersectionType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
@@ -104,8 +105,8 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         Type cnst = constantExpression.type();
         Object val = constantExpression.value();
 
-        if (cnst.equals(c.byteType()) || cnst.equals(c.shortType()) || cnst.equals(c.charType()) || cnst.equals(c.intType())) {
-            if (target.equals(c.charType()) || target.equals(c.charBox())) {
+        if (cnst.typeEquals(c.byteType()) || cnst.typeEquals(c.shortType()) || cnst.typeEquals(c.charType()) || cnst.typeEquals(c.intType())) {
+            if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
                     this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
                             .setSatisfied(true));
@@ -113,7 +114,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                     this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
                             .setSatisfied(true));
                 }
-            } else if (target.equals(c.byteType()) || target.equals(c.byteBox())) {
+            } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
                     this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
                             .setSatisfied(true));
@@ -121,7 +122,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                     this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
                             .setSatisfied(false));
                 }
-            } else if (target.equals(c.shortType()) || target.equals(c.shortBox())) {
+            } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
                     this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
                             .setSatisfied(true));
@@ -161,7 +162,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         TypeBound.Subtype bound = new TypeBound.Subtype(subtype, subtype);
         TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parent));
 
-        if (!subtype.equals(supertype) && seen.contains(bound)) {
+        if (!subtype.typeEquals(supertype) && seen.contains(bound)) {
             //Subtype is cyclic, cannot handle without inference
             this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NonCyclicSubtype(subtype, subtype), builder)).setSatisfied(false));
         } else {
@@ -173,12 +174,12 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 builder.setSatisfied(false);
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof NoneType l) {
-                builder.setSatisfied(l.equals(l.typeSystem().constants().nullType()) && !(supertype instanceof PrimitiveType));
+                builder.setSatisfied(l.isNullType() && !(supertype instanceof PrimitiveType));
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof PrimitiveType l && supertype instanceof PrimitiveType r) {
                 builder.setSatisfied(PRIM_SUPERS.get(l.name()).contains(r.name()));
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
-            } else if (subtype.equals(supertype)) {
+            } else if (subtype.typeEquals(supertype)) {
                 builder.setSatisfied(true);
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof ClassType l && supertype instanceof ClassType r) {
@@ -201,7 +202,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                     if (superTypeOpt.isPresent()) {
                         ClassType relative = superTypeOpt.get();
                         if (relative.typeArguments().size() == pcr.typeArguments().size()) {
-                            TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, supertype), TypeBound.Result.Propagation.AND, builder));
+                            TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder));
                             for (int i = 0; i < relative.typeArguments().size(); i++) {
                                 Type ti = relative.typeArguments().get(i);
                                 Type si = pcr.typeArguments().get(i);
@@ -221,7 +222,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                     }
                                 } else {
                                     this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch))
-                                            .setSatisfied(ti.equals(si)));
+                                            .setSatisfied(ti.typeEquals(si)));
                                 }
                             }
 
@@ -244,7 +245,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
             } else if (subtype instanceof ArrayType l) {
                 if (supertype instanceof ArrayType r) {
                     if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
-                        builder.setSatisfied(r.component().equals(l.component()));
+                        builder.setSatisfied(r.component().typeEquals(l.component()));
                         this.eventBoundSatisfiedOrUnsatisfied(builder);
                     } else {
                         strictSubtype(l.component(), r.component(), seen, builder);
@@ -257,9 +258,23 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 }
             } else if (subtype instanceof VarType l) {
                 l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
+            } else if (subtype instanceof MetaVarType mvt) {
+                if (mvt.upperBounds().isEmpty()) {
+                    this.eventBoundUnsatisfied(builder.setSatisfied(false));
+                } else {
+                    mvt.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
+                }
+            } else if (supertype instanceof MetaVarType mvt) {
+                if (mvt.lowerBounds().isEmpty()) {
+                    this.eventBoundUnsatisfied(builder.setSatisfied(false));
+                } else {
+                    builder.setPropagation(TypeBound.Result.Propagation.OR);
+                    mvt.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
+                }
             } else if (subtype instanceof WildType.Upper l) {
                 l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
-            } else if (subtype instanceof WildType.Lower r) {
+            } else if (supertype instanceof WildType.Lower r) {
+                builder.setPropagation(TypeBound.Result.Propagation.OR);
                 r.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
             } else if (subtype instanceof IntersectionType l) {
                 builder.setPropagation(TypeBound.Result.Propagation.OR);

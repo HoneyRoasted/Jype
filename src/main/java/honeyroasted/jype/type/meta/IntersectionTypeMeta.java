@@ -34,7 +34,7 @@ public class IntersectionTypeMeta<T> extends IntersectionTypeDelegate implements
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        IntersectionTypeMeta<T> copy = new IntersectionTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        IntersectionTypeMeta<T> copy = new IntersectionTypeMeta<>(this.typeSystem(), t -> this.delegate().copy(cache));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

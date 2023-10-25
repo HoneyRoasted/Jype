@@ -19,6 +19,26 @@ public interface Type extends Copyable<Type> {
 
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
 
+    default boolean typeEquals(Type other) {
+        return this.typeEquals(other, new HashSet<>());
+    }
+
+    default boolean typeEquals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen.add(this);
+
+        if (other instanceof MetaVarType mvt) {
+            return this.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.typeEquals(other, seen));
+        } else if (other instanceof IntersectionType it) {
+            return this.equals(it) || (it.children().size() == 1 && this.typeEquals(it.children().iterator().next(), seen));
+        }
+        return this.equals(other);
+    }
+
+    default boolean isNullType() {
+        return false;
+    }
+
     default Set<Type> knownDirectSupertypes() {
         return Collections.emptySet();
     }

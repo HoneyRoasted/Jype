@@ -35,10 +35,12 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
     }
 
-    public void reset() {
+    public TypeBoundIncorporater reset() {
         this.bounds.clear();
         this.constraints.clear();
         this.initialBoundBuilder.reset();
+
+        return this;
     }
 
     public Set<TypeBound.Result.Builder> bounds() {
@@ -64,6 +66,8 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         for (TypeBound.Result.Builder boundBuilder : bounds) {
             TypeBound bound = boundBuilder.bound();
             for (TypeBound.Result.Builder otherBuilder : bounds) {
+                if (boundBuilder == otherBuilder) continue;
+
                 //Complementary bounds, 18.3.1
                 TypeBound other = otherBuilder.bound();
 
@@ -74,11 +78,11 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                     MetaVarTypeResolver subResolver = new MetaVarTypeResolver(Map.of(mvt, otherType));
                     if (other != bound) {
                         if (other instanceof TypeBound.Equal otherEq) {
-                            if (otherEq.left().equals(mvt)) {
+                            if (otherEq.left().typeEquals(mvt)) {
                                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
                                 this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(otherType, otherEq.right()), TypeBound.Result.Propagation.AND,
                                         boundBuilder, otherBuilder)));
-                            } else if (otherEq.right().equals(mvt)) {
+                            } else if (otherEq.right().typeEquals(mvt)) {
                                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
                                 this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(otherType, otherEq.left()), TypeBound.Result.Propagation.AND,
                                         boundBuilder, otherBuilder)));
@@ -88,11 +92,11 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                                         boundBuilder, otherBuilder)));
                             }
                         } else if (other instanceof TypeBound.Subtype otherSub) {
-                            if (otherSub.left().equals(mvt)) {
+                            if (otherSub.left().typeEquals(mvt)) {
                                 //Case where alpha = S and alpha <: T => S <: T (18.3.1, Bullet #2)
                                 this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(otherType, otherSub.right()), TypeBound.Result.Propagation.AND,
                                         boundBuilder, otherBuilder)));
-                            } else if (otherSub.right().equals(mvt)) {
+                            } else if (otherSub.right().typeEquals(mvt)) {
                                 //Case where alpha = S and T <: alpha => T <: S (18.3.1, Bullet #3)
                                 this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(otherSub.left(), otherType), TypeBound.Result.Propagation.AND,
                                         boundBuilder, otherBuilder)));
@@ -104,12 +108,12 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                         }
                     }
                 } else if (bound instanceof TypeBound.Subtype st && other instanceof TypeBound.Subtype otherSub) {
-                    if (st.left() instanceof MetaVarType mvt && mvt.equals(otherSub.right())) {
+                    if (st.left() instanceof MetaVarType mvt && mvt.typeEquals(otherSub.right())) {
                         //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
                         this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(st.right(), otherSub.left()), boundBuilder, otherBuilder)));
                     }
 
-                    if (st.left() instanceof MetaVarType mvt && mvt.equals(otherSub.left())) {
+                    if (st.left() instanceof MetaVarType mvt && mvt.typeEquals(otherSub.left())) {
                         //Case where alpha <: T and alpha <: S and generic supertype G of T and S exists => generic parameters
                         // that aren't wildcards are equal (18.3.1, Last Paragraph)
                         commonSupertypes(st.right(), otherSub.right(), bounds).forEach(pair -> {
@@ -136,7 +140,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                 //P_l = parameter l of G
                 //B_l = bound of P_l
 
-                if (left.classReference().equals(right.classReference()) &&
+                if (left.classReference().typeEquals(right.classReference()) &&
                         left.typeArguments().size() == right.typeArguments().size()) { //Sanity check, should be true by convention
                     Map<VarType, MetaVarType> varMap = new LinkedHashMap<>(); //Substitution P_l = alpha_i
                     for (int i = 0; i < left.typeParameters().size() && i < left.typeArguments().size(); i++) {
@@ -164,12 +168,12 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                             if (a instanceof WildType) {
                                 for (TypeBound.Result.Builder otherBuilder : bounds) {
                                     TypeBound other = otherBuilder.bound();
-                                    if (other instanceof TypeBound.Equal eq && ((eq.left().equals(alpha) && !(eq.right() instanceof MetaVarType))
-                                            || (eq.right().equals(alpha) && !(eq.left() instanceof MetaVarType)))) {
+                                    if (other instanceof TypeBound.Equal eq && ((eq.left().typeEquals(alpha) && !(eq.right() instanceof MetaVarType))
+                                            || (eq.right().typeEquals(alpha) && !(eq.left() instanceof MetaVarType)))) {
                                         //Case where Ai is a wildcard and alpha_i = R => false (18.3.2 Bullets #2.1, 3.1, 4.1)
                                         this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(TypeBound.False.INSTANCE, boundBuilder, otherBuilder)));
                                     } else if (other instanceof TypeBound.Subtype st) {
-                                        if (st.left().equals(alpha) && !(st.right() instanceof MetaVarType)) {
+                                        if (st.left().typeEquals(alpha) && !(st.right() instanceof MetaVarType)) {
                                             //alpha <: R
                                             Type r = st.right();
                                             if (a instanceof WildType.Upper wtu) {
@@ -189,7 +193,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                                                 bi.forEach(bii -> this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(
                                                         new TypeBound.Subtype(theta.apply(bii), r), boundBuilder, otherBuilder))));
                                             }
-                                        } else if (st.right().equals(alpha) && !(st.left() instanceof MetaVarType)) {
+                                        } else if (st.right().typeEquals(alpha) && !(st.left() instanceof MetaVarType)) {
                                             //r <: alpha
                                             Type r = st.left();
                                             if (a instanceof WildType.Upper wtu) {
@@ -225,7 +229,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         for (Type leftSuper : leftSupers) {
             if (leftSuper instanceof ParameterizedClassType lct) {
                 for (Type rightSuper : rightSupers) {
-                    if (rightSuper instanceof ParameterizedClassType rct && lct.classReference().equals(rct.classReference())) {
+                    if (rightSuper instanceof ParameterizedClassType rct && lct.classReference().typeEquals(rct.classReference())) {
                         result.add(Pair.of(lct, rct));
                     }
                 }
@@ -246,7 +250,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
             building.add(type);
             if (type instanceof MetaVarType mvt) {
                 bounds.forEach(t -> {
-                    if (t.bound() instanceof TypeBound.Subtype st && st.left().equals(mvt)) {
+                    if (t.bound() instanceof TypeBound.Subtype st && st.left().typeEquals(mvt)) {
                         building.add(st.right());
                         st.right().knownDirectSupertypes().forEach(k -> allSupertypes(building, k, bounds));
                     }

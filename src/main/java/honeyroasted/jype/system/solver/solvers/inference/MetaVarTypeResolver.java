@@ -31,7 +31,7 @@ public class MetaVarTypeResolver implements DeepStructuralMappingVisitor {
     public Type metaVarTypeOverride(MetaVarType type, TypeCache<Type, Type> cache) {
         Type resolved = this.resolver.apply(type);
         cache.put(type, resolved);
-        if (resolved.equals(type)) {
+        if (resolved.typeEquals(type)) {
             return resolved;
         } else {
             return visit(resolved);

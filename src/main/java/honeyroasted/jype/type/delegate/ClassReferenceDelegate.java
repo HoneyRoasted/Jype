@@ -116,6 +116,6 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new ClassReferenceDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new ClassReferenceDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 }

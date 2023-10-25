@@ -34,7 +34,7 @@ public class NoneTypeMeta<T> extends NoneTypeDelegate implements MetadataType<No
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        NoneTypeMeta<T> copy = new NoneTypeMeta<>(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        NoneTypeMeta<T> copy = new NoneTypeMeta<>(this.typeSystem(), t -> this.delegate().copy(cache));
         copy.setMetadata(this.metadata instanceof Copyable<?> cp ? (T) cp.copy(cache) : this.metadata);
         return (K) copy;
     }

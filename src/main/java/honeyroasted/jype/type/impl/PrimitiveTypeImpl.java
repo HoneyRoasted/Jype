@@ -5,7 +5,6 @@ import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
@@ -45,10 +44,6 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof IntersectionType it) {
-            return it.equals(this);
-        }
-
         if (this == o) return true;
         if (o == null || !(o instanceof PrimitiveType)) return false;
         PrimitiveType that = (PrimitiveType) o;

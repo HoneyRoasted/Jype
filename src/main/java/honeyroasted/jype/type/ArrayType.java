@@ -8,6 +8,10 @@ import java.util.Set;
 public interface ArrayType extends PossiblyUnmodifiable, InstantiableType, ArgumentType {
     Type component();
 
+    default Type deepComponent() {
+        return this.component() instanceof ArrayType at ? at.deepComponent() : this.component();
+    }
+
     void setComponent(Type component);
 
     int depth();

@@ -4,7 +4,6 @@ import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
-import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 
 import java.util.Objects;
@@ -53,10 +52,6 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof IntersectionType it) {
-            return it.equals(this);
-        }
-
         if (this == o) return true;
         if (o == null || !(o instanceof ArrayType)) return false;
         ArrayType arrayType = (ArrayType) o;

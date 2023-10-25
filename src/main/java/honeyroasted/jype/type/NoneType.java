@@ -8,4 +8,9 @@ public interface NoneType extends Type {
     default <R, P> R accept(TypeVisitor<R, P> visitor, P context) {
         return visitor.visitNoneType(this, context);
     }
+
+    @Override
+    default boolean isNullType() {
+        return this.name().equals("null");
+    }
 }

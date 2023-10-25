@@ -47,6 +47,6 @@ public class VarTypeDelegate extends AbstractTypeDelegate<VarType> implements Va
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new VarTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new VarTypeDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 }

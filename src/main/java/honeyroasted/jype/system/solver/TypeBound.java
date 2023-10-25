@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionInformation;
+import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -389,20 +390,22 @@ public interface TypeBound {
         }
     }
 
-    class TypeArgumentsMatch extends Binary<Type, Type> {
+    class TypeArgumentsMatch extends Binary<ClassType, ClassType> {
 
-        public TypeArgumentsMatch(Type left, Type right) {
+        public TypeArgumentsMatch(ClassType left, ClassType right) {
             super(left, right);
         }
 
         @Override
         public String toString() {
-            return this.left + " HAS COMPATIBLE GENERIC ARGUMENTS WITH " + this.right;
+            return "<" + this.left.typeArguments().stream().map(Objects::toString).collect(Collectors.joining(", ")) + "> ARE COMPATIBLE WITH <" +
+                    this.right.typeArguments().stream().map(Objects::toString).collect(Collectors.joining(", ")) + ">";
         }
 
         @Override
         public String simpleName() {
-            return this.left.simpleName() + " <...>=<...> " + this.right.simpleName();
+            return "<" + this.left.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + "> ~= <" +
+                    this.right.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">";
         }
     }
 

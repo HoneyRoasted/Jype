@@ -139,6 +139,6 @@ public class ParameterizedMethodTypeDelegate extends AbstractTypeDelegate<Parame
 
     @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new ParameterizedMethodTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new ParameterizedMethodTypeDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 }

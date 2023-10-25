@@ -5,6 +5,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Set;
 import java.util.function.Function;
 
 public class MetaVarTypeDelegate extends AbstractTypeDelegate<MetaVarType> implements MetaVarType {
@@ -24,8 +25,23 @@ public class MetaVarTypeDelegate extends AbstractTypeDelegate<MetaVarType> imple
     }
 
     @Override
+    public Set<Type> upperBounds() {
+        return this.delegate().upperBounds();
+    }
+
+    @Override
+    public Set<Type> lowerBounds() {
+        return this.delegate().lowerBounds();
+    }
+
+    @Override
+    public Set<Type> equalities() {
+        return this.delegate().equalities();
+    }
+
+    @Override
     public <K extends Type> K copy(TypeCache<Type, Type> cache) {
-        return (K) new MetaVarTypeDelegate(this.typeSystem(), DelegateType.delayAndCache(t -> this.delegate().copy(cache)));
+        return (K) new MetaVarTypeDelegate(this.typeSystem(), t -> this.delegate().copy(cache));
     }
 
 }

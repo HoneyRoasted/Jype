@@ -63,10 +63,6 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
 
     @Override
     public boolean equals(Object o) {
-        if (this.children.size() == 1) {
-            return this.children.iterator().next().equals(o);
-        }
-
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IntersectionTypeImpl that = (IntersectionTypeImpl) o;

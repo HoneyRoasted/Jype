@@ -43,7 +43,7 @@ public class TypeInitialBoundBuilder extends AbstractInferenceHelper {
                         foundProperUpper = true;
                     }
                     //Upper bounds imply alpha_l <: T[P_1 = alpha_1... P_n = alpha_n], for each bound T
-                    this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(mvt, bound)));
+                    this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(mvt, resolved)));
                 }
 
                 if (!foundProperUpper) {
