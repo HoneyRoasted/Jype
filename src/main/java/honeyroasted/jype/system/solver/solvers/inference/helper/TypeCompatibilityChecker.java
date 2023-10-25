@@ -199,9 +199,11 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                     Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
                             .relativeSupertype(pcr.classReference());
                     if (superTypeOpt.isPresent()) {
+                        this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)).setSatisfied(true));
+
                         ClassType relative = superTypeOpt.get();
+                        TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder));
                         if (relative.typeArguments().size() == pcr.typeArguments().size()) {
-                            TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder));
                             for (int i = 0; i < relative.typeArguments().size(); i++) {
                                 Type ti = relative.typeArguments().get(i);
                                 Type si = pcr.typeArguments().get(i);
@@ -230,11 +232,11 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                 this.eventBoundSatisfiedOrUnsatisfied(builder);
                             }
                         } else {
-                            builder.setSatisfied(false);
+                            this.eventBoundUnsatisfied(argsMatch.setSatisfied(false));
                             this.eventBoundSatisfiedOrUnsatisfied(builder);
                         }
                     } else {
-                        builder.setSatisfied(false);
+                        this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)).setSatisfied(false));
                         this.eventBoundSatisfiedOrUnsatisfied(builder);
                     }
                 } else {

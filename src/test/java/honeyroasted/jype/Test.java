@@ -19,7 +19,7 @@ public class Test {
         TypeSystem system = TypeSystem.RUNTIME;
         TypeSolver.Result result = new CompatibilityTypeSolver()
                 .bind(
-                        new TypeBound.Compatible(resolve(new TypeToken<LinkedHashMap<String, Integer>>() {}), resolve(new TypeToken<Map<String, Integer>>() {}))
+                        new TypeBound.Subtype(new TypeToken<LinkedHashMap<String, Integer>>() {}.resolve(), new TypeToken<Map<String, ? extends Integer>>() {}.resolve())
                 )
                 .solve(system);
 
