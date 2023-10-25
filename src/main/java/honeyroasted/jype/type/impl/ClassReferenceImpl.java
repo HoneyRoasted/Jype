@@ -12,9 +12,11 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType implements ClassReference {
     private ClassNamespace namespace;
@@ -26,11 +28,6 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
 
     public ClassReferenceImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return this.namespace.name().simpleName();
     }
 
     @Override
@@ -170,25 +167,44 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, other);
+
+        if (other instanceof ClassType ct) {
+            if (Objects.equals(namespace, ct.namespace()) && modifiers == ct.modifiers() &&
+                    ((!this.hasRelevantOuterType() && !ct.hasRelevantOuterType()) || Type.equals(this.outerClass, ct.outerType(), seen))) {
+                if (other instanceof ParameterizedClassType pct) {
+                    return (!pct.hasTypeArguments() || Type.equals(pct.typeArguments(), typeParameters, seen));
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ClassType)) return false;
-        if (o instanceof ClassReference cr) {
-            return Objects.equals(namespace, cr.namespace()) && modifiers == cr.modifiers();
-        } else if (o instanceof ParameterizedClassType pt) {
-            return pt.equals(this);
-        }
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
         return false;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(namespace);
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.multiHash(Objects.hashCode(this.namespace), modifiers, Type.hashCode(outerClass, seen));
     }
 
     @Override
-    public String toString() {
-        return this.namespace.toString();
+    public int hashCode() {
+        return this.hashCode(new HashSet<>());
     }
 
 }

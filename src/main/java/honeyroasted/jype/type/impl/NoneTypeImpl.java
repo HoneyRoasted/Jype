@@ -6,7 +6,9 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 public final class NoneTypeImpl extends AbstractType implements NoneType {
     private final String name;
@@ -22,16 +24,32 @@ public final class NoneTypeImpl extends AbstractType implements NoneType {
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+
+        if (other instanceof NoneType nt) {
+            return Objects.equals(name, nt.name());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof NoneType)) return false;
-        NoneType noneType = (NoneType) o;
-        return Objects.equals(name, noneType.name());
+        if (o instanceof Type t) return this.equals(t, Collections.emptySet());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        return Objects.hashCode(name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return this.hashCode(Collections.emptySet());
     }
 
     @Override

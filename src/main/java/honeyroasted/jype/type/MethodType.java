@@ -4,6 +4,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
 
 public interface MethodType extends Type, PossiblyUnmodifiable {
@@ -19,6 +20,14 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
     ClassReference outerClass();
 
     void setOuterClass(ClassReference outerClass);
+
+    default boolean hasRelevantOuterType() {
+        return !Modifier.isStatic(this.modifiers()) && this.outerType() != null;
+    }
+
+    MethodReference methodReference();
+
+    ClassType outerType();
 
     Type returnType();
 

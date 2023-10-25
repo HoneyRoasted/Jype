@@ -6,7 +6,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -18,13 +18,6 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public WildTypeUpperImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return "?" +
-                ((!this.upperBound.isEmpty() && !this.upperBound.equals(Set.of(this.typeSystem().constants().object()))) ?
-                        " extends " + this.upperBound.stream().map(Type::simpleName).collect(Collectors.joining(" & ")) : "");
     }
 
     @Override
@@ -81,27 +74,30 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
-    public boolean equals(Object o) {
-        return o instanceof WildType wt && wt.identity() == this.identity;
-    }
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
 
-    @Override
-    public int hashCode() {
-        return this.identity;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("? extends ");
-        Iterator<Type> iterator = this.upperBound.iterator();
-        while (iterator.hasNext()) {
-            sb.append(iterator.next());
-            if (iterator.hasNext()) {
-                sb.append(" & ");
-            }
+        if (other instanceof WildType.Lower wtl) {
+            return identity == wtl.identity() && Type.equals(upperBound, wtl.lowerBounds(), seen);
+        } else {
+            return false;
         }
-        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.multiHash(identity, Type.hashCode(upperBound, seen));
     }
 
 }

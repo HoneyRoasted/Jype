@@ -25,6 +25,8 @@ public class RecursiveTypeVisitor<R, C> implements TypeVisitor<List<R>, Map<Type
     private boolean visitStructural;
     private C context;
 
+    public static class Box<T> { public T val; }
+
     public RecursiveTypeVisitor(TypeVisitor<R, C> visitor, C context, boolean visitStructural) {
         this.visitor = visitor;
         this.context = context;

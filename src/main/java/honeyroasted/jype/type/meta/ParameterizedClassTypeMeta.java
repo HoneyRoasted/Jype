@@ -5,7 +5,6 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.delegate.DelegateType;
 import honeyroasted.jype.type.delegate.ParameterizedClassTypeDelegate;
 
 import java.util.function.Function;

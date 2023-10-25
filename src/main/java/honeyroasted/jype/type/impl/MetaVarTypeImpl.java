@@ -6,8 +6,8 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Objects;
 import java.util.Set;
 
 public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
@@ -56,11 +56,6 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     }
 
     @Override
-    public String simpleName() {
-        return this.name + "/" + Integer.toString(this.identity, 16);
-    }
-
-    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
         MetaVarType mvt = new MetaVarTypeImpl(this.typeSystem(), this.identity, this.name);
         cache.put(this, mvt);
@@ -73,20 +68,33 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+
+        if (other instanceof MetaVarType mvt) {
+            return this.identity == mvt.identity();
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MetaVarTypeImpl that = (MetaVarTypeImpl) o;
-        return identity == that.identity;
+        if (o instanceof Type t) return this.equals(t, Collections.emptySet());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+
+        return this.identity;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(identity);
+        return this.hashCode(Collections.emptySet());
     }
 
-    @Override
-    public String toString() {
-        return "%" + this.name + "/" + Integer.toString(this.identity, 16);
-    }
 }

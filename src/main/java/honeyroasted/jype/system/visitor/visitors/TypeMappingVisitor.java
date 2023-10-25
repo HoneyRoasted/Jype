@@ -10,15 +10,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public interface MappingVisitor<P> extends SimpleTypeVisitor<Type, P>, Function<Type, Type> {
+public interface TypeMappingVisitor<P> extends SimpleTypeVisitor<Type, P>, Function<Type, Type> {
 
-    interface Default<P> extends MappingVisitor<P> {
+    interface Default<P> extends TypeMappingVisitor<P> {
         @Override
         Type visitType(Type type, P context);
     }
 
-    default MappingVisitor<Void> withContext(Supplier<P> newContext) {
-        return (MappingVisitor.Default<Void>) (type, context) -> this.visit(type, newContext.get());
+    default TypeMappingVisitor<Void> withContext(Supplier<P> newContext) {
+        return (TypeMappingVisitor.Default<Void>) (type, context) -> this.visit(type, newContext.get());
     }
 
     default Type visit(Type type) {

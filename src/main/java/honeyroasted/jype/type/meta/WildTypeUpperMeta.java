@@ -5,7 +5,6 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.delegate.DelegateType;
 import honeyroasted.jype.type.delegate.WildTypeUpperDelegate;
 
 import java.util.function.Function;

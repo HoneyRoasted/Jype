@@ -12,15 +12,14 @@ import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedClassType {
     private ClassReference classReference;
@@ -31,12 +30,6 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
 
     public ParameterizedClassTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return this.classReference.simpleName() +
-                (this.hasTypeArguments() ? "<" + this.typeArguments.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">" : "");
     }
 
     @Override
@@ -202,36 +195,51 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof ClassType ct) {
+            if (Type.equals(ct.classReference(), this.classReference, seen)) {
+                if (ct instanceof ClassReference cr) {
+                    return !this.hasTypeArguments() || Type.equals(typeArguments, cr.typeParameters(), seen);
+                } else if (ct instanceof ParameterizedClassType pct) {
+                    return Type.equals(typeArguments, pct.typeArguments(), seen) &&
+                            ((!this.hasRelevantOuterType() && !pct.hasRelevantOuterType()) || Type.equals(outerType, pct.outerType(), seen));
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ClassType)) return false;
-        if (o instanceof ParameterizedClassType pct) {
-            return Objects.equals(classReference, pct.classReference()) && Objects.equals(typeArguments, pct.typeArguments()) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, pct.outerType()));
-        } else if (o instanceof ClassReference cr) {
-            return Objects.equals(classReference, cr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, cr.typeParameters())) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, cr.outerClass()));
-        }
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
         return false;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(classReference, typeArguments);
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        if (Type.equals(this, classReference, new HashSet<>())) {
+            return Type.hashCode(classReference, seen);
+        } else {
+            return Type.multiHash(Type.hashCode(classReference, seen), Type.hashCode(outerType, seen),
+                    Type.hashCode(typeArguments, seen));
+        }
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.classReference);
-        if (!this.typeArguments().isEmpty()) {
-            sb.append("<");
-            for (int i = 0; i < this.typeArguments().size(); i++) {
-                sb.append(this.typeArguments().get(i));
-                if (i < this.typeArguments().size() - 1) {
-                    sb.append(", ");
-                }
-            }
-            sb.append(">");
-        }
-        return sb.toString();
+    public int hashCode() {
+        return this.hashCode(new HashSet<>());
     }
+
 }

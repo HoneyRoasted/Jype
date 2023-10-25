@@ -9,9 +9,9 @@ import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
-import honeyroasted.jype.type.Signature;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
+import honeyroasted.jype.type.signature.Signature;
 
 import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;

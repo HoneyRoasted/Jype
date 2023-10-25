@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public interface ParameterizedMethodType extends PossiblyUnmodifiable, MethodType, ParameterizedType {
-    MethodReference methodReference();
 
     ClassType outerType();
 

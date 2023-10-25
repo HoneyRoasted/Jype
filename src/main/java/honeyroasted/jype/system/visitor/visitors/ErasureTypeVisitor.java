@@ -7,7 +7,7 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
-public class ErasureTypeVisitor implements StructuralMappingVisitor<Boolean> {
+public class ErasureTypeVisitor implements StructuralTypeMappingVisitor<Boolean> {
 
     @Override
     public Type visit(Type type) {

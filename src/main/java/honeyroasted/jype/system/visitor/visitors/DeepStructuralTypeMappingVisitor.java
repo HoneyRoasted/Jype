@@ -29,7 +29,7 @@ import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 import java.util.List;
 import java.util.Optional;
 
-public interface DeepStructuralMappingVisitor extends MappingVisitor<TypeCache<Type, Type>> {
+public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<TypeCache<Type, Type>> {
     default boolean overridesClassType(ClassType type) {
         return false;
     }

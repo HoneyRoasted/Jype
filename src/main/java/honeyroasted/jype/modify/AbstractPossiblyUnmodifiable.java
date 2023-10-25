@@ -15,8 +15,6 @@ public abstract class AbstractPossiblyUnmodifiable implements PossiblyUnmodifiab
     protected void makeModifiable() {
     }
 
-    ;
-
     public boolean isUnmodifiable() {
         return this.unmodifiable;
     }

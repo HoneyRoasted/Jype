@@ -8,6 +8,7 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,11 +21,6 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public VarTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return this.name();
     }
 
     @Override
@@ -74,21 +70,36 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof VarType vt) {
+            return Objects.equals(location, vt.location()) &&
+                    Type.equals(upperBounds, vt.upperBounds(), seen);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof VarType)) return false;
-        VarType varType = (VarType) o;
-        return Objects.equals(location, varType.location());
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.multiHash(Objects.hashCode(location), Type.hashCode(upperBounds, seen));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location);
-    }
-
-    @Override
-    public String toString() {
-        return this.location.toString();
+        return this.hashCode(new HashSet<>());
     }
 
 }

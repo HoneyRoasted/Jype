@@ -6,19 +6,15 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implements ArrayType {
     private Type component;
 
     public ArrayTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return this.component.simpleName() + "[]";
     }
 
     @Override
@@ -51,21 +47,35 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof ArrayType at) {
+            return Type.equals(this.component(), at.component(), seen);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof ArrayType)) return false;
-        ArrayType arrayType = (ArrayType) o;
-        return Objects.equals(component, arrayType.component());
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.hashCode(this.component(), seen);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(component);
-    }
-
-    @Override
-    public String toString() {
-        return this.component + "[]";
+        return this.hashCode(new HashSet<>());
     }
 
 }

@@ -1,4 +1,4 @@
-package honeyroasted.jype.type;
+package honeyroasted.jype.type.signature;
 
 public interface Signature {
 

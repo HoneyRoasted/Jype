@@ -14,6 +14,15 @@ public interface MethodReference extends PossiblyUnmodifiable, MethodType {
 
     ParameterizedMethodType parameterizedWithTypeVars();
 
+    default MethodReference methodReference() {
+        return this;
+    }
+
+    @Override
+    default ClassType outerType() {
+        return outerClass();
+    }
+
     @Override
     default boolean hasTypeArguments() {
         return false;

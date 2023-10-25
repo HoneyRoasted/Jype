@@ -13,12 +13,11 @@ import honeyroasted.jype.type.ParameterizedMethodType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifiableType implements ParameterizedMethodType {
     private MethodReference methodReference;
@@ -27,12 +26,6 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
 
     public ParameterizedMethodTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return (this.hasTypeArguments() ? "<" + typeArguments.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">" : "")
-                + this.methodReference.simpleName();
     }
 
     @Override
@@ -161,37 +154,52 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
         methodReference.setParameters(parameters);
     }
 
-    public boolean equals(Object o) {
+    @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
 
-        if (this == o) return true;
-        if (o == null || !(o instanceof MethodType)) return false;
-        if (o instanceof ParameterizedMethodType pt) {
-            return Objects.equals(methodReference, pt.methodReference()) && Objects.equals(typeArguments, pt.typeArguments()) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, pt.outerType()));
-        } else if (o instanceof MethodReference mr) {
-            return Objects.equals(methodReference, mr) && (typeArguments.isEmpty() || Objects.equals(typeArguments, mr.typeParameters())) && (Modifier.isStatic(this.modifiers()) || Objects.equals(outerType, mr.outerClass()));
+        if (other instanceof MethodType mt) {
+            if (Type.equals(methodReference, mt.methodReference(), seen)) {
+                if (mt instanceof MethodReference mr) {
+                    return !this.hasTypeArguments() || (Type.equals(typeArguments, mr.typeParameters(), seen));
+                } else if (mt instanceof ParameterizedMethodType pmt) {
+                    return Type.equals(typeArguments, pmt.typeArguments(), seen) &&
+                            ((!this.hasRelevantOuterType() && !pmt.hasRelevantOuterType()) || Type.equals(outerType, pmt.outerType(), seen));
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
         return false;
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(methodReference, typeArguments);
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        if (Type.equals(this, methodReference, new HashSet<>())) {
+            return Type.hashCode(methodReference, seen);
+        } else {
+            return Type.multiHash(Type.hashCode(methodReference, seen), Type.hashCode(outerType, seen),
+                    Type.hashCode(typeArguments, seen));
+        }
     }
 
     @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(this.methodReference);
-        if (!this.typeArguments().isEmpty()) {
-            sb.append("<");
-            for (int i = 0; i < this.typeArguments().size(); i++) {
-                sb.append(this.typeArguments().get(i));
-                if (i < this.typeArguments().size() - 1) {
-                    sb.append(", ");
-                }
-            }
-            sb.append(">");
-        }
-        return sb.toString();
+    public int hashCode() {
+        return this.hashCode(new HashSet<>());
     }
+
 }

@@ -6,7 +6,7 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -18,11 +18,6 @@ public class WildTypeLowerImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public WildTypeLowerImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return "? super " + this.lowerBound.stream().map(Type::simpleName).collect(Collectors.joining(" & "));
     }
 
     @Override
@@ -79,26 +74,35 @@ public class WildTypeLowerImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof WildType.Lower wtl) {
+            return identity == wtl.identity() && Type.equals(lowerBound, wtl.lowerBounds(), seen);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
-        return o instanceof WildType wt && wt.identity() == this.identity;
+        if (this == o) return true;
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.multiHash(identity, Type.hashCode(lowerBound, seen));
     }
 
     @Override
     public int hashCode() {
-        return this.identity;
+        return this.hashCode(new HashSet<>());
     }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("? super ");
-        Iterator<Type> iterator = this.lowerBound.iterator();
-        while (iterator.hasNext()) {
-            sb.append(iterator.next());
-            if (iterator.hasNext()) {
-                sb.append(" & ");
-            }
-        }
-        return sb.toString();
-    }
 }

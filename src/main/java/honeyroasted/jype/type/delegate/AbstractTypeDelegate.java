@@ -3,6 +3,7 @@ package honeyroasted.jype.type.delegate;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.Type;
 
+import java.util.Set;
 import java.util.function.Function;
 
 public abstract class AbstractTypeDelegate<T extends Type> implements DelegateType<T> {
@@ -47,7 +48,18 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        return this.delegate().equals(other, seen);
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        return this.delegate().hashCode(seen);
+    }
+
+    @Override
     public String toString() {
         return this.delegate().toString();
     }
+
 }

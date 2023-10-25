@@ -14,4 +14,5 @@ open module Jype.main {
     exports honeyroasted.jype.system.visitor.visitors;
     exports honeyroasted.jype.system.solver.exception;
     exports honeyroasted.jype.system.solver.solvers.inference.expression;
+    exports honeyroasted.jype.type.signature;
 }

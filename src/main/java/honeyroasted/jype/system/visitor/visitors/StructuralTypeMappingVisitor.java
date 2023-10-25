@@ -23,7 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface StructuralMappingVisitor<P> extends MappingVisitor<P> {
+public interface StructuralTypeMappingVisitor<P> extends TypeMappingVisitor<P> {
     @Override
     default Type visitClassType(ClassType type, P context) {
         if (type instanceof ParameterizedClassType pType) {

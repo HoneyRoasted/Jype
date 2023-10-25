@@ -166,8 +166,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
             //Subtype is cyclic, cannot handle without inference
             this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NonCyclicSubtype(subtype, subtype), builder)).setSatisfied(false));
         } else {
-            seen = new HashSet<>(seen);
-            seen.add(bound);
+            seen = Type.concat(seen, bound);
             Set<TypeBound.Subtype> finalSeen = seen;
 
             if (supertype instanceof NoneType) {

@@ -13,10 +13,11 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType implements MethodReference {
     private MethodLocation location;
@@ -29,13 +30,6 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
 
     public MethodReferenceImpl(TypeSystem typeSystem) {
         super(typeSystem);
-    }
-
-    @Override
-    public String simpleName() {
-        return this.location.simpleName() + "(" +
-                this.parameters.stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ") -> " +
-                this.returnType.simpleName();
     }
 
     @Override
@@ -161,25 +155,47 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public String toString() {
-        return this.location.toString();
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof MethodType mt) {
+            if (Objects.equals(location, mt.location()) && modifiers == mt.modifiers() && Type.equals(returnType, mt.returnType(), seen) &&
+                    Type.equals(exceptionTypes, mt.exceptionTypes(), seen) && Type.equals(parameters, mt.parameters(), seen) && Type.equals(typeParameters, mt.typeParameters(), seen) &&
+                    ((!this.hasRelevantOuterType() && !mt.hasRelevantOuterType()) || Type.equals(this.outerClass, mt.outerType(), seen))) {
+                if (mt instanceof ParameterizedMethodType pmt) {
+                    return (!pmt.hasRelevantOuterType() || Type.equals(pmt.typeArguments(), typeParameters, seen));
+                } else {
+                    return true;
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof MethodType)) return false;
-        if (o instanceof MethodReference mr) {
-            return Objects.equals(location, mr.location()) && Objects.equals(returnType, mr.returnType()) && Objects.equals(outerClass, mr.outerClass()) && Objects.equals(parameters, mr.parameters()) && Objects.equals(typeParameters, mr.typeParameters()) && modifiers == mr.modifiers();
-        } else if (o instanceof ParameterizedMethodType pt) {
-            return pt.equals(this);
-        }
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
         return false;
     }
 
     @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.multiHash(Objects.hashCode(location), modifiers, Type.hashCode(outerClass, seen),
+                Type.hashCode(returnType, seen), Type.hashCode(exceptionTypes, seen), Type.hashCode(parameters, seen),
+                Type.hashCode(typeParameters, seen));
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(location, returnType, outerClass, parameters, typeParameters, exceptionTypes);
+        return this.hashCode(new HashSet<>());
     }
 
 }

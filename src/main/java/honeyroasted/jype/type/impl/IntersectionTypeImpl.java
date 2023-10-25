@@ -7,8 +7,9 @@ import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,37 +45,46 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
     }
 
     @Override
-    public String simpleName() {
-        return this.children.stream().map(Type::simpleName).collect(Collectors.joining(" & "));
-    }
-
-    @Override
-    public String toString() {
-        return this.children.stream().map(Type::toString).collect(Collectors.joining(" & "));
-    }
-
-    @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
+        Optional<Type> cached = cache.get(this);
+        if (cached.isPresent()) return (T) cached.get();
+
         IntersectionType copy = new IntersectionTypeImpl(this.typeSystem());
+        cache.put(this, copy);
         copy.setChildren((Set) this.children.stream().map(Type::copy).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
         return (T) copy;
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+        seen = Type.concat(seen, this);
+
+        if (other instanceof IntersectionType it) {
+            return Type.equals(children, it.children(), seen);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        IntersectionTypeImpl that = (IntersectionTypeImpl) o;
-        return Objects.equals(children, that.children);
+        if (o instanceof Type t) return this.equals(t, new HashSet<>());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        seen = Type.concat(seen, this);
+
+        return Type.hashCode(children, seen);
     }
 
     @Override
     public int hashCode() {
-        if (this.children.size() == 1) {
-            return this.children.iterator().next().hashCode();
-        }
-
-        return Objects.hash(children);
+        return this.hashCode(new HashSet<>());
     }
 }

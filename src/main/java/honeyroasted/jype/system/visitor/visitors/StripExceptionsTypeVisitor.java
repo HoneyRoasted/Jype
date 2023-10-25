@@ -7,7 +7,7 @@ import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
 
-public class StripExceptionsTypeVisitor implements DeepStructuralMappingVisitor {
+public class StripExceptionsTypeVisitor implements DeepStructuralTypeMappingVisitor {
 
     @Override
     public boolean overridesMethodType(MethodType type) {

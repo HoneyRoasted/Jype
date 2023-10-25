@@ -8,7 +8,9 @@ import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
+import java.util.Collections;
 import java.util.Objects;
+import java.util.Set;
 
 public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveType {
     private ClassNamespace namespace;
@@ -43,26 +45,32 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
     }
 
     @Override
+    public boolean equals(Type other, Set<Type> seen) {
+        if (seen.contains(this)) return true;
+
+        if (other instanceof PrimitiveType pt) {
+            return Objects.equals(descriptor, pt.descriptor());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || !(o instanceof PrimitiveType)) return false;
-        PrimitiveType that = (PrimitiveType) o;
-        return Objects.equals(namespace, that.namespace());
+        if (o instanceof Type t) return this.equals(t, Collections.emptySet());
+        return false;
+    }
+
+    @Override
+    public int hashCode(Set<Type> seen) {
+        if (seen.contains(this)) return 0;
+        return Objects.hashCode(descriptor);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(namespace);
-    }
-
-    @Override
-    public String toString() {
-        return this.namespace().name().toString();
-    }
-
-    @Override
-    public String simpleName() {
-        return this.toString();
+        return this.hashCode(Collections.emptySet());
     }
 
     @Override

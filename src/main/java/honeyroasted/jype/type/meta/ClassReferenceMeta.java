@@ -6,7 +6,6 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.delegate.ClassReferenceDelegate;
-import honeyroasted.jype.type.delegate.DelegateType;
 
 import java.util.function.Function;
 

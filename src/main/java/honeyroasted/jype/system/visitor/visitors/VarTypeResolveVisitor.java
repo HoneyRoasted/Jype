@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class VarTypeResolveVisitor implements DeepStructuralMappingVisitor {
+public class VarTypeResolveVisitor implements DeepStructuralTypeMappingVisitor {
     private Predicate<VarType> resolves;
     private Function<VarType, Type> resolver;
 

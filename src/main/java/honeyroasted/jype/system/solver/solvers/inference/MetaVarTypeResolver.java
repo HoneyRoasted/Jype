@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.solvers.inference;
 
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.visitor.visitors.DeepStructuralMappingVisitor;
+import honeyroasted.jype.system.visitor.visitors.DeepStructuralTypeMappingVisitor;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class MetaVarTypeResolver implements DeepStructuralMappingVisitor {
+public class MetaVarTypeResolver implements DeepStructuralTypeMappingVisitor {
     private Predicate<MetaVarType> resolves;
     private Function<MetaVarType, Type> resolver;
 
