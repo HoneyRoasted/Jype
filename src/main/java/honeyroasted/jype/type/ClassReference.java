@@ -16,6 +16,11 @@ public interface ClassReference extends PossiblyUnmodifiable, ClassType {
     ParameterizedClassType parameterizedWithTypeVars();
 
     @Override
+    default ClassType outerType() {
+        return outerClass();
+    }
+
+    @Override
     default Set<Type> knownDirectSupertypes() {
         Set<Type> supertypes =  new LinkedHashSet<>();
         if (this.superClass() != null) {

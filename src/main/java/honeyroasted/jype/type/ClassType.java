@@ -4,6 +4,7 @@ import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,12 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
     ClassReference outerClass();
 
     void setOuterClass(ClassReference outerClass);
+
+    default boolean hasRelevantOuterType() {
+        return !Modifier.isStatic(this.modifiers()) && this.outerType() != null;
+    }
+
+    ClassType outerType();
 
     ClassType superClass();
 

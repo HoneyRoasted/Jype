@@ -183,8 +183,18 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof ClassType l && supertype instanceof ClassType r) {
                 if (!l.hasTypeArguments() && !r.hasTypeArguments()) {
-                    builder.setSatisfied(l.hasSupertype(r.classReference()));
-                    this.eventBoundSatisfiedOrUnsatisfied(builder);
+                    if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
+                        if (l.hasRelevantOuterType() && r.hasRelevantOuterType()) {
+                            strictSubtype(l.outerType(), r.outerType(), seen, builder);
+                            this.eventBoundSatisfiedOrUnsatisfied(builder);
+                        } else {
+                            builder.setSatisfied(false);
+                            this.eventBoundUnsatisfied(builder);
+                        }
+                    } else {
+                        builder.setSatisfied(l.hasSupertype(r.classReference()));
+                        this.eventBoundSatisfiedOrUnsatisfied(builder);
+                    }
                 } else if (supertype instanceof ParameterizedClassType pcr) {
                     Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
                             .relativeSupertype(pcr.classReference());
@@ -210,9 +220,14 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                                 .forEach(wildBound -> strictSubtype(wildBound, ti, finalSeen, argMatch));
                                     }
                                 } else {
-                                    TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch)
-                                            .setSatisfied(ti.equals(si));
+                                    this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch))
+                                            .setSatisfied(ti.equals(si)));
                                 }
+                            }
+
+                            if (l.hasRelevantOuterType() && r.hasRelevantOuterType()) {
+                                strictSubtype(l.outerType(), r.outerType(), seen, builder);
+                                this.eventBoundSatisfiedOrUnsatisfied(builder);
                             }
                         } else {
                             builder.setSatisfied(false);
