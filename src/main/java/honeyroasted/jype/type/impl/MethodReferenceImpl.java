@@ -177,13 +177,6 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, new HashSet<>());
-        return false;
-    }
-
-    @Override
     public int hashCode(Set<Type> seen) {
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
@@ -191,11 +184,6 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         return Type.multiHash(Objects.hashCode(location), modifiers, Type.hashCode(outerClass, seen),
                 Type.hashCode(returnType, seen), Type.hashCode(exceptionTypes, seen), Type.hashCode(parameters, seen),
                 Type.hashCode(typeParameters, seen));
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode(new HashSet<>());
     }
 
 }

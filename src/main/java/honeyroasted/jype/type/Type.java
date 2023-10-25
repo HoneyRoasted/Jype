@@ -6,9 +6,12 @@ import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +24,7 @@ public interface Type extends Copyable<Type> {
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
 
     default boolean typeEquals(Type other) {
-        return this.typeEquals(other, new HashSet<>());
+        return this.typeEquals(other, Collections.newSetFromMap(new IdentityHashMap<>()));
     }
 
     default boolean typeEquals(Type other, Set<Type> seen) {
@@ -38,7 +41,17 @@ public interface Type extends Copyable<Type> {
     }
 
     static <T> Set<T> concat(Set<T> set, T... vals) {
-        Set<T> newSet = new HashSet<>(set);
+        Set<T> newSet;
+
+        if (set instanceof LinkedHashSet<T>) {
+            newSet = new LinkedHashSet<>(set);
+        } else if (set instanceof HashSet<T>) {
+            newSet = new HashSet<>(set);
+        } else {
+            newSet = Collections.newSetFromMap(new IdentityHashMap<>());
+            newSet.addAll(set);
+        }
+
         Collections.addAll(newSet, vals);
         return newSet;
     }

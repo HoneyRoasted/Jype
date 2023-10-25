@@ -14,7 +14,9 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -178,28 +180,16 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, new HashSet<>());
-        return false;
-    }
-
-    @Override
     public int hashCode(Set<Type> seen) {
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
 
-        if (Type.equals(this, methodReference, new HashSet<>())) {
+        if (Type.equals(this, methodReference, Collections.newSetFromMap(new IdentityHashMap<>()))) {
             return Type.hashCode(methodReference, seen);
         } else {
             return Type.multiHash(Type.hashCode(methodReference, seen), Type.hashCode(outerType, seen),
                     Type.hashCode(typeArguments, seen));
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode(new HashSet<>());
     }
 
 }

@@ -188,23 +188,11 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, new HashSet<>());
-        return false;
-    }
-
-    @Override
     public int hashCode(Set<Type> seen) {
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
 
         return Type.multiHash(Objects.hashCode(this.namespace), modifiers, Type.hashCode(outerClass, seen));
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode(new HashSet<>());
     }
 
 }

@@ -56,21 +56,9 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, Collections.emptySet());
-        return false;
-    }
-
-    @Override
     public int hashCode(Set<Type> seen) {
         if (seen.contains(this)) return 0;
         return Objects.hashCode(descriptor);
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode(Collections.emptySet());
     }
 
     @Override

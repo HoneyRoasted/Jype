@@ -13,8 +13,10 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -218,28 +220,16 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, new HashSet<>());
-        return false;
-    }
-
-    @Override
     public int hashCode(Set<Type> seen) {
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
 
-        if (Type.equals(this, classReference, new HashSet<>())) {
+        if (Type.equals(this, classReference, Collections.newSetFromMap(new IdentityHashMap<>()))) {
             return Type.hashCode(classReference, seen);
         } else {
             return Type.multiHash(Type.hashCode(classReference, seen), Type.hashCode(outerType, seen),
                     Type.hashCode(typeArguments, seen));
         }
-    }
-
-    @Override
-    public int hashCode() {
-        return this.hashCode(new HashSet<>());
     }
 
 }
