@@ -42,7 +42,7 @@ public class VerboseToStringVisitor implements ToStringVisitor {
     public String classToString(ClassType type, Set<Type> context) {
         StringBuilder sb = new StringBuilder();
         if (type.hasRelevantOuterType()) {
-            sb.append(startWrap).append(visit(type.outerType()))
+            sb.append(startWrap).append(visit(type.outerType(), context))
                     .append(endWrap).append(".").append(type.namespace().name().value());
         } else {
             sb.append(type.namespace());

@@ -15,7 +15,6 @@ import honeyroasted.jype.type.VarType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +27,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     private ClassType outerType;
     private List<ArgumentType> typeArguments;
 
-    private final transient Map<ClassReference, ParameterizedClassType> superTypes = new HashMap<>();
+    private final transient Map<ClassType, ClassType> superTypes = new HashMap<>();
 
     public ParameterizedClassTypeImpl(TypeSystem typeSystem) {
         super(typeSystem);
@@ -61,23 +60,28 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
-    public Optional<ClassType> relativeSupertype(ClassReference superType) {
+    public Optional<ClassType> relativeSupertype(ClassType superType) {
         ClassType result = this.superTypes.get(superType);
         if (result != null) {
             return Optional.of(result);
         }
 
-        Optional<List<ClassType>> pathOpt = this.hierarchyPathTo(superType);
+        Optional<List<ClassType>> pathOpt = this.hierarchyPathTo(superType.classReference());
         if (pathOpt.isPresent()) {
             List<ClassType> path = pathOpt.get();
             if (!path.isEmpty()) {
                 Iterator<ClassType> iter = path.iterator();
-                ClassType nxt = iter.next();
-
-                ParameterizedClassType curr = nxt instanceof ParameterizedClassType ptype ? ptype :
-                        nxt.classReference().parameterizedWithTypeVars();
+                ClassType curr = iter.next();
                 while (iter.hasNext()) {
                     curr = curr.directSupertype(iter.next());
+                }
+
+                if (superType instanceof ParameterizedClassType pct) {
+                    curr = (ParameterizedClassType) pct.varTypeResolver().visit(curr.hasTypeArguments() ? curr : curr.classReference().parameterizedWithTypeVars());
+                }
+
+                if (!curr.hasTypeArguments()) {
+                    curr = curr.classReference();
                 }
 
                 this.superTypes.put(superType, curr);
@@ -91,8 +95,21 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     public ParameterizedClassType directSupertype(ClassType supertypeInstance) {
         if (supertypeInstance instanceof ParameterizedClassType pType) {
             VarTypeResolveVisitor varTypeResolver = this.varTypeResolver();
-            return pType.classReference()
-                    .parameterized(pType.typeArguments().stream().map(t -> (ArgumentType) varTypeResolver.visit(t)).toList());
+            ParameterizedClassType res = pType.classReference().parameterized(pType.typeArguments().stream().map(t -> (ArgumentType) varTypeResolver.visit(t)).toList());
+
+            if (this.hasRelevantOuterType() && pType.hasRelevantOuterType()) {
+                Optional<ClassType> outerRelative = this.outerType().relativeSupertype(pType.outerType());
+                if (outerRelative.isPresent()) {
+                    res.setUnmodifiable(false);
+                    res.setOuterType(outerRelative.get());
+                    res.setUnmodifiable(true);
+                    return res;
+                } else {
+                    return null;
+                }
+            } else {
+                return res;
+            }
         } else if (supertypeInstance instanceof ClassReference rType) {
             return rType.parameterized();
         }

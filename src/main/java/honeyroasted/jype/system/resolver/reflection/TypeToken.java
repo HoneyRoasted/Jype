@@ -11,11 +11,11 @@ public abstract class TypeToken<T> {
         return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
-    public honeyroasted.jype.type.Type resolve(TypeSystem system) {
-        return system.resolve(this).get();
+    public <K extends honeyroasted.jype.type.Type> K resolve(TypeSystem system) {
+        return (K) system.resolve(this).get();
     }
 
-    public honeyroasted.jype.type.Type resolve() {
+    public <K extends honeyroasted.jype.type.Type> K resolve() {
         return this.resolve(TypeSystem.RUNTIME);
     }
 

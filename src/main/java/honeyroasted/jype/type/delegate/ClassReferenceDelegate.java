@@ -11,6 +11,7 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference> implements ClassReference {
@@ -52,6 +53,16 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
     @Override
     public void setOuterClass(ClassReference outerClass) {
         this.delegate().setOuterClass(outerClass);
+    }
+
+    @Override
+    public ParameterizedClassType directSupertype(ClassType supertypeInstance) {
+        return this.delegate().directSupertype(supertypeInstance);
+    }
+
+    @Override
+    public Optional<ClassType> relativeSupertype(ClassType superType) {
+        return this.delegate().relativeSupertype(superType);
     }
 
     @Override

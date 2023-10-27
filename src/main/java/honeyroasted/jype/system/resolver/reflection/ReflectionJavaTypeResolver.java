@@ -123,6 +123,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                 if (clsRef.isPresent() && clsRef.get() instanceof ClassReference) {
                     ParameterizedClassType result = new ParameterizedClassTypeImpl(system);
                     ParameterizedClassTypeMeta<ParameterizedType> attached = new ParameterizedClassTypeMeta<>(system, t -> result);
+                    attached.setMetadata(pType);
 
                     system.storage().cacheFor(java.lang.reflect.Type.class).put(value, attached);
                     result.setClassReference((ClassReference) clsRef.get());

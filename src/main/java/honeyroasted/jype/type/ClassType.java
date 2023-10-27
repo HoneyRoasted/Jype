@@ -6,8 +6,10 @@ import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ClassType extends InstantiableType, PossiblyUnmodifiable, ArgumentType {
 
@@ -25,6 +27,20 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
 
     default boolean hasRelevantOuterType() {
         return !Modifier.isStatic(this.modifiers()) && this.outerType() != null;
+    }
+
+    ParameterizedClassType directSupertype(ClassType supertypeInstance);
+
+    Optional<ClassType> relativeSupertype(ClassType superType);
+
+    @Override
+    default Set<Type> knownDirectSupertypes() {
+        Set<Type> res = new LinkedHashSet<>();
+        if (this.superClass() != null) {
+            res.add(this.superClass());
+        }
+        res.addAll(this.interfaces());
+        return res;
     }
 
     ClassType outerType();

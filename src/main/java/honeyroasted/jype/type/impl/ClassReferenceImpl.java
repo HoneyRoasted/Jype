@@ -12,7 +12,6 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -114,6 +113,16 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     public void setOuterClass(ClassReference outerClass) {
         this.checkUnmodifiable();
         this.outerClass = outerClass;
+    }
+
+    @Override
+    public ParameterizedClassType directSupertype(ClassType supertypeInstance) {
+        return this.parameterizedWithTypeVars().directSupertype(supertypeInstance);
+    }
+
+    @Override
+    public Optional<ClassType> relativeSupertype(ClassType superType) {
+        return this.parameterizedWithTypeVars().relativeSupertype(superType);
     }
 
     public ClassType superClass() {

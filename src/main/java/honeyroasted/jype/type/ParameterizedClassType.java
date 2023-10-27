@@ -4,7 +4,6 @@ import honeyroasted.jype.modify.PossiblyUnmodifiable;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
 public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType, ParameterizedType {
@@ -15,8 +14,6 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType,
 
     void setOuterType(ClassType outerType);
 
-    ParameterizedClassType directSupertype(ClassType supertypeInstance);
-
     @Override
     default Set<Type> knownDirectSupertypes() {
         Set<Type> supertypes = new LinkedHashSet<>();
@@ -26,8 +23,6 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType,
         this.interfaces().forEach(c -> supertypes.add(this.directSupertype(c)));
         return supertypes;
     }
-
-    Optional<ClassType> relativeSupertype(ClassReference superType);
 
     @Override
     default boolean hasTypeArguments() {

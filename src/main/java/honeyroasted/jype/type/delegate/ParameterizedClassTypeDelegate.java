@@ -137,7 +137,7 @@ public class ParameterizedClassTypeDelegate extends AbstractTypeDelegate<Paramet
     }
 
     @Override
-    public Optional<ClassType> relativeSupertype(ClassReference superType) {
+    public Optional<ClassType> relativeSupertype(ClassType superType) {
         return this.delegate().relativeSupertype(superType);
     }
 

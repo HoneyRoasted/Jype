@@ -15,6 +15,7 @@ import honeyroasted.jype.type.WildType;
 import java.util.Set;
 
 public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
+
     @Override
     default String visitClassType(ClassType type, Set<Type> context) {
         if (context.contains(type)) return "...";
