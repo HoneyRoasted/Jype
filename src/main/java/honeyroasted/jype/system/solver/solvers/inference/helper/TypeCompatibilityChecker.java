@@ -159,12 +159,11 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
     }
 
     private TypeBound.Result.Builder strictSubtype(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parent) {
-        TypeBound.Subtype bound = new TypeBound.Subtype(subtype, subtype);
+        TypeBound.Subtype bound = new TypeBound.Subtype(subtype, supertype);
         TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parent));
 
-        if (!subtype.typeEquals(supertype) && seen.contains(bound)) {
-            //Subtype is cyclic, cannot handle without inference
-            this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NonCyclicSubtype(subtype, subtype), builder)).setSatisfied(false));
+        if (seen.contains(bound)) {
+            this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.CyclicSubtype(subtype, supertype), builder)).setSatisfied(true));
         } else {
             seen = Type.concat(seen, bound);
             Set<TypeBound.Subtype> finalSeen = seen;
@@ -180,7 +179,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype.typeEquals(supertype)) {
                 builder.setSatisfied(true);
-                this.eventBoundSatisfiedOrUnsatisfied(builder);
+                this.eventBoundSatisfied(builder);
             } else if (subtype instanceof ClassType l && supertype instanceof ClassType r) {
                 if (!l.hasTypeArguments() && !r.hasTypeArguments()) {
                     if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
@@ -208,7 +207,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                 Type ti = relative.typeArguments().get(i);
                                 Type si = pcr.typeArguments().get(i);
 
-                                if (si instanceof WildType) {
+                                if (si instanceof WildType || si instanceof VarType || si instanceof MetaVarType) {
                                     TypeBound.Result.Builder argMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), TypeBound.Result.Propagation.AND, argsMatch));
                                     if (si instanceof WildType.Upper siwtu) {
                                         pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
@@ -219,6 +218,13 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                         pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
                                                 .forEach(argBound -> strictSubtype(ti, argBound, finalSeen, argMatch));
                                         siwtl.lowerBounds()
+                                                .forEach(wildBound -> strictSubtype(wildBound, ti, finalSeen, argMatch));
+                                    } else if (si instanceof MetaVarType mvt) {
+                                        pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
+                                                .forEach(argBound -> strictSubtype(ti, argBound, finalSeen, argMatch));
+                                        mvt.upperBounds()
+                                                .forEach(wildBound -> strictSubtype(ti, wildBound, finalSeen, argMatch));
+                                        mvt.lowerBounds()
                                                 .forEach(wildBound -> strictSubtype(wildBound, ti, finalSeen, argMatch));
                                     }
                                 } else {

@@ -1,25 +1,28 @@
 package honeyroasted.jype;
 
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
-import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.system.solver.TypeBound;
+import honeyroasted.jype.system.solver.solvers.CompatibilityTypeSolver;
+import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.type.ArgumentType;
+import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.Type;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 public class Test {
 
-    public static void main(String[] args) throws NoSuchMethodException {
-        ClassType fooBar = new TypeToken<Foo.Bar>(){}.resolve();
-        ClassType bafBorp = new TypeToken<Baf<Integer>.Borp>(){}.resolve();
+    public static <T extends List<T>> void main(String[] args) throws NoSuchMethodException {
+        Type varType = new TypeToken<T>() {}.resolve();
+        varType = TypeVisitors.VAR_WIDLCARDER.visit(varType);
 
-        Type val = bafBorp.relativeSupertype(fooBar.classReference()).get();
-        System.out.println(val);
+        Type tst = ((ClassReference) new TypeToken<List>(){}.resolve()).parameterized((ArgumentType) varType);
+        Type foo = new TypeToken<Foo>() {}.resolve();
 
-        ClassType linkMap = new TypeToken<LinkedHashMap>(){}.resolve();
-        ClassType map = new TypeToken<Map<String, String>>(){}.resolve();
-
-        System.out.println(linkMap.relativeSupertype(map).get());
+        System.out.println(new CompatibilityTypeSolver()
+                .bind(new TypeBound.Compatible(foo, tst))
+                .solve(TypeSystem.RUNTIME).toString(true));
     }
 
 }

@@ -7,6 +7,7 @@ import honeyroasted.jype.system.visitor.visitors.SignatureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleToStringVisitor;
 import honeyroasted.jype.system.visitor.visitors.StripExceptionsTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor;
+import honeyroasted.jype.system.visitor.visitors.VarWildcardingVisitor;
 import honeyroasted.jype.system.visitor.visitors.VerboseToStringVisitor;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.signature.Signature;
@@ -17,7 +18,8 @@ import java.util.HashSet;
 public interface TypeVisitors {
     TypeMappingVisitor<Boolean> ERASURE = new ErasureTypeVisitor();
     TypeMappingVisitor<Object> IDENTITY = new TypeMappingVisitor<>() {};
-    TypeMappingVisitor<Void> ERASE_EXCEPTIONS = new StripExceptionsTypeVisitor().withContext(() -> new InMemoryTypeCache<>());
+    TypeMappingVisitor<Void> VAR_WIDLCARDER = new VarWildcardingVisitor().withContext(InMemoryTypeCache::new);
+    TypeMappingVisitor<Void> ERASE_EXCEPTIONS = new StripExceptionsTypeVisitor().withContext(InMemoryTypeCache::new);
     TypeVisitor<Signature, SignatureTypeVisitor.Mode> SIGNATURE = new SignatureTypeVisitor();
     TypeVisitor<Signature, SignatureTypeVisitor.Mode> DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(SIGNATURE, true));
     TypeVisitor<Boolean, Void> IS_PROPER_TYPE = new RecursiveTypeVisitor<Boolean, Void>((TypeVisitor.Default) (type, context) -> !(type instanceof MetaVarType), null, false)

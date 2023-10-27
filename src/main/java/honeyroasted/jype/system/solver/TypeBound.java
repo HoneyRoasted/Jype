@@ -148,20 +148,20 @@ public interface TypeBound {
         }
     }
 
-    final class NonCyclicSubtype extends Binary<Type, Type> {
+    final class CyclicSubtype extends Binary<Type, Type> {
 
-        public NonCyclicSubtype(Type left, Type right) {
+        public CyclicSubtype(Type left, Type right) {
             super(left, right);
         }
 
         @Override
         public String toString() {
-            return "SUBTYPING " + left + " <: " + right + " IS NON-CYCLIC";
+            return "SUBTYPING " + left + " <: " + right + " FORMS A CYCLE";
         }
 
         @Override
         public String simpleName() {
-            return "non-cyclic(" + this.left.simpleName() + " <: " + this.right.simpleName() + ")";
+            return "cyclic(" + this.left.simpleName() + " <: " + this.right.simpleName() + ")";
         }
     }
 

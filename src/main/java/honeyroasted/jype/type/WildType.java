@@ -18,7 +18,7 @@ public interface WildType extends PossiblyUnmodifiable, Type, ArgumentType {
 
     Set<Type> upperBounds();
 
-    default Type upperBound_() {
+    default Type upperBound() {
         if (this.upperBounds().isEmpty()) {
             return this.typeSystem().constants().object();
         } else if (this.upperBounds().size() == 1) {

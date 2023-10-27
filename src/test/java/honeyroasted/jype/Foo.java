@@ -1,18 +1,7 @@
 package honeyroasted.jype;
 
-public class Foo<T> {
-    private String val;
+import java.util.List;
 
-    public class Bar<K> {
-
-        public void test() {
-            System.out.println();
-        }
-
-    }
-
-    public class Beep extends Bar<String> {
-
-    }
+public interface Foo extends List<Foo> {
 
 }

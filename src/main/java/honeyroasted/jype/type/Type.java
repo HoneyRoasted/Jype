@@ -6,7 +6,6 @@ import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.TypeVisitors;
-import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,12 +28,12 @@ public interface Type extends Copyable<Type> {
 
     default boolean typeEquals(Type other, Set<Type> seen) {
         if (seen.contains(this)) return true;
-        seen = concat(seen, this);
 
         if (other instanceof MetaVarType mvt) {
-            Set<Type> finalSeen = seen;
+            Set<Type> finalSeen = concat(seen, this);
             return this.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.typeEquals(other, finalSeen));
         } else if (other instanceof IntersectionType it) {
+            seen = concat(seen, this);
             return this.equals(it, seen) || (it.children().size() == 1 && this.typeEquals(it.children().iterator().next(), seen));
         }
         return this.equals(other, seen);

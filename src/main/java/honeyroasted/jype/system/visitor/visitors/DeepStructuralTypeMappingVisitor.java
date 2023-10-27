@@ -30,6 +30,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<TypeCache<Type, Type>> {
+
+    default boolean visitStructural() {
+        return true;
+    }
+
     default boolean overridesClassType(ClassType type) {
         return false;
     }
@@ -122,11 +127,21 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
             Type newSuper = visit(ref.superClass(), context);
             newRef.setSuperClass(newSuper instanceof ClassType ct ? ct : ref.superClass());
 
-            Type newOuter = visit(ref.outerClass(), context);
-            newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : ref.outerClass());
+            if (this.visitStructural() || type.hasRelevantOuterType()) {
+                Type newOuter = visit(ref.outerClass(), context);
+                newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : ref.outerClass());
+            } else {
+                newRef.setOuterClass(ref.outerClass());
+            }
 
             newRef.setInterfaces((List<ClassType>) (List) this.visit(ref.interfaces(), context).stream().filter(t -> t instanceof ClassType).toList());
-            newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+
+            if (this.visitStructural()) {
+                newRef.setTypeParameters((List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+            } else {
+                newRef.setTypeParameters(ref.typeParameters());
+            }
+
             newRef.setUnmodifiable(true);
 
             return newRef;
@@ -137,8 +152,12 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
             Type newRef = visit(pt.classReference(), context);
             newType.setClassReference(newRef instanceof ClassReference cr ? cr : pt.classReference());
 
-            Type newOuter = visit(pt.outerType(), context);
-            newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
+            if (this.visitStructural() || pt.hasRelevantOuterType()) {
+                Type newOuter = visit(pt.outerType(), context);
+                newType.setOuterType(newOuter instanceof ClassType ct ? ct : pt.outerType());
+            } else {
+                newType.setOuterType(pt.outerType());
+            }
 
             newType.setTypeArguments((List) this.visit(pt.typeArguments(), context));
             newType.setUnmodifiable(true);
@@ -206,14 +225,22 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
             context.put(type, newRef);
             newRef.setLocation(ref.location());
 
-            Type newOuter = this.visit(ref.outerClass(), context);
-            newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : newRef.outerClass());
+            if (this.visitStructural() || ref.hasRelevantOuterType()) {
+                Type newOuter = this.visit(ref.outerClass(), context);
+                newRef.setOuterClass(newOuter instanceof ClassReference cr ? cr : newRef.outerClass());
+            } else {
+                newRef.setOuterClass(newRef.outerClass());
+            }
 
             newRef.setModifiers(ref.modifiers());
             newRef.setExceptionTypes(this.visit(ref.exceptionTypes(), context));
             newRef.setReturnType(this.visit(ref.returnType(), context));
             newRef.setParameters(this.visit(ref.parameters(), context));
-            newRef.setTypeParameters((List<VarType>) (List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+            if (this.visitStructural()) {
+                newRef.setTypeParameters((List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof VarType).toList());
+            } else {
+                newRef.setTypeParameters(ref.typeParameters());
+            }
             newRef.setUnmodifiable(true);
             return newRef;
         } else if (type instanceof ParameterizedMethodType pt) {

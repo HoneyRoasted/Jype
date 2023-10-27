@@ -17,6 +17,7 @@ import honeyroasted.jype.type.impl.ArrayTypeImpl;
 import honeyroasted.jype.type.impl.ClassReferenceImpl;
 import honeyroasted.jype.type.impl.MethodReferenceImpl;
 import honeyroasted.jype.type.impl.VarTypeImpl;
+import honeyroasted.jype.type.meta.ArrayTypeMeta;
 import honeyroasted.jype.type.meta.ClassReferenceMeta;
 import honeyroasted.jype.type.meta.MetadataType;
 import honeyroasted.jype.type.meta.MethodReferenceMeta;
@@ -218,7 +219,10 @@ public interface ReflectionTypeResolution {
                 ArrayType type = new ArrayTypeImpl(system);
                 type.setComponent(c);
                 type.setUnmodifiable(true);
-                return type;
+
+                ArrayTypeMeta<Class<?>> attached = new ArrayTypeMeta<>(system, t -> type);
+                attached.setMetadata(cls);
+                return attached;
             });
         }
 

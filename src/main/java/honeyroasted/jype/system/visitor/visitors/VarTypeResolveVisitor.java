@@ -22,6 +22,11 @@ public class VarTypeResolveVisitor implements DeepStructuralTypeMappingVisitor {
     }
 
     @Override
+    public boolean visitStructural() {
+        return false;
+    }
+
+    @Override
     public boolean overridesVarType(VarType type) {
         return this.resolves.test(type);
     }
