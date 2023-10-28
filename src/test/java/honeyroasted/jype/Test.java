@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Test {
 
-    public static <T extends List<T>> void main(String[] args) throws NoSuchMethodException {
+    public static <T extends List<T>> void main(String[] args) {
         Type varType = new TypeToken<T>() {}.resolve();
         varType = TypeVisitors.VAR_WIDLCARDER.visit(varType);
 
