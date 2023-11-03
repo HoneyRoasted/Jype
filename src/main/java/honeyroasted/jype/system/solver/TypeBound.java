@@ -2,11 +2,13 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.solver.solvers.inference.expression.ExpressionInformation;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
@@ -201,6 +203,23 @@ public interface TypeBound {
             return obj instanceof Equal eq &&
                     ((Objects.equals(this.left, eq.left) && Objects.equals(this.right, eq.right)) ||
                             (Objects.equals(this.left, eq.right) && Objects.equals(this.right, eq.left)));
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " = " + this.right.simpleName();
+        }
+    }
+
+    final class Instantiation extends Binary<MetaVarType, Type> {
+
+        public Instantiation(MetaVarType left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " IS INSTANTIATED AS " + this.right;
         }
 
         @Override
@@ -693,6 +712,11 @@ public interface TypeBound {
                 return this;
             }
 
+            public Builder addParents(Collection<Builder> parents) {
+                this.parents.addAll(parents);
+                return this;
+            }
+
             public List<Builder> children() {
                 return this.children;
             }
@@ -709,6 +733,11 @@ public interface TypeBound {
 
             public Builder addChildren(Builder... children) {
                 Collections.addAll(this.children, children);
+                return this;
+            }
+
+            public Builder addChildren(Collection<Builder> children) {
+                this.children.addAll(children);
                 return this;
             }
 

@@ -6,6 +6,7 @@ import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.ToSignatureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.SimpleToStringVisitor;
 import honeyroasted.jype.system.visitor.visitors.StripExceptionsTypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.ToSourceTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor;
 import honeyroasted.jype.system.visitor.visitors.VarWildcardingVisitor;
 import honeyroasted.jype.system.visitor.visitors.VerboseToStringVisitor;
@@ -20,10 +21,14 @@ public interface TypeVisitors {
     TypeMappingVisitor<Object> IDENTITY = new TypeMappingVisitor<>() {};
     TypeMappingVisitor<Void> VAR_WIDLCARDER = new VarWildcardingVisitor().withContext(InMemoryTypeCache::new);
     TypeMappingVisitor<Void> ERASE_EXCEPTIONS = new StripExceptionsTypeVisitor().withContext(InMemoryTypeCache::new);
-    TypeVisitor<Signature, ToSignatureTypeVisitor.Mode> SIGNATURE = new ToSignatureTypeVisitor();
-    TypeVisitor<Signature, ToSignatureTypeVisitor.Mode> DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(SIGNATURE, true));
     TypeVisitor<Boolean, Void> IS_PROPER_TYPE = new RecursiveTypeVisitor<Boolean, Void>((TypeVisitor.Default) (type, context) -> !(type instanceof MetaVarType), null, false)
             .mapResult(ls -> ls.stream().allMatch(b -> b != null && b)).withContext(HashMap::new);
+
+    TypeVisitor<Signature, ToSignatureTypeVisitor.Mode> TO_SIGNATURE = new ToSignatureTypeVisitor();
+
+    TypeVisitor<Signature, ToSignatureTypeVisitor.Mode> TO_DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(TO_SIGNATURE, true));
+
+    TypeVisitor<String, ToSourceTypeVisitor.Mode> TO_SOURCE = new ToSourceTypeVisitor();
 
     TypeVisitor<String, Void> TO_STRING_SIMPLE = new SimpleToStringVisitor()
             .withContext(HashSet::new);

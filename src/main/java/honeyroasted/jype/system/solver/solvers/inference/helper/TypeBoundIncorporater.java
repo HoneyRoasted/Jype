@@ -62,6 +62,31 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         return this;
     }
 
+    public void updateMetaVars(Set<TypeBound.Result.Builder> bounds) {
+        for (TypeBound.Result.Builder boundBuilder : bounds) {
+            TypeBound bound = boundBuilder.bound();
+            if (bound instanceof TypeBound.Equal eq) {
+                if (eq.left() instanceof MetaVarType mvt) {
+                    mvt.equalities().add(eq.right());
+                }
+
+                if (eq.right() instanceof MetaVarType mvt) {
+                    mvt.equalities().add(eq.left());
+                }
+            }
+
+            if (bound instanceof TypeBound.Subtype st) {
+                if (st.left() instanceof MetaVarType mvt) {
+                    mvt.upperBounds().add(st.right());
+                }
+
+                if (st.right() instanceof MetaVarType mvt) {
+                    mvt.lowerBounds().add(st.right());
+                }
+            }
+        }
+    }
+
     public void incorporateOnce(Set<TypeBound.Result.Builder> bounds) {
         for (TypeBound.Result.Builder boundBuilder : bounds) {
             TypeBound bound = boundBuilder.bound();
