@@ -6,7 +6,6 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.Type;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 

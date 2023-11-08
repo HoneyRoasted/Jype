@@ -54,6 +54,7 @@ public class TypeSystem {
 
         this.constants = new TypeConstants(
                 this.tryResolve(Object.class), this.tryResolve(Cloneable.class), this.tryResolve(Serializable.class),
+                this.tryResolve(RuntimeException.class),
                 new NoneTypeImpl(this, "void"), new NoneTypeImpl(this, "null"), new NoneTypeImpl(this, "none"),
                 this.tryResolve(Void.class),
                 new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), this.tryResolve(Boolean.class), "Z"),

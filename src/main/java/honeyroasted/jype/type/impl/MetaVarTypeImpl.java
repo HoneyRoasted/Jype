@@ -6,7 +6,6 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

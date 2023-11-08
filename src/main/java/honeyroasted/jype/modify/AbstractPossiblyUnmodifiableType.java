@@ -5,7 +5,6 @@ import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 
 public abstract class AbstractPossiblyUnmodifiableType extends AbstractPossiblyUnmodifiable implements Type {

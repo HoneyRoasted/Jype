@@ -12,7 +12,6 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
-import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;
 
 public class ToSourceTypeVisitor implements TypeVisitor<String, ToSourceTypeVisitor.Mode> {

@@ -6,7 +6,6 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;

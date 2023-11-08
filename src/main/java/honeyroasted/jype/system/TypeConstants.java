@@ -14,6 +14,7 @@ public final class TypeConstants {
     private final ClassReference object;
     private ClassReference cloneable;
     private ClassReference serializable;
+    private ClassReference runtimeException;
     private final NoneType voidType;
     private final NoneType nullType;
     private final NoneType noneType;
@@ -28,6 +29,7 @@ public final class TypeConstants {
     private final PrimitiveType doubleType;
 
     public TypeConstants(ClassReference object, ClassReference cloneable, ClassReference serializable,
+                         ClassReference runtimeException,
                          NoneType voidType, NoneType nullType, NoneType noneType, ClassReference voidBox,
                          PrimitiveType booleanType, PrimitiveType byteType, PrimitiveType shortType,
                          PrimitiveType charType, PrimitiveType intType, PrimitiveType longType,
@@ -35,6 +37,7 @@ public final class TypeConstants {
         this.object = object;
         this.cloneable = cloneable;
         this.serializable = serializable;
+        this.runtimeException = runtimeException;
         this.voidType = voidType;
         this.nullType = nullType;
         this.noneType = noneType;
@@ -101,6 +104,10 @@ public final class TypeConstants {
 
     public ClassReference serializable() {
         return this.serializable;
+    }
+
+    public ClassReference runtimeException() {
+        return this.runtimeException;
     }
 
     public NoneType voidType() {

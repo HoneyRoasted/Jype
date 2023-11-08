@@ -7,7 +7,6 @@ import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;

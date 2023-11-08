@@ -7,7 +7,7 @@ import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class TypeConstraintReducer extends AbstractInferenceHelper {
@@ -26,8 +26,8 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
     }
 
-    private Set<TypeBound.Result.Builder> constraints = new HashSet<>();
-    private Set<TypeBound.Result.Builder> bounds = new HashSet<>();
+    private Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
+    private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
 
     public Set<TypeBound.Result.Builder> bounds() {
         return this.bounds;
@@ -41,6 +41,11 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         this.bounds.clear();
         this.constraints.clear();
         this.initialBoundBuilder.reset();
+    }
+
+    public TypeConstraintReducer addBounds(Set<TypeBound.Result.Builder> bounds) {
+        this.bounds.addAll(bounds);
+        return this;
     }
 
     public TypeConstraintReducer reduce(Set<TypeBound.Result.Builder> constraints) {

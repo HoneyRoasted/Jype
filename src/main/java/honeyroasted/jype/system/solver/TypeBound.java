@@ -361,8 +361,8 @@ public interface TypeBound {
         }
     }
 
-    final class Throws extends Unary<VarType> {
-        public Throws(VarType type) {
+    final class Throws extends Unary<Type> {
+        public Throws(Type type) {
             super(type);
         }
 
@@ -604,6 +604,22 @@ public interface TypeBound {
         }
 
         public static Builder builder(TypeBound bound, Propagation propagation, Builder... originators) {
+            Builder builder = new Builder().setBound(bound).addParents(originators).setPropagation(propagation);
+            for (Builder originator : originators) {
+                originator.addChildren(builder);
+            }
+            return builder;
+        }
+
+        public static Builder builder(TypeBound bound, Collection<Builder> originators) {
+            Builder builder = new Builder().setBound(bound).addParents(originators);
+            for (Builder originator : originators) {
+                originator.addChildren(builder);
+            }
+            return builder;
+        }
+
+        public static Builder builder(TypeBound bound, Propagation propagation, Collection<Builder> originators) {
             Builder builder = new Builder().setBound(bound).addParents(originators).setPropagation(propagation);
             for (Builder originator : originators) {
                 originator.addChildren(builder);

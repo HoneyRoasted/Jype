@@ -45,6 +45,19 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         return this.findLub(system, types, new HashMap<>());
     }
 
+    public Type findGlb(TypeSystem system, Set<Type> types) {
+        if (types.isEmpty()) {
+            return system.constants().nullType();
+        } else if (types.size() == 1) {
+            return types.iterator().next();
+        } else {
+            IntersectionType type = new IntersectionTypeImpl(system);
+            type.children().addAll(types);
+            type.setUnmodifiable(true);
+            return type;
+        }
+    }
+
     private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {
         if (types.isEmpty()) {
             return system.constants().nullType();

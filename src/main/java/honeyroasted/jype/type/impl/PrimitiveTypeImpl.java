@@ -8,7 +8,6 @@ import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
