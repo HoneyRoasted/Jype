@@ -12,6 +12,10 @@ public interface IntersectionType extends Type, PossiblyUnmodifiable {
 
     void setChildren(Set<Type> children);
 
+    default boolean typeContains(Type other) {
+        return this.children().stream().anyMatch(t -> t.typeEquals(other));
+    }
+
     static Set<Type> flatten(Set<Type> children) {
         Set<Type> results = new LinkedHashSet<>();
         for (Type child : children) {

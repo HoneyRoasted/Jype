@@ -10,7 +10,6 @@ import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -25,6 +24,9 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
     private TypeLubFinder lubFinder;
     private TypeCompatibilityChecker compatibilityChecker;
 
+    private Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
+    private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
+
     public TypeBoundResolver() {
         this(TypeSolver.NO_OP);
     }
@@ -37,37 +39,38 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         this.compatibilityChecker = new TypeCompatibilityChecker(solver);
     }
 
-    private Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
-    private Set<TypeBound.Result.Builder> initialBounds = new LinkedHashSet<>();
-    private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
-    private Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
-
     public void reset() {
-        this.bounds.clear();
-        this.initialBounds.clear();
-        this.instantiations.clear();
         this.boundIncorporater.reset();
         this.constraintReducer.reset();
+        this.instantiations.clear();
+        this.bounds.clear();
     }
 
-    public TypeBoundResolver addInitialBounds(TypeBound.Result.Builder... bounds) {
-        Collections.addAll(initialBounds, bounds);
-        return this;
-    }
-
-    public TypeBoundResolver addInitialBounds(Collection<TypeBound.Result.Builder> bounds) {
-        this.initialBounds.addAll(bounds);
-        return this;
-    }
-
-    public TypeBoundResolver resolve() {
-        this.bounds.addAll(this.initialBounds);
+    public TypeBoundResolver resolve(Set<TypeBound.Result.Builder> bounds) {
         Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(bounds);
-        this.resolve(dependencies.keySet(), dependencies, new LinkedHashMap<>(), bounds);
+        Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> result = this.resolve(dependencies.keySet(), dependencies, new LinkedHashMap<>(), bounds);
+        this.bounds.addAll(result.right());
+        this.instantiations.putAll(result.left());
         return this;
     }
 
-    private Map<MetaVarType, Type> resolve(Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations, Set<TypeBound.Result.Builder> bounds) {
+    public Map<MetaVarType, Type> instantiations() {
+        return this.instantiations;
+    }
+
+    public Set<TypeBound.Result.Builder> bounds() {
+        return this.bounds;
+    }
+
+    public MetaVarTypeResolver instantiationsResolver() {
+        return new MetaVarTypeResolver(this.instantiations);
+    }
+
+    public boolean success() {
+        return this.bounds.stream().noneMatch(b -> b.bound() instanceof TypeBound.False);
+    }
+
+    private Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolve(Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations, Set<TypeBound.Result.Builder> bounds) {
         Set<MetaVarType> varsAndDeps = new HashSet<>();
         currentMetaVars.forEach(cmv -> varsAndDeps.addAll(dependencies.getOrDefault(cmv, Collections.emptySet())));
 
@@ -84,7 +87,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         }
 
         if (!foundAllInstantiations) {
-            Set<MetaVarType> subset = findSubset(varsAndDeps, dependencies);
+            Set<MetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
             if (!subset.isEmpty()) {
                 Set<TypeBound.Result.Builder> generatedBounds = new LinkedHashSet<>();
 
@@ -102,17 +105,17 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
 
                         if (!properLower.isEmpty()) {
                             Type lub = this.lubFinder.find(mvt.typeSystem(), properLower.keySet());
-                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values());
-                            candidates.put(mvt, Pair.of(lub, bound));
+                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
+                            candidates.put(mvt, Pair.of(lub, this.eventBoundCreated(bound)));
                         } else if (bounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.Throws thr && thr.value().equals(mvt)) &&
                                 properUpper.keySet().stream().allMatch(t -> this.compatibilityChecker.isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
                             Type cand = mvt.typeSystem().constants().runtimeException();
-                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values());
-                            candidates.put(mvt, Pair.of(cand, bound));
+                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
+                            candidates.put(mvt, Pair.of(cand, this.eventBoundCreated(bound)));
                         } else if (!properUpper.isEmpty()) {
                             Type glb = this.lubFinder.findGlb(mvt.typeSystem(), properUpper.keySet());
-                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, glb), TypeBound.Result.Propagation.AND, properLower.values());
-                            candidates.put(mvt, Pair.of(glb, bound));
+                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, glb), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
+                            candidates.put(mvt, Pair.of(glb, this.eventBoundCreated(bound)));
                         } else {
                             foundAllCandidates = false;
                         }
@@ -154,15 +157,15 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
 
                         if (!properLower.isEmpty()) {
                             Type lower = this.lubFinder.find(mvt.typeSystem(), properLower.keySet());
-                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lower), TypeBound.Result.Propagation.AND, properLower.values());
-                            newBounds.add(bound);
+                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lower), properLower.values()).setSatisfied(true);
+                            newBounds.add(this.eventBoundCreated(bound));
                             y.lowerBounds().add(lower);
                         }
 
                         if (!properUpper.isEmpty()) {
                             Type upper = this.lubFinder.findGlb(mvt.typeSystem(), properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, upper), TypeBound.Result.Propagation.AND, properLower.values());
-                            newBounds.add(bound);
+                            TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, upper), properLower.values()).setSatisfied(true);
+                            newBounds.add(this.eventBoundCreated(bound));
                             y.upperBounds().add(upper);
                         }
 
@@ -170,7 +173,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                     }
 
                     newBounds.removeIf(b -> b.bound() instanceof TypeBound.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains));
-                    freshVars.forEach((mv, fresh) -> newBounds.add(TypeBound.Result.builder(new TypeBound.Equal(mv, fresh)).setSatisfied(true)));
+                    freshVars.forEach((mv, fresh) -> newBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(mv, fresh)).setSatisfied(true))));
                     generatedBounds.clear();
                     generatedBounds.addAll(newBounds);
                 }
@@ -186,15 +189,19 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                 }
 
                 if (incorporated.stream().anyMatch(b -> b.bound() instanceof TypeBound.False)) {
-                    return Collections.emptyMap();
+                    return Pair.of(Collections.emptyMap(), incorporated);
                 } else {
                     return this.resolve(currentMetaVars, dependencies, instantiations, incorporated);
                 }
             } else {
-                return Collections.emptyMap();
+                Set<TypeBound.Result.Builder> boundsFailed = new LinkedHashSet<>(bounds);
+                boundsFailed.add(this.eventBoundCreated(TypeBound.Result.builder(TypeBound.False.INSTANCE, bounds).setSatisfied(false)));
+                return Pair.of(Collections.emptyMap(), boundsFailed);
             }
         } else {
-            return instantiations;
+            Set<TypeBound.Result.Builder> boundsFailed = new LinkedHashSet<>(bounds);
+            boundsFailed.add(this.eventBoundCreated(TypeBound.Result.builder(TypeBound.False.INSTANCE, bounds).setSatisfied(false)));
+            return Pair.of(Collections.emptyMap(), boundsFailed);
         }
     }
 
@@ -218,9 +225,9 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         return Pair.of(upperBounds, lowerBounds);
     }
 
-    private Set<MetaVarType> findSubset(Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies) {
+    private Set<MetaVarType> findSubset(Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations) {
         for (MetaVarType mvt : currentMetaVars) {
-            Set<MetaVarType> subset = trySubsetWithBase(mvt, dependencies, Collections.emptySet());
+            Set<MetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet());
             if (!subset.isEmpty()) {
                 return subset;
             }
@@ -229,7 +236,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         return Collections.emptySet();
     }
 
-    private Set<MetaVarType> trySubsetWithBase(MetaVarType base, Map<MetaVarType, Set<MetaVarType>> dependencies, Set<MetaVarType> building) {
+    private Set<MetaVarType> trySubsetWithBase(MetaVarType base, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations, Set<MetaVarType> building) {
         if (building.contains(base)) return building;
 
         Set<MetaVarType> res = new HashSet<>(building);
@@ -237,13 +244,13 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
 
         for (MetaVarType dep : dependencies.get(base)) {
             if (base != dep) {
-                if (this.instantiations.containsKey(dep)) {
+                if (instantiations.containsKey(dep)) {
                     res.add(dep);
                 } else {
                     boolean foundEquiv = true;
                     for (Type eq : dep.equalities()) {
                         if (eq instanceof MetaVarType equiv) {
-                            Set<MetaVarType> discover = trySubsetWithBase(equiv, dependencies, res);
+                            Set<MetaVarType> discover = trySubsetWithBase(equiv, dependencies, instantiations, res);
                             if (!discover.isEmpty()) {
                                 res.addAll(discover);
                                 break;

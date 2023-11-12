@@ -45,8 +45,16 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         return this.check(new TypeBound.Subtype(subtype, supertype)).build().satisfied();
     }
 
+    public boolean isSubtype(Type subtype, Type supertype, TypeBound.Result.Builder... parents) {
+        return this.check(new TypeBound.Subtype(subtype, supertype), parents).build().satisfied();
+    }
+
     public boolean isCompatible(Type subtype, Type supertype, TypeBound.Compatible.Context context) {
         return this.check(new TypeBound.Compatible(subtype, supertype, context)).build().satisfied();
+    }
+
+    public boolean isCompatible(Type subtype, Type supertype, TypeBound.Compatible.Context context, TypeBound.Result.Builder... parents) {
+        return this.check(new TypeBound.Compatible(subtype, supertype, context), parents).build().satisfied();
     }
 
     public TypeBound.Result.Builder check(TypeBound.Subtype subtype, TypeBound.Result.Builder... parents) {

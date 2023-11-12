@@ -3,9 +3,12 @@ package honeyroasted.jype.system.solver.solvers.inference.helper;
 import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.type.ArrayType;
+import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.VarType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -61,10 +64,13 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(pt.box(), bound.right(), bound.context()), builder)));
         } else if (bound.right() instanceof PrimitiveType pt) {
             this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), pt.box()), builder)));
-        } else if (bound.left() instanceof ParameterizedClassType pct) {
-            //TODO
-        } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ParameterizedClassType pct) {
-            //TODO
+        } else if (bound.left() instanceof ParameterizedClassType pct && bound.right() instanceof ClassType ct && !ct.hasTypeArguments() &&
+            this.compatibilityChecker.isSubtype(pct.classReference(), ct.classReference(), builder)) {
+            this.eventBoundSatisfied(builder.setSatisfied(true));
+        } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ParameterizedClassType pct &&
+            bound.right() instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasTypeArguments() &&
+            at.depth() == rat.depth() && this.compatibilityChecker.isSubtype(pct.classReference(), rpct.classReference(), builder)) {
+            this.eventBoundSatisfied(builder.setSatisfied(true));
         } else {
             this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), builder)));
         }
@@ -74,7 +80,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         builder.setPropagation(TypeBound.Result.Propagation.AND);
 
         if (bound.left().isProperType() && bound.right().isProperType()) {
-            this.compatibilityChecker.check(bound, builder);
+            this.bounds.add(this.compatibilityChecker.check(bound, builder));
         } else if (bound.left().isNullType()) {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
             this.eventBoundSatisfied(builder.setSatisfied(true));
@@ -82,7 +88,37 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
             this.eventBoundUnsatisfied(builder.setSatisfied(false));
         } else if (bound.left() instanceof MetaVarType || bound.right() instanceof MetaVarType) {
-            this.bounds.add(TypeBound.Result.builder(bound, builder));
+            this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(bound, builder)));
+        } else if (bound.right() instanceof ClassType ct) {
+
+        } else if (bound.right() instanceof ArrayType at) {
+            if (bound.left() instanceof ArrayType lat) {
+                if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
+                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder)));
+                } else {
+                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder)));
+                }
+            } else {
+                //TODO
+            }
+        } else if (bound.right() instanceof VarType vt) {
+            if (bound.left() instanceof IntersectionType it && it.typeContains(vt)) {
+                this.eventBoundSatisfied(builder.setSatisfied(true));
+            } else {
+                this.eventBoundUnsatisfied(builder.setSatisfied(false));
+            }
+        } else if (bound.right() instanceof MetaVarType mvt) {
+            if (bound.left() instanceof IntersectionType it && it.typeContains(mvt)) {
+                this.eventBoundSatisfied(builder.setSatisfied(true));
+            } else if (!mvt.lowerBounds().isEmpty()) {
+                this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), mvt.lowerBound()), builder)));
+            } else {
+                this.eventBoundUnsatisfied(builder.setSatisfied(false));
+            }
+        } else if (bound.right() instanceof IntersectionType it) {
+            it.children().forEach(t -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder))));
+        } else {
+            this.eventBoundUnsatisfied(builder.setSatisfied(false));
         }
     }
 
