@@ -29,36 +29,27 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TypeLubFinder extends AbstractInferenceHelper {
+public class TypeSetOperations extends AbstractInferenceHelper {
     private TypeCompatibilityChecker typeCompatibilityChecker;
 
-    public TypeLubFinder() {
+    public TypeSetOperations() {
         this.typeCompatibilityChecker = new TypeCompatibilityChecker();
     }
 
-    public TypeLubFinder(TypeSolver solver) {
+    public TypeSetOperations(TypeSolver solver) {
         super(solver);
         this.typeCompatibilityChecker = new TypeCompatibilityChecker(solver);
     }
 
-    public Type find(TypeSystem system, Set<Type> types) {
+    public Type findLeastUpperBound(TypeSystem system, Set<Type> types) {
         return this.findLub(system, types, new HashMap<>());
     }
 
-    public Type findGlb(TypeSystem system, Set<Type> types) {
-        if (types.isEmpty()) {
-            return system.constants().nullType();
-        } else if (types.size() == 1) {
-            return types.iterator().next();
-        } else {
-            IntersectionType type = new IntersectionTypeImpl(system);
-            type.children().addAll(types);
-            type.setUnmodifiable(true);
-            return type;
-        }
+    public Type findGreatestLowerBound(TypeSystem system, Set<Type> types) {
+        return IntersectionType.of(types, system);
     }
 
-    public Type findMostSpecific(TypeSystem system, Set<Type> types) {
+    public Type findMostSpecificType(TypeSystem system, Set<Type> types) {
         Set<Type> result = new LinkedHashSet<>();
         for (Type curr : types) {
             if (types.stream().noneMatch(t ->

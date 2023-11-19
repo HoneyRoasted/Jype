@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class TypeBoundResolver extends AbstractInferenceHelper {
     private TypeBoundIncorporater boundIncorporater;
     private TypeConstraintReducer constraintReducer;
-    private TypeLubFinder lubFinder;
+    private TypeSetOperations setOperations;
     private TypeCompatibilityChecker compatibilityChecker;
 
     private Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
@@ -35,7 +35,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         super(solver);
         this.boundIncorporater = new TypeBoundIncorporater(solver);
         this.constraintReducer = new TypeConstraintReducer(solver);
-        this.lubFinder = new TypeLubFinder(solver);
+        this.setOperations = new TypeSetOperations(solver);
         this.compatibilityChecker = new TypeCompatibilityChecker(solver);
     }
 
@@ -104,7 +104,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                         Map<Type, TypeBound.Result.Builder> properLower = properBounds.right();
 
                         if (!properLower.isEmpty()) {
-                            Type lub = this.lubFinder.find(mvt.typeSystem(), properLower.keySet());
+                            Type lub = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
                             TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                             candidates.put(mvt, Pair.of(lub, this.eventBoundCreated(bound)));
                         } else if (bounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.Throws thr && thr.value().equals(mvt)) &&
@@ -113,7 +113,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                             TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                             candidates.put(mvt, Pair.of(cand, this.eventBoundCreated(bound)));
                         } else if (!properUpper.isEmpty()) {
-                            Type glb = this.lubFinder.findGlb(mvt.typeSystem(), properUpper.keySet());
+                            Type glb = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet());
                             TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, glb), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                             candidates.put(mvt, Pair.of(glb, this.eventBoundCreated(bound)));
                         } else {
@@ -156,14 +156,14 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                         Map<Type, TypeBound.Result.Builder> properLower = properBounds.right();
 
                         if (!properLower.isEmpty()) {
-                            Type lower = this.lubFinder.find(mvt.typeSystem(), properLower.keySet());
+                            Type lower = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
                             TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lower), properLower.values()).setSatisfied(true);
                             newBounds.add(this.eventBoundCreated(bound));
                             y.lowerBounds().add(lower);
                         }
 
                         if (!properUpper.isEmpty()) {
-                            Type upper = this.lubFinder.findGlb(mvt.typeSystem(), properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
+                            Type upper = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
                             TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, upper), properLower.values()).setSatisfied(true);
                             newBounds.add(this.eventBoundCreated(bound));
                             y.upperBounds().add(upper);

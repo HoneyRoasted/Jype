@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 public class TypeConstraintReducer extends AbstractInferenceHelper {
     private TypeCompatibilityChecker compatibilityChecker;
-    private TypeLubFinder lubFinder;
+    private TypeSetOperations setOperations;
     private TypeInitialBoundBuilder initialBoundBuilder;
 
     public TypeConstraintReducer() {
@@ -28,7 +28,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
     public TypeConstraintReducer(TypeSolver solver) {
         super(solver);
         this.compatibilityChecker = new TypeCompatibilityChecker(solver);
-        this.lubFinder = new TypeLubFinder(solver);
+        this.setOperations = new TypeSetOperations(solver);
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
     }
 
@@ -148,7 +148,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             }
         }
 
-        return this.lubFinder.findMostSpecific(type.typeSystem(), current);
+        return this.setOperations.findMostSpecificType(type.typeSystem(), current);
     }
 
 }
