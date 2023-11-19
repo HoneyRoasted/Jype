@@ -8,10 +8,13 @@ import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TypeConstraintReducer extends AbstractInferenceHelper {
     private TypeCompatibilityChecker compatibilityChecker;
@@ -89,18 +92,6 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             this.eventBoundUnsatisfied(builder.setSatisfied(false));
         } else if (bound.left() instanceof MetaVarType || bound.right() instanceof MetaVarType) {
             this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(bound, builder)));
-        } else if (bound.right() instanceof ClassType ct) {
-
-        } else if (bound.right() instanceof ArrayType at) {
-            if (bound.left() instanceof ArrayType lat) {
-                if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
-                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder)));
-                } else {
-                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder)));
-                }
-            } else {
-                //TODO
-            }
         } else if (bound.right() instanceof VarType vt) {
             if (bound.left() instanceof IntersectionType it && it.typeContains(vt)) {
                 this.eventBoundSatisfied(builder.setSatisfied(true));
@@ -117,9 +108,47 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             }
         } else if (bound.right() instanceof IntersectionType it) {
             it.children().forEach(t -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder))));
+        } else if (bound.right() instanceof ClassType ct) {
+
+        } else if (bound.right() instanceof ArrayType at) {
+            if (bound.left() instanceof ArrayType lat) {
+                if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
+                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder)));
+                } else {
+                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder)));
+                }
+            } else {
+                Type arr = findMostSpecificArrayType(bound.left());
+                if (arr == null) {
+                    builder.setPropagation(TypeBound.Result.Propagation.NONE);
+                    this.eventBoundUnsatisfied(builder.setSatisfied(false));
+                } else {
+                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(arr, at), builder)));
+                }
+            }
         } else {
             this.eventBoundUnsatisfied(builder.setSatisfied(false));
         }
+    }
+
+    private Type findMostSpecificArrayType(Type type) {
+        if (type instanceof ArrayType) {
+            return type;
+        }
+
+        Set<Type> current = new HashSet<>(type.knownDirectSupertypes());
+        while (!current.isEmpty()) {
+            Set<Type> arrayTypes = current.stream().filter(t -> t instanceof ArrayType).collect(Collectors.toSet());
+            if (!arrayTypes.isEmpty()) {
+                current = arrayTypes;
+            } else {
+                Set<Type> next = new HashSet<>();
+                current.forEach(t -> next.addAll(t.knownDirectSupertypes()));
+                current = next;
+            }
+        }
+
+        return this.lubFinder.findMostSpecific(type.typeSystem(), current);
     }
 
 }

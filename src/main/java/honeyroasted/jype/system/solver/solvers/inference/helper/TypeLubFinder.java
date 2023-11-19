@@ -58,6 +58,17 @@ public class TypeLubFinder extends AbstractInferenceHelper {
         }
     }
 
+    public Type findMostSpecific(TypeSystem system, Set<Type> types) {
+        Set<Type> result = new LinkedHashSet<>();
+        for (Type curr : types) {
+            if (types.stream().noneMatch(t ->
+                    this.typeCompatibilityChecker.isSubtype(t, curr))) {
+                result.add(curr);
+            }
+        }
+        return IntersectionType.of(result, system);
+    }
+
     private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {
         if (types.isEmpty()) {
             return system.constants().nullType();
