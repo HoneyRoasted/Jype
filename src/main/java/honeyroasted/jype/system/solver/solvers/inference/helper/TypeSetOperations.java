@@ -50,6 +50,10 @@ public class TypeSetOperations extends AbstractInferenceHelper {
     }
 
     public Type findMostSpecificType(TypeSystem system, Set<Type> types) {
+        return IntersectionType.of(findMostSpecificTypes(types), system);
+    }
+
+    public Set<Type> findMostSpecificTypes(Set<Type> types) {
         Set<Type> result = new LinkedHashSet<>();
         for (Type curr : types) {
             if (types.stream().noneMatch(t ->
@@ -57,7 +61,7 @@ public class TypeSetOperations extends AbstractInferenceHelper {
                 result.add(curr);
             }
         }
-        return IntersectionType.of(result, system);
+        return result;
     }
 
     private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {

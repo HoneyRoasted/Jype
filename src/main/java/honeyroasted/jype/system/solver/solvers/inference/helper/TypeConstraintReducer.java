@@ -118,12 +118,12 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
                     this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder)));
                 }
             } else {
-                Type arr = findMostSpecificArrayType(bound.left());
-                if (arr == null) {
+                Set<Type> arr = findMostSpecificArrayTypes(bound.left());
+                if (arr.isEmpty()) {
                     builder.setPropagation(TypeBound.Result.Propagation.NONE);
                     this.eventBoundUnsatisfied(builder.setSatisfied(false));
                 } else {
-                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(arr, at), builder)));
+                    arr.forEach(st -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(st, at), builder))));
                 }
             }
         } else {
@@ -131,13 +131,13 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         }
     }
 
-    private Type findMostSpecificArrayType(Type type) {
+    private Set<Type> findMostSpecificArrayTypes(Type type) {
         if (type instanceof ArrayType) {
-            return type;
+            return Set.of(type);
         }
 
         Set<Type> current = new HashSet<>(type.knownDirectSupertypes());
-        while (!current.isEmpty()) {
+        while (!current.isEmpty() && current.stream().allMatch(t -> t instanceof ArrayType)) {
             Set<Type> arrayTypes = current.stream().filter(t -> t instanceof ArrayType).collect(Collectors.toSet());
             if (!arrayTypes.isEmpty()) {
                 current = arrayTypes;
@@ -148,7 +148,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             }
         }
 
-        return this.setOperations.findMostSpecificType(type.typeSystem(), current);
+        return this.setOperations.findMostSpecificTypes(current);
     }
 
 }
