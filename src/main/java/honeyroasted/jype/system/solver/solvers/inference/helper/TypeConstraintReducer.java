@@ -58,6 +58,10 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         return this;
     }
 
+    private void reduce(TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
+
+    }
+
     private void reduce(TypeBound.Result.Builder builder, TypeBound.Compatible bound) {
         builder.setPropagation(TypeBound.Result.Propagation.AND);
 
@@ -67,11 +71,11 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(pt.box(), bound.right(), bound.context()), builder)));
         } else if (bound.right() instanceof PrimitiveType pt) {
             this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), pt.box()), builder)));
-        } else if (bound.left() instanceof ParameterizedClassType pct && bound.right() instanceof ClassType ct && !ct.hasTypeArguments() &&
+        } else if (bound.left() instanceof ClassType pct && pct.hasAnyTypeArguments() && bound.right() instanceof ClassType ct && !ct.hasAnyTypeArguments() &&
             this.compatibilityChecker.isSubtype(pct.classReference(), ct.classReference(), builder)) {
             this.eventBoundSatisfied(builder.setSatisfied(true));
-        } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ParameterizedClassType pct &&
-            bound.right() instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasTypeArguments() &&
+        } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ClassType pct && pct.hasAnyTypeArguments() &&
+            bound.right() instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasAnyTypeArguments() &&
             at.depth() == rat.depth() && this.compatibilityChecker.isSubtype(pct.classReference(), rpct.classReference(), builder)) {
             this.eventBoundSatisfied(builder.setSatisfied(true));
         } else {
@@ -109,7 +113,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         } else if (bound.right() instanceof IntersectionType it) {
             it.children().forEach(t -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder))));
         } else if (bound.right() instanceof ClassType ct) {
-
+            //TODO
         } else if (bound.right() instanceof ArrayType at) {
             if (bound.left() instanceof ArrayType lat) {
                 if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {

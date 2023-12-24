@@ -67,6 +67,10 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
 
     boolean hasTypeArguments();
 
+    default boolean hasAnyTypeArguments() {
+        return this.hasTypeArguments() || (this.hasRelevantOuterType() && this.outerType().hasAnyTypeArguments());
+    }
+
     List<ArgumentType> typeArguments();
 
     @Override

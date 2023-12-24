@@ -272,24 +272,25 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                     strictSubtype(subtype.typeSystem().constants().serializable(), supertype, seen, builder);
                 }
             } else if (subtype instanceof VarType l) {
+                builder.setPropagation(TypeBound.Result.Propagation.OR);
                 l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
             } else if (subtype instanceof MetaVarType mvt) {
                 if (mvt.upperBounds().isEmpty()) {
                     this.eventBoundUnsatisfied(builder.setSatisfied(false));
                 } else {
+                    builder.setPropagation(TypeBound.Result.Propagation.OR);
                     mvt.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
                 }
             } else if (supertype instanceof MetaVarType mvt) {
                 if (mvt.lowerBounds().isEmpty()) {
                     this.eventBoundUnsatisfied(builder.setSatisfied(false));
                 } else {
-                    builder.setPropagation(TypeBound.Result.Propagation.OR);
                     mvt.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
                 }
             } else if (subtype instanceof WildType.Upper l) {
+                builder.setPropagation(TypeBound.Result.Propagation.OR);
                 l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
             } else if (supertype instanceof WildType.Lower r) {
-                builder.setPropagation(TypeBound.Result.Propagation.OR);
                 r.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
             } else if (subtype instanceof IntersectionType l) {
                 builder.setPropagation(TypeBound.Result.Propagation.OR);
