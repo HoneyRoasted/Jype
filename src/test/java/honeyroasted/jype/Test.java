@@ -1,28 +1,34 @@
 package honeyroasted.jype;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.resolver.reflection.TypeToken;
 import honeyroasted.jype.system.solver.TypeBound;
-import honeyroasted.jype.system.solver.solvers.CompatibilityTypeSolver;
-import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.system.solver.solvers.inference.helper.TypeBoundResolver;
+import honeyroasted.jype.system.solver.solvers.inference.helper.TypeConstraintReducer;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
 import java.util.List;
+import java.util.Set;
 
 public class Test {
 
-    public static <T extends List<T>> void main(String[] args) {
-        Type varType = new TypeToken<T>() {}.resolve();
-        varType = TypeVisitors.VAR_WIDLCARDER.visit(varType);
+    public static void main(String[] args) {
+        TypeSystem system = TypeSystem.RUNTIME;
+        TypeConstraintReducer reducer = new TypeConstraintReducer();
+        TypeBoundResolver resolver = new TypeBoundResolver();
 
-        Type tst = ((ClassReference) new TypeToken<List>(){}.resolve()).parameterized((ArgumentType) varType);
-        Type foo = new TypeToken<Foo>() {}.resolve();
+        ClassReference list = (ClassReference) system.resolve(List.class).get();
 
-        System.out.println(new CompatibilityTypeSolver()
-                .bind(new TypeBound.Compatible(foo, tst))
-                .solve(TypeSystem.RUNTIME).toString(true));
+        TypeBound.Result.Builder builder = TypeBound.Result.builder(new TypeBound.Compatible(
+                list.parameterized(new MetaVarTypeImpl(system, "T")),
+                list.parameterized((ArgumentType) system.resolve(String.class).get())
+        ));
+
+        reducer.reduce(Set.of(builder));
+        resolver.resolve(reducer.bounds());
+
+        resolver.instantiations().forEach((mvt, t) -> System.out.println(mvt.toString() + " = " + t.toString()));
     }
 
 }

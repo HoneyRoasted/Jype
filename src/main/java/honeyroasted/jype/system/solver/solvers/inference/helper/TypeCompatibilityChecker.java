@@ -163,7 +163,6 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         } else if (!(subtype instanceof PrimitiveType) && supertype instanceof PrimitiveType r) {
             strictSubtype(subtype, r.box(), new HashSet<>(), parent);
         }
-
     }
 
     private TypeBound.Result.Builder strictSubtype(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parent) {

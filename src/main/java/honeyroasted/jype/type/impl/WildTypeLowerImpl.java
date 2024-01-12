@@ -17,6 +17,7 @@ public class WildTypeLowerImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public WildTypeLowerImpl(TypeSystem typeSystem) {
         super(typeSystem);
+        this.identity = System.identityHashCode(this);
     }
 
     @Override

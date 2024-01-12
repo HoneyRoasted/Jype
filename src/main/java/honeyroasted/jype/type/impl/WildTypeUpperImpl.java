@@ -17,6 +17,7 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
 
     public WildTypeUpperImpl(TypeSystem typeSystem) {
         super(typeSystem);
+        this.identity = System.identityHashCode(this);
     }
 
     @Override

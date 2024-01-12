@@ -34,8 +34,8 @@ public class CompatibilityTypeSolver extends AbstractTypeSolver {
             } else if (bound instanceof TypeBound.Compatible ct) {
                 results.add(this.compatibilityChecker.check(ct));
             } else if (bound instanceof TypeBound.Equal eq) {
-                this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(eq))
-                        .setSatisfied(eq.left().typeEquals(eq.right())));
+                results.add(this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(eq))
+                        .setSatisfied(eq.left().typeEquals(eq.right()))));
             }
         }
 

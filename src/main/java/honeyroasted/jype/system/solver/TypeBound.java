@@ -5,7 +5,6 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -328,8 +327,8 @@ public interface TypeBound {
         }
     }
 
-    final class Contains extends Binary<VarType, VarType> {
-        public Contains(VarType left, VarType right) {
+    final class Contains extends Binary<Type, Type> {
+        public Contains(Type left, Type right) {
             super(left, right);
         }
 
@@ -542,7 +541,7 @@ public interface TypeBound {
 
         private void toString(List<String> building, boolean useSimpleName) {
             String ind = "    ";
-            building.add("Bound: " + (useSimpleName ? this.bound.simpleName() : this.bound.toString()));
+            building.add("Condition: " + (useSimpleName ? this.bound.simpleName() : this.bound.toString()));
             building.add("Satisfied: " + this.satisfied);
 
             if (!this.children.isEmpty()) {
@@ -627,7 +626,6 @@ public interface TypeBound {
             return builder;
         }
 
-
         public enum Propagation {
             NONE,
             AND,
@@ -640,7 +638,6 @@ public interface TypeBound {
         public static class Builder implements ResultView {
             private Result built;
             private Propagation propagation = Propagation.NONE;
-
             private TypeBound bound;
             private boolean satisfied;
             private List<Builder> parents = new ArrayList<>();
