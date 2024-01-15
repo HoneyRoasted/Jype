@@ -4,6 +4,19 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
     public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
     public static final ClassLocation VOID = ClassLocation.of(void.class);
 
+    public static ClassLocation of(String internalName) {
+        String[] parts = internalName.split("/");
+        if (parts.length == 1) {
+            return new ClassLocation(Type.CLASS, DEFAULT_MODULE, parts[0]);
+        } else {
+            ClassLocation result = new ClassLocation(Type.PACKAGE, DEFAULT_MODULE, parts[0]);
+            for (int i = 1; i < parts.length - 1; i++) {
+                result = new ClassLocation(Type.PACKAGE, result, parts[i]);
+            }
+            return new ClassLocation(Type.CLASS, result, parts[parts.length - 1]);
+        }
+    }
+
     public static ClassLocation of(Class<?> cls) {
         if (cls == null) {
             return null;

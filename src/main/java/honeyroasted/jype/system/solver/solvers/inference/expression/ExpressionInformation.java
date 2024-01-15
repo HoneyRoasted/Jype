@@ -90,12 +90,16 @@ public interface ExpressionInformation {
         InstantiableType type();
 
         List<ExpressionInformation> parameters();
+
+        List<Type> explicitTypeArguments();
     }
 
     interface Invocation extends ExpressionInformation {
         ExpressionInformation source();
 
         List<ExpressionInformation> parameters();
+
+        List<Type> explicitTypeArguments();
     }
 
     interface Lambda extends ExpressionInformation {
@@ -108,10 +112,14 @@ public interface ExpressionInformation {
         boolean implicitReturn();
     }
 
+    interface InstantiationReference extends ExpressionInformation {
+        InstantiableType type();
+    }
+
     interface InvocationReference extends ExpressionInformation {
         ExpressionInformation source();
         String methodName();
-        List<Type> explicitParameterTypes();
+        List<Type> explicitTypeArguments();
     }
 
 }
