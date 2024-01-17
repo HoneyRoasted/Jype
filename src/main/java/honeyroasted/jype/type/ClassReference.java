@@ -15,6 +15,8 @@ public interface ClassReference extends PossiblyUnmodifiable, ClassType {
 
     ParameterizedClassType parameterizedWithTypeVars();
 
+    ParameterizedClassType parameterizedWithMetaVars();
+
     @Override
     default ClassType outerType() {
         return outerClass();

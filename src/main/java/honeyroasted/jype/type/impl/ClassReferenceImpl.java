@@ -3,16 +3,22 @@ package honeyroasted.jype.type.impl;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
+import honeyroasted.jype.system.visitor.TypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -64,6 +70,24 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     @Override
     public ParameterizedClassType parameterizedWithTypeVars() {
         return parameterized((List<ArgumentType>) (List) this.typeParameters);
+    }
+
+    @Override
+    public ParameterizedClassType parameterizedWithMetaVars() {
+        List<ArgumentType> mvts = new ArrayList<>();
+        Map<VarType, MetaVarType> typeMap = new HashMap<>();
+
+        this.typeParameters.forEach(v -> {
+            MetaVarType mvt = new MetaVarTypeImpl(v.typeSystem(), v.name());
+            mvts.add(mvt);
+            typeMap.put(v, mvt);
+        });
+
+        TypeVisitor<Type, Void> resolver = new VarTypeResolveVisitor(typeMap)
+                .withContext(new InMemoryTypeCache<>());
+        mvts.forEach(resolver::visit);
+
+        return parameterized(mvts);
     }
 
     @Override

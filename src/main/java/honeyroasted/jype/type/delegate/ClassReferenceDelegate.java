@@ -46,6 +46,11 @@ public class ClassReferenceDelegate extends AbstractTypeDelegate<ClassReference>
     }
 
     @Override
+    public ParameterizedClassType parameterizedWithMetaVars() {
+        return new ParameterizedClassTypeDelegate(this.typeSystem(), ts -> this.delegate().parameterizedWithMetaVars());
+    }
+
+    @Override
     public ClassReference outerClass() {
         return this.delegate().outerClass();
     }
