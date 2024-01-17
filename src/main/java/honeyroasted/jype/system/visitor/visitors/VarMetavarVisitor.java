@@ -7,20 +7,36 @@ import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class VarMetavarVisitor implements DeepStructuralTypeMappingVisitor {
     private Predicate<VarType> include;
     private Predicate<VarType> exclude;
 
-    public VarMetavarVisitor include(Predicate<VarType> include) {
+    public VarMetavarVisitor(Predicate<VarType> include, Predicate<VarType> exclude) {
         this.include = include;
-        return this;
+        this.exclude = exclude;
     }
 
-    public VarMetavarVisitor exclude(Predicate<VarType> exclude) {
-        this.exclude = exclude;
-        return this;
+    public VarMetavarVisitor() {
+        this(null, null);
+    }
+
+    public static VarMetavarVisitor including(Predicate<VarType> include) {
+        return new VarMetavarVisitor(include, null);
+    }
+
+    public static VarMetavarVisitor including(Set<VarType> include) {
+        return including(include::contains);
+    }
+
+    public static VarMetavarVisitor excluding(Predicate<VarType> exclude) {
+        return new VarMetavarVisitor(null, exclude);
+    }
+
+    public static VarMetavarVisitor excluding(Set<VarType> exclude) {
+        return excluding(exclude::contains);
     }
 
     @Override
