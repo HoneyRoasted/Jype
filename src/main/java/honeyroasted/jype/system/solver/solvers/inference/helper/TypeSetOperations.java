@@ -2,11 +2,13 @@ package honeyroasted.jype.system.solver.solvers.inference.helper;
 
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeBound;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.IntersectionType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -62,6 +64,44 @@ public class TypeSetOperations extends AbstractInferenceHelper {
             }
         }
         return result;
+    }
+
+    public Set<Type> allKnownSupertypes(Type type) {
+        Set<Type> result = new LinkedHashSet<>();
+        allKnownSupertypes(type, result);
+        return result;
+    }
+
+    private void allKnownSupertypes(Type type, Set<Type> building) {
+        if (!building.contains(type)) {
+            building.add(type);
+            type.knownDirectSupertypes().forEach(t -> allSupertypes(t, building));
+        }
+    }
+
+    public void updateMetaVars(Set<TypeBound.Result.Builder> bounds) {
+        for (TypeBound.Result.Builder boundBuilder : bounds) {
+            TypeBound bound = boundBuilder.bound();
+            if (bound instanceof TypeBound.Equal eq) {
+                if (eq.left() instanceof MetaVarType mvt) {
+                    mvt.equalities().add(eq.right());
+                }
+
+                if (eq.right() instanceof MetaVarType mvt) {
+                    mvt.equalities().add(eq.left());
+                }
+            }
+
+            if (bound instanceof TypeBound.Subtype st) {
+                if (st.left() instanceof MetaVarType mvt) {
+                    mvt.upperBounds().add(st.right());
+                }
+
+                if (st.right() instanceof MetaVarType mvt) {
+                    mvt.lowerBounds().add(st.right());
+                }
+            }
+        }
     }
 
     private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {

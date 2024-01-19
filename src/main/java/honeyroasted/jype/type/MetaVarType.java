@@ -17,6 +17,11 @@ public interface MetaVarType extends Type, ArgumentType {
 
     Set<Type> equalities();
 
+    @Override
+    default Set<Type> knownDirectSupertypes() {
+        return upperBounds();
+    }
+
     default Type upperBound() {
         if (this.upperBounds().isEmpty()) {
             return this.typeSystem().constants().object();

@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public class ReflectionExpressionResolver implements ExpressionResolver {
 
-    @Override
     public boolean isFunctionalInterface(ClassReference ref) {
         Optional<Class<?>> clsOpt = ReflectionTypeResolution.getReflectionType(ref);
         if (clsOpt.isEmpty()) return false;

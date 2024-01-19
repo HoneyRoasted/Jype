@@ -307,8 +307,8 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
             TypeBound bound = boundBuilder.bound();
             if (bound instanceof TypeBound.Equal || bound instanceof TypeBound.Subtype) {
                 TypeBound.Binary<Type, Type> bin = (TypeBound.Binary<Type, Type>) bound;
-                MetaVarType mvt = getMetaVarType(bin);
-                Type otherType = getOtherType(bin);
+                MetaVarType mvt = bin.getMetaVar().orElse(null);
+                Type otherType = bin.getOtherType().orElse(null);
 
                 boolean foundInCapture = false;
                 for (TypeBound.Result.Builder otherBuilder : bounds) {
@@ -369,28 +369,6 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
     private static Set<MetaVarType> discoverMetaVars(Type visit) {
         return new HashSet<>(new RecursiveTypeVisitor<MetaVarType, Void>((TypeVisitor.Default) (type, context) -> type instanceof MetaVarType mvt ? mvt : null,
                 null, false).visit(visit, new HashMap<>()));
-    }
-
-    private static MetaVarType getMetaVarType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        if (bound.left() instanceof MetaVarType m) {
-            return m;
-        } else if (bound.right() instanceof MetaVarType m) {
-            return m;
-        } else {
-            return null;
-        }
-    }
-
-    private static boolean hasMetaVarType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        return getMetaVarType(bound) != null;
-    }
-
-    private static Type getOtherType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        if (bound.left() instanceof MetaVarType) {
-            return bound.right();
-        } else {
-            return bound.left();
-        }
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface TypeBound {
@@ -24,7 +25,8 @@ public interface TypeBound {
 
         public static final False INSTANCE = new False();
 
-        private False() {}
+        private False() {
+        }
 
         @Override
         public List<?> parameters() {
@@ -87,6 +89,22 @@ public interface TypeBound {
         public Binary(L left, R right) {
             this.left = left;
             this.right = right;
+        }
+
+        public boolean hasMetaVar() {
+            return this.left instanceof MetaVarType || this.right instanceof MetaVarType;
+        }
+
+        public Optional<MetaVarType> getMetaVar() {
+            return this.left instanceof MetaVarType mvt ? Optional.of(mvt) :
+                    this.right instanceof MetaVarType mvt ? Optional.of(mvt) :
+                            Optional.empty();
+        }
+
+        public Optional<Type> getOtherType() {
+            return this.left instanceof MetaVarType ?
+                    (this.right instanceof Type t ? Optional.of(t) : Optional.empty()) :
+                    (this.left instanceof Type t ? Optional.of(t) : Optional.empty());
         }
 
         public L left() {

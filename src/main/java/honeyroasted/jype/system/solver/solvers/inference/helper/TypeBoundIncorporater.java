@@ -25,14 +25,16 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
     private Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
 
     private TypeInitialBoundBuilder initialBoundBuilder;
+    private TypeSetOperations setOperations;
 
     public TypeBoundIncorporater(TypeSolver solver) {
         super(solver);
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
+        this.setOperations = new TypeSetOperations(solver);
     }
 
     public TypeBoundIncorporater() {
-        this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
+        this(TypeSolver.NO_OP);
     }
 
     public TypeBoundIncorporater reset() {
@@ -58,34 +60,9 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         do {
             current = new HashSet<>(this.bounds);
             this.incorporateOnce(current);
-            this.updateMetaVars(this.bounds);
+            this.setOperations.updateMetaVars(this.bounds);
         } while (!this.bounds.equals(current) && this.bounds.stream().noneMatch(b -> b.bound().equals(TypeBound.False.INSTANCE)));
         return this;
-    }
-
-    public void updateMetaVars(Set<TypeBound.Result.Builder> bounds) {
-        for (TypeBound.Result.Builder boundBuilder : bounds) {
-            TypeBound bound = boundBuilder.bound();
-            if (bound instanceof TypeBound.Equal eq) {
-                if (eq.left() instanceof MetaVarType mvt) {
-                    mvt.equalities().add(eq.right());
-                }
-
-                if (eq.right() instanceof MetaVarType mvt) {
-                    mvt.equalities().add(eq.left());
-                }
-            }
-
-            if (bound instanceof TypeBound.Subtype st) {
-                if (st.left() instanceof MetaVarType mvt) {
-                    mvt.upperBounds().add(st.right());
-                }
-
-                if (st.right() instanceof MetaVarType mvt) {
-                    mvt.lowerBounds().add(st.right());
-                }
-            }
-        }
     }
 
     public void incorporateOnce(Set<TypeBound.Result.Builder> bounds) {
@@ -97,10 +74,10 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
                 //Complementary bounds, 18.3.1
                 TypeBound other = otherBuilder.bound();
 
-                if (bound instanceof TypeBound.Equal eq && hasMetaVarType(eq)) {
+                if (bound instanceof TypeBound.Equal eq && eq.hasMetaVar()) {
                     //case where alpha = S
-                    MetaVarType mvt = getMetaVarType(eq);
-                    Type otherType = getOtherType(eq);
+                    MetaVarType mvt = eq.getMetaVar().orElse(null);
+                    Type otherType = eq.getOtherType().orElse(null);
                     MetaVarTypeResolver subResolver = new MetaVarTypeResolver(Map.of(mvt, otherType));
                     if (other != bound) {
                         if (other instanceof TypeBound.Equal otherEq) {
@@ -246,11 +223,11 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
     }
 
     //Generates all supertypes of left and right which share a class type. Do not need to share type arguments.
-    private static List<Pair<ParameterizedClassType, ParameterizedClassType>> commonSupertypes(Type left, Type right, Set<? extends TypeBound.ResultView> bounds) {
+    private List<Pair<ParameterizedClassType, ParameterizedClassType>> commonSupertypes(Type left, Type right, Set<? extends TypeBound.ResultView> bounds) {
         List<Pair<ParameterizedClassType, ParameterizedClassType>> result = new ArrayList<>();
 
-        Set<Type> leftSupers = allSupertypes(left, bounds);
-        Set<Type> rightSupers = allSupertypes(right, bounds);
+        Set<Type> leftSupers = this.setOperations.allKnownSupertypes(left);
+        Set<Type> rightSupers = this.setOperations.allKnownSupertypes(right);
 
         for (Type leftSuper : leftSupers) {
             if (leftSuper instanceof ParameterizedClassType lct) {
@@ -263,50 +240,6 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         }
 
         return result;
-    }
-
-    private static Set<Type> allSupertypes(Type type, Set<? extends TypeBound.ResultView> bounds) {
-        Set<Type> result = new LinkedHashSet<>();
-        allSupertypes(result, type, bounds);
-        return result;
-    }
-
-    private static void allSupertypes(Set<Type> building, Type type, Set<? extends TypeBound.ResultView> bounds) {
-        if (!building.contains(type)) {
-            building.add(type);
-            if (type instanceof MetaVarType mvt) {
-                bounds.forEach(t -> {
-                    if (t.bound() instanceof TypeBound.Subtype st && st.left().typeEquals(mvt)) {
-                        building.add(st.right());
-                        st.right().knownDirectSupertypes().forEach(k -> allSupertypes(building, k, bounds));
-                    }
-                });
-            } else {
-                type.knownDirectSupertypes().forEach(t -> allSupertypes(building, t, bounds));
-            }
-        }
-    }
-
-    private static MetaVarType getMetaVarType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        if (bound.left() instanceof MetaVarType m) {
-            return m;
-        } else if (bound.right() instanceof MetaVarType m) {
-            return m;
-        } else {
-            return null;
-        }
-    }
-
-    private static boolean hasMetaVarType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        return getMetaVarType(bound) != null;
-    }
-
-    private static Type getOtherType(TypeBound.Binary<? extends Type, ? extends Type> bound) {
-        if (bound.left() instanceof MetaVarType) {
-            return bound.right();
-        } else {
-            return bound.left();
-        }
     }
 
 }
