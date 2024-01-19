@@ -22,6 +22,10 @@ public interface Type extends Copyable<Type> {
 
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
 
+    default <R, P> R accept(TypeVisitor<R, P> visitor) {
+        return accept(visitor, null);
+    }
+
     default boolean typeEquals(Type other) {
         return this.typeEquals(other, Collections.newSetFromMap(new IdentityHashMap<>()));
     }

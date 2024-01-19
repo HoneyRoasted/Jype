@@ -69,12 +69,12 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
 
     @Override
     public ParameterizedClassType parameterizedWithTypeVars() {
-        return parameterized((List<ArgumentType>) (List) this.typeParameters);
+        return parameterized((List) this.typeParameters);
     }
 
     @Override
     public ParameterizedClassType parameterizedWithMetaVars() {
-        List<ArgumentType> mvts = new ArrayList<>();
+        List<MetaVarType> mvts = new ArrayList<>();
         Map<VarType, MetaVarType> typeMap = new HashMap<>();
 
         this.typeParameters.forEach(v -> {
@@ -85,9 +85,15 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
 
         TypeVisitor<Type, Void> resolver = new VarTypeResolveVisitor(typeMap)
                 .withContext(new InMemoryTypeCache<>());
-        mvts.forEach(resolver::visit);
+        for (int i = 0; i < mvts.size(); i++) {
+            VarType param = this.typeParameters.get(i);
+            MetaVarType mvt = mvts.get(i);
+            if (!param.hasDefaultBounds()) {
+                param.upperBounds().forEach(bnd -> mvt.upperBounds().add(bnd.accept(resolver)));
+            }
+        }
 
-        return parameterized(mvts);
+        return parameterized((List) mvts);
     }
 
     @Override
