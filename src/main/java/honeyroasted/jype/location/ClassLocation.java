@@ -2,14 +2,19 @@ package honeyroasted.jype.location;
 
 public record ClassLocation(Type type, ClassLocation containing, String value) {
     public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
+    public static final ClassLocation UNKNOWN_MODULE = new ClassLocation(Type.MODULE, null, null);
     public static final ClassLocation VOID = ClassLocation.of(void.class);
 
     public static ClassLocation of(String internalName) {
+        return of(UNKNOWN_MODULE, internalName);
+    }
+
+    public static ClassLocation of(ClassLocation module, String internalName) {
         String[] parts = internalName.split("/");
         if (parts.length == 1) {
-            return new ClassLocation(Type.CLASS, DEFAULT_MODULE, parts[0]);
+            return new ClassLocation(Type.CLASS, module, parts[0]);
         } else {
-            ClassLocation result = new ClassLocation(Type.PACKAGE, DEFAULT_MODULE, parts[0]);
+            ClassLocation result = new ClassLocation(Type.PACKAGE, module, parts[0]);
             for (int i = 1; i < parts.length - 1; i++) {
                 result = new ClassLocation(Type.PACKAGE, result, parts[i]);
             }
@@ -70,7 +75,7 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
 
     public String toString(String delim, String moduleDelim) {
         StringBuilder sb = new StringBuilder();
-        if (this.containing != null && !this.containing.equals(DEFAULT_MODULE)) {
+        if (this.containing != null && !this.containing.equals(DEFAULT_MODULE) && !this.containing.equals(UNKNOWN_MODULE)) {
             sb.append(this.containing);
             if (this.containing.type == Type.MODULE) {
                 sb.append(moduleDelim);

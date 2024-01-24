@@ -33,9 +33,13 @@ public record MethodLocation(ClassNamespace containing, String name, ClassLocati
     public static MethodLocation of(Constructor cons) {
         return new MethodLocation(
                 ClassNamespace.of(cons.getDeclaringClass()),
-                "<init>",
+                CONSTRUCTOR_NAME,
                 ClassLocation.VOID,
                 Stream.of(cons.getParameterTypes()).map(ClassLocation::of).toList());
+    }
+
+    public boolean isConstructor() {
+        return this.name.equals(CONSTRUCTOR_NAME);
     }
 
     @Override

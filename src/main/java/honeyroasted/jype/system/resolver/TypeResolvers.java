@@ -4,6 +4,7 @@ import honeyroasted.jype.type.Type;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class TypeResolvers {
     private List<TypeResolver<?, ?>> resolvers = new ArrayList<>();
@@ -17,16 +18,18 @@ public class TypeResolvers {
     }
 
     public <I, O extends Type> TypeResolver<I, O> resolverFor(Class<I> keyType, Class<O> outputType) {
-        List<TypeResolver<?, ?>> applicable = this.resolvers.stream()
-                .filter(t -> t.keyType().isAssignableFrom(keyType) && outputType.isAssignableFrom(t.resultType())).toList();
-
-        if (applicable == null || applicable.isEmpty()) {
-            return TypeResolver.none();
-        } else if (applicable.size() == 1) {
-            return (TypeResolver<I, O>) applicable.get(0);
-        } else {
-            return new MultiTypeResolvers<I, O>((List) applicable);
-        }
+        return (system, value) -> {
+            for (TypeResolver<?, ?> resolver : this.resolvers) {
+                if (resolver.keyType().isAssignableFrom(keyType) && outputType.isAssignableFrom(resolver.resultType())) {
+                    Optional<? extends O> attempt = ((TypeResolver<? super I, ? extends O>) resolver).resolve(system, value);
+                    if (attempt.isPresent()) {
+                        return attempt;
+                    }
+                }
+            }
+            return Optional.empty();
+        };
     }
+
 
 }

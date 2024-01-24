@@ -106,13 +106,13 @@ public interface ReflectionTypeResolution {
 
             Class<?> target = Class.forName(current.toRuntimeName());
 
-            for (int i = 0; i < depth; i++) {
-                target = Array.newInstance(target, 0).getClass();
+            if (depth != 0) {
+                target = Array.newInstance(target, new int[depth]).getClass();
             }
 
             return target;
         } catch (ClassNotFoundException ex) {
-            throw new ResolutionFailedException("Failed to resolve class: " + location, ex);
+            throw new ResolutionFailedException("Failed to resolve class (runtime lookup failed): " + location, ex);
         }
     }
 
@@ -121,11 +121,11 @@ public interface ReflectionTypeResolution {
         try {
             targetCls = classFromLocation(location.containing().location());
         } catch (ResolutionFailedException ex) {
-            throw new ResolutionFailedException("Could not resolve method: " + location, ex);
+            throw new ResolutionFailedException("Could not resolve method (containing class not found): " + location, ex);
         }
         Executable targetMethod = null;
 
-        if (location.name().equals(MethodLocation.CONSTRUCTOR_NAME)) {
+        if (location.isConstructor()) {
             Constructor[] cons = targetCls.getDeclaredConstructors();
             for (Constructor con : cons) {
                 if (locationMatchesMethod(location, con)) {
@@ -144,7 +144,7 @@ public interface ReflectionTypeResolution {
         }
 
         if (targetMethod == null) {
-            throw new ResolutionFailedException("Could not resolve method: " + location);
+            throw new ResolutionFailedException("Could not resolve method (matching method not found): " + location);
         }
 
         return targetMethod;
@@ -335,11 +335,11 @@ public interface ReflectionTypeResolution {
                 parameters = ReflectionTypeResolution.methodFromLocation(containing).getTypeParameters();
             }
         } catch (ResolutionFailedException ex) {
-            throw new ResolutionFailedException("Could not resolve type parameter: " + location, ex);
+            throw new ResolutionFailedException("Could not resolve type parameter (no generic declaration found): " + location, ex);
         }
 
         if (parameters == null) {
-            throw new ResolutionFailedException("Could not resolve type parameter: " + location);
+            throw new ResolutionFailedException("Could not resolve type parameter (no type parameters found): " + location);
         }
 
         TypeVariable varTarget = null;
@@ -353,7 +353,7 @@ public interface ReflectionTypeResolution {
         if (varTarget != null) {
             return varTarget;
         } else {
-            throw new ResolutionFailedException("Could not resolve type parameter: " + location);
+            throw new ResolutionFailedException("Could not resolve type parameter (no matching name found): " + location);
         }
     }
 

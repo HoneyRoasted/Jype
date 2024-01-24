@@ -41,7 +41,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
         
-        return "[" + visit(type.component()) + "]";
+        return "[" + visit(type.component(), context) + "]";
     }
 
     String arrayToString(ArrayType type, Set<Type> context);
@@ -51,7 +51,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
         
-        return null;
+        return intersectionToString(type, context);
     }
 
     String intersectionToString(IntersectionType type, Set<Type> context);
