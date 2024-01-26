@@ -18,11 +18,11 @@ public class Test {
         TypeConstraintReducer reducer = new TypeConstraintReducer();
         TypeBoundResolver resolver = new TypeBoundResolver();
 
-        ClassReference list = (ClassReference) system.resolve(List.class).get();
+        ClassReference list = system.tryResolve(List.class);
 
         TypeBound.Result.Builder builder = TypeBound.Result.builder(new TypeBound.Compatible(
                 list.parameterized(new MetaVarTypeImpl(system, "T")),
-                list.parameterized((ArgumentType) system.resolve(String.class).get())
+                list.parameterized(system.<ArgumentType>tryResolve(String.class))
         ));
 
         reducer.reduce(Set.of(builder));
