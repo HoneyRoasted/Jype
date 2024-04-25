@@ -110,16 +110,16 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                     if (!properLower.isEmpty()) {
                         Type lub = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
-                        candidates.put(mvt, Pair.of(lub, this.eventBoundCreated(bound)));
+                        candidates.put(mvt, Pair.of(lub, bound));
                     } else if (bounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.Throws thr && thr.value().equals(mvt)) &&
                             properUpper.keySet().stream().allMatch(t -> this.compatibilityChecker.isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
                         Type cand = mvt.typeSystem().constants().runtimeException();
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
-                        candidates.put(mvt, Pair.of(cand, this.eventBoundCreated(bound)));
+                        candidates.put(mvt, Pair.of(cand, bound));
                     } else if (!properUpper.isEmpty()) {
                         Type glb = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, glb), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
-                        candidates.put(mvt, Pair.of(glb, this.eventBoundCreated(bound)));
+                        candidates.put(mvt, Pair.of(glb, bound));
                     } else {
                         foundAllCandidates = false;
                     }
@@ -162,22 +162,20 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                     if (!properLower.isEmpty()) {
                         Type lower = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lower), properLower.values()).setSatisfied(true);
-                        newBounds.add(this.eventBoundCreated(bound));
+                        newBounds.add(bound);
                         y.lowerBounds().add(lower);
                     }
 
                     if (!properUpper.isEmpty()) {
                         Type upper = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, upper), properLower.values()).setSatisfied(true);
-                        newBounds.add(this.eventBoundCreated(bound));
+                        newBounds.add(bound);
                         y.upperBounds().add(upper);
                     }
-
-                    //TODO missing well-formed bounds check
                 }
 
                 newBounds.removeIf(b -> b.bound() instanceof TypeBound.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains));
-                freshVars.forEach((mv, fresh) -> newBounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(mv, fresh)).setSatisfied(true))));
+                freshVars.forEach((mv, fresh) -> newBounds.add(TypeBound.Result.builder(new TypeBound.Equal(mv, fresh)).setSatisfied(true)));
                 generatedBounds.clear();
                 generatedBounds.addAll(newBounds);
             }
@@ -199,7 +197,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
             }
         } else {
             Set<TypeBound.Result.Builder> boundsFailed = new LinkedHashSet<>(bounds);
-            boundsFailed.add(this.eventBoundCreated(TypeBound.Result.builder(TypeBound.False.INSTANCE, bounds).setSatisfied(false)));
+            boundsFailed.add(TypeBound.Result.builder(TypeBound.False.INSTANCE, bounds).setSatisfied(false));
             return Pair.of(Collections.emptyMap(), boundsFailed);
         }
     }
@@ -274,10 +272,10 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
             TypeBound bound = boundBuilder.bound();
             if (bound instanceof TypeBound.Equal eq) {
                 if (eq.left().typeEquals(mvt) && eq.right().isProperType()) {
-                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.right()), boundBuilder)).setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.right()), boundBuilder).setSatisfied(true);
                     return eq.right();
                 } else if (eq.right().equals(mvt) && eq.left().isProperType()) {
-                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.left()), boundBuilder)).setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.left()), boundBuilder).setSatisfied(true);
                     return eq.left();
                 }
             }

@@ -15,61 +15,74 @@ public interface ExpressionInformation {
 
     String simpleName();
 
-    default boolean isStandalone() {
+    default boolean isSimplyTyped() {
         return false;
     }
 
-    default Optional<Type> getStandaloneType(TypeSystem system) {
+    default Optional<Type> getSimpleType(TypeSystem system) {
         return Optional.empty();
     }
 
-    interface Standalone extends ExpressionInformation {
-        Type type();
+    interface SimplyTyped extends ExpressionInformation {
+        Type type(TypeSystem system);
 
         @Override
-        default boolean isStandalone() {
+        default boolean isSimplyTyped() {
             return true;
         }
 
         @Override
-        default Optional<Type> getStandaloneType(TypeSystem system) {
-            return Optional.of(this.type());
+        default Optional<Type> getSimpleType(TypeSystem system) {
+            return Optional.of(this.type(system));
         }
     }
 
-    interface Constant extends Standalone {
+    interface Constant extends SimplyTyped {
 
         Object value();
 
+        @Override
+        default Type type(TypeSystem system) {
+            if (value() == null) {
+                return system.constants().nullType();
+            } else {
+                Type type = system.tryResolve(value().getClass());
+                Type unboxed = system.constants().primitiveByBox().get(type);
+                if (unboxed != null) {
+                    return unboxed;
+                }
+                return type;
+            }
+        }
     }
 
-    interface Poly extends ExpressionInformation {
+    interface Multi extends ExpressionInformation {
         List<ExpressionInformation> children();
 
         @Override
-        default boolean isStandalone() {
-            return this.children().stream().allMatch(e -> e instanceof Standalone || (e instanceof Poly p && p.isStandalone()));
+        default boolean isSimplyTyped() {
+            return this.children().stream().allMatch(e -> e instanceof SimplyTyped || (e instanceof Multi m && m.isSimplyTyped()));
         }
 
         @Override
-        default Optional<Type> getStandaloneType(TypeSystem system) {
-            if (!this.isStandalone()) {
+        default Optional<Type> getSimpleType(TypeSystem system) {
+            if (!this.isSimplyTyped()) {
                 return Optional.empty();
             }
 
             if (this.children().isEmpty()) {
                 return Optional.of(system.constants().nullType());
             } else if (this.children().size() == 1) {
-                return this.children().get(0) instanceof Standalone st ? Optional.of(st.type()) : this.children().get(0).getStandaloneType(system);
+                return this.children().get(0) instanceof SimplyTyped st ? Optional.of(st.type(system)) : this.children().get(0).getSimpleType(system);
             } else {
                 IntersectionType type = new IntersectionTypeImpl(system);
                 Set<Type> childrenTypes = new LinkedHashSet<>();
                 this.children().forEach(c -> {
                     Type childType = null;
-                    if (c instanceof Standalone st) {
-                        childType = st.type();
-                    } else if (c instanceof Poly p) {
-                        childType = p.getStandaloneType(system).get();
+                    if (c instanceof SimplyTyped st) {
+                        childType = st.type(system);
+                    } else if (c instanceof Multi p) {
+                        childType = p.getSimpleType(system).get();
                     }
 
                     if (childType instanceof IntersectionType it) {

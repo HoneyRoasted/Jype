@@ -62,27 +62,27 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
     }
 
     public TypeBound.Result.Builder check(TypeBound.Compatible compatible, TypeBound.Result.Builder... parents) {
-        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(compatible, parents));
+        TypeBound.Result.Builder builder = TypeBound.Result.builder(compatible, parents);
         switch (compatible.context()) {
             case SUBTYPE, STRICT_INVOCATION -> strictSubtype(compatible.left(), compatible.right(), new HashSet<>(), builder);
             case ASSIGNMENT, LOOSE_INVOCATION -> looseInvocation(compatible.left(), compatible.right(), builder);
             case EXPLICIT_CAST -> explicitCast(compatible.left(), compatible.right(), builder);
         }
-        this.eventBoundSatisfiedOrUnsatisfied(builder);
         return builder;
     }
 
     public TypeBound.Result.Builder check(TypeBound.ExpressionCompatible compatible, TypeBound.Result.Builder... parents) {
         Type expr;
 
-        if (compatible.left().isStandalone()) {
-            expr = compatible.left().getStandaloneType(compatible.right().typeSystem()).get();
+        if (compatible.left().isSimplyTyped()) {
+            expr = compatible.left().getSimpleType(compatible.right().typeSystem()).get();
         } else {
-            return this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Standalone(compatible.left()), parents))
-                    .setSatisfied(false));
+            //TODO
+            return TypeBound.Result.builder(new TypeBound.Standalone(compatible.left()), parents)
+                    .setSatisfied(false);
         }
 
-        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(compatible, parents));
+        TypeBound.Result.Builder builder = TypeBound.Result.builder(compatible, parents);
         switch (compatible.context()) {
             case SUBTYPE, STRICT_INVOCATION -> strictSubtype(expr, compatible.right(), new HashSet<>(), builder);
             case LOOSE_INVOCATION -> looseInvocation(expr, compatible.right(), builder);
@@ -95,7 +95,6 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 }
             }
         }
-        this.eventBoundSatisfiedOrUnsatisfied(builder);
         return builder;
     }
 
@@ -110,33 +109,33 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
 
         TypeConstants c = subtype.typeSystem().constants();
 
-        Type cnst = constantExpression.type();
+        Type cnst = constantExpression.type(subtype.typeSystem());
         Object val = constantExpression.value();
 
         if (cnst.typeEquals(c.byteType()) || cnst.typeEquals(c.shortType()) || cnst.typeEquals(c.charType()) || cnst.typeEquals(c.intType())) {
             if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
-                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(true);
                 } else {
-                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(true);
                 }
             } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
-                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(true);
                 } else {
-                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(false));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(false);
                 }
             } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
-                    this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(true));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(true);
                 } else {
-                    this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent))
-                            .setSatisfied(false));
+                    TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), parent)
+                            .setSatisfied(false);
                 }
             }
         }
@@ -144,9 +143,9 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
         looseInvocation(subtype, target, parent);
     }
 
-    private static boolean fits(Object obj, int min, int max) {
+    private static boolean fits(Object obj, long min, long max) {
         if (obj instanceof Number n) {
-            return min <= n.intValue() && n.intValue() <= max;
+            return min <= n.longValue() && n.longValue() <= max;
         } else if (obj instanceof Character c) {
             return min <= c && c <= max;
         }
@@ -167,55 +166,48 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
 
     private TypeBound.Result.Builder strictSubtype(Type subtype, Type supertype, Set<TypeBound.Subtype> seen, TypeBound.Result.Builder... parent) {
         TypeBound.Subtype bound = new TypeBound.Subtype(subtype, supertype);
-        TypeBound.Result.Builder builder = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parent));
+        TypeBound.Result.Builder builder = TypeBound.Result.builder(new TypeBound.Subtype(subtype, supertype), TypeBound.Result.Propagation.AND, parent);
 
         if (seen.contains(bound)) {
-            this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.CyclicSubtype(subtype, supertype), builder)).setSatisfied(true));
+            TypeBound.Result.builder(new TypeBound.CyclicSubtype(subtype, supertype), builder).setSatisfied(true);
         } else {
             seen = Type.concat(seen, bound);
             Set<TypeBound.Subtype> finalSeen = seen;
 
             if (supertype instanceof NoneType) {
                 builder.setSatisfied(false);
-                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof NoneType l) {
                 builder.setSatisfied(l.isNullType() && !(supertype instanceof PrimitiveType));
-                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype instanceof PrimitiveType l && supertype instanceof PrimitiveType r) {
                 builder.setSatisfied(PRIM_SUPERS.get(l.name()).contains(r.name()));
-                this.eventBoundSatisfiedOrUnsatisfied(builder);
             } else if (subtype.typeEquals(supertype)) {
                 builder.setSatisfied(true);
-                this.eventBoundSatisfied(builder);
             } else if (subtype instanceof ClassType l && supertype instanceof ClassType r) {
                 if (!l.hasTypeArguments() && !r.hasTypeArguments()) {
                     if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
                         if (l.hasRelevantOuterType() && r.hasRelevantOuterType()) {
                             strictSubtype(l.outerType(), r.outerType(), seen, builder);
-                            this.eventBoundSatisfiedOrUnsatisfied(builder);
                         } else {
                             builder.setSatisfied(false);
-                            this.eventBoundUnsatisfied(builder);
                         }
                     } else {
                         builder.setSatisfied(l.classReference().hasSupertype(r.classReference()));
-                        this.eventBoundSatisfiedOrUnsatisfied(builder);
                     }
                 } else if (supertype instanceof ParameterizedClassType pcr) {
                     Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
                             .relativeSupertype(pcr.classReference());
                     if (superTypeOpt.isPresent()) {
-                        this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)).setSatisfied(true));
+                        TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder).setSatisfied(true);
 
                         ClassType relative = superTypeOpt.get();
-                        TypeBound.Result.Builder argsMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder));
+                        TypeBound.Result.Builder argsMatch = TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder);
                         if (relative.typeArguments().size() == pcr.typeArguments().size()) {
                             for (int i = 0; i < relative.typeArguments().size(); i++) {
                                 Type ti = relative.typeArguments().get(i);
                                 Type si = pcr.typeArguments().get(i);
 
                                 if (si instanceof WildType || si instanceof VarType || si instanceof MetaVarType) {
-                                    TypeBound.Result.Builder argMatch = this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), TypeBound.Result.Propagation.AND, argsMatch));
+                                    TypeBound.Result.Builder argMatch = TypeBound.Result.builder(new TypeBound.GenericParameter(ti, si), TypeBound.Result.Propagation.AND, argsMatch);
                                     if (si instanceof WildType.Upper siwtu) {
                                         pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
                                                 .forEach(argBound -> strictSubtype(ti, argBound, finalSeen, argMatch));
@@ -235,32 +227,27 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                                                 .forEach(wildBound -> strictSubtype(wildBound, ti, finalSeen, argMatch));
                                     }
                                 } else {
-                                    this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch))
-                                            .setSatisfied(ti.typeEquals(si)));
+                                    TypeBound.Result.builder(new TypeBound.Equal(ti, si), argsMatch)
+                                            .setSatisfied(ti.typeEquals(si));
                                 }
                             }
 
                             if (l.hasRelevantOuterType() && r.hasRelevantOuterType()) {
                                 strictSubtype(l.outerType(), r.outerType(), seen, builder);
-                                this.eventBoundSatisfiedOrUnsatisfied(builder);
                             }
                         } else {
-                            this.eventBoundUnsatisfied(argsMatch.setSatisfied(false));
-                            this.eventBoundSatisfiedOrUnsatisfied(builder);
+                            argsMatch.setSatisfied(false);
                         }
                     } else {
-                        this.eventBoundUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)).setSatisfied(false));
-                        this.eventBoundSatisfiedOrUnsatisfied(builder);
+                        TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder).setSatisfied(false);
                     }
                 } else {
                     builder.setSatisfied(false);
-                    this.eventBoundSatisfiedOrUnsatisfied(builder);
                 }
             } else if (subtype instanceof ArrayType l) {
                 if (supertype instanceof ArrayType r) {
                     if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
                         builder.setSatisfied(r.component().typeEquals(l.component()));
-                        this.eventBoundSatisfiedOrUnsatisfied(builder);
                     } else {
                         strictSubtype(l.component(), r.component(), seen, builder);
                     }
@@ -275,14 +262,14 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
                 l.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
             } else if (subtype instanceof MetaVarType mvt) {
                 if (mvt.upperBounds().isEmpty()) {
-                    this.eventBoundUnsatisfied(builder.setSatisfied(false));
+                    builder.setSatisfied(false);
                 } else {
                     builder.setPropagation(TypeBound.Result.Propagation.OR);
                     mvt.upperBounds().forEach(t -> strictSubtype(t, supertype, finalSeen, builder));
                 }
             } else if (supertype instanceof MetaVarType mvt) {
                 if (mvt.lowerBounds().isEmpty()) {
-                    this.eventBoundUnsatisfied(builder.setSatisfied(false));
+                    builder.setSatisfied(false);
                 } else {
                     mvt.lowerBounds().forEach(t -> strictSubtype(subtype, t, finalSeen, builder));
                 }

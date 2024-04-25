@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.solver.solvers.TypeSolverListener;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
@@ -18,11 +17,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public interface TypeSolver extends TypeSolverListener {
+public interface TypeSolver {
 
     TypeSolver NO_OP = new NoOpTypeSolver();
-
-    TypeSolver addListener(TypeSolverListener listener);
 
     boolean supports(TypeBound bound);
 

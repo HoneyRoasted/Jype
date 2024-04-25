@@ -105,7 +105,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
 
         if (s.isProperType() && t.isProperType()) {
             if (s.typeEquals(t)) {
-                this.eventBoundSatisfied(builder);
+                builder.setSatisfied(true);
             } else {
                 this.failOnConstraint(builder);
             }
@@ -119,9 +119,9 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
     }
 
     private void reduce(TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
-        if (bound.left().isStandalone()) {
+        if (bound.left().isSimplyTyped()) {
             builder.setPropagation(TypeBound.Result.Propagation.INHERIT);
-            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(bound.left().getStandaloneType(bound.right().typeSystem()).get(), bound.right()), builder)));
+            this.constraints.add(TypeBound.Result.builder(new TypeBound.Compatible(bound.left().getSimpleType(bound.right().typeSystem()).get(), bound.right()), builder));
         } else {
             //TODO
         }
@@ -134,38 +134,38 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         if (t instanceof WildType) {
             if (t instanceof WildType.Upper wtu) {
                 if (wtu.hasDefaultBounds()) {
-                    this.eventBoundSatisfied(builder.setSatisfied(true));
+                    builder.setSatisfied(true);
                 } else {
                     if (s instanceof WildType) {
                         if (s instanceof WildType.Upper swtu) {
                             if (swtu.hasDefaultBounds()) {
-                                this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(s.typeSystem().constants().object(), wtu.upperBound()), builder)));
+                                this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(s.typeSystem().constants().object(), wtu.upperBound()), builder));
                             } else {
-                                this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(swtu.upperBound(), wtu.upperBound()), builder)));
+                                this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(swtu.upperBound(), wtu.upperBound()), builder));
                             }
                         } else if (s instanceof WildType.Lower swtl) {
-                            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(s.typeSystem().constants().object(), wtu.upperBound()), builder)));
+                            this.constraints.add(TypeBound.Result.builder(new TypeBound.Equal(s.typeSystem().constants().object(), wtu.upperBound()), builder));
                         }
                     } else {
-                        this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(s, wtu.upperBound()), builder)));
+                        this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(s, wtu.upperBound()), builder));
                     }
                 }
             } else if (t instanceof WildType.Lower wtl) {
                 if (s instanceof WildType) {
                     if (s instanceof WildType.Lower swtl) {
-                        this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(wtl.lowerBound(), swtl.lowerBound()), builder)));
+                        this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(wtl.lowerBound(), swtl.lowerBound()), builder));
                     } else {
                         this.failOnConstraint(builder);
                     }
                 } else {
-                    this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(wtl.lowerBound(), s), builder)));
+                    this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(wtl.lowerBound(), s), builder));
                 }
             }
         } else {
             if (s instanceof WildType) {
                 this.failOnConstraint(builder);
             } else {
-                this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(s, t), builder)));
+                this.constraints.add(TypeBound.Result.builder(new TypeBound.Equal(s, t), builder));
             }
         }
     }
@@ -176,18 +176,18 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         if (bound.left().isProperType() && bound.right().isProperType()) {
             this.compatibilityChecker.check(bound, builder);
         } else if (bound.left() instanceof PrimitiveType pt) {
-            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Compatible(pt.box(), bound.right(), bound.context()), builder)));
+            this.constraints.add(TypeBound.Result.builder(new TypeBound.Compatible(pt.box(), bound.right(), bound.context()), builder));
         } else if (bound.right() instanceof PrimitiveType pt) {
-            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), pt.box()), builder)));
+            this.constraints.add(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), pt.box()), builder));
         } else if (bound.left() instanceof ClassType pct && pct.hasAnyTypeArguments() && bound.right() instanceof ClassType ct && !ct.hasAnyTypeArguments() &&
                 this.compatibilityChecker.isSubtype(pct.classReference(), ct.classReference(), builder)) {
-            this.eventBoundSatisfied(builder.setSatisfied(true));
+            builder.setSatisfied(true);
         } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ClassType pct && pct.hasAnyTypeArguments() &&
                 bound.right() instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasAnyTypeArguments() &&
                 at.depth() == rat.depth() && this.compatibilityChecker.isSubtype(pct.classReference(), rpct.classReference(), builder)) {
-            this.eventBoundSatisfied(builder.setSatisfied(true));
+            builder.setSatisfied(true);
         } else {
-            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), builder)));
+            this.constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), builder));
         }
     }
 
@@ -198,28 +198,28 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
             this.bounds.add(this.compatibilityChecker.check(bound, builder));
         } else if (bound.left().isNullType()) {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
-            this.eventBoundSatisfied(builder.setSatisfied(true));
+            builder.setSatisfied(true);
         } else if (bound.right().isNullType()) {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
             this.failOnConstraint(builder);
         } else if (bound.left() instanceof MetaVarType || bound.right() instanceof MetaVarType) {
-            this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(bound, builder)));
+            this.bounds.add(TypeBound.Result.builder(bound, builder));
         } else if (bound.right() instanceof VarType vt) {
             if (bound.left() instanceof IntersectionType it && it.typeContains(vt)) {
-                this.eventBoundSatisfied(builder.setSatisfied(true));
+                builder.setSatisfied(true);
             } else {
                 this.failOnConstraint(builder);
             }
         } else if (bound.right() instanceof MetaVarType mvt) {
             if (bound.left() instanceof IntersectionType it && it.typeContains(mvt)) {
-                this.eventBoundSatisfied(builder.setSatisfied(true));
+                builder.setSatisfied(true);
             } else if (!mvt.lowerBounds().isEmpty()) {
-                this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), mvt.lowerBound()), builder)));
+                this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), mvt.lowerBound()), builder));
             } else {
                 this.failOnConstraint(builder);
             }
         } else if (bound.right() instanceof IntersectionType it) {
-            it.children().forEach(t -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder))));
+            it.children().forEach(t -> this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder)));
         } else if (bound.right() instanceof ClassType ct) {
             if (ct.hasAnyTypeArguments()) {
                 TypeBound.Result.Builder classTypeMatch = TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), ct.classReference()), TypeBound.Result.Propagation.OR, builder);
@@ -232,7 +232,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
                             Type ti = supertype.typeArguments().get(i);
                             Type si = ct.typeArguments().get(i);
 
-                            this.constraints.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Contains(ti, si), builder)));
+                            this.constraints.add(TypeBound.Result.builder(new TypeBound.Contains(ti, si), builder));
                         }
                     } else {
                         this.failOnConstraint(builder);
@@ -246,16 +246,16 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
         } else if (bound.right() instanceof ArrayType at) {
             if (bound.left() instanceof ArrayType lat) {
                 if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
-                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder)));
+                    this.bounds.add(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder));
                 } else {
-                    this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder)));
+                    this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder));
                 }
             } else {
                 Set<Type> arr = findMostSpecificArrayTypes(bound.left());
                 if (arr.isEmpty()) {
                     this.failOnConstraint(builder);
                 } else {
-                    arr.forEach(st -> this.bounds.add(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Subtype(st, at), builder))));
+                    arr.forEach(st -> this.bounds.add(TypeBound.Result.builder(new TypeBound.Subtype(st, at), builder)));
                 }
             }
         } else {
@@ -265,23 +265,23 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
 
     private void failOnConstraint(TypeBound.Result.Builder constraint) {
         constraint.setPropagation(TypeBound.Result.Propagation.NONE);
-        this.eventBoundUnsatisfied(constraint.setSatisfied(false));
+        constraint.setSatisfied(false);
         this.bounds.add(TypeBound.Result.builder(TypeBound.False.INSTANCE, constraint).setSatisfied(false));
     }
 
     private Optional<ClassType> identifySuperclass(ClassReference target, Type type, TypeBound.Result.Builder builder) {
         if (type instanceof ClassType ct) {
             Optional<ClassType> found = ct.relativeSupertype(ct);
-            this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ct.classReference(), target), builder))
-                    .setSatisfied(found.isPresent()));
+            TypeBound.Result.builder(new TypeBound.Equal(ct.classReference(), target), builder)
+                    .setSatisfied(found.isPresent());
             return found;
         } else {
             for (Type supertype : type.knownDirectSupertypes()) {
                 if (supertype instanceof ClassType ct) {
                     Optional<ClassType> found = ct.relativeSupertype(target);
                     if (found.isPresent()) {
-                        this.eventBoundSatisfied(this.eventBoundCreated(TypeBound.Result.builder(new TypeBound.Equal(ct.classReference(), target), builder))
-                                .setSatisfied(true));
+                        TypeBound.Result.builder(new TypeBound.Equal(ct.classReference(), target), builder)
+                                .setSatisfied(true);
                         return found;
                     }
                 }

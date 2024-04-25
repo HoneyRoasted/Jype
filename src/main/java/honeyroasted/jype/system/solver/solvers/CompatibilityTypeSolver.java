@@ -34,11 +34,11 @@ public class CompatibilityTypeSolver extends AbstractTypeSolver {
             } else if (bound instanceof TypeBound.Compatible ct) {
                 results.add(this.compatibilityChecker.check(ct));
             } else if (bound instanceof TypeBound.Equal eq) {
-                results.add(this.eventBoundSatisfiedOrUnsatisfied(this.eventBoundCreated(TypeBound.Result.builder(eq))
-                        .setSatisfied(eq.left().typeEquals(eq.right()))));
+                results.add(TypeBound.Result.builder(eq)
+                        .setSatisfied(eq.left().typeEquals(eq.right())));
             }
         }
 
-        return this.eventSolved(new Result(results.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toSet())));
+        return new Result(results.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toSet()));
     }
 }
