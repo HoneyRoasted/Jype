@@ -72,7 +72,6 @@ public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subty
             } else {
                 argsMatch.setSatisfied(false);
             }
-            results.add(argsMatch);
         } else {
             results.add(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), pcr.classReference()), constraint).setSatisfied(false));
         }

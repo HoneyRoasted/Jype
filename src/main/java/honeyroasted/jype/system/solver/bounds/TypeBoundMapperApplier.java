@@ -15,18 +15,34 @@ public class TypeBoundMapperApplier {
     }
 
     public Set<TypeBound.Result.Builder> process(Set<TypeBound.Result.Builder> constraints) {
+        Set<TypeBound.Result.Builder> compare = new LinkedHashSet<>();
+
         Set<TypeBound.Result.Builder> previous = new LinkedHashSet<>();
+        Set<TypeBound.Result.Builder> processing = new LinkedHashSet<>();
         Set<TypeBound.Result.Builder> current = new LinkedHashSet<>(constraints);
 
-        while (!previous.equals(current)) {
-            previous = current;
-            current = new LinkedHashSet<>();
+        while (!compare.equals(current)) {
+            compare.clear();
+            compare.addAll(current);
 
             for (TypeBoundMapper mapper : this.mappers) {
-                Set<TypeBound.Result.Builder> processing = previous.stream().filter(mapper::accepts).collect(Collectors.toCollection(LinkedHashSet::new));
+                previous.clear();
+                previous.addAll(current);
 
-                Set<TypeBound.Result.Builder> results = current;
-                consumeSubsets(processing, mapper.arity(), arr -> mapper.map(results, arr));
+                current.clear();
+                processing.clear();
+
+                for (TypeBound.Result.Builder constraint : previous) {
+                    if (mapper.accepts(constraint)) {
+                        processing.add(constraint);
+                    } else {
+                        current.add(constraint);
+                    }
+                }
+
+                if (!processing.isEmpty()) {
+                    consumeSubsets(processing, mapper.arity(), arr -> mapper.map(current, arr));
+                }
             }
         }
 
