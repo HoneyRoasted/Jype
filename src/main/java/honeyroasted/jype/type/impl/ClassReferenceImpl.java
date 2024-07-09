@@ -2,6 +2,7 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -206,9 +207,9 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
-        if (seen.contains(this)) return true;
-        seen = Type.concat(seen, other);
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.of(this, other))) return true;
+        seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof ClassType ct) {
             if (Objects.equals(namespace, ct.namespace()) && modifiers == ct.modifiers() &&

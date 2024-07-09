@@ -26,7 +26,7 @@ public interface ParameterizedClassType extends PossiblyUnmodifiable, ClassType,
 
     @Override
     default boolean hasTypeArguments() {
-        return !this.typeArguments().isEmpty();
+        return this.typeArguments() != null && !this.typeArguments().isEmpty();
     }
 
     @Override

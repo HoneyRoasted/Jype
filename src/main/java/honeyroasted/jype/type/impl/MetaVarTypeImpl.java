@@ -1,6 +1,7 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.modify.AbstractType;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
@@ -67,8 +68,8 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
-        if (seen.contains(this)) return true;
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.of(this, other))) return true;
 
         if (other instanceof MetaVarType mvt) {
             return this.identity == mvt.identity();

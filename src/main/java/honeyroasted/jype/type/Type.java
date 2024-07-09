@@ -1,11 +1,12 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.modify.Copyable;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.TypeBound;
-import honeyroasted.jype.system.solver.solvers.CompatibilityTypeSolver;
+import honeyroasted.jype.system.solver._old.solvers.CompatibilityTypeSolver;
+import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 
@@ -40,17 +41,18 @@ public interface Type extends Copyable<Type> {
     }
 
     default boolean typeEquals(Type other) {
-        return this.typeEquals(other, Collections.newSetFromMap(new IdentityHashMap<>()));
+        return this.typeEquals(other, new HashSet<>());
     }
 
-    default boolean typeEquals(Type other, Set<Type> seen) {
-        if (this == other || seen.contains(this)) return true;
+    default boolean typeEquals(Type other, Set<Pair<Type, Type>> seen) {
+        if (this == other) return true;
+        if (seen.contains(Pair.of(this, other))) return true;
 
         if (other instanceof MetaVarType mvt) {
-            Set<Type> finalSeen = concat(seen, this);
+            Set<Pair<Type, Type>> finalSeen = concat(seen, Pair.identity(this, other));
             return this.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.typeEquals(other, finalSeen));
         } else if (other instanceof IntersectionType it) {
-            seen = concat(seen, this);
+            seen = concat(seen, Pair.identity(this, other));
             return this.equals(it, seen) || (it.children().size() == 1 && this.typeEquals(it.children().iterator().next(), seen));
         }
         return this.equals(other, seen);
@@ -72,7 +74,7 @@ public interface Type extends Copyable<Type> {
         return newSet;
     }
 
-    static boolean equals(Type left, Type right, Set<Type> seen) {
+    static boolean equals(Type left, Type right, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
         return left.equals(right, seen);
@@ -83,7 +85,7 @@ public interface Type extends Copyable<Type> {
         return type.hashCode(seen);
     }
 
-    static boolean equals(List<? extends Type> left, List<? extends Type> right, Set<Type> seen) {
+    static boolean equals(List<? extends Type> left, List<? extends Type> right, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
 
@@ -108,7 +110,7 @@ public interface Type extends Copyable<Type> {
         return hash;
     }
 
-    static boolean equals(Set<? extends Type> left, Set<? extends Type> right, Set<Type> seen) {
+    static boolean equals(Set<? extends Type> left, Set<? extends Type> right, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
 
@@ -148,7 +150,7 @@ public interface Type extends Copyable<Type> {
         return hash;
     }
 
-    boolean equals(Type other, Set<Type> seen);
+    boolean equals(Type other, Set<Pair<Type, Type>> seen);
 
     int hashCode(Set<Type> seen);
 

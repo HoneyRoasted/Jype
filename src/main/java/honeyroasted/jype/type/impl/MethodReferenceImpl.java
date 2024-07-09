@@ -2,6 +2,7 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArgumentType;
@@ -154,9 +155,9 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
-        if (seen.contains(this)) return true;
-        seen = Type.concat(seen, this);
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.of(this, other))) return true;
+        seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof MethodType mt) {
             if (Objects.equals(location, mt.location()) && modifiers == mt.modifiers() && Type.equals(returnType, mt.returnType(), seen) &&

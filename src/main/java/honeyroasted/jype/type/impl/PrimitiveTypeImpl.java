@@ -2,6 +2,7 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.modify.AbstractType;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ClassReference;
@@ -44,8 +45,8 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
-        if (seen.contains(this)) return true;
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.of(this, other))) return true;
 
         if (other instanceof PrimitiveType pt) {
             return Objects.equals(descriptor, pt.descriptor());

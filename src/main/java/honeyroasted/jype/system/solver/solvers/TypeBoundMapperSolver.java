@@ -1,0 +1,72 @@
+package honeyroasted.jype.system.solver.solvers;
+
+import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.system.solver.TypeSolver;
+import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
+
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class TypeBoundMapperSolver implements TypeSolver {
+    private String name;
+    private TypeBoundMapperApplier applier;
+    private Set<Class<? extends TypeBound>> supported;
+
+    private Set<TypeBound> bounds = new LinkedHashSet<>();
+
+    public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, TypeBoundMapperApplier applier) {
+        this.name = name;
+        this.applier = applier;
+        this.supported = supported;
+    }
+
+    private static TypeBound supportsImpl(TypeBound bound, Set<Class<? extends TypeBound>> supported) {
+        if (supported.stream().noneMatch(c -> c.isInstance(bound))) {
+            return bound;
+        }
+
+        if (bound instanceof TypeBound.Compound cmp) {
+            for (TypeBound child : cmp.children()) {
+                TypeBound subSupported = supportsImpl(child, supported);
+                if (subSupported != null) {
+                    return subSupported;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean supports(TypeBound bound) {
+        if (bound == null) return false;
+        return supportsImpl(bound, this.supported) == null;
+    }
+
+    @Override
+    public TypeSolver bind(TypeBound bound) {
+        Objects.requireNonNull(bound);
+        TypeBound check = supportsImpl(bound, this.supported);
+        if (check != null) {
+            throw new IllegalArgumentException(this.name + " does not support TypeBound of type " +
+                    check.getClass().getName() + ", support bounds are: [" +
+                    supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
+        }
+        this.bounds.add(bound);
+        return this;
+    }
+
+    @Override
+    public void reset() {
+        this.bounds.clear();
+    }
+
+    @Override
+    public Result solve(TypeSystem system) {
+        return new Result(this.applier.process(this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new)))
+                .stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));
+    }
+}

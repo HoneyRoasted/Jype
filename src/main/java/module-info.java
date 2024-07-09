@@ -8,11 +8,13 @@ open module Jype.main {
     exports honeyroasted.jype.system.resolver;
     exports honeyroasted.jype.system.resolver.reflection;
     exports honeyroasted.jype.system.solver;
-    exports honeyroasted.jype.system.solver.solvers;
-    exports honeyroasted.jype.system.solver.solvers.inference;
+    exports honeyroasted.jype.system.solver._old.solvers;
+    exports honeyroasted.jype.system.solver._old.solvers.inference;
     exports honeyroasted.jype.system.visitor;
     exports honeyroasted.jype.system.visitor.visitors;
-    exports honeyroasted.jype.system.solver.exception;
-    exports honeyroasted.jype.system.solver.solvers.inference.expression;
+    exports honeyroasted.jype.system.solver._old.solvers.inference.expression;
     exports honeyroasted.jype.type.signature;
+    exports honeyroasted.jype.system.solver.bounds;
+    exports honeyroasted.jype.system.solver.solvers;
+    exports honeyroasted.jype.modify;
 }

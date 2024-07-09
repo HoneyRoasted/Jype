@@ -1,5 +1,6 @@
 package honeyroasted.jype.type.delegate;
 
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.Type;
 
@@ -48,7 +49,7 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
         return this.delegate().equals(other, seen);
     }
 

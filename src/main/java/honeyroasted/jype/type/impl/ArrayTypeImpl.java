@@ -1,6 +1,7 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArrayType;
@@ -46,9 +47,9 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
     }
 
     @Override
-    public boolean equals(Type other, Set<Type> seen) {
-        if (seen.contains(this)) return true;
-        seen = Type.concat(seen, this);
+    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.of(this, other))) return true;
+        seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof ArrayType at) {
             return Type.equals(this.component(), at.component(), seen);

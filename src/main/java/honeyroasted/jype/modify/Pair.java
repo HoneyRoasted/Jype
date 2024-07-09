@@ -11,7 +11,32 @@ public class Pair<L, R> {
         this.right = right;
     }
 
+    static class Identity<L, R> extends Pair<L, R> {
+
+        public Identity(L left, R right) {
+            super(left, right);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Pair<?, ?> pair = (Pair<?, ?>) o;
+            return this.left() == pair.left && this.right() == pair.right;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(System.identityHashCode(this.left()),
+                    System.identityHashCode(this.right()));
+        }
+    }
+
     public static <L, R> Pair<L, R> of(L left, R right) {
+        return new Pair<>(left, right);
+    }
+
+    public static <L, R> Pair<L, R> identity(L left, R right) {
         return new Pair<>(left, right);
     }
 
