@@ -2,6 +2,7 @@ package honeyroasted.jype.system.solver._old.solvers.inference.helper;
 
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.solver.solvers.TypeSolvers;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -25,7 +26,7 @@ public class TypeConstraintReducer extends AbstractInferenceHelper {
     private TypeBoundIncorporater boundIncorporater;
 
     public TypeConstraintReducer() {
-        this(TypeSolver.NO_OP);
+        this(TypeSolvers.NO_OP);
     }
 
     public TypeConstraintReducer(TypeSolver solver) {

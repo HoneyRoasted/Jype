@@ -52,8 +52,8 @@ public class TypeBoundMapperSolver implements TypeSolver {
         TypeBound check = supportsImpl(bound, this.supported);
         if (check != null) {
             throw new IllegalArgumentException(this.name + " does not support TypeBound of type " +
-                    check.getClass().getName() + ", support bounds are: [" +
-                    supported.stream().map(Class::getName).collect(Collectors.joining(", ")) + "]");
+                    check.getClass().getCanonicalName() + ", supported bounds are: [" +
+                    supported.stream().map(Class::getCanonicalName).collect(Collectors.joining(", ")) + "]");
         }
         this.bounds.add(bound);
         return this;

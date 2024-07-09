@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
 
 public interface TypeSolver {
 
-    TypeSolver NO_OP = new NoOpTypeSolver();
-
     boolean supports(TypeBound bound);
 
     TypeSolver bind(TypeBound bound);

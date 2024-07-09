@@ -1,6 +1,8 @@
 package honeyroasted.jype.system.solver.solvers;
 
+import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleLooseInvocation;
@@ -23,31 +25,33 @@ import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeWild;
 import java.util.List;
 import java.util.Set;
 
-public class CompatibilityTypeSolver_2 extends TypeBoundMapperSolver {
+public interface TypeSolvers {
 
-    public CompatibilityTypeSolver_2() {
-        super("CompatibilityTypeSolver",
-                Set.of(TypeBound.Equal.class, TypeBound.Subtype.class, TypeBound.Compatible.class),
-                new TypeBoundMapperApplier(List.of(
-                        new EqualType(),
-                        new CompatibleExplicitCast(),
-                        new CompatibleLooseInvocation(),
-                        new CompatibleSubtype(),
-                        new ExpressionAssignmentConstant(),
-                        new ExpressionSimplyTyped(),
+    TypeSolver NO_OP = new NoOpTypeSolver();
 
-                        new SubtypeNone(),
-                        new SubtypePrimitive(),
-                        new SubtypeEquality(),
-                        new SubtypeUnchecked(),
-                        new SubtypeRawClass(),
-                        new SubtypeGenericClass(),
-                        new SubtypeArray(),
-                        new SubtypeVar(),
-                        new SubtypeMetaVar(),
-                        new SubtypeWild(),
-                        new SubtypeIntersection()
-                )));
-    }
+    TypeSolver COMPATIBILITY = new TypeBoundMapperSolver("CompatibilityTypeSolver",
+            Set.of(TypeBound.Equal.class, TypeBound.Subtype.class, TypeBound.Compatible.class),
+            new TypeBoundMapperApplier(List.of(
+                    new TypeBoundCompoundUnwrapper(),
+
+                    new EqualType(),
+                    new CompatibleExplicitCast(),
+                    new CompatibleLooseInvocation(),
+                    new CompatibleSubtype(),
+                    new ExpressionAssignmentConstant(),
+                    new ExpressionSimplyTyped(),
+
+                    new SubtypeNone(),
+                    new SubtypePrimitive(),
+                    new SubtypeEquality(),
+                    new SubtypeUnchecked(),
+                    new SubtypeRawClass(),
+                    new SubtypeGenericClass(),
+                    new SubtypeArray(),
+                    new SubtypeVar(),
+                    new SubtypeMetaVar(),
+                    new SubtypeWild(),
+                    new SubtypeIntersection()
+            )));
 
 }
