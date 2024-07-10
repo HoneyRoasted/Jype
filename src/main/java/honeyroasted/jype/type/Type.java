@@ -39,23 +39,29 @@ public interface Type extends Copyable<Type> {
     default boolean isAssignableTo(Type other) {
         return this.isCompatibleTo(other, TypeBound.Compatible.Context.ASSIGNMENT);
     }
+    
+    static boolean baseCaseEquivalence(Type left, Type other, Set<Pair<Type, Type>> seen) {
+        if (left == other) return true;
+        if (seen.contains(Pair.identity(left, other))) return true;
 
-    default boolean typeEquals(Type other) {
-        return this.typeEquals(other, new HashSet<>());
-    }
-
-    default boolean typeEquals(Type other, Set<Pair<Type, Type>> seen) {
-        if (this == other) return true;
-        if (seen.contains(Pair.of(this, other))) return true;
-
-        if (other instanceof MetaVarType mvt) {
-            Set<Pair<Type, Type>> finalSeen = concat(seen, Pair.identity(this, other));
-            return this.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.typeEquals(other, finalSeen));
-        } else if (other instanceof IntersectionType it) {
-            seen = concat(seen, Pair.identity(this, other));
-            return this.equals(it, seen) || (it.children().size() == 1 && this.typeEquals(it.children().iterator().next(), seen));
+        if (left instanceof MetaVarType mvt) {
+            Set<Pair<Type, Type>> finalSeen = concat(seen, Pair.identity(other, left));
+            return other.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.equals(left, Equality.EQUIVALENT, finalSeen));
+        } else if (left instanceof IntersectionType it) {
+            seen = concat(seen, Pair.identity(other, left));
+            return other.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && other.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
         }
-        return this.equals(other, seen);
+        
+        if (other instanceof MetaVarType mvt) {
+            Set<Pair<Type, Type>> finalSeen = concat(seen, Pair.identity(left, other));
+            return left.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.equals(other, Equality.EQUIVALENT, finalSeen));
+        } else if (other instanceof IntersectionType it) {
+            seen = concat(seen, Pair.identity(left, other));
+            return left.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && left.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
+        }
+        
+        
+        return false;
     }
 
     static <T> Set<T> concat(Set<T> set, T... vals) {
@@ -74,24 +80,40 @@ public interface Type extends Copyable<Type> {
         return newSet;
     }
 
-    static boolean equals(Type left, Type right, Set<Pair<Type, Type>> seen) {
+    static boolean typeEquals(Type left, Type right) {
+        return typeEquals(left, right, new HashSet<>());
+    }
+
+    static boolean typeEquals(Type left, Type right, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
-        return left.equals(right, seen);
+        return left.equals(right, Equality.EQUIVALENT, seen);
     }
 
-    static int hashCode(Type type, Set<Type> seen) {
-        if (type == null) return 0;
-        return type.hashCode(seen);
+    static boolean structuralEquals(Type left, Type right) {
+        return structuralEquals(left, right, new HashSet<>());
     }
 
-    static boolean equals(List<? extends Type> left, List<? extends Type> right, Set<Pair<Type, Type>> seen) {
+    static boolean structuralEquals(Type left, Type right, Set<Pair<Type, Type>> seen) {
+        if (left == right) return true;
+        if (left == null || right == null) return false;
+        return left.equals(right, Equality.STRUCTURAL, seen);
+    }
+    
+    static boolean equals(Type left, Type right, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (left == right) return true;
+        if (left == null || right == null) return false;
+        return left.equals(right, kind, seen);    
+    }
+    
+
+    static boolean equals(List<? extends Type> left, List<? extends Type> right, Equality kind, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
 
         if (left.size() == right.size()) {
             for (int i = 0; i < left.size(); i++) {
-                if (!left.get(i).equals(right.get(i), seen)) {
+                if (!Type.equals(left.get(i), right.get(i), kind, seen)) {
                     return false;
                 }
             }
@@ -100,17 +122,7 @@ public interface Type extends Copyable<Type> {
         return false;
     }
 
-    static int hashCode(List<? extends Type> list, Set<Type> seen) {
-        if (list == null) return 0;
-
-        int hash = 1;
-        for (Type t : list) {
-            hash = (hash * 31) + Type.hashCode(t, seen);
-        }
-        return hash;
-    }
-
-    static boolean equals(Set<? extends Type> left, Set<? extends Type> right, Set<Pair<Type, Type>> seen) {
+    static boolean equals(Set<? extends Type> left, Set<? extends Type> right, Equality kind, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
 
@@ -118,7 +130,7 @@ public interface Type extends Copyable<Type> {
             for (Type lt : left) {
                 boolean contains = false;
                 for (Type rt : right) {
-                    if (lt.equals(rt, seen)) {
+                    if (Type.equals(lt, rt, kind, seen)) {
                         contains = true;
                         break;
                     }
@@ -132,11 +144,26 @@ public interface Type extends Copyable<Type> {
         return false;
     }
 
+    static int hashCode(Type type, Set<Type> seen) {
+        if (type == null) return 0;
+        return type.hashCode(seen);
+    }
+    
+    static int hashCode(List<? extends Type> list, Set<Type> seen) {
+        if (list == null) return 0;
+
+        int hash = 1;
+        for (Type t : list) {
+            hash = (hash * 31) + Type.hashCode(t, seen);
+        }
+        return hash;
+    }
+
     static int hashCode(Set<? extends Type> set, Set<Type> seen) {
         if (seen == null) return 0;
 
         int hash = 1;
-        for (Type t : seen) {
+        for (Type t : set) {
             hash += Type.hashCode(t, seen);
         }
         return hash;
@@ -150,7 +177,24 @@ public interface Type extends Copyable<Type> {
         return hash;
     }
 
-    boolean equals(Type other, Set<Pair<Type, Type>> seen);
+    boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen);
+
+    default boolean equals(Type other, Equality kind) {
+        return this.equals(other, kind, new HashSet<>());
+    }
+
+    default boolean typeEquals(Type other) {
+        return this.equals(other, Equality.EQUIVALENT);
+    }
+
+    default boolean structuralEquals(Type other) {
+        return this.equals(other, Equality.STRUCTURAL);
+    }
+    
+    enum Equality {
+        STRUCTURAL,
+        EQUIVALENT
+    }
 
     int hashCode(Set<Type> seen);
 

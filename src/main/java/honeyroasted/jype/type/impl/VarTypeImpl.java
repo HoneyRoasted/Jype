@@ -70,13 +70,14 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
+        if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof VarType vt) {
             return Objects.equals(location, vt.location()) &&
-                    Type.equals(upperBounds, vt.upperBounds(), seen);
+                    Type.equals(upperBounds, vt.upperBounds(), kind, seen);
         } else {
             return false;
         }

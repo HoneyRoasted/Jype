@@ -31,6 +31,7 @@ public class TypeSystem {
     private TypeStorage storage;
     private TypeResolvers resolvers;
     private TypeConstants constants;
+    private TypeOperations operations;
 
     public TypeSystem() {
         this(TypeCacheFactory.IN_MEMORY_FACTORY);
@@ -67,6 +68,8 @@ public class TypeSystem {
                 new PrimitiveTypeImpl(this, ClassNamespace.of(float.class), this.tryLocResolve(Float.class), "F"),
                 new PrimitiveTypeImpl(this, ClassNamespace.of(double.class), this.tryLocResolve(Double.class), "D")
         );
+
+        this.operations = new TypeOperations(this);
     }
 
     private ClassReference tryLocResolve(Class<?> cls) {
@@ -84,6 +87,10 @@ public class TypeSystem {
 
     public TypeResolvers resolvers() {
         return this.resolvers;
+    }
+
+    public TypeOperations operations() {
+        return this.operations;
     }
 
     public <I, O extends Type> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key) {

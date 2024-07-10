@@ -57,12 +57,13 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
+        if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof IntersectionType it) {
-            return Type.equals(children, it.children(), seen);
+            return Type.equals(children, it.children(), kind, seen);
         } else {
             return false;
         }

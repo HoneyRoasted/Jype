@@ -14,9 +14,7 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -215,17 +213,18 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
+        if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof ClassType ct) {
-            if (Type.equals(ct.classReference(), this.classReference, seen)) {
+            if (Type.equals(ct.classReference(), this.classReference, kind, seen)) {
                 if (ct instanceof ClassReference cr) {
-                    return !this.hasTypeArguments() || Type.equals(typeArguments, cr.typeParameters(), seen);
+                    return !this.hasAnyTypeArguments() || Type.equals(typeArguments, cr.typeParameters(), kind, seen);
                 } else if (ct instanceof ParameterizedClassType pct) {
-                    return Type.equals(typeArguments, pct.typeArguments(), seen) &&
-                            ((!this.hasRelevantOuterType() && !pct.hasRelevantOuterType()) || Type.equals(outerType, pct.outerType(), seen));
+                    return Type.equals(typeArguments, pct.typeArguments(), kind, seen) &&
+                            ((!this.hasRelevantOuterType() && !pct.hasRelevantOuterType()) || Type.equals(outerType, pct.outerType(), kind, seen));
                 } else {
                     return false;
                 }
@@ -242,7 +241,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
 
-        if (Type.equals(this, classReference, Collections.newSetFromMap(new IdentityHashMap<>()))) {
+        if (Type.structuralEquals(this, this.classReference)) {
             return Type.hashCode(classReference, seen);
         } else {
             return Type.multiHash(Type.hashCode(classReference, seen), Type.hashCode(outerType, seen),

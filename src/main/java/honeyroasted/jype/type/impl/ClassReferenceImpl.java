@@ -207,15 +207,16 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
+        if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof ClassType ct) {
             if (Objects.equals(namespace, ct.namespace()) && modifiers == ct.modifiers() &&
-                    ((!this.hasRelevantOuterType() && !ct.hasRelevantOuterType()) || Type.equals(this.outerClass, ct.outerType(), seen))) {
+                    ((!this.hasRelevantOuterType() && !ct.hasRelevantOuterType()) || Type.equals(this.outerClass, ct.outerType(), kind, seen))) {
                 if (other instanceof ParameterizedClassType pct) {
-                    return (!pct.hasTypeArguments() || Type.equals(pct.typeArguments(), typeParameters, seen));
+                    return (!pct.hasTypeArguments() || Type.equals(pct.typeArguments(), typeParameters, kind, seen));
                 } else {
                     return true;
                 }

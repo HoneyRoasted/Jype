@@ -247,7 +247,6 @@ public interface TypeBound {
 
     final class Compatible extends Binary<Type, Type> {
         public enum Context {
-            SUBTYPE("<:"),
             ASSIGNMENT("~<:"),
             STRICT_INVOCATION("<:"),
             LOOSE_INVOCATION("~<:"),

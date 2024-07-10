@@ -75,12 +75,13 @@ public class WildTypeLowerImpl extends AbstractPossiblyUnmodifiableType implemen
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
+        if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof WildType.Lower wtl) {
-            return identity == wtl.identity() && Type.equals(lowerBound, wtl.lowerBounds(), seen);
+            return identity == wtl.identity() && Type.equals(lowerBound, wtl.lowerBounds(), kind, seen);
         } else {
             return false;
         }

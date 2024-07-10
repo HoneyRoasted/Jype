@@ -9,7 +9,7 @@ import java.util.Collections;
 public class NoOpTypeSolver implements TypeSolver {
     @Override
     public boolean supports(TypeBound bound) {
-        return false;
+        return true;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class NoOpTypeSolver implements TypeSolver {
 
     @Override
     public Result solve(TypeSystem system) {
-        return new Result(Collections.emptySet());
+        return new Result(true, Collections.emptySet());
     }
 
 }

@@ -155,16 +155,16 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other,  Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof MethodType mt) {
-            if (Objects.equals(location, mt.location()) && modifiers == mt.modifiers() && Type.equals(returnType, mt.returnType(), seen) &&
-                    Type.equals(exceptionTypes, mt.exceptionTypes(), seen) && Type.equals(parameters, mt.parameters(), seen) && Type.equals(typeParameters, mt.typeParameters(), seen) &&
-                    ((!this.hasRelevantOuterType() && !mt.hasRelevantOuterType()) || Type.equals(this.outerClass, mt.outerType(), seen))) {
+            if (Objects.equals(location, mt.location()) && modifiers == mt.modifiers() && Type.equals(returnType, mt.returnType(), kind, seen) &&
+                    Type.equals(exceptionTypes, mt.exceptionTypes(), kind, seen) && Type.equals(parameters, mt.parameters(), kind, seen) && Type.equals(typeParameters, mt.typeParameters(), kind, seen) &&
+                    ((!this.hasRelevantOuterType() && !mt.hasRelevantOuterType()) || Type.equals(this.outerClass, mt.outerType(), kind, seen))) {
                 if (mt instanceof ParameterizedMethodType pmt) {
-                    return (!pmt.hasRelevantOuterType() || Type.equals(pmt.typeArguments(), typeParameters, seen));
+                    return (!pmt.hasRelevantOuterType() || Type.equals(pmt.typeArguments(), typeParameters, kind, seen));
                 } else {
                     return true;
                 }

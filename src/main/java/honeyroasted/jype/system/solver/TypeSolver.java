@@ -2,7 +2,6 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;

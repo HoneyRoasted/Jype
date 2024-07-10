@@ -6,21 +6,26 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TypeBoundMapperSolver implements TypeSolver {
     private String name;
-    private TypeBoundMapperApplier applier;
+    private List<TypeBoundMapperApplier> appliers;
     private Set<Class<? extends TypeBound>> supported;
 
     private Set<TypeBound> bounds = new LinkedHashSet<>();
 
-    public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, TypeBoundMapperApplier applier) {
+    public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, List<TypeBoundMapperApplier> appliers) {
         this.name = name;
-        this.applier = applier;
+        this.appliers = appliers;
         this.supported = supported;
+    }
+
+    public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, TypeBoundMapperApplier... appliers) {
+        this(name, supported, List.of(appliers));
     }
 
     private static TypeBound supportsImpl(TypeBound bound, Set<Class<? extends TypeBound>> supported) {
@@ -66,7 +71,13 @@ public class TypeBoundMapperSolver implements TypeSolver {
 
     @Override
     public Result solve(TypeSystem system) {
-        return new Result(this.applier.process(this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new)))
-                .stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));
+        Set<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Set<TypeBound.Result.Builder> processing = building;
+        for (TypeBoundMapperApplier applier : this.appliers) {
+            processing = applier.process(processing);
+        }
+
+        return new Result(building.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 }

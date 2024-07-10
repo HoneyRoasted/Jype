@@ -64,7 +64,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
     public TypeBound.Result.Builder check(TypeBound.Compatible compatible, TypeBound.Result.Builder... parents) {
         TypeBound.Result.Builder builder = TypeBound.Result.builder(compatible, parents);
         switch (compatible.context()) {
-            case SUBTYPE, STRICT_INVOCATION -> strictSubtype(compatible.left(), compatible.right(), new HashSet<>(), builder);
+            case STRICT_INVOCATION -> strictSubtype(compatible.left(), compatible.right(), new HashSet<>(), builder);
             case ASSIGNMENT, LOOSE_INVOCATION -> looseInvocation(compatible.left(), compatible.right(), builder);
             case EXPLICIT_CAST -> explicitCast(compatible.left(), compatible.right(), builder);
         }
@@ -84,7 +84,7 @@ public class TypeCompatibilityChecker extends AbstractInferenceHelper {
 
         TypeBound.Result.Builder builder = TypeBound.Result.builder(compatible, parents);
         switch (compatible.context()) {
-            case SUBTYPE, STRICT_INVOCATION -> strictSubtype(expr, compatible.right(), new HashSet<>(), builder);
+            case STRICT_INVOCATION -> strictSubtype(expr, compatible.right(), new HashSet<>(), builder);
             case LOOSE_INVOCATION -> looseInvocation(expr, compatible.right(), builder);
             case EXPLICIT_CAST -> explicitCast(expr, compatible.right(), builder);
             case ASSIGNMENT -> {

@@ -4,7 +4,7 @@ import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver._old.solvers.inference.MetaVarTypeResolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.solvers.TypeSolvers;
+import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
 import honeyroasted.jype.type.MetaVarType;
@@ -30,7 +30,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
     private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
 
     public TypeBoundResolver() {
-        this(TypeSolvers.NO_OP);
+        this(new NoOpTypeSolver());
     }
 
     public TypeBoundResolver(TypeSolver solver) {

@@ -49,8 +49,8 @@ public abstract class AbstractTypeDelegate<T extends Type> implements DelegateTy
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        return this.delegate().equals(other, seen);
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        return this.delegate().equals(other, kind, seen);
     }
 
     @Override

@@ -8,11 +8,11 @@ import java.util.Set;
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context.*;
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
-public class CompatibleSubtype implements UnaryTypeBoundMapper<TypeBound.Compatible> {
+public class CompatibleStrictInvocation implements UnaryTypeBoundMapper<TypeBound.Compatible> {
     @Override
     public boolean accepts(TypeBound.Result.Builder constraint) {
         return constraint.getSatisfied() == UNKNOWN && constraint.bound() instanceof TypeBound.Compatible cmpt &&
-                (cmpt.context() == SUBTYPE || cmpt.context() == STRICT_INVOCATION);
+                cmpt.context() == STRICT_INVOCATION;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package honeyroasted.jype.modify;
 
+import honeyroasted.jype.type.Type;
+
 import java.util.Objects;
 
 public class Pair<L, R> {
@@ -27,7 +29,7 @@ public class Pair<L, R> {
 
         @Override
         public int hashCode() {
-            return Objects.hash(System.identityHashCode(this.left()),
+            return Type.multiHash(System.identityHashCode(this.left()),
                     System.identityHashCode(this.right()));
         }
     }
@@ -37,7 +39,7 @@ public class Pair<L, R> {
     }
 
     public static <L, R> Pair<L, R> identity(L left, R right) {
-        return new Pair<>(left, right);
+        return new Identity<>(left, right);
     }
 
     public L left() {

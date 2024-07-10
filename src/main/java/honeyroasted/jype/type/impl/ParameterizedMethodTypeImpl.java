@@ -15,8 +15,6 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -157,17 +155,17 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
     }
 
     @Override
-    public boolean equals(Type other, Set<Pair<Type, Type>> seen) {
-        if (seen.contains(Pair.of(this, other))) return true;
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
+        if (seen.contains(Pair.identity(this, other))) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof MethodType mt) {
-            if (Type.equals(methodReference, mt.methodReference(), seen)) {
+            if (Type.equals(methodReference, mt.methodReference(), kind, seen)) {
                 if (mt instanceof MethodReference mr) {
-                    return !this.hasTypeArguments() || (Type.equals(typeArguments, mr.typeParameters(), seen));
+                    return !this.hasTypeArguments() || (Type.equals(typeArguments, mr.typeParameters(), kind, seen));
                 } else if (mt instanceof ParameterizedMethodType pmt) {
-                    return Type.equals(typeArguments, pmt.typeArguments(), seen) &&
-                            ((!this.hasRelevantOuterType() && !pmt.hasRelevantOuterType()) || Type.equals(outerType, pmt.outerType(), seen));
+                    return Type.equals(typeArguments, pmt.typeArguments(), kind, seen) &&
+                            ((!this.hasRelevantOuterType() && !pmt.hasRelevantOuterType()) || Type.equals(outerType, pmt.outerType(), kind, seen));
                 } else {
                     return false;
                 }
@@ -184,7 +182,7 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
         if (seen.contains(this)) return 0;
         seen = Type.concat(seen, this);
 
-        if (Type.equals(this, methodReference, Collections.newSetFromMap(new IdentityHashMap<>()))) {
+        if (Type.structuralEquals(this, this.methodReference)) {
             return Type.hashCode(methodReference, seen);
         } else {
             return Type.multiHash(Type.hashCode(methodReference, seen), Type.hashCode(outerType, seen),

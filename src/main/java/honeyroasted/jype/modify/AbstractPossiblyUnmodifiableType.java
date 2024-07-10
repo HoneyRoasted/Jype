@@ -5,6 +5,7 @@ import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.Type;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 
 public abstract class AbstractPossiblyUnmodifiableType extends AbstractPossiblyUnmodifiable implements Type {
@@ -37,7 +38,7 @@ public abstract class AbstractPossiblyUnmodifiableType extends AbstractPossiblyU
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o instanceof Type t) return this.equals(t, Collections.newSetFromMap(new IdentityHashMap<>()));
+        if (o instanceof Type t) return Type.equals(this, t, Equality.STRUCTURAL, new HashSet<>());
         return false;
     }
 }
