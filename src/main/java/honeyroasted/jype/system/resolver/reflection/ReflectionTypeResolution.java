@@ -47,7 +47,7 @@ public interface ReflectionTypeResolution {
         ClassLocation retType = method instanceof Method mth ? ClassLocation.of(mth.getReturnType()) : ClassLocation.of(void.class);
 
         if (methodLocation.name().equals(method.getName()) &&
-                methodLocation.containing().equals(ClassLocation.of(method.getDeclaringClass())) &&
+                methodLocation.containing().equals(ClassNamespace.of(method.getDeclaringClass())) &&
                 methodLocation.returnType().equals(retType) &&
                 methodLocation.parameters().size() == method.getParameterCount()) {
             Class[] parameters = method.getParameterTypes();

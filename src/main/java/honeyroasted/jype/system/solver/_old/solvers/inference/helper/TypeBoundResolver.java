@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 public class TypeBoundResolver extends AbstractInferenceHelper {
     private TypeBoundIncorporater boundIncorporater;
     private TypeConstraintReducer constraintReducer;
-    private TypeSetOperations setOperations;
     private TypeCompatibilityChecker compatibilityChecker;
 
     private Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
@@ -37,7 +36,6 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         super(solver);
         this.boundIncorporater = new TypeBoundIncorporater(solver);
         this.constraintReducer = new TypeConstraintReducer(solver);
-        this.setOperations = new TypeSetOperations(solver);
         this.compatibilityChecker = new TypeCompatibilityChecker(solver);
     }
 
@@ -109,7 +107,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                     Map<Type, TypeBound.Result.Builder> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
-                        Type lub = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
+                        Type lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                         candidates.put(mvt, Pair.of(lub, bound));
                     } else if (bounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.Throws thr && thr.value().equals(mvt)) &&
@@ -118,7 +116,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                         candidates.put(mvt, Pair.of(cand, bound));
                     } else if (!properUpper.isEmpty()) {
-                        Type glb = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet());
+                        Type glb = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, glb), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                         candidates.put(mvt, Pair.of(glb, bound));
                     } else {
@@ -161,14 +159,14 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                     Map<Type, TypeBound.Result.Builder> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
-                        Type lower = this.setOperations.findLeastUpperBound(mvt.typeSystem(), properLower.keySet());
+                        Type lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lower), properLower.values()).setSatisfied(true);
                         newBounds.add(bound);
                         y.lowerBounds().add(lower);
                     }
 
                     if (!properUpper.isEmpty()) {
-                        Type upper = this.setOperations.findGreatestLowerBound(mvt.typeSystem(), properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
+                        Type upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, upper), properLower.values()).setSatisfied(true);
                         newBounds.add(bound);
                         y.upperBounds().add(upper);

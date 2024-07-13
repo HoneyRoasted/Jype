@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver._old.solvers.inference.helper;
 
 import honeyroasted.jype.modify.Pair;
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver._old.solvers.inference.MetaVarTypeResolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
@@ -26,12 +27,10 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
     private Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
 
     private TypeInitialBoundBuilder initialBoundBuilder;
-    private TypeSetOperations setOperations;
 
     public TypeBoundIncorporater(TypeSolver solver) {
         super(solver);
         this.initialBoundBuilder = new TypeInitialBoundBuilder(solver);
-        this.setOperations = new TypeSetOperations(solver);
     }
 
     public TypeBoundIncorporater() {
@@ -61,7 +60,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         do {
             current = new HashSet<>(this.bounds);
             this.incorporateOnce(current);
-            this.setOperations.updateMetaVars(this.bounds);
+            TypeSystem.RUNTIME.operations().updateMetaVars(this.bounds);
         } while (!this.bounds.equals(current) && this.bounds.stream().noneMatch(b -> b.bound().equals(TypeBound.False.INSTANCE)));
         return this;
     }
@@ -227,8 +226,8 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
     private List<Pair<ParameterizedClassType, ParameterizedClassType>> commonSupertypes(Type left, Type right, Set<? extends TypeBound.ResultView> bounds) {
         List<Pair<ParameterizedClassType, ParameterizedClassType>> result = new ArrayList<>();
 
-        Set<Type> leftSupers = this.setOperations.allKnownSupertypes(left);
-        Set<Type> rightSupers = this.setOperations.allKnownSupertypes(right);
+        Set<Type> leftSupers = left.typeSystem().operations().findAllKnownSupertypes(left);
+        Set<Type> rightSupers = left.typeSystem().operations().findAllKnownSupertypes(right);
 
         for (Type leftSuper : leftSupers) {
             if (leftSuper instanceof ParameterizedClassType lct) {
