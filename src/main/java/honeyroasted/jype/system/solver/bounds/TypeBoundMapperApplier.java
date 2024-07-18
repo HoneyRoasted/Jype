@@ -1,9 +1,8 @@
 package honeyroasted.jype.system.solver.bounds;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -25,19 +24,19 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
-        Set<TypeBound.Result.Builder> constraintSet = new LinkedHashSet<>();
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
+        List<TypeBound.Result.Builder> constraintSet = new ArrayList<>();
         Collections.addAll(constraintSet, constraints);
 
         results.addAll(this.process(constraintSet));
     }
 
-    public Set<TypeBound.Result.Builder> process(Set<TypeBound.Result.Builder> constraints) {
-        Set<TypeBound.Result.Builder> compare = new LinkedHashSet<>();
+    public List<TypeBound.Result.Builder> process(List<TypeBound.Result.Builder> constraints) {
+        List<TypeBound.Result.Builder> compare = new ArrayList<>();
 
-        Set<TypeBound.Result.Builder> previous = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> processing = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> current = new LinkedHashSet<>(constraints);
+        List<TypeBound.Result.Builder> previous = new ArrayList<>();
+        List<TypeBound.Result.Builder> processing = new ArrayList<>();
+        List<TypeBound.Result.Builder> current = new ArrayList<>(constraints);
 
         while (!compare.equals(current)) {
             compare.clear();
@@ -66,7 +65,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         return current;
     }
 
-    private static void consumeSubsets(Set<TypeBound.Result.Builder> processing, int size, Consumer<TypeBound.Result.Builder[]> baseCase) {
+    private static void consumeSubsets(List<TypeBound.Result.Builder> processing, int size, Consumer<TypeBound.Result.Builder[]> baseCase) {
         if (size <= 0 || size == processing.size()) {
             baseCase.accept(processing.toArray(new TypeBound.Result.Builder[0]));
         } else if (size < processing.size()) {

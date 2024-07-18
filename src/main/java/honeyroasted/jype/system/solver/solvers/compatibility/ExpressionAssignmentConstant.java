@@ -6,7 +6,7 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.Type;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context.*;
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
@@ -19,7 +19,7 @@ public class ExpressionAssignmentConstant implements UnaryTypeBoundMapper<TypeBo
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.OR);
 
         Type target = bound.right();

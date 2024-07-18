@@ -4,7 +4,7 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.ClassType;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
@@ -17,12 +17,12 @@ public class SubtypeRawClass implements UnaryTypeBoundMapper<TypeBound.Subtype> 
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         ClassType l = (ClassType) bound.left();
         ClassType r = (ClassType) bound.right();
 
         if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
-            if (l.hasAnyTypeArguments() && r.hasRelevantOuterType()) {
+            if (l.hasAnyTypeArguments() && r.hasAnyTypeArguments()) {
                 results.add(TypeBound.Result.builder(new TypeBound.Subtype(l.outerType(), r.outerType()), constraint));
             } else {
                 results.add(constraint.setSatisfied(false));

@@ -71,9 +71,9 @@ public class TypeBoundMapperSolver implements TypeSolver {
 
     @Override
     public Result solve(TypeSystem system) {
-        Set<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new));
+        List<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toList());
 
-        Set<TypeBound.Result.Builder> processing = building;
+        List<TypeBound.Result.Builder> processing = building;
         for (TypeBoundMapperApplier applier : this.appliers) {
             processing = applier.process(processing);
         }

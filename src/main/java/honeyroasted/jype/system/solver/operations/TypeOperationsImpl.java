@@ -124,7 +124,7 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
-    public Set<TypeBound.Result.Builder> updateMetaVars(Set<TypeBound.Result.Builder> constraints) {
+    public List<TypeBound.Result.Builder> updateMetaVars(List<TypeBound.Result.Builder> constraints) {
         return UPDATE_META_VARS.map(constraints);
     }
 

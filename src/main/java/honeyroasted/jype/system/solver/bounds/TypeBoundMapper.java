@@ -1,9 +1,9 @@
 package honeyroasted.jype.system.solver.bounds;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 public interface TypeBoundMapper {
 
@@ -13,15 +13,15 @@ public interface TypeBoundMapper {
 
     boolean accepts(TypeBound.Result.Builder constraint);
 
-    void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints);
+    void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints);
 
-    default Set<TypeBound.Result.Builder> map(TypeBound.Result.Builder... constraints) {
-        Set<TypeBound.Result.Builder> results = new LinkedHashSet<>();
+    default List<TypeBound.Result.Builder> map(TypeBound.Result.Builder... constraints) {
+        List<TypeBound.Result.Builder> results = new ArrayList<>();
         this.map(results, constraints);
         return results;
     }
 
-    default Set<TypeBound.Result.Builder> map(Set<TypeBound.Result.Builder> constraints) {
+    default List<TypeBound.Result.Builder> map(List<TypeBound.Result.Builder> constraints) {
         return this.map(constraints.toArray(TypeBound.Result.Builder[]::new));
     }
 

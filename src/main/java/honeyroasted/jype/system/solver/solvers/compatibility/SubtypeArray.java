@@ -7,7 +7,7 @@ import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
@@ -19,7 +19,7 @@ public class SubtypeArray implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         ArrayType l = (ArrayType) bound.left();
         Type supertype = bound.right();
         if (supertype instanceof ArrayType r) {

@@ -5,7 +5,7 @@ import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
@@ -17,7 +17,7 @@ public class SubtypeMetaVar implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         Type subtype = bound.left();
         Type supertype = bound.right();
         if (subtype instanceof MetaVarType mvt) {

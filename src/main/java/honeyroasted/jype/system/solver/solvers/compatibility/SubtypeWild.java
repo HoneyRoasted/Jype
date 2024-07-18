@@ -4,7 +4,7 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.WildType;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
@@ -16,7 +16,7 @@ public class SubtypeWild implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         if (bound.left() instanceof WildType.Upper l) {
             constraint.setPropagation(TypeBound.Result.Propagation.OR);
             l.upperBounds().forEach(t -> results.add(TypeBound.Result.builder(new TypeBound.Subtype(t, bound.right()), constraint)));

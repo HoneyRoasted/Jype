@@ -5,7 +5,7 @@ import honeyroasted.jype.system.solver.bounds.TypeBoundMapper;
 import honeyroasted.jype.type.MetaVarType;
 
 import java.util.Collections;
-import java.util.Set;
+import java.util.List;
 
 public class UpdateMetaVars implements TypeBoundMapper {
     @Override
@@ -19,7 +19,7 @@ public class UpdateMetaVars implements TypeBoundMapper {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
         for (TypeBound.Result.Builder boundBuilder : constraints) {
             TypeBound bound = boundBuilder.bound();
             if (bound instanceof TypeBound.Equal eq) {
