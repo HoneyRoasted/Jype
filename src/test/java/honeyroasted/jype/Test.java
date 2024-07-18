@@ -14,7 +14,7 @@ import java.util.Set;
 public class Test {
 
     public static <T> void main(String[] args) {
-        TypeSystem system = TypeSystem.RUNTIME;
+        TypeSystem system = TypeSystem.SIMPLE_RUNTIME;
         TypeConstraintReducer reducer = new TypeConstraintReducer();
         TypeBoundResolver resolver = new TypeBoundResolver();
 

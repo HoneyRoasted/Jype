@@ -60,7 +60,7 @@ public class TypeBoundIncorporater extends AbstractInferenceHelper {
         do {
             current = new HashSet<>(this.bounds);
             this.incorporateOnce(current);
-            TypeSystem.RUNTIME.operations().updateMetaVars(this.bounds);
+            TypeSystem.SIMPLE_RUNTIME.operations().updateMetaVars(this.bounds);
         } while (!this.bounds.equals(current) && this.bounds.stream().noneMatch(b -> b.bound().equals(TypeBound.False.INSTANCE)));
         return this;
     }

@@ -4,165 +4,94 @@ import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
-import honeyroasted.jype.system.cache.TypeCacheFactory;
 import honeyroasted.jype.system.cache.TypeStorage;
-import honeyroasted.jype.system.resolver.BundledTypeResolvers;
-import honeyroasted.jype.system.resolver.ResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.system.resolver.TypeResolvers;
-import honeyroasted.jype.system.resolver.reflection.ReflectionTypeResolution;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
+import honeyroasted.jype.system.solver.operations.TypeOperations;
+import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.IntersectionType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.NoneType;
+import honeyroasted.jype.type.ParameterizedClassType;
+import honeyroasted.jype.type.ParameterizedMethodType;
+import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.impl.NoneTypeImpl;
-import honeyroasted.jype.type.impl.PrimitiveTypeImpl;
+import honeyroasted.jype.type.WildType;
 
-import java.io.Serializable;
 import java.lang.reflect.Executable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
-public class TypeSystem {
-    public static TypeSystem RUNTIME = new TypeSystem();
+public interface TypeSystem {
+    TypeSystem SIMPLE_RUNTIME = new SimpleTypeSystem();
 
-    private TypeStorage storage;
-    private TypeResolvers resolvers;
-    private TypeConstants constants;
-    private TypeOperations operations;
+    TypeConstants constants();
 
-    public TypeSystem() {
-        this(TypeCacheFactory.IN_MEMORY_FACTORY);
-    }
+    TypeStorage storage();
 
-    public TypeSystem(TypeCacheFactory cacheFactory) {
-        this(cacheFactory, ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
-    }
+    TypeResolvers resolvers();
 
-    public TypeSystem(TypeResolver... initialResolvers) {
-        this(TypeCacheFactory.IN_MEMORY_FACTORY, initialResolvers);
-    }
+    TypeOperations operations();
 
-    public TypeSystem(TypeCacheFactory cacheFactory, TypeResolver... initialResolvers) {
-        this(cacheFactory, List.of(initialResolvers));
-    }
+    <I, O extends Type> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key);
 
-    public TypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers) {
-        this.storage = new TypeStorage(cacheFactory);
-        this.resolvers = new TypeResolvers();
-        this.registerResolvers(initialResolvers);
+    <T extends Type> Optional<T> resolve(TypeToken<?> token);
 
-        this.constants = new TypeConstants(
-                this.tryLocResolve(Object.class), this.tryLocResolve(Cloneable.class), this.tryLocResolve(Serializable.class),
-                this.tryLocResolve(RuntimeException.class),
-                new NoneTypeImpl(this, "void"), new NoneTypeImpl(this, "null"), new NoneTypeImpl(this, "none"),
-                this.tryLocResolve(Void.class),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(boolean.class), this.tryLocResolve(Boolean.class), "Z"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(byte.class), this.tryLocResolve(Byte.class), "B"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(short.class), this.tryLocResolve(Short.class), "S"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(char.class), this.tryLocResolve(Character.class), "C"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(int.class), this.tryLocResolve(Integer.class), "I"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(long.class), this.tryLocResolve(Long.class), "J"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(float.class), this.tryLocResolve(Float.class), "F"),
-                new PrimitiveTypeImpl(this, ClassNamespace.of(double.class), this.tryLocResolve(Double.class), "D")
-        );
+    <T extends Type> T tryResolve(TypeToken<?> token);
 
-        this.operations = new TypeOperations(this);
-    }
+    <T extends Type> Optional<T> resolve(java.lang.reflect.Type reflectionType);
 
-    private ClassReference tryLocResolve(Class<?> cls) {
-        return (ClassReference) this.resolve(ClassLocation.class, Type.class, ClassLocation.of(cls))
-                .orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + cls.getName() + " type"));
-    }
+    <T extends Type> T tryResolve(java.lang.reflect.Type reflectionType);
 
-    public TypeConstants constants() {
-        return this.constants;
-    }
+    <T extends Type> Optional<T> resolve(ClassLocation classLocation);
 
-    public TypeStorage storage() {
-        return this.storage;
-    }
+    <T extends Type> T tryResolve(ClassLocation classLocation);
 
-    public TypeResolvers resolvers() {
-        return this.resolvers;
-    }
+    <T extends MethodReference> Optional<T> resolve(Executable executable);
 
-    public TypeOperations operations() {
-        return this.operations;
-    }
+    <T extends MethodReference> T tryResolve(Executable executable);
 
-    public <I, O extends Type> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key) {
-        return this.resolvers().resolverFor(keyType, resultType).resolve(this, key);
-    }
+    <T extends MethodReference> Optional<T> resolve(MethodLocation methodLocation);
 
-    public <T extends Type> Optional<T> resolve(TypeToken<?> token) {
-        return (Optional<T>) this.resolve(TypeToken.class, Type.class, token);
-    }
+    <T extends MethodReference> T tryResolve(MethodLocation methodLocation);
 
-    public <T extends Type> T tryResolve(TypeToken<?> token) {
-        return this.<T>resolve(token).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + token + " to a type"));
-    }
+    <T extends VarType> Optional<T> resolve(TypeParameterLocation parameterLocation);
 
-    public <T extends Type> Optional<T> resolve(java.lang.reflect.Type reflectionType) {
-        return (Optional<T>) this.resolve(java.lang.reflect.Type.class, Type.class, reflectionType);
-    }
+    <T extends VarType> T tryResolve(TypeParameterLocation parameterLocation);
 
-    public <T extends Type> T tryResolve(java.lang.reflect.Type reflectionType) {
-        return this.<T>resolve(reflectionType).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + reflectionType + " to a type"));
-    }
+    void registerResolvers(TypeResolver... resolvers);
 
-    public <T extends Type> Optional<T> resolve(ClassLocation classLocation) {
-        return (Optional<T>) this.resolve(ClassLocation.class, Type.class, classLocation);
-    }
+    void registerResolvers(Collection<? extends TypeResolver> resolvers);
 
-    public <T extends Type> T tryResolve(ClassLocation classLocation) {
-        return this.<T>resolve(classLocation).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + classLocation + " to a type"));
-    }
+    void registerResolver(TypeResolver resolver);
 
-    public <T extends MethodReference> Optional<T> resolve(Executable executable) {
-        return (Optional<T>) this.resolve(Executable.class, MethodReference.class, executable);
-    }
+    ArrayType newArrayType();
 
-    public <T extends MethodReference> T tryResolve(Executable executable) {
-        return this.<T>resolve(executable).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + executable + " to a type"));
-    }
+    ClassReference newClassReference();
 
-    public<T extends MethodReference> Optional<T> resolve(MethodLocation methodLocation) {
-        return (Optional<T>) this.resolve(MethodLocation.class, MethodReference.class, methodLocation);
-    }
+    IntersectionType newIntersectionType();
 
-    public <T extends MethodReference> T tryResolve(MethodLocation methodLocation) {
-        return this.<T>resolve(methodLocation).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + methodLocation + " to a type"));
-    }
+    MetaVarType newMetaVarType(String name);
 
-    public <T extends VarType> Optional<T> resolve(TypeParameterLocation parameterLocation) {
-        return (Optional<T>) this.resolve(TypeParameterLocation.class, VarType.class, parameterLocation);
-    }
+    MetaVarType newMetaVarType(int identity, String name);
 
-    public <T extends VarType> T tryResolve(TypeParameterLocation parameterLocation) {
-        return this.<T>resolve(parameterLocation).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + parameterLocation + " to a type"));
-    }
+    MethodReference newMethodReference();
 
-    public void registerResolvers(TypeResolver... resolvers) {
-        for (TypeResolver resolver : resolvers) {
-            this.registerResolver(resolver);
-        }
-    }
+    NoneType newNoneType(String name);
 
-    public void registerResolvers(Collection<? extends TypeResolver> resolvers) {
-        for (TypeResolver resolver : resolvers) {
-            this.registerResolver(resolver);
-        }
-    }
+    ParameterizedClassType newParameterizedClassType();
 
-    public void registerResolver(TypeResolver resolver) {
-        if (resolver instanceof BundledTypeResolvers bundle) {
-            this.registerResolvers(bundle.resolvers());
-        } else {
-            this.resolvers().register(resolver);
-        }
-    }
+    ParameterizedMethodType newParameterizedMethodType();
 
+    PrimitiveType newPrimitiveType(ClassNamespace namespace, ClassReference box, String descriptor);
+
+    VarType newVarType();
+
+    WildType.Lower newLowerWildType();
+
+    WildType.Upper newUpperWildType();
 }

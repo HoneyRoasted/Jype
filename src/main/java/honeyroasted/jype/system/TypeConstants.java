@@ -4,189 +4,65 @@ import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.PrimitiveType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TypeConstants {
-    private final ClassReference object;
-    private ClassReference cloneable;
-    private ClassReference serializable;
-    private ClassReference runtimeException;
-    private final NoneType voidType;
-    private final NoneType nullType;
-    private final NoneType noneType;
-    private final ClassReference voidBox;
-    private final PrimitiveType booleanType;
-    private final PrimitiveType byteType;
-    private final PrimitiveType shortType;
-    private final PrimitiveType charType;
-    private final PrimitiveType intType;
-    private final PrimitiveType longType;
-    private final PrimitiveType floatType;
-    private final PrimitiveType doubleType;
+public interface TypeConstants {
+    List<PrimitiveType> allPrimitives();
 
-    public TypeConstants(ClassReference object, ClassReference cloneable, ClassReference serializable,
-                         ClassReference runtimeException,
-                         NoneType voidType, NoneType nullType, NoneType noneType, ClassReference voidBox,
-                         PrimitiveType booleanType, PrimitiveType byteType, PrimitiveType shortType,
-                         PrimitiveType charType, PrimitiveType intType, PrimitiveType longType,
-                         PrimitiveType floatType, PrimitiveType doubleType) {
-        this.object = object;
-        this.cloneable = cloneable;
-        this.serializable = serializable;
-        this.runtimeException = runtimeException;
-        this.voidType = voidType;
-        this.nullType = nullType;
-        this.noneType = noneType;
-        this.voidBox = voidBox;
-        this.booleanType = booleanType;
-        this.byteType = byteType;
-        this.shortType = shortType;
-        this.charType = charType;
-        this.intType = intType;
-        this.longType = longType;
-        this.floatType = floatType;
-        this.doubleType = doubleType;
+    List<ClassReference> allBoxes();
 
-        this.allPrimitives = List.of(booleanType, byteType, shortType, charType, intType, longType, floatType, doubleType);
-        List<ClassReference> allBoxes = new ArrayList<>();
+    Map<String, PrimitiveType> primitivesByName();
 
-        for (PrimitiveType type : this.allPrimitives) {
-            allBoxes.add(type.box());
-            boxByPrimitive.put(type, type.box());
-            primitiveByBox.put(type.box(), type);
-            primitivesByName.put(type.name(), type);
-        }
+    Map<PrimitiveType, ClassReference> boxByPrimitive();
 
-        this.allBoxes = Collections.unmodifiableList(allBoxes);
-        this.boxByPrimitive = Collections.unmodifiableMap(boxByPrimitive);
-        this.primitivesByName = Collections.unmodifiableMap(primitivesByName);
-        this.primitiveByBox = Collections.unmodifiableMap(primitiveByBox);
-    }
+    Map<ClassReference, PrimitiveType> primitiveByBox();
 
-    private final List<PrimitiveType> allPrimitives;
-    private final List<ClassReference> allBoxes;
+    ClassReference object();
 
-    private Map<String, PrimitiveType> primitivesByName = new LinkedHashMap<>();
-    private Map<PrimitiveType, ClassReference> boxByPrimitive = new LinkedHashMap<>();
-    private Map<ClassReference, PrimitiveType> primitiveByBox = new LinkedHashMap<>();
+    ClassReference cloneable();
 
-    public List<PrimitiveType> allPrimitives() {
-        return allPrimitives;
-    }
+    ClassReference serializable();
 
-    public List<ClassReference> allBoxes() {
-        return allBoxes;
-    }
+    ClassReference runtimeException();
 
-    public Map<String, PrimitiveType> primitivesByName() {
-        return this.primitivesByName;
-    }
+    NoneType voidType();
 
-    public Map<PrimitiveType, ClassReference> boxByPrimitive() {
-        return this.boxByPrimitive;
-    }
+    NoneType nullType();
 
-    public Map<ClassReference, PrimitiveType> primitiveByBox() {
-        return this.primitiveByBox;
-    }
+    NoneType noneType();
 
-    public ClassReference object() {
-        return object;
-    }
+    ClassReference voidBox();
 
-    public ClassReference cloneable() {
-        return this.cloneable;
-    }
+    PrimitiveType booleanType();
 
-    public ClassReference serializable() {
-        return this.serializable;
-    }
+    PrimitiveType byteType();
 
-    public ClassReference runtimeException() {
-        return this.runtimeException;
-    }
+    PrimitiveType shortType();
 
-    public NoneType voidType() {
-        return voidType;
-    }
+    PrimitiveType charType();
 
-    public NoneType nullType() {
-        return nullType;
-    }
+    PrimitiveType intType();
 
-    public NoneType noneType() {
-        return noneType;
-    }
+    PrimitiveType longType();
 
-    public ClassReference voidBox() {
-        return voidBox;
-    }
+    PrimitiveType floatType();
 
-    public PrimitiveType booleanType() {
-        return booleanType;
-    }
+    PrimitiveType doubleType();
 
-    public PrimitiveType byteType() {
-        return byteType;
-    }
+    ClassReference booleanBox();
 
-    public PrimitiveType shortType() {
-        return shortType;
-    }
+    ClassReference byteBox();
 
-    public PrimitiveType charType() {
-        return charType;
-    }
+    ClassReference shortBox();
 
-    public PrimitiveType intType() {
-        return intType;
-    }
+    ClassReference charBox();
 
-    public PrimitiveType longType() {
-        return longType;
-    }
+    ClassReference intBox();
 
-    public PrimitiveType floatType() {
-        return floatType;
-    }
+    ClassReference longBox();
 
-    public PrimitiveType doubleType() {
-        return doubleType;
-    }
+    ClassReference floatBox();
 
-    public ClassReference booleanBox() {
-        return booleanType.box();
-    }
-
-    public ClassReference byteBox() {
-        return byteType.box();
-    }
-
-    public ClassReference shortBox() {
-        return shortType.box();
-    }
-
-    public ClassReference charBox() {
-        return charType.box();
-    }
-
-    public ClassReference intBox() {
-        return intType.box();
-    }
-
-    public ClassReference longBox() {
-        return longType.box();
-    }
-
-    public ClassReference floatBox() {
-        return floatType.box();
-    }
-
-    public ClassReference doubleBox() {
-        return doubleType.box();
-    }
+    ClassReference doubleBox();
 }

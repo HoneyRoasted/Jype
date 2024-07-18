@@ -17,4 +17,5 @@ open module Jype.main {
     exports honeyroasted.jype.system.solver.bounds;
     exports honeyroasted.jype.system.solver.solvers;
     exports honeyroasted.jype.modify;
+    exports honeyroasted.jype.system.solver.operations;
 }

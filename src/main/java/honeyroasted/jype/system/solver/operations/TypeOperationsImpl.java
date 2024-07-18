@@ -1,17 +1,11 @@
-package honeyroasted.jype.system;
+package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
-import honeyroasted.jype.system.solver.operations.FindAllKnownSupertypes;
-import honeyroasted.jype.system.solver.operations.FindGreatestLowerBound;
-import honeyroasted.jype.system.solver.operations.FindLeastUpperBound;
-import honeyroasted.jype.system.solver.operations.FindMostSpecificType;
-import honeyroasted.jype.system.solver.operations.FindMostSpecificTypes;
-import honeyroasted.jype.system.solver.operations.TypeOperation;
-import honeyroasted.jype.system.solver.operations.UpdateMetaVars;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
@@ -36,7 +30,7 @@ import honeyroasted.jype.type.Type;
 import java.util.List;
 import java.util.Set;
 
-public class TypeOperations {
+public class TypeOperationsImpl implements TypeOperations {
     public static TypeBoundMapperApplier COMPATIBILITY_APPLIER = new TypeBoundMapperApplier(List.of(
             new TypeBoundCompoundUnwrapper(),
 
@@ -72,20 +66,23 @@ public class TypeOperations {
 
     private TypeSystem typeSystem;
 
-    public TypeOperations(TypeSystem typeSystem) {
+    public TypeOperationsImpl(TypeSystem typeSystem) {
         this.typeSystem = typeSystem;
     }
 
+    @Override
     public TypeSolver noOpSolver() {
         return new NoOpTypeSolver();
     }
 
+    @Override
     public TypeSolver compatibilitySolver() {
         return new TypeBoundMapperSolver("CompatibilityTypeSolver",
                 Set.of(TypeBound.Equal.class, TypeBound.Subtype.class, TypeBound.Compatible.class),
                 COMPATIBILITY_APPLIER);
     }
 
+    @Override
     public boolean isCompatible(Type subtype, Type supertype, TypeBound.Compatible.Context ctx) {
         return this.compatibilitySolver()
                 .bind(new TypeBound.Compatible(subtype, supertype, ctx))
@@ -93,6 +90,7 @@ public class TypeOperations {
                 .success();
     }
 
+    @Override
     public boolean isSubtype(Type subtype, Type supertype) {
         return this.compatibilitySolver()
                 .bind(new TypeBound.Subtype(subtype, supertype))
@@ -100,26 +98,32 @@ public class TypeOperations {
                 .success();
     }
 
+    @Override
     public Set<Type> findAllKnownSupertypes(Type type) {
         return FIND_ALL_KNOWN_SUPERTYPES.apply(this.typeSystem, type);
     }
 
+    @Override
     public Type findGreatestLowerBound(Set<Type> types) {
         return FIND_GREATEST_LOWER_BOUND.apply(this.typeSystem, types);
     }
 
+    @Override
     public Type findLeastUpperBound(Set<Type> types) {
         return FIND_LEAST_UPPER_BOUND.apply(this.typeSystem, types);
     }
 
+    @Override
     public Type findMostSpecificType(Set<Type> types) {
         return FIND_MOST_SPECIFIC_TYPE.apply(this.typeSystem, types);
     }
 
+    @Override
     public Set<Type> findMostSpecificTypes(Set<Type> types) {
         return FIND_MOST_SPECIFIC_TYPES.apply(this.typeSystem, types);
     }
 
+    @Override
     public Set<TypeBound.Result.Builder> updateMetaVars(Set<TypeBound.Result.Builder> constraints) {
         return UPDATE_META_VARS.map(constraints);
     }
