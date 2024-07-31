@@ -19,8 +19,8 @@ public class UpdateMetaVars implements TypeBoundMapper {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
-        for (TypeBound.Result.Builder boundBuilder : constraints) {
+    public void map(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints, TypeBound.Result.Builder... input) {
+        for (TypeBound.Result.Builder boundBuilder : input) {
             TypeBound bound = boundBuilder.bound();
             if (bound instanceof TypeBound.Equal eq) {
                 if (eq.left() instanceof MetaVarType mvt) {
@@ -43,6 +43,6 @@ public class UpdateMetaVars implements TypeBoundMapper {
             }
         }
 
-        Collections.addAll(results, constraints);
+        Collections.addAll(bounds, input);
     }
 }

@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.solvers;
 
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
@@ -73,9 +74,11 @@ public class TypeBoundMapperSolver implements TypeSolver {
     public Result solve(TypeSystem system) {
         Set<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new));
 
-        Set<TypeBound.Result.Builder> processing = building;
+        Set<TypeBound.Result.Builder> constraints = building;
+        Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
         for (TypeBoundMapperApplier applier : this.appliers) {
-            processing = applier.process(processing);
+            Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> result = applier.process(bounds, constraints);
+
         }
 
         return new Result(building.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));

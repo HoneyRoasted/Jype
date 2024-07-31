@@ -17,6 +17,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public interface TypeBound {
+
+    enum Classification {
+        BOUND,
+        CONSTRAINT,
+        BOTH
+    }
+
     List<?> parameters();
 
     String simpleName();

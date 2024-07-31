@@ -5,8 +5,8 @@ import java.util.Set;
 public interface UnaryTypeBoundMapper<T extends TypeBound> extends TypeBoundMapper {
 
     @Override
-    default void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder... constraints) {
-        map(results, constraints[0], (T) constraints[0].bound());
+    default void map(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints, TypeBound.Result.Builder... input) {
+        map(bounds, input[0], (T) input[0].bound());
     }
 
     void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, T bound);
