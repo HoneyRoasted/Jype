@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.type.Type;
@@ -26,5 +27,5 @@ public interface TypeOperations {
 
     Set<Type> findMostSpecificTypes(Set<Type> types);
 
-    List<TypeBound.Result.Builder> updateMetaVars(List<TypeBound.Result.Builder> constraints);
+    Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> updateMetaVars(List<TypeBound.Result.Builder> constraints);
 }

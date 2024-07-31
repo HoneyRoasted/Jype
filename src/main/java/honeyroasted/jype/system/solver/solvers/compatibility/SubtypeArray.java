@@ -19,19 +19,19 @@ public class SubtypeArray implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         ArrayType l = (ArrayType) bound.left();
         Type supertype = bound.right();
         if (supertype instanceof ArrayType r) {
             if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
-                results.add(constraint.setSatisfied(r.component().typeEquals(l.component())));
+                constraints.add(constraint.setSatisfied(r.component().typeEquals(l.component())));
             } else {
-                results.add(TypeBound.Result.builder(new TypeBound.Subtype(l.component(), r.component()), constraint));
+                constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(l.component(), r.component()), constraint));
             }
         } else {
             TypeConstants c = supertype.typeSystem().constants();
             constraint.setPropagation(TypeBound.Result.Propagation.OR);
-            addAll(results,
+            addAll(constraints,
                     TypeBound.Result.builder(new TypeBound.Subtype(c.object(), supertype), constraint),
                     TypeBound.Result.builder(new TypeBound.Subtype(c.cloneable(), supertype), constraint),
                     TypeBound.Result.builder(new TypeBound.Subtype(c.serializable(), supertype), constraint)

@@ -15,8 +15,8 @@ public class SubtypeEquality implements UnaryTypeBoundMapper<TypeBound.Subtype> 
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         constraint.setSatisfied(true);
-        results.add(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), bound.right()), constraint).setSatisfied(true));
+        bounds.add(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), bound.right()), constraint).setSatisfied(true));
     }
 }

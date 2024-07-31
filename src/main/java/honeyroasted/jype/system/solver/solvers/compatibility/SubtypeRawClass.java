@@ -17,18 +17,18 @@ public class SubtypeRawClass implements UnaryTypeBoundMapper<TypeBound.Subtype> 
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         ClassType l = (ClassType) bound.left();
         ClassType r = (ClassType) bound.right();
 
         if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
             if (l.hasAnyTypeArguments() && r.hasAnyTypeArguments()) {
-                results.add(TypeBound.Result.builder(new TypeBound.Subtype(l.outerType(), r.outerType()), constraint));
+                constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(l.outerType(), r.outerType()), constraint));
             } else {
-                results.add(constraint.setSatisfied(false));
+                bounds.add(constraint.setSatisfied(false));
             }
         } else {
-            results.add(constraint.setSatisfied(l.classReference().hasSupertype(r.classReference())));
+            bounds.add(constraint.setSatisfied(l.classReference().hasSupertype(r.classReference())));
         }
     }
 }

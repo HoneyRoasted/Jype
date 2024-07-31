@@ -1,18 +1,12 @@
-package honeyroasted.jype.system;
+package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.jype.modify.Pair;
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
-import honeyroasted.jype.system.solver.operations.FindAllKnownSupertypes;
-import honeyroasted.jype.system.solver.operations.FindGreatestLowerBound;
-import honeyroasted.jype.system.solver.operations.FindLeastUpperBound;
-import honeyroasted.jype.system.solver.operations.FindMostSpecificType;
-import honeyroasted.jype.system.solver.operations.FindMostSpecificTypes;
-import honeyroasted.jype.system.solver.operations.TypeOperation;
-import honeyroasted.jype.system.solver.operations.UpdateMetaVars;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
@@ -37,7 +31,7 @@ import honeyroasted.jype.type.Type;
 import java.util.List;
 import java.util.Set;
 
-public class TypeOperations {
+public class TypeOperationsImpl implements TypeOperations {
     public static TypeBoundMapperApplier COMPATIBILITY_APPLIER = new TypeBoundMapperApplier(List.of(
             new TypeBoundCompoundUnwrapper(),
 
@@ -73,7 +67,7 @@ public class TypeOperations {
 
     private TypeSystem typeSystem;
 
-    public TypeOperations(TypeSystem typeSystem) {
+    public TypeOperationsImpl(TypeSystem typeSystem) {
         this.typeSystem = typeSystem;
     }
 
@@ -121,8 +115,8 @@ public class TypeOperations {
         return FIND_MOST_SPECIFIC_TYPES.apply(this.typeSystem, types);
     }
 
-    public Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> updateMetaVars(Set<TypeBound.Result.Builder> constraints) {
-        return UPDATE_META_VARS.map(constraints);
+    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> updateMetaVars(List<TypeBound.Result.Builder> constraints) {
+        return UPDATE_META_VARS.map(TypeBound.Classification.BOTH, constraints);
     }
 
 

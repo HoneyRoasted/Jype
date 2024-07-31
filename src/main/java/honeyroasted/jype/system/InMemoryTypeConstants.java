@@ -1,6 +1,5 @@
 package honeyroasted.jype.system;
 
-import honeyroasted.jype.system.TypeConstants;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.PrimitiveType;

@@ -16,7 +16,8 @@ public class SubtypeWild implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+        List<TypeBound.Result.Builder> results = classification == TypeBound.Classification.BOUND ? bounds : constraints;
         if (bound.left() instanceof WildType.Upper l) {
             constraint.setPropagation(TypeBound.Result.Propagation.OR);
             l.upperBounds().forEach(t -> results.add(TypeBound.Result.builder(new TypeBound.Subtype(t, bound.right()), constraint)));

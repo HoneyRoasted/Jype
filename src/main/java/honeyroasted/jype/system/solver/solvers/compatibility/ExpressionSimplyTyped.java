@@ -18,10 +18,10 @@ public class ExpressionSimplyTyped implements UnaryTypeBoundMapper<TypeBound.Exp
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
         Type supertype = bound.right();
         Type expr = bound.left().getSimpleType(supertype.typeSystem()).get();
 
-        results.add(TypeBound.Result.builder(new TypeBound.Compatible(expr, supertype, bound.context()), constraint));
+        constraints.add(TypeBound.Result.builder(new TypeBound.Compatible(expr, supertype, bound.context()), constraint));
     }
 }

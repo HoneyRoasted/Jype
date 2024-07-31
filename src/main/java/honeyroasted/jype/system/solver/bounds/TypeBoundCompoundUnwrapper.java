@@ -9,8 +9,11 @@ public class TypeBoundCompoundUnwrapper implements UnaryTypeBoundMapper<TypeBoun
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compound bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Compound bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.AND);
-        bound.children().forEach(t -> results.add(TypeBound.Result.builder(t, constraint)));
+        switch (classification) {
+            case CONSTRAINT -> bound.children().forEach(t -> constraints.add(TypeBound.Result.builder(t, constraint)));
+            case BOUND, BOTH -> bound.children().forEach(t -> bounds.add(TypeBound.Result.builder(t, constraint)));
+        }
     }
 }

@@ -17,15 +17,14 @@ public class CompatibleLooseInvocation implements UnaryTypeBoundMapper<TypeBound
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.OR);
-        results.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), constraint));
+        constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), constraint));
 
         if (bound.left() instanceof PrimitiveType l && !(bound.right() instanceof PrimitiveType)) {
-            results.add(TypeBound.Result.builder(new TypeBound.Subtype(l.box(), bound.right()), constraint));
+            constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(l.box(), bound.right()), constraint));
         } else if (!(bound.left() instanceof PrimitiveType) && bound.right() instanceof PrimitiveType r) {
-            results.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), r.box()), constraint));
+            constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), r.box()), constraint));
         }
     }
-
 }

@@ -2,10 +2,10 @@ package honeyroasted.jype.system.solver.bounds;
 
 import honeyroasted.jype.modify.Pair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 public interface TypeBoundMapper {
 
@@ -19,17 +19,17 @@ public interface TypeBoundMapper {
 
     boolean accepts(TypeBound.Result.Builder constraint);
 
-    void map(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints, TypeBound.Result.Builder... input); 
+    void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder... input);
 
-    default Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> map(TypeBound.Result.Builder... input) {
-        Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> constraints = new LinkedHashSet<>();
-        this.map(bounds, constraints, input);
+    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeBound.Classification classification, TypeBound.Result.Builder... input) {
+        List<TypeBound.Result.Builder> bounds = new ArrayList<>();
+        List<TypeBound.Result.Builder> constraints = new ArrayList<>();
+        this.map(bounds, constraints, classification, input);
         return Pair.of(bounds, constraints);
     }
 
-    default Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> map(Set<TypeBound.Result.Builder> constraints) {
-        return this.map(constraints.toArray(TypeBound.Result.Builder[]::new));
+    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeBound.Classification classification, List<TypeBound.Result.Builder> constraints) {
+        return this.map(classification, constraints.toArray(TypeBound.Result.Builder[]::new));
     }
 
     default <T> void addAll(Collection<? super T> collection, T... arr) {

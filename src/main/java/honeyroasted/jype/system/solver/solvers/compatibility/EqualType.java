@@ -12,7 +12,7 @@ public class EqualType implements UnaryTypeBoundMapper<TypeBound.Equal> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Equal bound) {
-        results.add(constraint.setSatisfied(bound.left().typeEquals(bound.right())));
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Equal bound) {
+        bounds.add(constraint.setSatisfied(bound.left().typeEquals(bound.right())));
     }
 }

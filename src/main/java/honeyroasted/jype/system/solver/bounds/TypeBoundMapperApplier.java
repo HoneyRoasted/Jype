@@ -2,10 +2,9 @@ package honeyroasted.jype.system.solver.bounds;
 
 import honeyroasted.jype.modify.Pair;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -27,28 +26,28 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints, TypeBound.Result.Builder... input) {
-        Set<TypeBound.Result.Builder> constraintSet = new LinkedHashSet<>();
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder... input) {
+        List<TypeBound.Result.Builder> constraintSet = new ArrayList<>();
         Collections.addAll(constraintSet, input);
 
-        Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> result = this.process(new LinkedHashSet<>(), constraintSet);
+        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = this.process(new ArrayList<>(), constraintSet);
         bounds.addAll(result.left());
         constraints.addAll(result.right());
     }
 
-    public Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> process(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints) {
-        Set<TypeBound.Result.Builder> compareConstraints = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> previousConstraints = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> processingConstraints = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> currentConstraints = new LinkedHashSet<>(constraints);
+    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints) {
+        List<TypeBound.Result.Builder> compareConstraints = new ArrayList<>();
+        List<TypeBound.Result.Builder> previousConstraints = new ArrayList<>();
+        List<TypeBound.Result.Builder> processingConstraints = new ArrayList<>();
+        List<TypeBound.Result.Builder> currentConstraints = new ArrayList<>(constraints);
 
-        Set<TypeBound.Result.Builder> compareBounds = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> previousBounds = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> processingBounds = new LinkedHashSet<>();
-        Set<TypeBound.Result.Builder> currentBounds = new LinkedHashSet<>(bounds);
+        List<TypeBound.Result.Builder> compareBounds = new ArrayList<>();
+        List<TypeBound.Result.Builder> previousBounds = new ArrayList<>();
+        List<TypeBound.Result.Builder> processingBounds = new ArrayList<>();
+        List<TypeBound.Result.Builder> currentBounds = new ArrayList<>(bounds);
 
 
-        while (!compareConstraints.equals(currentConstraints) && !compareBounds.equals(currentBounds)) {
+        while (!compareConstraints.equals(currentConstraints) || !compareBounds.equals(currentBounds)) {
             compareConstraints.clear();
             compareConstraints.addAll(currentConstraints);
 
@@ -77,7 +76,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                     }
 
                     if (!processingConstraints.isEmpty()) {
-                        consumeSubsets(processingConstraints, mapper.arity(), arr -> mapper.map(currentBounds, currentConstraints, arr));
+                        consumeSubsets(processingConstraints, mapper.arity(), arr -> mapper.map(currentBounds, currentConstraints, TypeBound.Classification.CONSTRAINT, arr));
                     }
                 }
 
@@ -91,7 +90,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                     }
 
                     if (!processingBounds.isEmpty()) {
-                        consumeSubsets(processingBounds, mapper.arity(), arr -> mapper.map(currentBounds, currentConstraints, arr));
+                        consumeSubsets(processingBounds, mapper.arity(), arr -> mapper.map(currentBounds, currentConstraints, TypeBound.Classification.BOUND, arr));
                     }
                 }
 
@@ -101,7 +100,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         return Pair.of(currentBounds, currentConstraints);
     }
 
-    private static void consumeSubsets(Set<TypeBound.Result.Builder> processing, int size, Consumer<TypeBound.Result.Builder[]> baseCase) {
+    private static void consumeSubsets(List<TypeBound.Result.Builder> processing, int size, Consumer<TypeBound.Result.Builder[]> baseCase) {
         if (size <= 0 || size == processing.size()) {
             baseCase.accept(processing.toArray(new TypeBound.Result.Builder[0]));
         } else if (size < processing.size()) {

@@ -1,14 +1,14 @@
 package honeyroasted.jype.system.solver.bounds;
 
-import java.util.Set;
+import java.util.List;
 
 public interface UnaryTypeBoundMapper<T extends TypeBound> extends TypeBoundMapper {
 
     @Override
-    default void map(Set<TypeBound.Result.Builder> bounds, Set<TypeBound.Result.Builder> constraints, TypeBound.Result.Builder... input) {
-        map(bounds, input[0], (T) input[0].bound());
+    default void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder... input) {
+        map(bounds, constraints, classification, input[0], (T) input[0].bound());
     }
 
-    void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, T bound);
+    void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, T bound);
 
 }

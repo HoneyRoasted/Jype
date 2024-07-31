@@ -17,11 +17,11 @@ public class SubtypeNone implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         if (bound.right() instanceof NoneType) {
-            results.add(constraint.setSatisfied(false));
+            bounds.add(constraint.setSatisfied(false));
         } else if (bound.left() instanceof NoneType l) {
-            results.add(constraint.setSatisfied(l.isNullType() && !(bound.left() instanceof PrimitiveType)));
+            bounds.add(constraint.setSatisfied(l.isNullType() && !(bound.left() instanceof PrimitiveType)));
         }
     }
 }

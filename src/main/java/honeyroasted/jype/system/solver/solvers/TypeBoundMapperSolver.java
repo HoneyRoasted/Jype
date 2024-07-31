@@ -6,6 +6,7 @@ import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -72,13 +73,14 @@ public class TypeBoundMapperSolver implements TypeSolver {
 
     @Override
     public Result solve(TypeSystem system) {
-        Set<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(LinkedHashSet::new));
+        List<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(ArrayList::new));
 
-        Set<TypeBound.Result.Builder> constraints = building;
-        Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
+        List<TypeBound.Result.Builder> constraints = new ArrayList<>(building);
+        List<TypeBound.Result.Builder> bounds = new ArrayList<>();
         for (TypeBoundMapperApplier applier : this.appliers) {
-            Pair<Set<TypeBound.Result.Builder>, Set<TypeBound.Result.Builder>> result = applier.process(bounds, constraints);
-
+            Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = applier.process(bounds, constraints);
+            bounds.addAll(result.left());
+            constraints.addAll(result.right());
         }
 
         return new Result(building.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));

@@ -17,11 +17,10 @@ public class CompatibleExplicitCast implements UnaryTypeBoundMapper<TypeBound.Co
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
+    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.OR);
-        addAll(results,
+        addAll(constraints,
                 TypeBound.Result.builder(new TypeBound.Compatible(bound.left(), bound.right(), LOOSE_INVOCATION), constraint),
                 TypeBound.Result.builder(new TypeBound.Compatible(bound.right(), bound.left(), LOOSE_INVOCATION), constraint));
     }
-
 }
