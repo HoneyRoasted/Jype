@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.solver.bounds;
 
-import java.util.Set;
+import java.util.List;
 
 public class TypeBoundCompoundUnwrapper implements UnaryTypeBoundMapper<TypeBound.Compound> {
     @Override
@@ -9,7 +9,7 @@ public class TypeBoundCompoundUnwrapper implements UnaryTypeBoundMapper<TypeBoun
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compound bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compound bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.AND);
         bound.children().forEach(t -> results.add(TypeBound.Result.builder(t, constraint)));
     }

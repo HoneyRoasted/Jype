@@ -4,6 +4,7 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.PrimitiveType;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class SubtypePrimitive implements UnaryTypeBoundMapper<TypeBound.Subtype>
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         results.add(constraint.setSatisfied(PRIM_SUPERS.get(((PrimitiveType) bound.left()).name()).contains(((PrimitiveType) bound.right()).name())));
     }
 }

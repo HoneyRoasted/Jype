@@ -9,8 +9,8 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
@@ -18,11 +18,11 @@ public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subty
     @Override
     public boolean accepts(TypeBound.Result.Builder constraint) {
         return constraint.getSatisfied() == UNKNOWN && constraint.bound() instanceof TypeBound.Subtype st &&
-                st.left() instanceof ClassType && st.right() instanceof ParameterizedClassType;
+                st.left() instanceof ClassType && st.right() instanceof ClassType ct && ct.hasTypeArguments();
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         constraint.setPropagation(TypeBound.Result.Propagation.AND);
 
         ClassType l = (ClassType) bound.left();

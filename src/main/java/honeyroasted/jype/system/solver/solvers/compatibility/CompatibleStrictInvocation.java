@@ -3,7 +3,7 @@ package honeyroasted.jype.system.solver.solvers.compatibility;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 
-import java.util.Set;
+import java.util.List;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context.*;
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
@@ -16,7 +16,7 @@ public class CompatibleStrictInvocation implements UnaryTypeBoundMapper<TypeBoun
     }
 
     @Override
-    public void map(Set<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
+    public void map(List<TypeBound.Result.Builder> results, TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
         results.add(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), constraint));
     }
 }
