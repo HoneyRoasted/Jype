@@ -2,7 +2,7 @@ package honeyroasted.jype.system.solver._old.solvers.inference.helper;
 
 import honeyroasted.jype.system.TypeConstants;
 import honeyroasted.jype.system.solver.TypeSolver;
-import honeyroasted.jype.system.solver._old.solvers.inference.expression.ExpressionInformation;
+import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassType;

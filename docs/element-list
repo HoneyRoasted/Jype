@@ -3,12 +3,12 @@ honeyroasted.jype.location
 honeyroasted.jype.modify
 honeyroasted.jype.system
 honeyroasted.jype.system.cache
+honeyroasted.jype.system.expression
 honeyroasted.jype.system.resolver
 honeyroasted.jype.system.resolver.reflection
 honeyroasted.jype.system.solver
 honeyroasted.jype.system.solver._old.solvers
 honeyroasted.jype.system.solver._old.solvers.inference
-honeyroasted.jype.system.solver._old.solvers.inference.expression
 honeyroasted.jype.system.solver._old.solvers.inference.helper
 honeyroasted.jype.system.solver.bounds
 honeyroasted.jype.system.solver.operations

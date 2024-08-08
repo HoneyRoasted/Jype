@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.solver._old.solvers.inference.expression;
+package honeyroasted.jype.system.expression;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.InstantiableType;

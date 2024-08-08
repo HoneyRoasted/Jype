@@ -119,9 +119,12 @@ implements <a href="TypeOperations.html" title="interface in honeyroasted.jype.s
 <div class="col-first odd-row-color"><code>static <a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></code></div>
 <div class="col-second odd-row-color"><code><a href="#INCORPORATION_APPLIER" class="member-name-link">INCORPORATION_APPLIER</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>static final <a href="TypeOperation.html" title="interface in honeyroasted.jype.system.solver.operations">TypeOperation</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>,<wbr><a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#UPDATE_META_VARS" class="member-name-link">UPDATE_META_VARS</a></code></div>
+<div class="col-first even-row-color"><code>static <a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></code></div>
+<div class="col-second even-row-color"><code><a href="#REDUCTION_APPLIER" class="member-name-link">REDUCTION_APPLIER</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final <a href="TypeOperation.html" title="interface in honeyroasted.jype.system.solver.operations">TypeOperation</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>,<wbr><a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#UPDATE_META_VARS" class="member-name-link">UPDATE_META_VARS</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -188,9 +191,12 @@ implements <a href="TypeOperations.html" title="interface in honeyroasted.jype.s
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../TypeSolver.html" title="interface in honeyroasted.jype.system.solver">TypeSolver</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#noOpSolver()" class="member-name-link">noOpSolver</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateMetaVars(java.util.Collection)" class="member-name-link">updateMetaVars</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reductionApplier()" class="member-name-link">reductionApplier</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateMetaVars(java.util.Collection)" class="member-name-link">updateMetaVars</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="../bounds/TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -218,6 +224,12 @@ implements <a href="TypeOperations.html" title="interface in honeyroasted.jype.s
 <section class="detail" id="INCORPORATION_APPLIER">
 <h3>INCORPORATION_APPLIER</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></span>&nbsp;<span class="element-name">INCORPORATION_APPLIER</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="REDUCTION_APPLIER">
+<h3>REDUCTION_APPLIER</h3>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></span>&nbsp;<span class="element-name">REDUCTION_APPLIER</span></div>
 </section>
 </li>
 <li>
@@ -291,6 +303,16 @@ implements <a href="TypeOperations.html" title="interface in honeyroasted.jype.s
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="TypeOperations.html#noOpSolver()">noOpSolver</a></code>&nbsp;in interface&nbsp;<code><a href="TypeOperations.html" title="interface in honeyroasted.jype.system.solver.operations">TypeOperations</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="reductionApplier()">
+<h3>reductionApplier</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../bounds/TypeBoundMapperApplier.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapperApplier</a></span>&nbsp;<span class="element-name">reductionApplier</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="TypeOperations.html#reductionApplier()">reductionApplier</a></code>&nbsp;in interface&nbsp;<code><a href="TypeOperations.html" title="interface in honeyroasted.jype.system.solver.operations">TypeOperations</a></code></dd>
 </dl>
 </section>
 </li>

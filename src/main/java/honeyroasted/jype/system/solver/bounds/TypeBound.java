@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.solver.bounds;
 
-import honeyroasted.jype.system.solver._old.solvers.inference.expression.ExpressionInformation;
+import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;

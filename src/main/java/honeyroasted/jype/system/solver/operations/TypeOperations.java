@@ -14,6 +14,8 @@ import java.util.Set;
 public interface TypeOperations {
     TypeSolver noOpSolver();
 
+    TypeBoundMapperApplier reductionApplier();
+
     TypeBoundMapperApplier incorporationApplier();
 
     TypeBoundMapperApplier compatibilityApplier();

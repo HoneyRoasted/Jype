@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.solver.solvers.compatibility;
 
-import honeyroasted.jype.system.solver._old.solvers.inference.expression.ExpressionInformation;
+import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.Type;

@@ -28,6 +28,11 @@ import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationCaptur
 import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationEqualEqual;
 import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationEqualSubtype;
 import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationSubtypeSubtype;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceCompatible;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceContains;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceEqual;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceExpressionCompatible;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceSubtype;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -72,6 +77,16 @@ public class TypeOperationsImpl implements TypeOperations {
             new IncorporationCapture()
     ));
 
+    public static TypeBoundMapperApplier REDUCTION_APPLIER = new TypeBoundMapperApplier(List.of(
+            new TypeBoundCompoundUnwrapper(),
+
+            new ReduceSubtype(),
+            new ReduceCompatible(),
+            new ReduceExpressionCompatible(),
+            new ReduceContains(),
+            new ReduceEqual()
+    ));
+
     public static final TypeOperation<Type, Set<Type>> FIND_ALL_KNOWN_SUPERTYPES = new FindAllKnownSupertypes();
     public static final TypeOperation<Set<Type>, Type> FIND_GREATEST_LOWER_BOUND = new FindGreatestLowerBound();
     public static final TypeOperation<Set<Type>, Type> FIND_LEAST_UPPER_BOUND = new FindLeastUpperBound();
@@ -88,6 +103,11 @@ public class TypeOperationsImpl implements TypeOperations {
 
     public TypeSolver noOpSolver() {
         return new NoOpTypeSolver();
+    }
+
+    @Override
+    public TypeBoundMapperApplier reductionApplier() {
+        return REDUCTION_APPLIER;
     }
 
     @Override

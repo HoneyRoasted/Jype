@@ -12,10 +12,10 @@ open module Jype.main {
     exports honeyroasted.jype.system.solver._old.solvers.inference;
     exports honeyroasted.jype.system.visitor;
     exports honeyroasted.jype.system.visitor.visitors;
-    exports honeyroasted.jype.system.solver._old.solvers.inference.expression;
     exports honeyroasted.jype.type.signature;
     exports honeyroasted.jype.system.solver.bounds;
     exports honeyroasted.jype.system.solver.solvers;
     exports honeyroasted.jype.modify;
     exports honeyroasted.jype.system.solver.operations;
+    exports honeyroasted.jype.system.expression;
 }
