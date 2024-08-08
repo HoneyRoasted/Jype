@@ -5,8 +5,6 @@ import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.PrimitiveType;
 
-import java.util.List;
-
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
 public class SubtypeNone implements UnaryTypeBoundMapper<TypeBound.Subtype> {
@@ -17,11 +15,11 @@ public class SubtypeNone implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         if (bound.right() instanceof NoneType) {
-            bounds.add(constraint.setSatisfied(false));
+            context.bounds().accept(constraint.setSatisfied(false));
         } else if (bound.left() instanceof NoneType l) {
-            bounds.add(constraint.setSatisfied(l.isNullType() && !(bound.left() instanceof PrimitiveType)));
+            context.bounds().accept(constraint.setSatisfied(l.isNullType() && !(bound.left() instanceof PrimitiveType)));
         }
     }
 }

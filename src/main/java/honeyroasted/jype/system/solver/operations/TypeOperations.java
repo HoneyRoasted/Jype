@@ -1,15 +1,22 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 public interface TypeOperations {
     TypeSolver noOpSolver();
+
+    TypeBoundMapperApplier incorporationApplier();
+
+    TypeBoundMapperApplier compatibilityApplier();
 
     TypeSolver compatibilitySolver();
 
@@ -27,5 +34,7 @@ public interface TypeOperations {
 
     Set<Type> findMostSpecificTypes(Set<Type> types);
 
-    Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> updateMetaVars(List<TypeBound.Result.Builder> constraints);
+    Set<TypeBound.Result.Builder> buildInitialBounds(Map<VarType, MetaVarType> metaVars);
+
+    Collection<TypeBound.Result.Builder> updateMetaVars(Collection<TypeBound.Result.Builder> constraints);
 }

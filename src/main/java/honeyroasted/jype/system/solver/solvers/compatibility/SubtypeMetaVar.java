@@ -5,8 +5,6 @@ import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 
-import java.util.List;
-
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
 public class SubtypeMetaVar implements UnaryTypeBoundMapper<TypeBound.Subtype> {
@@ -16,22 +14,22 @@ public class SubtypeMetaVar implements UnaryTypeBoundMapper<TypeBound.Subtype> {
                 (st.left() instanceof MetaVarType || st.right() instanceof MetaVarType);
     }
     @Override
-    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         Type subtype = bound.left();
         Type supertype = bound.right();
         if (subtype instanceof MetaVarType mvt) {
             if (mvt.upperBounds().isEmpty()) {
-                bounds.add(constraint.setSatisfied(false));
+                context.bounds().accept(constraint.setSatisfied(false));
             } else {
                 constraint.setPropagation(TypeBound.Result.Propagation.OR);
-                mvt.upperBounds().forEach(t -> constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(t, supertype), constraint)));
+                mvt.upperBounds().forEach(t -> context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(t, supertype), constraint)));
             }
         } else if (supertype instanceof MetaVarType mvt) {
             if (mvt.lowerBounds().isEmpty()) {
-                bounds.add(constraint.setSatisfied(false));
+                context.bounds().accept(constraint.setSatisfied(false));
             } else {
                 constraint.setPropagation(TypeBound.Result.Propagation.AND);
-                mvt.lowerBounds().forEach(t -> constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(subtype, t), constraint)));
+                mvt.lowerBounds().forEach(t -> context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(subtype, t), constraint)));
             }
         }
     }

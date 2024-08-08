@@ -43,7 +43,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li>Field&nbsp;|&nbsp;</li>
 <li>Constr&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -76,12 +76,25 @@ loadScripts(document, 'script');</script>
 <dt>All Superinterfaces:</dt>
 <dd><code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="../solvers/incorporation/IncorporationEqualEqual.html" title="class in honeyroasted.jype.system.solver.solvers.incorporation">IncorporationEqualEqual</a></code>, <code><a href="../solvers/incorporation/IncorporationEqualSubtype.html" title="class in honeyroasted.jype.system.solver.solvers.incorporation">IncorporationEqualSubtype</a></code>, <code><a href="../solvers/incorporation/IncorporationSubtypeSubtype.html" title="class in honeyroasted.jype.system.solver.solvers.incorporation">IncorporationSubtypeSubtype</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">BinaryTypeBoundMapper&lt;T extends <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>,<wbr>K extends <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>&gt;</span><span class="extends-implements">
 extends <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="inherited-list">
+<h2 id="nested-classes-inherited-from-class-honeyroasted.jype.system.solver.bounds.TypeBoundMapper">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.system.solver.bounds.<a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></h2>
+<code><a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a></code></div>
+</section>
+</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
@@ -93,27 +106,38 @@ extends <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.sys
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)" class="member-name-link">accepts</a><wbr>(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;constraint)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">accepts</a><wbr>(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;input)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#commutative()" class="member-name-link">commutative</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#leftType()" class="member-name-link">leftType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;bounds,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints,
- <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">map</a><wbr>(<a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a>&nbsp;context,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;input)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,T,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,K)" class="member-name-link">map</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;bounds,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints,
- <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,T,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,K)" class="member-name-link">map</a><wbr>(<a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a>&nbsp;context,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;leftConstraint,
  <a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&nbsp;leftBound,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;rightConstraint,
  <a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">K</a>&nbsp;rightBound)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#rightType()" class="member-name-link">rightType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.system.solver.bounds.TypeBoundMapper">Methods inherited from interface&nbsp;honeyroasted.jype.system.solver.bounds.<a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></h3>
-<code><a href="TypeBoundMapper.html#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)">accepts</a>, <a href="TypeBoundMapper.html#addAll(java.util.Collection,T...)">addAll</a>, <a href="TypeBoundMapper.html#arity()">arity</a>, <a href="TypeBoundMapper.html#classification()">classification</a>, <a href="TypeBoundMapper.html#map(honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">map</a>, <a href="TypeBoundMapper.html#map(honeyroasted.jype.system.solver.bounds.TypeBound.Classification,java.util.List)">map</a></code></div>
+<code><a href="TypeBoundMapper.html#addAll(java.util.function.Consumer,java.lang.Iterable)">addAll</a>, <a href="TypeBoundMapper.html#addAll(java.util.function.Consumer,T...)">addAll</a>, <a href="TypeBoundMapper.html#arity()">arity</a>, <a href="TypeBoundMapper.html#classification()">classification</a>, <a href="TypeBoundMapper.html#map(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">map</a>, <a href="TypeBoundMapper.html#map(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,java.util.List)">map</a></code></div>
 </section>
 </li>
 </ul>
@@ -126,28 +150,66 @@ extends <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.sys
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">
+<section class="detail" id="map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">
 <h3>map</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;bounds,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints,
- <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a>&nbsp;context,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;input)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="TypeBoundMapper.html#map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">map</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
+<dd><code><a href="TypeBoundMapper.html#map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">map</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,T,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,K)">
-<h3 id="map(java.util.List,java.util.List,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,honeyroasted.jype.system.solver.bounds.TypeBound)">map</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;bounds,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&gt;&nbsp;constraints,
- <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+<section class="detail" id="commutative()">
+<h3>commutative</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">commutative</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="TypeBoundMapper.html#commutative()">commutative</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)">
+<h3>accepts</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">accepts</span><wbr><span class="parameters">(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;constraint)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="TypeBoundMapper.html#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)">accepts</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">
+<h3>accepts</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">accepts</span><wbr><span class="parameters">(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;input)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="TypeBoundMapper.html#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">accepts</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,T,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,K)">
+<h3 id="map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder,honeyroasted.jype.system.solver.bounds.TypeBound)">map</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">map</span><wbr><span class="parameters">(<a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a>&nbsp;context,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;leftConstraint,
  <a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&nbsp;leftBound,
  <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;rightConstraint,
  <a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">K</a>&nbsp;rightBound)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="leftType()">
+<h3>leftType</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&gt;</span>&nbsp;<span class="element-name">leftType</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="rightType()">
+<h3>rightType</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;<a href="BinaryTypeBoundMapper.html" title="type parameter in BinaryTypeBoundMapper">T</a>&gt;</span>&nbsp;<span class="element-name">rightType</span>()</div>
 </section>
 </li>
 </ul>

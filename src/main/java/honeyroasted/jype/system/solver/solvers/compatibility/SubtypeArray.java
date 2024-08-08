@@ -7,8 +7,6 @@ import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
-import java.util.List;
-
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
 public class SubtypeArray implements UnaryTypeBoundMapper<TypeBound.Subtype> {
@@ -19,19 +17,19 @@ public class SubtypeArray implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     }
 
     @Override
-    public void map(List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints, TypeBound.Classification classification, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
         ArrayType l = (ArrayType) bound.left();
         Type supertype = bound.right();
         if (supertype instanceof ArrayType r) {
             if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
-                constraints.add(constraint.setSatisfied(r.component().typeEquals(l.component())));
+                context.constraints().accept(constraint.setSatisfied(r.component().typeEquals(l.component())));
             } else {
-                constraints.add(TypeBound.Result.builder(new TypeBound.Subtype(l.component(), r.component()), constraint));
+                context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.component(), r.component()), constraint));
             }
         } else {
             TypeConstants c = supertype.typeSystem().constants();
             constraint.setPropagation(TypeBound.Result.Propagation.OR);
-            addAll(constraints,
+            addAll(context.constraints(),
                     TypeBound.Result.builder(new TypeBound.Subtype(c.object(), supertype), constraint),
                     TypeBound.Result.builder(new TypeBound.Subtype(c.cloneable(), supertype), constraint),
                     TypeBound.Result.builder(new TypeBound.Subtype(c.serializable(), supertype), constraint)

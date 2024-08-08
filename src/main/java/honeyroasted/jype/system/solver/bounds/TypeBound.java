@@ -690,6 +690,8 @@ public interface TypeBound {
         }
 
         public static class Builder implements ResultView {
+            private Builder delegate;
+
             private Result built;
             private Propagation propagation = Propagation.NONE;
             private TypeBound bound;
@@ -697,7 +699,17 @@ public interface TypeBound {
             private List<Builder> parents = new ArrayList<>();
             private List<Builder> children = new ArrayList<>();
 
+            public void replaceWith(TypeBound.Result.Builder other) {
+                if (this.delegate != null) {
+                    this.delegate.replaceWith(other);
+                } else {
+                    this.delegate = other;
+                }
+            }
+
             public Result build() {
+                if (this.delegate != null) return this.delegate.build();
+
                 if (this.built == null) {
                     this.propagate();
 
@@ -713,12 +725,22 @@ public interface TypeBound {
             }
 
             public Builder deepSetPropagation(Propagation propagation) {
+                if (this.delegate != null) {
+                    this.delegate.deepSetPropagation(propagation);
+                    return this;
+                }
+
                 this.propagation = propagation;
                 this.children.forEach(b -> b.deepSetPropagation(propagation));
                 return this;
             }
 
             public Builder propagate() {
+                if (this.delegate != null) {
+                    this.delegate.propagate();
+                    return this;
+                }
+
                 if (!this.children.isEmpty()) {
                     this.children.forEach(Builder::propagate);
                     switch (this.propagation) {
@@ -737,63 +759,123 @@ public interface TypeBound {
             }
 
             public Builder not() {
+                if (this.delegate != null) {
+                    this.delegate.not();
+                    return this;
+                }
+
                 this.satisfied = this.satisfied.not();
                 return this;
             }
 
             public Builder andChildren() {
+                if (this.delegate != null) {
+                    this.delegate.andChildren();
+                    return this;
+                }
+
                 this.satisfied = Trinary.of(this.children.stream().allMatch(Builder::satisfied));
                 return this;
             }
 
             public Builder orChildren() {
+                if (this.delegate != null) {
+                    this.delegate.orChildren();
+                    return this;
+                }
+
                 this.satisfied = Trinary.of(this.children.stream().anyMatch(Builder::satisfied));
                 return this;
             }
 
             public TypeBound bound() {
+                if (this.delegate != null) {
+                    return this.delegate.bound();
+                }
+
                 return this.bound;
             }
 
             public Builder setBound(TypeBound bound) {
+                if (this.delegate != null) {
+                    this.delegate.setBound(bound);
+                    return this;
+                }
+
                 this.bound = bound;
                 return this;
             }
 
             public boolean satisfied() {
+                if (this.delegate != null) {
+                    return this.delegate.satisfied();
+                }
+
                 this.propagate();
                 return this.satisfied.toBool();
             }
 
             public Trinary getSatisfied() {
+                if (this.delegate != null) {
+                    return this.delegate.getSatisfied();
+                }
+
                 return this.satisfied;
             }
 
             public Builder setSatisfied(boolean satisfied) {
+                if (this.delegate != null) {
+                    this.delegate.setSatisfied(satisfied);
+                    return this;
+                }
+
                 this.satisfied = Trinary.of(satisfied);
                 return this;
             }
 
             public List<Builder> parents() {
+                if (this.delegate != null) {
+                    return this.delegate.parents();
+                }
+
                 return this.parents;
             }
 
             public Builder setParents(List<Builder> parents) {
+                if (this.delegate != null) {
+                    this.delegate.setParents(parents);
+                    return this;
+                }
+
                 this.parents = parents;
                 return this;
             }
 
             public Builder addParents(Builder... parents) {
+                if (this.delegate != null) {
+                    this.delegate.addParents(parents);
+                    return this;
+                }
+
                 Collections.addAll(this.parents, parents);
                 return this;
             }
 
             public Builder addParents(Collection<Builder> parents) {
+                if (this.delegate != null) {
+                    this.delegate.addParents(parents);
+                    return this;
+                }
+
                 this.parents.addAll(parents);
                 return this;
             }
 
             public List<Builder> children() {
+                if (this.delegate != null) {
+                    return this.delegate.children();
+                }
+
                 return this.children;
             }
 
@@ -803,27 +885,55 @@ public interface TypeBound {
             }
 
             public Builder setChildren(List<Builder> children) {
+                if (this.delegate != null) {
+                    this.delegate.setChildren(children);
+                    return this;
+                }
+
                 this.children = children;
                 return this;
             }
 
             public Builder addChildren(Builder... children) {
+                if (this.delegate != null) {
+                    this.delegate.addChildren(children);
+                    return this;
+                }
+
                 Collections.addAll(this.children, children);
                 return this;
             }
 
             public Builder addChildren(Collection<Builder> children) {
+                if (this.delegate != null) {
+                    this.delegate.addChildren(children);
+                    return this;
+                }
+
                 this.children.addAll(children);
                 return this;
             }
 
             public Propagation propagation() {
+                if (this.delegate != null) {
+                    return this.delegate.propagation();
+                }
+
                 return this.propagation;
             }
 
             public Builder setPropagation(Propagation propagation) {
+                if (this.delegate != null) {
+                    this.delegate.setPropagation(propagation);
+                    return this;
+                }
+
                 this.propagation = propagation;
                 return this;
+            }
+
+            public boolean isDelegated() {
+                return this.delegate != null;
             }
 
             @Override
@@ -831,16 +941,29 @@ public interface TypeBound {
                 if (this == o) return true;
                 if (o == null || getClass() != o.getClass()) return false;
                 Builder builder = (Builder) o;
+
+                if (this.delegate != null) {
+                    return this.delegate.equals(builder);
+                }
+
                 return satisfied == builder.satisfied && propagation == builder.propagation && Objects.equals(bound, builder.bound) && Objects.equals(children, builder.children);
             }
 
             @Override
             public int hashCode() {
+                if (this.delegate != null) {
+                    return this.delegate.hashCode();
+                }
+
                 return Objects.hash(propagation, bound, satisfied, children);
             }
 
             @Override
             public String toString() {
+                if (this.delegate != null) {
+                    return this.delegate.toString();
+                }
+
                 return "TypeBound.Result.Builder{" +
                         "propagation=" + propagation +
                         ", bound=" + bound +
