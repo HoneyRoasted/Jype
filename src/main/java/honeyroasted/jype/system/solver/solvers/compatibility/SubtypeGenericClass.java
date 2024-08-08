@@ -11,18 +11,16 @@ import honeyroasted.jype.type.WildType;
 
 import java.util.Optional;
 
-import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
-
 public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subtype> {
+
     @Override
-    public boolean accepts(TypeBound.Result.Builder constraint) {
-        return constraint.getSatisfied() == UNKNOWN && constraint.bound() instanceof TypeBound.Subtype st &&
-                st.left() instanceof ClassType && st.right() instanceof ClassType ct && ct.hasTypeArguments();
+    public boolean accepts(TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+        return constraint.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN && bound.left() instanceof ClassType && bound.right() instanceof ClassType ct && ct.hasTypeArguments();
     }
 
     @Override
-    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
-        constraint.setPropagation(TypeBound.Result.Propagation.AND);
+    public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
+        builder.setPropagation(TypeBound.Result.Propagation.AND);
 
         ClassType l = (ClassType) bound.left();
         ParameterizedClassType pcr = (ParameterizedClassType) bound.right();
@@ -30,10 +28,10 @@ public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subty
         Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
                 .relativeSupertype(pcr.classReference());
         if (superTypeOpt.isPresent()) {
-            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), pcr.classReference()), constraint).setSatisfied(true));
+            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), pcr.classReference()), builder).setSatisfied(true));
 
             ClassType relative = superTypeOpt.get();
-            TypeBound.Result.Builder argsMatch = TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, constraint);
+            TypeBound.Result.Builder argsMatch = TypeBound.Result.builder(new TypeBound.TypeArgumentsMatch(relative, pcr), TypeBound.Result.Propagation.AND, builder);
             if (relative.typeArguments().size() == pcr.typeArguments().size()) {
                 for (int i = 0; i < relative.typeArguments().size(); i++) {
                     Type ti = relative.typeArguments().get(i);
@@ -66,13 +64,13 @@ public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subty
                 }
 
                 if (l.hasRelevantOuterType() && pcr.hasRelevantOuterType()) {
-                    context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.outerType(), pcr.outerType()), constraint));
+                    context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.outerType(), pcr.outerType()), builder));
                 }
             } else {
                 argsMatch.setSatisfied(false);
             }
         } else {
-            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), pcr.classReference()), constraint).setSatisfied(false));
+            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), pcr.classReference()), builder).setSatisfied(false));
         }
     }
 }

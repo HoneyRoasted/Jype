@@ -18,7 +18,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
     }
 
     @Override
-    public boolean accepts(TypeBound.Result.Builder constraint) {
+    public boolean accepts(TypeBound.Result.Builder builder) {
         return true;
     }
 
@@ -30,11 +30,28 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
     @Override
     public void map(Context context, TypeBound.Result.Builder... input) {
         List<TypeBound.Result.Builder> constraintSet = new ArrayList<>();
-        Collections.addAll(constraintSet, input);
+        List<TypeBound.Result.Builder> boundSet = new ArrayList<>();
 
-        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = this.process(context.system(), new ArrayList<>(), constraintSet);
+        if (context.classification() == TypeBound.Classification.BOUND) {
+            Collections.addAll(boundSet, input);
+        } else {
+            Collections.addAll(constraintSet, input);
+        }
+
+        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = this.process(context.system(), boundSet, constraintSet);
         addAll(context.bounds(), result.left());
         addAll(context.constraints(), result.right());
+    }
+
+    public TypeBound.Result.Builder apply(TypeSystem system, TypeBound bound, TypeBound.Classification classification, TypeBound.Result.Builder... parents) {
+        TypeBound.Result.Builder child = TypeBound.Result.builder(bound, parents);
+        this.process(system, classification == TypeBound.Classification.BOUND ? List.of(child) : Collections.emptyList(),
+                classification == TypeBound.Classification.BOUND ? Collections.emptyList() : List.of(child));
+        return child;
+    }
+
+    public boolean check(TypeSystem system, TypeBound bound, TypeBound.Classification classification, TypeBound.Result.Builder... parents) {
+        return apply(system, bound, classification, parents).satisfied();
     }
 
     public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(TypeSystem system, List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints) {

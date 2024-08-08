@@ -11,11 +11,16 @@ public interface UnaryTypeBoundMapper<T extends TypeBound> extends TypeBoundMapp
     }
 
     @Override
-    default boolean accepts(TypeBound.Result.Builder constraint) {
-        return type().isAssignableFrom(constraint.bound().getClass());
+    default boolean accepts(TypeBound.Result.Builder builder) {
+        return type().isAssignableFrom(builder.bound().getClass())
+                && accepts(builder, (T) builder.bound());
     }
 
-    void map(Context context, TypeBound.Result.Builder constraint, T bound);
+    default boolean accepts(TypeBound.Result.Builder constraint, T bound) {
+        return true;
+    }
+
+    void map(Context context, TypeBound.Result.Builder builder, T bound);
 
     private Type[] typeArgs() {
         for (Type inter : getClass().getGenericInterfaces()) {

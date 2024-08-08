@@ -7,18 +7,16 @@ import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.Type;
 
 import static honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context.*;
-import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
 
 public class ExpressionAssignmentConstant implements UnaryTypeBoundMapper<TypeBound.ExpressionCompatible> {
     @Override
-    public boolean accepts(TypeBound.Result.Builder constraint) {
-        return constraint.getSatisfied() == UNKNOWN && constraint.bound() instanceof TypeBound.ExpressionCompatible cmpt &&
-                cmpt.context() == ASSIGNMENT && cmpt.left() instanceof ExpressionInformation.Constant;
+    public boolean accepts(TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
+        return constraint.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN && bound.context() == ASSIGNMENT && bound.left() instanceof ExpressionInformation.Constant;
     }
 
     @Override
-    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.ExpressionCompatible bound) {
-        constraint.setPropagation(TypeBound.Result.Propagation.OR);
+    public void map(Context context, TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
+        builder.setPropagation(TypeBound.Result.Propagation.OR);
 
         Type target = bound.right();
         ExpressionInformation.Constant constantExpression = (ExpressionInformation.Constant) bound.left();
@@ -32,32 +30,32 @@ public class ExpressionAssignmentConstant implements UnaryTypeBoundMapper<TypeBo
         if (cnst.typeEquals(c.byteType()) || cnst.typeEquals(c.shortType()) || cnst.typeEquals(c.charType()) || cnst.typeEquals(c.intType())) {
             if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(true));
                 } else {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(true));
                 }
             } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(true));
                 } else {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(false));
                 }
             } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(true));
                 } else {
-                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), constraint)
+                    context.bounds().accept(TypeBound.Result.builder(new TypeBound.NarrowConstant(constantExpression, target), builder)
                             .setSatisfied(false));
                 }
             }
         }
 
-        context.constraints().accept(TypeBound.Result.builder(new TypeBound.Compatible(subtype, target, LOOSE_INVOCATION), constraint));
+        context.constraints().accept(TypeBound.Result.builder(new TypeBound.Compatible(subtype, target, LOOSE_INVOCATION), builder));
     }
 
     private static boolean fits(Object obj, long min, long max) {

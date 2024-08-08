@@ -11,9 +11,9 @@ import java.util.Map;
 public class IncorporationEqualSubtype implements BinaryTypeBoundMapper<TypeBound.Equal, TypeBound.Subtype>  {
 
     @Override
-    public void map(Context context, TypeBound.Result.Builder leftConstraint, TypeBound.Equal leftBound, TypeBound.Result.Builder rightConstraint, TypeBound.Subtype rightBound) {
+    public void map(Context context, TypeBound.Result.Builder leftBuild, TypeBound.Equal leftBound, TypeBound.Result.Builder rightBuilder, TypeBound.Subtype rightBound) {
         addAll(context.defaultConsumer(),
-                leftConstraint, rightConstraint);
+                leftBuild, rightBuilder);
 
         if (leftBound.hasMetaVar()) {
             MetaVarType mvt = leftBound.getMetaVar().orElse(null);
@@ -23,15 +23,15 @@ public class IncorporationEqualSubtype implements BinaryTypeBoundMapper<TypeBoun
             if (rightBound.left().typeEquals(mvt)) {
                 //Case where alpha = S and alpha <: T => S <: T (18.3.1, Bullet #2)
                 context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(otherType, rightBound.right()), TypeBound.Result.Propagation.AND,
-                        leftConstraint, rightConstraint));
+                        leftBuild, rightBuilder));
             } else if (rightBound.right().typeEquals(mvt)) {
                 //Case where alpha = S and T <: alpha => T <: S (18.3.1, Bullet #3)
                 context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(rightBound.left(), otherType), TypeBound.Result.Propagation.AND,
-                        leftConstraint, rightConstraint));
+                        leftBuild, rightBuilder));
             } else {
                 //Case where alpha = U and S <: T => S[alpha = U] <: T[alpha = U] (18.3.1, Bullet #6)
                 context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(subResolver.visit(rightBound.left()), subResolver.visit(rightBound.right())), TypeBound.Result.Propagation.AND,
-                        leftConstraint, rightConstraint));
+                        leftBuild, rightBuilder));
             }
         }
     }

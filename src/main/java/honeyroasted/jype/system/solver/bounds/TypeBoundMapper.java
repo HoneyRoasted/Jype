@@ -34,10 +34,10 @@ public interface TypeBoundMapper {
 
 
     default TypeBound.Classification classification() {
-        return TypeBound.Classification.CONSTRAINT;
+        return TypeBound.Classification.BOUND;
     }
 
-    boolean accepts(TypeBound.Result.Builder constraint);
+    boolean accepts(TypeBound.Result.Builder builder);
 
     default boolean accepts(TypeBound.Result.Builder... input) {
         return true;
@@ -52,8 +52,8 @@ public interface TypeBoundMapper {
         return Pair.of(bounds, constraints);
     }
 
-    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeSystem system, TypeBound.Classification classification, List<TypeBound.Result.Builder> constraints) {
-        return this.map(system, classification, constraints.toArray(TypeBound.Result.Builder[]::new));
+    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeSystem system, TypeBound.Classification classification, List<TypeBound.Result.Builder> input) {
+        return this.map(system, classification, input.toArray(TypeBound.Result.Builder[]::new));
     }
 
     default <T> void addAll(Consumer<? super T> collection, T... arr) {

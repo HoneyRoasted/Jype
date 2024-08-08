@@ -16,10 +16,20 @@ public interface BinaryTypeBoundMapper<T extends TypeBound, K extends TypeBound>
     }
 
     @Override
-    default boolean accepts(TypeBound.Result.Builder constraint) {
-        return leftType().isAssignableFrom(constraint.bound().getClass()) ||
-                rightType().isAssignableFrom(constraint.bound().getClass());
+    default boolean accepts(TypeBound.Result.Builder builder) {
+        return builder.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN &&
+                ((leftType().isAssignableFrom(builder.bound().getClass()) && acceptsLeft(builder, (T) builder.bound())) ||
+                        (rightType().isAssignableFrom(builder.bound().getClass())) && acceptsRight(builder, (K) builder.bound()));
     }
+
+    default boolean acceptsLeft(TypeBound.Result.Builder builder, T bound) {
+        return true;
+    }
+
+    default boolean acceptsRight(TypeBound.Result.Builder builder, K bound) {
+        return true;
+    }
+
 
     @Override
     default boolean accepts(TypeBound.Result.Builder... input) {
@@ -27,8 +37,8 @@ public interface BinaryTypeBoundMapper<T extends TypeBound, K extends TypeBound>
                 rightType().isAssignableFrom(input[1].bound().getClass());
     }
 
-    void map(Context context, TypeBound.Result.Builder leftConstraint, T leftBound,
-             TypeBound.Result.Builder rightConstraint, K rightBound);
+    void map(Context context, TypeBound.Result.Builder leftBuild, T leftBound,
+             TypeBound.Result.Builder rightBuilder, K rightBound);
 
     private Type[] typeArgs() {
         for (Type inter : getClass().getGenericInterfaces()) {

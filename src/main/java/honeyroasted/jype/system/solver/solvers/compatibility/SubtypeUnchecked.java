@@ -4,23 +4,21 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 import honeyroasted.jype.type.ClassType;
 
-import static honeyroasted.jype.system.solver.bounds.TypeBound.Result.Trinary.*;
-
 public class SubtypeUnchecked implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     @Override
-    public boolean accepts(TypeBound.Result.Builder constraint) {
-        return constraint.getSatisfied() == UNKNOWN && constraint.bound() instanceof TypeBound.Subtype st &&
-                st.left() instanceof ClassType l && st.right() instanceof ClassType r &&
-                ((l.hasAnyTypeArguments() && !r.hasTypeArguments()) ||
-                        (!l.hasAnyTypeArguments() && r.hasTypeArguments()));
+    public boolean accepts(TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+        return constraint.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN &&
+                bound.left() instanceof ClassType l && bound.right() instanceof ClassType r &&
+                ((l.hasAnyTypeArguments() && !r.hasAnyTypeArguments()) ||
+                        (!l.hasAnyTypeArguments() && r.hasAnyTypeArguments()));
     }
 
     @Override
-    public void map(Context context, TypeBound.Result.Builder constraint, TypeBound.Subtype bound) {
+    public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
         ClassType l = (ClassType) bound.left();
         ClassType r = (ClassType) bound.right();
 
-        context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), constraint)
+        context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)
                 .setSatisfied(l.classReference().hasSupertype(r.classReference())));
     }
 }

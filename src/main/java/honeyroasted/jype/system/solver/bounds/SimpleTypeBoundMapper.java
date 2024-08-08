@@ -31,8 +31,8 @@ public class SimpleTypeBoundMapper implements TypeBoundMapper {
     }
 
     @Override
-    public boolean accepts(TypeBound.Result.Builder constraint) {
-        return constraint.bound() != null && (this.acceptedBounds.isEmpty() || this.acceptedBounds.stream().anyMatch(c -> c.isAssignableFrom(constraint.bound().getClass())));
+    public boolean accepts(TypeBound.Result.Builder builder) {
+        return builder.bound() != null && (this.acceptedBounds.isEmpty() || this.acceptedBounds.stream().anyMatch(c -> c.isAssignableFrom(builder.bound().getClass())));
     }
 
     @Override

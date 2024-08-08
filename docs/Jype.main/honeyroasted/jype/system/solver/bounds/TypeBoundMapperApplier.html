@@ -120,10 +120,22 @@ implements <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)" class="member-name-link">accepts</a><wbr>(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;constraint)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)" class="member-name-link">accepts</a><wbr>(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;builder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#arity()" class="member-name-link">arity</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#apply(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">apply</a><wbr>(<a href="../../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
+ <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>&nbsp;bound,
+ <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+ <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;parents)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#arity()" class="member-name-link">arity</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#check(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">check</a><wbr>(<a href="../../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
+ <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>&nbsp;bound,
+ <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+ <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;parents)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)" class="member-name-link">map</a><wbr>(<a href="TypeBoundMapper.Context.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBoundMapper.Context</a>&nbsp;context,
@@ -171,7 +183,7 @@ implements <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.
 <li>
 <section class="detail" id="accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)">
 <h3>accepts</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">accepts</span><wbr><span class="parameters">(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;constraint)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">accepts</span><wbr><span class="parameters">(<a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>&nbsp;builder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="TypeBoundMapper.html#accepts(honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder)">accepts</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
@@ -197,6 +209,24 @@ implements <a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.
 <dt>Specified by:</dt>
 <dd><code><a href="TypeBoundMapper.html#map(honeyroasted.jype.system.solver.bounds.TypeBoundMapper.Context,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">map</a></code>&nbsp;in interface&nbsp;<code><a href="TypeBoundMapper.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBoundMapper</a></code></dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="apply(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">
+<h3>apply</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a></span>&nbsp;<span class="element-name">apply</span><wbr><span class="parameters">(<a href="../../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
+ <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>&nbsp;bound,
+ <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+ <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;parents)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="check(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.system.solver.bounds.TypeBound,honeyroasted.jype.system.solver.bounds.TypeBound.Classification,honeyroasted.jype.system.solver.bounds.TypeBound.Result.Builder...)">
+<h3>check</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">check</span><wbr><span class="parameters">(<a href="../../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
+ <a href="TypeBound.html" title="interface in honeyroasted.jype.system.solver.bounds">TypeBound</a>&nbsp;bound,
+ <a href="TypeBound.Classification.html" title="enum class in honeyroasted.jype.system.solver.bounds">TypeBound.Classification</a>&nbsp;classification,
+ <a href="TypeBound.Result.Builder.html" title="class in honeyroasted.jype.system.solver.bounds">TypeBound.Result.Builder</a>...&nbsp;parents)</span></div>
 </section>
 </li>
 <li>

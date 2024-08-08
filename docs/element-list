@@ -15,6 +15,7 @@ honeyroasted.jype.system.solver.operations
 honeyroasted.jype.system.solver.solvers
 honeyroasted.jype.system.solver.solvers.compatibility
 honeyroasted.jype.system.solver.solvers.incorporation
+honeyroasted.jype.system.solver.solvers.reduction
 honeyroasted.jype.system.visitor
 honeyroasted.jype.system.visitor.visitors
 honeyroasted.jype.type

@@ -13,14 +13,15 @@ import java.util.List;
 import java.util.Set;
 
 public class IncorporationSubtypeSubtype implements BinaryTypeBoundMapper<TypeBound.Subtype, TypeBound.Subtype> {
+
     @Override
-    public void map(Context context, TypeBound.Result.Builder leftConstraint, TypeBound.Subtype leftBound, TypeBound.Result.Builder rightConstraint, TypeBound.Subtype rightBound) {
+    public void map(Context context, TypeBound.Result.Builder leftBuild, TypeBound.Subtype leftBound, TypeBound.Result.Builder rightBuilder, TypeBound.Subtype rightBound) {
         addAll(context.defaultConsumer(),
-                leftConstraint, rightConstraint);
+                leftBuild, rightBuilder);
 
         if (leftBound.left() instanceof MetaVarType mvt && mvt.typeEquals(rightBound.right())) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
-            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(leftBound.right(), rightBound.left()), leftConstraint, rightConstraint));
+            context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(leftBound.right(), rightBound.left()), leftBuild, rightBuilder));
         }
 
         if (leftBound.left() instanceof MetaVarType mvt && mvt.typeEquals(rightBound.left())) {
@@ -34,7 +35,7 @@ public class IncorporationSubtypeSubtype implements BinaryTypeBoundMapper<TypeBo
 
                         if (!(left instanceof WildType) && !(right instanceof WildType)) {
                             context.bounds().accept(TypeBound.Result.builder(new TypeBound.Equal(pair.left().typeArguments().get(i), pair.right().typeArguments().get(i)),
-                                    TypeBound.Result.Propagation.AND, leftConstraint, rightConstraint));
+                                    TypeBound.Result.Propagation.AND, leftBuild, rightBuilder));
                         }
                     }
                 }
