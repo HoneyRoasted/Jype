@@ -95,13 +95,23 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                     }
 
                     if (!processingConstraints.isEmpty()) {
-                        consumeSubsets(processingConstraints, mapper.arity(), mapper.commutative(), arr -> {
+                        boolean accepted = consumeSubsets(processingConstraints, mapper.arity(), mapper.commutative(), arr -> {
                             if (mapper.accepts(arr)) {
                                 mapper.map(new Context(t -> addToBoundList(t, currentBounds), t -> addToBoundList(t, currentConstraints),
                                         previousBounds, previousConstraints, system, TypeBound.Classification.CONSTRAINT), arr);
+                            } else {
+                                for (TypeBound.Result.Builder builder : arr) {
+                                    addToBoundList(builder, currentConstraints);
+                                }
                             }
                         });
+
+                        if (!accepted) {
+                            currentConstraints.addAll(previousConstraints);
+                        }
                     }
+                } else {
+                    currentConstraints.addAll(previousConstraints);
                 }
 
                 if (mapper.classification() == TypeBound.Classification.BOUND || mapper.classification() == TypeBound.Classification.BOTH) {
@@ -114,22 +124,36 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                     }
 
                     if (!processingBounds.isEmpty()) {
-                        consumeSubsets(processingBounds, mapper.arity(), mapper.commutative(), arr -> {
+                        boolean accepted = consumeSubsets(processingBounds, mapper.arity(), mapper.commutative(), arr -> {
                             if (mapper.accepts(arr)) {
                                 mapper.map(new Context(t -> addToBoundList(t, currentBounds), t -> addToBoundList(t, currentConstraints),
                                         previousBounds, previousConstraints, system, TypeBound.Classification.BOUND), arr);
+                            } else {
+                                for (TypeBound.Result.Builder builder : arr) {
+                                    addToBoundList(builder, currentBounds);
+                                }
                             }
                         });
+
+                        if (!accepted) {
+                            currentBounds.addAll(previousBounds);
+                        }
                     }
+                } else {
+                    currentBounds.addAll(previousBounds);
                 }
-
-
             }
         }
         return Pair.of(currentBounds, currentConstraints);
     }
 
     private static void addToBoundList(TypeBound.Result.Builder builder, Collection<TypeBound.Result.Builder> list) {
+        for (TypeBound.Result.Builder curr : list) {
+            if (curr == builder) {
+                return;
+            }
+        }
+
         for (TypeBound.Result.Builder curr : list) {
             if (curr.bound().equals(builder.bound())) {
                 builder.replaceWith(curr);
@@ -140,9 +164,10 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         list.add(builder);
     }
 
-    private static void consumeSubsets(List<TypeBound.Result.Builder> processing, int size, boolean commutative, Consumer<TypeBound.Result.Builder[]> baseCase) {
+    private static boolean consumeSubsets(List<TypeBound.Result.Builder> processing, int size, boolean commutative, Consumer<TypeBound.Result.Builder[]> baseCase) {
         if (size <= 0 || size == processing.size()) {
-            baseCase.accept(processing.toArray(new TypeBound.Result.Builder[0]));
+            baseCase.accept(processing.toArray(TypeBound.Result.Builder[]::new));
+            return true;
         } else if (size < processing.size()) {
             TypeBound.Result.Builder[] mem = new TypeBound.Result.Builder[size];
             TypeBound.Result.Builder[] input = processing.toArray(TypeBound.Result.Builder[]::new);
@@ -160,6 +185,10 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                 }
                 consumeSubset(mem, input, subset, commutative, baseCase);
             }
+
+            return true;
+        } else {
+            return false;
         }
     }
 

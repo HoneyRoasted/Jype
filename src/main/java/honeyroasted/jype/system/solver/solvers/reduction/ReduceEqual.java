@@ -19,9 +19,9 @@ public class ReduceEqual implements UnaryTypeBoundMapper<TypeBound.Equal> {
         Type t = bound.right();
 
         if (s.isProperType() && t.isProperType()) {
-            builder.setSatisfied(s.typeEquals(t));
+            context.bounds().accept(builder.setSatisfied(s.typeEquals(t)));
         } else if (s.isNullType() || t.isNullType()) {
-            builder.setSatisfied(false);
+            context.bounds().accept(builder.setSatisfied(false));
         } else if (s instanceof MetaVarType && !(t instanceof PrimitiveType)) {
             context.bounds().accept(TypeBound.Result.builder(new TypeBound.Equal(s, t), builder));
         } else if (t instanceof MetaVarType && !(s instanceof PrimitiveType)) {

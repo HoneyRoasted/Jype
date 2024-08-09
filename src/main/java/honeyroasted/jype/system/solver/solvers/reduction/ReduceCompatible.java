@@ -25,12 +25,12 @@ public class ReduceCompatible implements UnaryTypeBoundMapper<TypeBound.Compatib
             context.constraints().accept(TypeBound.Result.builder(new TypeBound.Equal(bound.left(), pt.box()), builder));
         } else if (bound.left() instanceof ClassType pct && pct.hasAnyTypeArguments() && bound.right() instanceof ClassType ct && !ct.hasAnyTypeArguments() &&
                 context.system().operations().compatibilityApplier().check(context.system(), new TypeBound.Subtype(pct.classReference(), ct.classReference()), TypeBound.Classification.BOUND, builder)) {
-            builder.setSatisfied(true);
+            context.bounds().accept(builder.setSatisfied(true));
         } else if (bound.left() instanceof ArrayType at && at.deepComponent() instanceof ClassType pct && pct.hasAnyTypeArguments() &&
                 bound.right() instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasAnyTypeArguments() &&
                 at.depth() == rat.depth() &&
                 context.system().operations().compatibilityApplier().check(context.system(), new TypeBound.Subtype(pct.classReference(), rpct.classReference()), TypeBound.Classification.BOUND, builder)) {
-            builder.setSatisfied(true);
+            context.bounds().accept(builder.setSatisfied(true));
         } else {
             context.constraints().accept(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), bound.right()), builder));
         }

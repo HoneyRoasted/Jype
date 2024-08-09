@@ -32,6 +32,11 @@ public interface BinaryTypeBoundMapper<T extends TypeBound, K extends TypeBound>
 
 
     @Override
+    default int arity() {
+        return 2;
+    }
+
+    @Override
     default boolean accepts(TypeBound.Result.Builder... input) {
         return leftType().isAssignableFrom(input[0].bound().getClass()) &&
                 rightType().isAssignableFrom(input[1].bound().getClass());

@@ -5,6 +5,10 @@ import honeyroasted.jype.system.solver.bounds.UnaryTypeBoundMapper;
 
 public class ReduceExpressionCompatible implements UnaryTypeBoundMapper<TypeBound.ExpressionCompatible> {
     @Override
+    public TypeBound.Classification classification() {
+        return TypeBound.Classification.CONSTRAINT;
+    }
+    @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
         if (bound.left().isSimplyTyped()) {
             builder.setPropagation(TypeBound.Result.Propagation.INHERIT);

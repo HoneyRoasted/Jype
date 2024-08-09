@@ -1,11 +1,13 @@
 package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
+import honeyroasted.jype.system.solver.solvers.ResolveBounds;
 import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleLooseInvocation;
@@ -84,7 +86,9 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceCompatible(),
             new ReduceExpressionCompatible(),
             new ReduceContains(),
-            new ReduceEqual()
+            new ReduceEqual(),
+
+            INCORPORATION_APPLIER
     ));
 
     public static final TypeOperation<Type, Set<Type>> FIND_ALL_KNOWN_SUPERTYPES = new FindAllKnownSupertypes();
@@ -94,6 +98,7 @@ public class TypeOperationsImpl implements TypeOperations {
     public static final TypeOperation<Set<Type>, Set<Type>> FIND_MOST_SPECIFIC_TYPES = new FindMostSpecificTypes();
     public static final TypeOperation<Map<VarType, MetaVarType>, Set<TypeBound.Result.Builder>> BUILD_INITIAL_BOUNDS = new BuildInitialBounds();
     public static final TypeOperation<TypeBound.Result.Builder, TypeBound.Result.Builder> UPDATE_META_VARS = new UpdateMetaVars();
+    public static final TypeOperation<Set<TypeBound.Result.Builder>, Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>>> RESOLVE_BOUNDS = new ResolveBounds();
 
     private TypeSystem typeSystem;
 
@@ -179,7 +184,10 @@ public class TypeOperationsImpl implements TypeOperations {
         return constraints;
     }
 
-
+    @Override
+    public Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolveBounds(Set<TypeBound.Result.Builder> bounds) {
+        return RESOLVE_BOUNDS.apply(this.typeSystem, bounds);
+    }
 
 
 }
