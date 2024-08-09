@@ -160,7 +160,7 @@ public interface Type extends Copyable<Type> {
     }
 
     static int hashCode(Set<? extends Type> set, Set<Type> seen) {
-        if (seen == null) return 0;
+        if (set == null) return 0;
 
         int hash = 1;
         for (Type t : set) {

@@ -102,6 +102,10 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
                 }
             }
 
+            if (lub.size() > 1) {
+                lub.remove(system.constants().object());
+            }
+
             type.setChildren(IntersectionType.flatten(lub));
             type.setUnmodifiable(true);
 

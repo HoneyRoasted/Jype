@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.solver._old.solvers.inference;
+package honeyroasted.jype.system.visitor.visitors;
 
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.visitors.DeepStructuralTypeMappingVisitor;

@@ -80,8 +80,8 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
         if (kind == Equality.EQUIVALENT && Type.baseCaseEquivalence(this, other, seen)) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 
-        if (other instanceof WildType.Lower wtl) {
-            return identity == wtl.identity() && Type.equals(upperBound, wtl.lowerBounds(), kind, seen);
+        if (other instanceof WildType.Upper wtu) {
+            return identity == wtu.identity() && Type.equals(upperBound, wtu.upperBounds(), kind, seen);
         } else {
             return false;
         }

@@ -2,7 +2,7 @@ package honeyroasted.jype.system.solver._old.solvers.inference.helper;
 
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.solver.TypeSolver;
-import honeyroasted.jype.system.solver._old.solvers.inference.MetaVarTypeResolver;
+import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.visitor.TypeVisitor;
