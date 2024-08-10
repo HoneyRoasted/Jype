@@ -18,7 +18,7 @@ public class TypeBoundMapperSolver implements TypeSolver {
     private List<TypeBoundMapperApplier> appliers;
     private Set<Class<? extends TypeBound>> supported;
 
-    private Set<TypeBound> bounds = new LinkedHashSet<>();
+    private Set<TypeBound> constraints = new LinkedHashSet<>();
 
     public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, List<TypeBoundMapperApplier> appliers) {
         this.name = name;
@@ -62,18 +62,18 @@ public class TypeBoundMapperSolver implements TypeSolver {
                     check.getClass().getCanonicalName() + ", supported bounds are: [" +
                     supported.stream().map(Class::getCanonicalName).collect(Collectors.joining(", ")) + "]");
         }
-        this.bounds.add(bound);
+        this.constraints.add(bound);
         return this;
     }
 
     @Override
     public void reset() {
-        this.bounds.clear();
+        this.constraints.clear();
     }
 
     @Override
     public Result solve(TypeSystem system) {
-        List<TypeBound.Result.Builder> building = this.bounds.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(ArrayList::new));
+        List<TypeBound.Result.Builder> building = this.constraints.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(ArrayList::new));
 
         List<TypeBound.Result.Builder> constraints = new ArrayList<>(building);
         List<TypeBound.Result.Builder> bounds = new ArrayList<>();

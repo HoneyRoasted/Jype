@@ -14,12 +14,12 @@ import java.util.function.Consumer;
 
 public interface TypeBoundMapper {
 
-    static TypeBoundMapper of(int arity, boolean commutative, TypeBound.Classification classification, Set<Class<? extends  TypeBound>> accepted, BiConsumer<Context, TypeBound.Result.Builder[]> consumer) {
+    static TypeBoundMapper of(int arity, boolean commutative, Set<TypeBound.Classification> classification, Set<Class<? extends  TypeBound>> accepted, BiConsumer<Context, TypeBound.Result.Builder[]> consumer) {
         return new SimpleTypeBoundMapper(arity, commutative, classification, accepted, consumer);
     }
 
     static TypeBoundMapper simpleMapper(BiFunction<TypeSystem, TypeBound.Result.Builder, TypeBound.Result.Builder> operation) {
-        return of(1, true, TypeBound.Classification.BOTH, Collections.emptySet(), (context, arr) -> {
+        return of(1, true, Set.of(TypeBound.Classification.BOUND, TypeBound.Classification.CONSTRAINT), Collections.emptySet(), (context, arr) -> {
             context.defaultConsumer().accept(operation.apply(context.system, arr[0]));
         });
     }
@@ -33,8 +33,8 @@ public interface TypeBoundMapper {
     }
 
 
-    default TypeBound.Classification classification() {
-        return TypeBound.Classification.BOUND;
+    default boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.BOUND;
     }
 
     boolean accepts(TypeBound.Result.Builder builder);

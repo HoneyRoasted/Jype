@@ -1,76 +1,34 @@
-package honeyroasted.jype.system.solver._old.solvers.inference.helper;
+package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.jype.modify.Pair;
-import honeyroasted.jype.system.solver.TypeSolver;
-import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
+import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.visitor.TypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class TypeBoundResolver extends AbstractInferenceHelper {
-    private TypeBoundIncorporater boundIncorporater;
-    private TypeConstraintReducer constraintReducer;
-    private TypeCompatibilityChecker compatibilityChecker;
-
-    private Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
-    private Set<TypeBound.Result.Builder> bounds = new LinkedHashSet<>();
-
-    public TypeBoundResolver() {
-        this(new NoOpTypeSolver());
+public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder>, Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>>> {
+    @Override
+    public Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> apply(TypeSystem system, Set<TypeBound.Result.Builder> builders) {
+        Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(builders);
+        return this.resolve(system, dependencies.keySet(), dependencies, new LinkedHashMap<>(), builders);
     }
 
-    public TypeBoundResolver(TypeSolver solver) {
-        super(solver);
-        this.boundIncorporater = new TypeBoundIncorporater(solver);
-        this.constraintReducer = new TypeConstraintReducer(solver);
-        this.compatibilityChecker = new TypeCompatibilityChecker(solver);
-    }
-
-    public void reset() {
-        this.boundIncorporater.reset();
-        this.constraintReducer.reset();
-        this.instantiations.clear();
-        this.bounds.clear();
-    }
-
-    public TypeBoundResolver resolve(Set<TypeBound.Result.Builder> bounds) {
-        Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(bounds);
-        Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> result = this.resolve(dependencies.keySet(), dependencies, new LinkedHashMap<>(), bounds);
-        this.bounds.addAll(result.right());
-        this.instantiations.putAll(result.left());
-        return this;
-    }
-
-    public Map<MetaVarType, Type> instantiations() {
-        return this.instantiations;
-    }
-
-    public Set<TypeBound.Result.Builder> bounds() {
-        return this.bounds;
-    }
-
-    public MetaVarTypeResolver instantiationsResolver() {
-        return new MetaVarTypeResolver(this.instantiations);
-    }
-
-    public boolean success() {
-        return this.bounds.stream().noneMatch(b -> b.bound() instanceof TypeBound.False);
-    }
-
-    private Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolve(Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations, Set<TypeBound.Result.Builder> bounds) {
+    private Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolve(TypeSystem system, Set<MetaVarType> currentMetaVars, Map<MetaVarType, Set<MetaVarType>> dependencies, Map<MetaVarType, Type> instantiations, Set<TypeBound.Result.Builder> bounds) {
         Set<MetaVarType> varsAndDeps = new HashSet<>();
         currentMetaVars.forEach(cmv -> varsAndDeps.addAll(dependencies.getOrDefault(cmv, Collections.emptySet())));
 
@@ -111,7 +69,7 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, lub), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                         candidates.put(mvt, Pair.of(lub, bound));
                     } else if (bounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.Throws thr && thr.value().equals(mvt)) &&
-                            properUpper.keySet().stream().allMatch(t -> this.compatibilityChecker.isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
+                            properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
                         Type cand = mvt.typeSystem().constants().runtimeException();
                         TypeBound.Result.Builder bound = TypeBound.Result.builder(new TypeBound.Equal(mvt, cand), TypeBound.Result.Propagation.AND, properLower.values()).setSatisfied(true);
                         candidates.put(mvt, Pair.of(cand, bound));
@@ -125,20 +83,20 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                 }
 
                 if (foundAllCandidates) {
-                    Set<TypeBound.Result.Builder> newBounds = new LinkedHashSet<>(bounds);
+                    List<TypeBound.Result.Builder> newBounds = new ArrayList<>(bounds);
                     Map<MetaVarType, Type> finalInstantiations = instantiations;
                     candidates.forEach((k, v) -> {
                         newBounds.add(v.right());
                         finalInstantiations.put(k, v.left());
                     });
-                    this.boundIncorporater.reset();
-                    this.boundIncorporater.incorporate(newBounds);
-                    Set<TypeBound.Result.Builder> incorporated = this.boundIncorporater.bounds();
 
-                    if (!this.boundIncorporater.constraints().isEmpty()) {
-                        this.constraintReducer.addBounds(incorporated);
-                        this.constraintReducer.reduce(this.boundIncorporater.constraints());
-                        incorporated = this.constraintReducer.bounds();
+                    Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> incorporation = system.operations()
+                            .incorporationApplier().process(system, newBounds, new ArrayList<>());
+                    List<TypeBound.Result.Builder> incorporated = incorporation.left();
+
+                    if (!incorporation.right().isEmpty()) {
+                        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, incorporated, incorporation.right());
+                        incorporated = redux.left();
                     }
                     generatedBounds.addAll(incorporated);
                 }
@@ -179,20 +137,20 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
                 generatedBounds.addAll(newBounds);
             }
 
-            this.boundIncorporater.reset()
-                    .incorporate(generatedBounds);
-            Set<TypeBound.Result.Builder> incorporated = this.boundIncorporater.bounds();
 
-            if (!this.boundIncorporater.constraints().isEmpty()) {
-                this.constraintReducer.addBounds(incorporated);
-                this.constraintReducer.reduce(this.boundIncorporater.constraints());
-                incorporated = this.constraintReducer.bounds();
+            Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> incorporation = system.operations()
+                    .incorporationApplier().process(system, new ArrayList<>(generatedBounds), new ArrayList<>());
+            List<TypeBound.Result.Builder> incorporated = incorporation.left();
+
+            if (!incorporation.right().isEmpty()) {
+                Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, incorporated, incorporation.right());
+                incorporated = redux.left();
             }
 
-            if (incorporated.stream().anyMatch(b -> b.bound() instanceof TypeBound.False)) {
-                return Pair.of(Collections.emptyMap(), incorporated);
+            if (incorporated.stream().anyMatch(b -> b.getSatisfied() == TypeBound.Result.Trinary.FALSE)) {
+                return Pair.of(Collections.emptyMap(), new LinkedHashSet<>(incorporated));
             } else {
-                return this.resolve(currentMetaVars, dependencies, instantiations, incorporated);
+                return this.resolve(system, currentMetaVars, dependencies, instantiations, new LinkedHashSet<>(incorporated));
             }
         } else {
             Set<TypeBound.Result.Builder> boundsFailed = new LinkedHashSet<>(bounds);
@@ -367,5 +325,4 @@ public class TypeBoundResolver extends AbstractInferenceHelper {
         return new HashSet<>(new RecursiveTypeVisitor<MetaVarType, Void>((TypeVisitor.Default) (type, context) -> type instanceof MetaVarType mvt ? mvt : null,
                 null, false).visit(visit, new HashMap<>()));
     }
-
 }

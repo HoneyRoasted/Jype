@@ -20,8 +20,7 @@ public interface TypeBound {
 
     enum Classification {
         BOUND,
-        CONSTRAINT,
-        BOTH
+        CONSTRAINT
     }
 
     List<?> parameters();

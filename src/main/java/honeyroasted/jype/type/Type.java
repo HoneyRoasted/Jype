@@ -5,7 +5,6 @@ import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver._old.solvers.CompatibilityTypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.TypeVisitors;
@@ -30,10 +29,7 @@ public interface Type extends Copyable<Type> {
     }
 
     default boolean isCompatibleTo(Type other, TypeBound.Compatible.Context context) {
-        return new CompatibilityTypeSolver()
-                .bind(new TypeBound.Compatible(this, other, context))
-                .solve(this.typeSystem())
-                .success();
+        return this.typeSystem().operations().isCompatible(this, other, context);
     }
 
     default boolean isAssignableTo(Type other) {

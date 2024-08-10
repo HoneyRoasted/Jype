@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
 
 public class ReduceSubtype implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     @Override
-    public TypeBound.Classification classification() {
-        return TypeBound.Classification.CONSTRAINT;
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.CONSTRAINT;
     }
+
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
         builder.setPropagation(TypeBound.Result.Propagation.AND);

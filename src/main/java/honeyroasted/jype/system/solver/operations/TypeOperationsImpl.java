@@ -7,7 +7,6 @@ import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
-import honeyroasted.jype.system.solver.solvers.ResolveBounds;
 import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
 import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleLooseInvocation;
@@ -33,7 +32,7 @@ import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationSubtyp
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceContains;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceEqual;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceExpressionCompatible;
+import honeyroasted.jype.system.solver.solvers.reduction.ReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceSubtype;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
@@ -84,7 +83,8 @@ public class TypeOperationsImpl implements TypeOperations {
 
             new ReduceSubtype(),
             new ReduceCompatible(),
-            new ReduceExpressionCompatible(),
+            new ReduceSimplyTypedExpression(),
+            //TODO implement non-simply typed expressions
             new ReduceContains(),
             new ReduceEqual(),
 

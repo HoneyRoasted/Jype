@@ -6,12 +6,11 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.WildType;
 
 public class ReduceContains implements UnaryTypeBoundMapper<TypeBound.Contains> {
-
     @Override
-    public TypeBound.Classification classification() {
-        return TypeBound.Classification.CONSTRAINT;
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.CONSTRAINT;
     }
-    
+
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Contains bound) {
         Type s = bound.left();

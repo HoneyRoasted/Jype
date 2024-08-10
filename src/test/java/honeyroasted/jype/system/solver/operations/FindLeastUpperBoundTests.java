@@ -1,6 +1,5 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -37,9 +36,10 @@ public class FindLeastUpperBoundTests {
         Type lub = ts.operations().findLeastUpperBound(Set.of(bar, baz));
 
         //Set wild type identity to be the same, otherwise they will not be considered equal
-        ParameterizedClassType lubPct = (ParameterizedClassType) lub;
-        WildType.Upper lubWtu = (WildType.Upper) lubPct.typeArguments().get(0);
-        wtu.setIdentity(lubWtu.identity());
+        if (lub instanceof ParameterizedClassType lubPct && !lubPct.typeArguments().isEmpty() &&
+                lubPct.typeArguments().get(0) instanceof WildType.Upper lubWtu) {
+            wtu.setIdentity(lubWtu.identity());
+        }
 
         assertTrue(lub.typeEquals(pct), lub.simpleName() + " = " + pct.simpleName());
     }

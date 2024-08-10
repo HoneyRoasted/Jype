@@ -7,10 +7,9 @@ import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 
 public class ReduceEqual implements UnaryTypeBoundMapper<TypeBound.Equal> {
-
     @Override
-    public TypeBound.Classification classification() {
-        return TypeBound.Classification.CONSTRAINT;
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.CONSTRAINT;
     }
 
     @Override

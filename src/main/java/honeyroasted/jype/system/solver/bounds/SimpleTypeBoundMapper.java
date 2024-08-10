@@ -7,12 +7,12 @@ public class SimpleTypeBoundMapper implements TypeBoundMapper {
     private int arity;
     private boolean commutative;
 
-    private TypeBound.Classification acceptedClassifications;
+    private Set<TypeBound.Classification> acceptedClassifications;
     private Set<Class<? extends TypeBound>> acceptedBounds;
 
     private BiConsumer<Context, TypeBound.Result.Builder[]> consumer;
 
-    public SimpleTypeBoundMapper(int arity, boolean commutative, TypeBound.Classification acceptedClassifications, Set<Class<? extends TypeBound>> acceptedBounds, BiConsumer<Context, TypeBound.Result.Builder[]> consumer) {
+    public SimpleTypeBoundMapper(int arity, boolean commutative, Set<TypeBound.Classification> acceptedClassifications, Set<Class<? extends TypeBound>> acceptedBounds, BiConsumer<Context, TypeBound.Result.Builder[]> consumer) {
         this.arity = arity;
         this.commutative = commutative;
         this.acceptedClassifications = acceptedClassifications;
@@ -26,8 +26,8 @@ public class SimpleTypeBoundMapper implements TypeBoundMapper {
     }
 
     @Override
-    public TypeBound.Classification classification() {
-        return this.acceptedClassifications;
+    public boolean accepts(TypeBound.Classification classification) {
+        return this.acceptedClassifications.contains(classification);
     }
 
     @Override

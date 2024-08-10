@@ -1,11 +1,11 @@
 package honeyroasted.jype;
 
-import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
-import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.visitor.TypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.ToSignatureTypeVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.MetaVarType;
@@ -17,20 +17,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Test {
+public class Test<T> {
 
-    interface Foo<T extends Foo<T>> {}
+    public static <T> void main(String[] args) {
+        List<TypeToken> tokens = List.of(
+                new TypeToken<List<T>>() {},
+                new TypeToken<String>() {},
+                new TypeToken<Map<List<T>, Integer>>() {},
+                new TypeToken<List<? extends T>>() {}
+        );
 
-    class Bar implements Foo<Bar> {}
-    class Baz implements Foo<Baz> {}
-
-    public static void main(String[] args) {
-        TypeSystem ts = TypeSystem.SIMPLE_RUNTIME;
-        Type bar = ts.tryResolve(Bar.class);
-        Type baz = ts.tryResolve(Baz.class);
-
-        Type lub = ts.operations().findLeastUpperBound(Set.of(bar, baz));
-        System.out.println(lub);
+        for (TypeToken t : tokens) {
+            Type type = t.resolve();
+            System.out.println(t.extractType() + " = " + TypeVisitors.TO_SIGNATURE.visit(type, ToSignatureTypeVisitor.Mode.USAGE));
+        }
     }
 
 }

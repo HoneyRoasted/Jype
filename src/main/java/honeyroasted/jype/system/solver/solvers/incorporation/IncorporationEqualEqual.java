@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.solvers.incorporation;
 
-import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.system.solver.bounds.BinaryTypeBoundMapper;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 

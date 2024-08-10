@@ -3,8 +3,8 @@ package honeyroasted.jype.system.solver.bounds;
 public class TypeBoundCompoundUnwrapper implements UnaryTypeBoundMapper<TypeBound.Compound> {
 
     @Override
-    public TypeBound.Classification classification() {
-        return TypeBound.Classification.BOTH;
+    public boolean accepts(TypeBound.Classification classification) {
+        return true;
     }
 
     @Override

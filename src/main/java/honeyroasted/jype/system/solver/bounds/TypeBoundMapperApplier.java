@@ -6,8 +6,11 @@ import honeyroasted.jype.system.TypeSystem;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 public class TypeBoundMapperApplier implements TypeBoundMapper {
@@ -54,97 +57,56 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         return apply(system, bound, classification, parents).satisfied();
     }
 
-    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(TypeSystem system, List<TypeBound.Result.Builder> bounds, List<TypeBound.Result.Builder> constraints) {
-        List<TypeBound.Result.Builder> compareConstraints = new ArrayList<>();
-        List<TypeBound.Result.Builder> previousConstraints = new ArrayList<>();
-        List<TypeBound.Result.Builder> processingConstraints = new ArrayList<>();
-        List<TypeBound.Result.Builder> currentConstraints = new ArrayList<>(constraints);
-
-        List<TypeBound.Result.Builder> compareBounds = new ArrayList<>();
-        List<TypeBound.Result.Builder> previousBounds = new ArrayList<>();
-        List<TypeBound.Result.Builder> processingBounds = new ArrayList<>();
-        List<TypeBound.Result.Builder> currentBounds = new ArrayList<>(bounds);
+    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(TypeSystem system, List<TypeBound.Result.Builder> inputBounds, List<TypeBound.Result.Builder> inputConstraints) {
+        QuadList<TypeBound.Result.Builder> constraints = new QuadList<>(inputConstraints, ArrayList::new);
+        QuadList<TypeBound.Result.Builder> bounds = new QuadList<>(inputBounds, ArrayList::new);
 
 
-        while (!compareConstraints.equals(currentConstraints) || !compareBounds.equals(currentBounds)) {
-            compareConstraints.clear();
-            compareConstraints.addAll(currentConstraints);
-
-            compareBounds.clear();
-            compareBounds.addAll(currentBounds);
+        while (!constraints.compareMatchesCurrent() || !bounds.compareMatchesCurrent()) {
+            constraints.stepCompare();
+            bounds.stepCompare();
 
             for (TypeBoundMapper mapper : this.mappers) {
-                previousConstraints.clear();
-                previousConstraints.addAll(currentConstraints);
-                currentConstraints.clear();
-                processingConstraints.clear();
+                constraints.stepForwards();
+                bounds.stepForwards();
 
-                previousBounds.clear();
-                previousBounds.addAll(currentBounds);
-                currentBounds.clear();
-                processingBounds.clear();
-
-
-                if (mapper.classification() == TypeBound.Classification.CONSTRAINT || mapper.classification() == TypeBound.Classification.BOTH) {
-                    for (TypeBound.Result.Builder constraint : previousConstraints) {
-                        if (mapper.accepts(constraint)) {
-                            processingConstraints.add(constraint);
-                        } else {
-                            currentConstraints.add(constraint);
-                        }
-                    }
-
-                    if (!processingConstraints.isEmpty()) {
-                        boolean accepted = consumeSubsets(processingConstraints, mapper.arity(), mapper.commutative(), arr -> {
-                            if (mapper.accepts(arr)) {
-                                mapper.map(new Context(t -> addToBoundList(t, currentBounds), t -> addToBoundList(t, currentConstraints),
-                                        previousBounds, previousConstraints, system, TypeBound.Classification.CONSTRAINT), arr);
-                            } else {
-                                for (TypeBound.Result.Builder builder : arr) {
-                                    addToBoundList(builder, currentConstraints);
-                                }
-                            }
-                        });
-
-                        if (!accepted) {
-                            currentConstraints.addAll(previousConstraints);
-                        }
-                    }
+                if (mapper.accepts(TypeBound.Classification.CONSTRAINT)) {
+                    applyMapper(system, mapper, TypeBound.Classification.CONSTRAINT, constraints, bounds, constraints);
                 } else {
-                    currentConstraints.addAll(previousConstraints);
+                    constraints.addPreviousToCurrent();
                 }
 
-                if (mapper.classification() == TypeBound.Classification.BOUND || mapper.classification() == TypeBound.Classification.BOTH) {
-                    for (TypeBound.Result.Builder constraint : previousBounds) {
-                        if (mapper.accepts(constraint)) {
-                            processingBounds.add(constraint);
-                        } else {
-                            currentBounds.add(constraint);
-                        }
-                    }
-
-                    if (!processingBounds.isEmpty()) {
-                        boolean accepted = consumeSubsets(processingBounds, mapper.arity(), mapper.commutative(), arr -> {
-                            if (mapper.accepts(arr)) {
-                                mapper.map(new Context(t -> addToBoundList(t, currentBounds), t -> addToBoundList(t, currentConstraints),
-                                        previousBounds, previousConstraints, system, TypeBound.Classification.BOUND), arr);
-                            } else {
-                                for (TypeBound.Result.Builder builder : arr) {
-                                    addToBoundList(builder, currentBounds);
-                                }
-                            }
-                        });
-
-                        if (!accepted) {
-                            currentBounds.addAll(previousBounds);
-                        }
-                    }
+                if (mapper.accepts(TypeBound.Classification.BOUND)) {
+                    applyMapper(system, mapper, TypeBound.Classification.BOUND, bounds, bounds, constraints);
                 } else {
-                    currentBounds.addAll(previousBounds);
+                    bounds.addPreviousToCurrent();
                 }
             }
         }
-        return Pair.of(currentBounds, currentConstraints);
+        return Pair.of(bounds.current(), constraints.current());
+    }
+
+    private static void applyMapper(TypeSystem system, TypeBoundMapper mapper, TypeBound.Classification classification, QuadList<TypeBound.Result.Builder> input, QuadList<TypeBound.Result.Builder> bounds, QuadList<TypeBound.Result.Builder> constraints) {
+        for (TypeBound.Result.Builder constraint : input.previous()) {
+            if (mapper.accepts(constraint)) {
+                input.processing().add(constraint);
+            } else {
+                input.current().add(constraint);
+            }
+        }
+
+        Set<TypeBound.Result.Builder> consumed = Collections.newSetFromMap(new IdentityHashMap<>());
+        consumeSubsets(input.processing(), mapper.arity(), mapper.commutative(), arr -> {
+            if (mapper.accepts(arr)) {
+                Collections.addAll(consumed, arr);
+                mapper.map(new Context(t -> addToBoundList(t, bounds.current()), t -> addToBoundList(t, constraints.current()), bounds.previous(), constraints.previous(), system, classification), arr);
+            }
+        });
+
+        Set<TypeBound.Result.Builder> ignored = Collections.newSetFromMap(new IdentityHashMap<>());
+        ignored.addAll(input.processing());
+        ignored.removeAll(consumed);
+        input.current().addAll(ignored);
     }
 
     private static void addToBoundList(TypeBound.Result.Builder builder, Collection<TypeBound.Result.Builder> list) {
@@ -164,10 +126,9 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         list.add(builder);
     }
 
-    private static boolean consumeSubsets(List<TypeBound.Result.Builder> processing, int size, boolean commutative, Consumer<TypeBound.Result.Builder[]> baseCase) {
+    private static void consumeSubsets(List<TypeBound.Result.Builder> processing, int size, boolean commutative, Consumer<TypeBound.Result.Builder[]> baseCase) {
         if (size <= 0 || size == processing.size()) {
             baseCase.accept(processing.toArray(TypeBound.Result.Builder[]::new));
-            return true;
         } else if (size < processing.size()) {
             TypeBound.Result.Builder[] mem = new TypeBound.Result.Builder[size];
             TypeBound.Result.Builder[] input = processing.toArray(TypeBound.Result.Builder[]::new);
@@ -185,10 +146,6 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                 }
                 consumeSubset(mem, input, subset, commutative, baseCase);
             }
-
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -197,18 +154,18 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
             copyMem(mem, input, subset);
             baseCase.accept(mem);
         } else {
-            permuteSubset(mem, input, subset, 0, subset.length - 1, baseCase);
+            permuteAndConsumeSubset(mem, input, subset, 0, subset.length - 1, baseCase);
         }
     }
 
-    private static void permuteSubset(TypeBound.Result.Builder[] mem, TypeBound.Result.Builder[] input, int[] subset, int l, int h, Consumer<TypeBound.Result.Builder[]> baseCase) {
+    private static void permuteAndConsumeSubset(TypeBound.Result.Builder[] mem, TypeBound.Result.Builder[] input, int[] subset, int l, int h, Consumer<TypeBound.Result.Builder[]> baseCase) {
         if (l == h) {
             copyMem(mem, input, subset);
             baseCase.accept(mem);
         } else {
             for (int i = l; i <= h; i++) {
                 swap(subset, l, i);
-                permuteSubset(mem, input, subset, l + 1, h, baseCase);
+                permuteAndConsumeSubset(mem, input, subset, l + 1, h, baseCase);
                 swap(subset, l, i);
             }
         }
@@ -224,6 +181,58 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
     private static void copyMem(TypeBound.Result.Builder[] mem, TypeBound.Result.Builder[] input, int[] subset) {
         for (int i = 0; i < subset.length; i++) {
             mem[i] = input[subset[i]];
+        }
+    }
+
+    public static class QuadList<T> {
+        private List<T> compare;
+        private List<T> previous;
+        private List<T> processing;
+        private List<T> current;
+
+        public QuadList(Collection<T> initial, Supplier<? extends List<T>> factory) {
+            this.compare = factory.get();
+            this.previous = factory.get();
+            this.processing = factory.get();
+            this.current = factory.get();
+
+            this.current.addAll(initial);
+        }
+
+        public List<T> compare() {
+            return this.compare;
+        }
+
+        public List<T> previous() {
+            return this.previous;
+        }
+
+        public List<T> processing() {
+            return this.processing;
+        }
+
+        public List<T> current() {
+            return this.current;
+        }
+
+        public void addPreviousToCurrent() {
+            this.current.addAll(this.previous);
+        }
+
+        public void stepCompare() {
+            this.compare.clear();
+            this.compare.addAll(this.current);
+        }
+
+        public void stepForwards() {
+            this.previous.clear();
+            this.previous.addAll(this.current);
+            this.current.clear();
+            this.processing.clear();
+        }
+
+        public boolean compareMatchesCurrent() {
+            return this.compare.equals(this.current);
         }
     }
 

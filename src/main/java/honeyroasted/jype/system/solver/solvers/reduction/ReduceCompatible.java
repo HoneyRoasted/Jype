@@ -8,10 +8,10 @@ import honeyroasted.jype.type.PrimitiveType;
 
 public class ReduceCompatible implements UnaryTypeBoundMapper<TypeBound.Compatible> {
     @Override
-    public TypeBound.Classification classification() {
-        return TypeBound.Classification.CONSTRAINT;
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.CONSTRAINT;
     }
-    
+
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Compatible bound) {
         builder.setPropagation(TypeBound.Result.Propagation.AND);
