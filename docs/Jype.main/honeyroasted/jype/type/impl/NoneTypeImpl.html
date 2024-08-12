@@ -72,7 +72,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class NoneTypeImpl" class="title">Class NoneTypeImpl</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="../../modify/AbstractType.html" title="class in honeyroasted.jype.modify">honeyroasted.jype.modify.AbstractType</a>
+<div class="inheritance"><a href="AbstractType.html" title="class in honeyroasted.jype.type.impl">honeyroasted.jype.type.impl.AbstractType</a>
 <div class="inheritance">honeyroasted.jype.type.impl.NoneTypeImpl</div>
 </div>
 </div>
@@ -83,7 +83,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">NoneTypeImpl</span>
-<span class="extends-implements">extends <a href="../../modify/AbstractType.html" title="class in honeyroasted.jype.modify">AbstractType</a>
+<span class="extends-implements">extends <a href="AbstractType.html" title="class in honeyroasted.jype.type.impl">AbstractType</a>
 implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type">NoneType</a></span></div>
 </section>
 <section class="summary">
@@ -94,7 +94,7 @@ implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.type.Type">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.type.<a href="../Type.html" title="interface in honeyroasted.jype.type">Type</a></h2>
-<code><a href="../Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a></code></div>
+<code><a href="../Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a>, <a href="../Type.Metadata.html" title="interface in honeyroasted.jype.type">Type.Metadata</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -146,8 +146,8 @@ implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-honeyroasted.jype.modify.AbstractType">Methods inherited from class&nbsp;honeyroasted.jype.modify.<a href="../../modify/AbstractType.html" title="class in honeyroasted.jype.modify">AbstractType</a></h3>
-<code><a href="../../modify/AbstractType.html#equals(java.lang.Object)">equals</a>, <a href="../../modify/AbstractType.html#hashCode()">hashCode</a>, <a href="../../modify/AbstractType.html#typeSystem()">typeSystem</a></code></div>
+<h3 id="methods-inherited-from-class-honeyroasted.jype.type.impl.AbstractType">Methods inherited from class&nbsp;honeyroasted.jype.type.impl.<a href="AbstractType.html" title="class in honeyroasted.jype.type.impl">AbstractType</a></h3>
+<code><a href="AbstractType.html#equals(java.lang.Object)">equals</a>, <a href="AbstractType.html#hashCode()">hashCode</a>, <a href="AbstractType.html#metadata()">metadata</a>, <a href="AbstractType.html#typeSystem()">typeSystem</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -156,7 +156,7 @@ implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type
 <code><a href="../NoneType.html#accept(honeyroasted.jype.system.visitor.TypeVisitor,P)">accept</a>, <a href="../NoneType.html#isNullType()">isNullType</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.Type">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="../Type.html" title="interface in honeyroasted.jype.type">Type</a></h3>
-<code><a href="../Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="../Type.html#copy()">copy</a>, <a href="../Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="../Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="../Type.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="../Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="../Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="../Type.html#isProperType()">isProperType</a>, <a href="../Type.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="../Type.html#stripMetadata()">stripMetadata</a>, <a href="../Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="../Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="../Type.html#typeSystem()">typeSystem</a></code></div>
+<code><a href="../Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="../Type.html#copy()">copy</a>, <a href="../Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="../Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="../Type.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="../Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="../Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="../Type.html#isProperType()">isProperType</a>, <a href="../Type.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="../Type.html#metadata()">metadata</a>, <a href="../Type.html#stripMetadata()">stripMetadata</a>, <a href="../Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="../Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="../Type.html#typeSystem()">typeSystem</a></code></div>
 </section>
 </li>
 </ul>
@@ -221,7 +221,7 @@ implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
 <dl class="notes">
 <dt>Overrides:</dt>
-<dd><code><a href="../../modify/AbstractType.html#toString()">toString</a></code>&nbsp;in class&nbsp;<code><a href="../../modify/AbstractType.html" title="class in honeyroasted.jype.modify">AbstractType</a></code></dd>
+<dd><code><a href="AbstractType.html#toString()">toString</a></code>&nbsp;in class&nbsp;<code><a href="AbstractType.html" title="class in honeyroasted.jype.type.impl">AbstractType</a></code></dd>
 </dl>
 </section>
 </li>
@@ -233,7 +233,7 @@ implements <a href="../NoneType.html" title="interface in honeyroasted.jype.type
 <dt>Specified by:</dt>
 <dd><code><a href="../Type.html#simpleName()">simpleName</a></code>&nbsp;in interface&nbsp;<code><a href="../Type.html" title="interface in honeyroasted.jype.type">Type</a></code></dd>
 <dt>Overrides:</dt>
-<dd><code><a href="../../modify/AbstractType.html#simpleName()">simpleName</a></code>&nbsp;in class&nbsp;<code><a href="../../modify/AbstractType.html" title="class in honeyroasted.jype.modify">AbstractType</a></code></dd>
+<dd><code><a href="AbstractType.html#simpleName()">simpleName</a></code>&nbsp;in class&nbsp;<code><a href="AbstractType.html" title="class in honeyroasted.jype.type.impl">AbstractType</a></code></dd>
 </dl>
 </section>
 </li>

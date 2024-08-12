@@ -16,42 +16,24 @@ import honeyroasted.jype.system.resolver.reflection.ReflectionTypeResolution;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
 import honeyroasted.jype.system.solver.operations.TypeOperations;
 import honeyroasted.jype.system.solver.operations.TypeOperationsImpl;
-import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.IntersectionType;
-import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.MethodReference;
-import honeyroasted.jype.type.NoneType;
-import honeyroasted.jype.type.ParameterizedClassType;
-import honeyroasted.jype.type.ParameterizedMethodType;
-import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.impl.ArrayTypeImpl;
-import honeyroasted.jype.type.impl.ClassReferenceImpl;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
-import honeyroasted.jype.type.impl.MetaVarTypeImpl;
-import honeyroasted.jype.type.impl.MethodReferenceImpl;
-import honeyroasted.jype.type.impl.NoneTypeImpl;
-import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
-import honeyroasted.jype.type.impl.ParameterizedMethodTypeImpl;
-import honeyroasted.jype.type.impl.PrimitiveTypeImpl;
-import honeyroasted.jype.type.impl.VarTypeImpl;
-import honeyroasted.jype.type.impl.WildTypeLowerImpl;
-import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 
 import java.io.Serializable;
 import java.lang.reflect.Executable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class SimpleTypeSystem implements TypeSystem {
     private TypeStorage storage;
     private TypeResolvers resolvers;
     private TypeConstants constants;
     private TypeOperations operations;
+    private TypeFactory typeFactory;
 
     public SimpleTypeSystem() {
         this(TypeCacheFactory.IN_MEMORY_FACTORY);
@@ -66,27 +48,28 @@ public class SimpleTypeSystem implements TypeSystem {
     }
 
     public SimpleTypeSystem(TypeCacheFactory cacheFactory, TypeResolver... initialResolvers) {
-        this(cacheFactory, List.of(initialResolvers));
+        this(cacheFactory, List.of(initialResolvers), SimpleTypeFactory::new);
     }
 
-    public SimpleTypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers) {
+    public SimpleTypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers, Function<TypeSystem, TypeFactory> typeFactory) {
         this.storage = new InMemoryTypeStorage(cacheFactory);
         this.resolvers = new InMemoryTypeResolvers();
         this.registerResolvers(initialResolvers);
+        this.typeFactory = typeFactory.apply(this);
 
         this.constants = new InMemoryTypeConstants(
                 this.tryLocResolve(Object.class), this.tryLocResolve(Cloneable.class), this.tryLocResolve(Serializable.class),
                 this.tryLocResolve(RuntimeException.class),
-                this.newNoneType("void"), this.newNoneType("null"), this.newNoneType("none"),
+                this.typeFactory().newNoneType("void"), this.typeFactory().newNoneType("null"), this.typeFactory().newNoneType("none"),
                 this.tryLocResolve(Void.class),
-                this.newPrimitiveType(ClassNamespace.of(boolean.class), this.tryLocResolve(Boolean.class), "Z"),
-                this.newPrimitiveType(ClassNamespace.of(byte.class), this.tryLocResolve(Byte.class), "B"),
-                this.newPrimitiveType(ClassNamespace.of(short.class), this.tryLocResolve(Short.class), "S"),
-                this.newPrimitiveType(ClassNamespace.of(char.class), this.tryLocResolve(Character.class), "C"),
-                this.newPrimitiveType(ClassNamespace.of(int.class), this.tryLocResolve(Integer.class), "I"),
-                this.newPrimitiveType(ClassNamespace.of(long.class), this.tryLocResolve(Long.class), "J"),
-                this.newPrimitiveType(ClassNamespace.of(float.class), this.tryLocResolve(Float.class), "F"),
-                this.newPrimitiveType(ClassNamespace.of(double.class), this.tryLocResolve(Double.class), "D")
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(boolean.class), this.tryLocResolve(Boolean.class), "Z"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(byte.class), this.tryLocResolve(Byte.class), "B"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(short.class), this.tryLocResolve(Short.class), "S"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(char.class), this.tryLocResolve(Character.class), "C"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(int.class), this.tryLocResolve(Integer.class), "I"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(long.class), this.tryLocResolve(Long.class), "J"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(float.class), this.tryLocResolve(Float.class), "F"),
+                this.typeFactory().newPrimitiveType(ClassNamespace.of(double.class), this.tryLocResolve(Double.class), "D")
         );
 
         this.operations = new TypeOperationsImpl(this);
@@ -206,68 +189,9 @@ public class SimpleTypeSystem implements TypeSystem {
     }
 
     @Override
-    public ArrayType newArrayType() {
-        return new ArrayTypeImpl(this);
+    public TypeFactory typeFactory() {
+        return this.typeFactory;
     }
 
-    @Override
-    public ClassReference newClassReference() {
-        return new ClassReferenceImpl(this);
-    }
-
-    @Override
-    public IntersectionType newIntersectionType() {
-        return new IntersectionTypeImpl(this);
-    }
-
-    @Override
-    public MetaVarType newMetaVarType(String name) {
-        return new MetaVarTypeImpl(this, name);
-    }
-
-    @Override
-    public MetaVarType newMetaVarType(int identity, String name) {
-        return new MetaVarTypeImpl(this, identity, name);
-    }
-
-    @Override
-    public MethodReference newMethodReference() {
-        return new MethodReferenceImpl(this);
-    }
-
-    @Override
-    public NoneType newNoneType(String name) {
-        return new NoneTypeImpl(this, name);
-    }
-
-    @Override
-    public ParameterizedClassType newParameterizedClassType() {
-        return new ParameterizedClassTypeImpl(this);
-    }
-
-    @Override
-    public ParameterizedMethodType newParameterizedMethodType() {
-        return new ParameterizedMethodTypeImpl(this);
-    }
-
-    @Override
-    public PrimitiveType newPrimitiveType(ClassNamespace namespace, ClassReference box, String descriptor) {
-        return new PrimitiveTypeImpl(this, namespace, box, descriptor);
-    }
-
-    @Override
-    public VarType newVarType() {
-        return new VarTypeImpl(this);
-    }
-
-    @Override
-    public WildType.Lower newLowerWildType() {
-        return new WildTypeLowerImpl(this);
-    }
-
-    @Override
-    public WildType.Upper newUpperWildType() {
-        return new WildTypeUpperImpl(this);
-    }
 
 }

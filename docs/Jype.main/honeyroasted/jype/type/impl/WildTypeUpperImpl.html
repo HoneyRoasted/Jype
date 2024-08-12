@@ -73,7 +73,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="../../modify/AbstractPossiblyUnmodifiable.html" title="class in honeyroasted.jype.modify">honeyroasted.jype.modify.AbstractPossiblyUnmodifiable</a>
-<div class="inheritance"><a href="../../modify/AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.modify">honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType</a>
+<div class="inheritance"><a href="AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.type.impl">honeyroasted.jype.type.impl.AbstractPossiblyUnmodifiableType</a>
 <div class="inheritance">honeyroasted.jype.type.impl.WildTypeUpperImpl</div>
 </div>
 </div>
@@ -85,7 +85,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">WildTypeUpperImpl</span>
-<span class="extends-implements">extends <a href="../../modify/AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.modify">AbstractPossiblyUnmodifiableType</a>
+<span class="extends-implements">extends <a href="AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.type.impl">AbstractPossiblyUnmodifiableType</a>
 implements <a href="../WildType.Upper.html" title="interface in honeyroasted.jype.type">WildType.Upper</a></span></div>
 </section>
 <section class="summary">
@@ -96,7 +96,7 @@ implements <a href="../WildType.Upper.html" title="interface in honeyroasted.jyp
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.type.Type">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.type.<a href="../Type.html" title="interface in honeyroasted.jype.type">Type</a></h2>
-<code><a href="../Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a></code></div>
+<code><a href="../Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a>, <a href="../Type.Metadata.html" title="interface in honeyroasted.jype.type">Type.Metadata</a></code></div>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.type.WildType">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.type.<a href="../WildType.html" title="interface in honeyroasted.jype.type">WildType</a></h2>
 <code><a href="../WildType.Lower.html" title="interface in honeyroasted.jype.type">WildType.Lower</a>, <a href="../WildType.Upper.html" title="interface in honeyroasted.jype.type">WildType.Upper</a></code></div>
@@ -165,8 +165,8 @@ implements <a href="../WildType.Upper.html" title="interface in honeyroasted.jyp
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType">Methods inherited from class&nbsp;honeyroasted.jype.modify.<a href="../../modify/AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.modify">AbstractPossiblyUnmodifiableType</a></h3>
-<code><a href="../../modify/AbstractPossiblyUnmodifiableType.html#equals(java.lang.Object)">equals</a>, <a href="../../modify/AbstractPossiblyUnmodifiableType.html#hashCode()">hashCode</a>, <a href="../../modify/AbstractPossiblyUnmodifiableType.html#simpleName()">simpleName</a>, <a href="../../modify/AbstractPossiblyUnmodifiableType.html#toString()">toString</a>, <a href="../../modify/AbstractPossiblyUnmodifiableType.html#typeSystem()">typeSystem</a></code></div>
+<h3 id="methods-inherited-from-class-honeyroasted.jype.type.impl.AbstractPossiblyUnmodifiableType">Methods inherited from class&nbsp;honeyroasted.jype.type.impl.<a href="AbstractPossiblyUnmodifiableType.html" title="class in honeyroasted.jype.type.impl">AbstractPossiblyUnmodifiableType</a></h3>
+<code><a href="AbstractPossiblyUnmodifiableType.html#equals(java.lang.Object)">equals</a>, <a href="AbstractPossiblyUnmodifiableType.html#hashCode()">hashCode</a>, <a href="AbstractPossiblyUnmodifiableType.html#metadata()">metadata</a>, <a href="AbstractPossiblyUnmodifiableType.html#simpleName()">simpleName</a>, <a href="AbstractPossiblyUnmodifiableType.html#toString()">toString</a>, <a href="AbstractPossiblyUnmodifiableType.html#typeSystem()">typeSystem</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.modify.AbstractPossiblyUnmodifiable">Methods inherited from class&nbsp;honeyroasted.jype.modify.<a href="../../modify/AbstractPossiblyUnmodifiable.html" title="class in honeyroasted.jype.modify">AbstractPossiblyUnmodifiable</a></h3>
 <code><a href="../../modify/AbstractPossiblyUnmodifiable.html#checkUnmodifiable()">checkUnmodifiable</a>, <a href="../../modify/AbstractPossiblyUnmodifiable.html#isUnmodifiable()">isUnmodifiable</a>, <a href="../../modify/AbstractPossiblyUnmodifiable.html#setUnmodifiable(boolean)">setUnmodifiable</a></code></div>
@@ -178,7 +178,7 @@ implements <a href="../WildType.Upper.html" title="interface in honeyroasted.jyp
 <code><a href="../../modify/PossiblyUnmodifiable.html#isUnmodifiable()">isUnmodifiable</a>, <a href="../../modify/PossiblyUnmodifiable.html#setUnmodifiable(boolean)">setUnmodifiable</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.Type">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="../Type.html" title="interface in honeyroasted.jype.type">Type</a></h3>
-<code><a href="../Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="../Type.html#copy()">copy</a>, <a href="../Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="../Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="../Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="../Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="../Type.html#isNullType()">isNullType</a>, <a href="../Type.html#isProperType()">isProperType</a>, <a href="../Type.html#simpleName()">simpleName</a>, <a href="../Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="../Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="../Type.html#typeSystem()">typeSystem</a></code></div>
+<code><a href="../Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="../Type.html#copy()">copy</a>, <a href="../Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="../Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="../Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="../Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="../Type.html#isNullType()">isNullType</a>, <a href="../Type.html#isProperType()">isProperType</a>, <a href="../Type.html#metadata()">metadata</a>, <a href="../Type.html#simpleName()">simpleName</a>, <a href="../Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="../Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="../Type.html#typeSystem()">typeSystem</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.WildType">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="../WildType.html" title="interface in honeyroasted.jype.type">WildType</a></h3>
 <code><a href="../WildType.html#accept(honeyroasted.jype.system.visitor.TypeVisitor,P)">accept</a>, <a href="../WildType.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="../WildType.html#lowerBound()">lowerBound</a>, <a href="../WildType.html#upperBound()">upperBound</a></code></div>

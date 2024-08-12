@@ -16,7 +16,5 @@ honeyroasted.jype.system.solver.solvers.reduction
 honeyroasted.jype.system.visitor
 honeyroasted.jype.system.visitor.visitors
 honeyroasted.jype.type
-honeyroasted.jype.type.delegate
 honeyroasted.jype.type.impl
-honeyroasted.jype.type.meta
 honeyroasted.jype.type.signature

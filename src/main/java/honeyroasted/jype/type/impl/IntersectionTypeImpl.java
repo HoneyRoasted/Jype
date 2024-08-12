@@ -1,6 +1,5 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -36,6 +35,50 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
     }
 
     @Override
+    public boolean isSimplified() {
+        for (Type current : this.children()) {
+            for (Type other : this.children()) {
+                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public Type simplify() {
+        Set<Type> newChildren = new LinkedHashSet<>();
+        for (Type current : this.children()) {
+            boolean foundSubtype = false;
+            for (Type other : this.children()) {
+                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
+                    foundSubtype = true;
+                    break;
+                }
+            }
+
+            if (!foundSubtype) {
+                newChildren.add(current);
+            }
+        }
+
+        if (newChildren.isEmpty() && !this.children().isEmpty()) {
+            newChildren.add(this.children().iterator().next());
+        }
+
+        if (newChildren.size() == 1) {
+            return newChildren.iterator().next();
+        }
+
+        IntersectionType type = this.typeSystem().typeFactory().newIntersectionType();
+        type.setChildren(newChildren);
+        type.setUnmodifiable(true);
+        return type;
+    }
+
+    @Override
     public void setChildren(Set<Type> children) {
         if (children.stream().anyMatch(t -> t instanceof IntersectionType)) {
             throw new IllegalArgumentException("Intersection type may not be nested");
@@ -49,7 +92,7 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();
 
-        IntersectionType copy = new IntersectionTypeImpl(this.typeSystem());
+        IntersectionType copy = this.typeSystem().typeFactory().newIntersectionType();
         cache.put(this, copy);
         copy.setChildren((Set) this.children.stream().map(Type::copy).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
@@ -63,7 +106,11 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
         seen = Type.concat(seen, Pair.identity(this, other));
 
         if (other instanceof IntersectionType it) {
-            return Type.equals(children, it.children(), kind, seen);
+            if (this.isSimplified() && it.isSimplified()) {
+                return Type.equals(children, it.children(), kind, seen);
+            } else {
+                return this.simplify().equals(it.simplify(), kind, seen);
+            }
         } else {
             return false;
         }

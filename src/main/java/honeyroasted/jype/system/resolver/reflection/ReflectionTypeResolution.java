@@ -13,15 +13,6 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.impl.ArrayTypeImpl;
-import honeyroasted.jype.type.impl.ClassReferenceImpl;
-import honeyroasted.jype.type.impl.MethodReferenceImpl;
-import honeyroasted.jype.type.impl.VarTypeImpl;
-import honeyroasted.jype.type.meta.ArrayTypeMeta;
-import honeyroasted.jype.type.meta.ClassReferenceMeta;
-import honeyroasted.jype.type.meta.MetadataType;
-import honeyroasted.jype.type.meta.MethodReferenceMeta;
-import honeyroasted.jype.type.meta.VarTypeMeta;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -66,10 +57,9 @@ public interface ReflectionTypeResolution {
 
     static <T> Optional<T> getReflectionType(Type type) {
         try {
-            if (type instanceof MetadataType<?, ?> mt && mt.hasMetadata(java.lang.reflect.Type.class)) {
-                return (Optional<T>) Optional.of(mt.getMetadata(java.lang.reflect.Type.class));
-            } else if (type instanceof MetadataType<?, ?> mt && mt.hasMetadata(java.lang.reflect.Executable.class)) {
-                return (Optional<T>) Optional.of(mt.getMetadata(java.lang.reflect.Executable.class));
+            if (type.metadata().has(ReflectionType.class)) {
+                ReflectionType<?> meta = type.metadata().get(ReflectionType.class).get();
+                return (Optional<T>) Optional.of(meta.type());
             } else if (type instanceof ClassReference cr) {
                 return (Optional<T>) Optional.of(classFromLocation(cr.namespace().location()));
             } else if (type instanceof MethodReference mr) {
@@ -151,10 +141,8 @@ public interface ReflectionTypeResolution {
     }
 
     static Optional<MethodReference> createMethodReference(TypeSystem system, Executable executable, MethodLocation location) {
-        MethodReference mRef = new MethodReferenceImpl(system);
-        MethodReferenceMeta<Executable> attached = new MethodReferenceMeta<>(system, t -> mRef);
-        attached.setMetadata(executable);
-
+        MethodReference mRef = system.typeFactory().newMethodReference();
+        mRef.metadata().attach(new ReflectionType.Executable(executable));
         mRef.setLocation(location);
         mRef.setModifiers(executable.getModifiers());
         Optional<? extends honeyroasted.jype.type.Type> outerClass = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, executable.getDeclaringClass());
@@ -207,33 +195,30 @@ public interface ReflectionTypeResolution {
         mRef.setParameters(resolvedParams);
         mRef.setTypeParameters(resolvedTypeParams);
         mRef.setUnmodifiable(true);
-        system.storage().cacheFor(MethodLocation.class).put(mRef.location(), attached);
-        system.storage().cacheFor(Executable.class).put(executable, attached);
+        system.storage().cacheFor(MethodLocation.class).put(mRef.location(), mRef);
+        system.storage().cacheFor(Executable.class).put(executable, mRef);
 
-        return Optional.of(attached);
+        return Optional.of(mRef);
     }
 
     static Optional<Type> createClassReference(TypeSystem system, Class<?> cls, ClassLocation location) {
         if (cls.isArray()) {
             return createClassReference(system, cls.componentType(), location.containing()).map(c -> {
-                ArrayType type = new ArrayTypeImpl(system);
+                ArrayType type = system.typeFactory().newArrayType();
                 type.setComponent(c);
                 type.setUnmodifiable(true);
-
-                ArrayTypeMeta<Class<?>> attached = new ArrayTypeMeta<>(system, t -> type);
-                attached.setMetadata(cls);
-                return attached;
+                type.metadata().attach(new ReflectionType.Type(cls));
+                return type;
             });
         }
 
-        ClassReference reference = new ClassReferenceImpl(system);
-        ClassReferenceMeta<Class<?>> attached = new ClassReferenceMeta<>(system, t -> reference);
-        attached.setMetadata(cls);
+        ClassReference reference = system.typeFactory().newClassReference();
 
+        reference.metadata().attach(new ReflectionType.Type(cls));
         reference.setNamespace(ClassNamespace.of(cls));
         reference.setModifiers(cls.getModifiers());
-        system.storage().cacheFor(java.lang.reflect.Type.class).put(location, attached);
-        system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), attached);
+        system.storage().cacheFor(java.lang.reflect.Type.class).put(location, reference);
+        system.storage().cacheFor(ClassLocation.class).put(reference.namespace().location(), reference);
 
         if (cls.getSuperclass() != null) {
             Optional<? extends honeyroasted.jype.type.Type> superCls = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class)
@@ -296,16 +281,14 @@ public interface ReflectionTypeResolution {
         }
 
         reference.setUnmodifiable(true);
-        return Optional.of(attached);
+        return Optional.of(reference);
     }
 
     static Optional<VarType> createVarType(TypeSystem system, TypeVariable<?> var, TypeParameterLocation location) {
-        VarType varType = new VarTypeImpl(system);
-        VarTypeMeta<TypeVariable<?>> attached = new VarTypeMeta<>(system, t -> varType);
-        attached.setMetadata(var);
-
+        VarType varType = system.typeFactory().newVarType();
+        varType.metadata().attach(new ReflectionType.Type(var));
         varType.setLocation(location);
-        system.storage().cacheFor(TypeParameterLocation.class).put(location, attached);
+        system.storage().cacheFor(TypeParameterLocation.class).put(location, varType);
 
         for (java.lang.reflect.Type bound : var.getBounds()) {
             Optional<? extends honeyroasted.jype.type.Type> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class).resolve(system, bound);
@@ -318,7 +301,7 @@ public interface ReflectionTypeResolution {
         }
 
         varType.setUnmodifiable(true);
-        return Optional.of(attached);
+        return Optional.of(varType);
     }
 
     static TypeVariable<?> typeParameterFromLocation(TypeParameterLocation location) throws ResolutionFailedException {

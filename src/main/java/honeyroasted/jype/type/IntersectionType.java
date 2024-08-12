@@ -3,7 +3,6 @@ package honeyroasted.jype.type;
 import honeyroasted.jype.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.TypeVisitor;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -16,14 +15,18 @@ public interface IntersectionType extends Type, PossiblyUnmodifiable {
         } else if (types.size() == 1) {
             return types.iterator().next();
         } else {
-            IntersectionType intersectionType = new IntersectionTypeImpl(system);
+            IntersectionType intersectionType = system.typeFactory().newIntersectionType();
             intersectionType.setChildren(flatten(types));
             intersectionType.setUnmodifiable(true);
-            return intersectionType;
+            return intersectionType.simplify();
         }
     }
 
     Set<Type> children();
+
+    Type simplify();
+
+    boolean isSimplified();
 
     void setChildren(Set<Type> children);
 

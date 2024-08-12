@@ -12,14 +12,6 @@ import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.impl.ArrayTypeImpl;
-import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
-import honeyroasted.jype.type.impl.WildTypeLowerImpl;
-import honeyroasted.jype.type.impl.WildTypeUpperImpl;
-import honeyroasted.jype.type.meta.ArrayTypeMeta;
-import honeyroasted.jype.type.meta.ParameterizedClassTypeMeta;
-import honeyroasted.jype.type.meta.WildTypeLowerMeta;
-import honeyroasted.jype.type.meta.WildTypeUpperMeta;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
@@ -77,13 +69,11 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
         } else if (value instanceof GenericArrayType genArrType) {
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
                     .map(t -> {
-                        ArrayType result = new ArrayTypeImpl(t.typeSystem());
-                        ArrayTypeMeta<GenericArrayType> attached = new ArrayTypeMeta<>(system, k -> result);
-                        attached.setMetadata(genArrType);
-
+                        ArrayType result = t.typeSystem().typeFactory().newArrayType();
+                        result.metadata().attach(new ReflectionType.Type(genArrType));
                         result.setComponent(t);
                         result.setUnmodifiable(true);
-                        return attached;
+                        return result;
                     });
         } else if (value instanceof WildcardType wType) {
             java.lang.reflect.Type[] bounds = wType.getLowerBounds().length == 0 ? wType.getUpperBounds() : wType.getLowerBounds();
@@ -99,33 +89,28 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             }
 
             if (wType.getLowerBounds().length == 0) { //? extends ...
-                WildType.Upper upper = new WildTypeUpperImpl(system);
-                WildTypeUpperMeta<WildcardType> attached = new WildTypeUpperMeta<>(system, t -> upper);
-                attached.setMetadata(wType);
-
+                WildType.Upper upper = system.typeFactory().newUpperWildType();
+                upper.metadata().attach(new ReflectionType.Type(wType));
                 upper.setIdentity(System.identityHashCode(wType));
                 upper.upperBounds().addAll(resolvedBounds);
                 upper.setUnmodifiable(true);
-                return Optional.of(attached);
+                return Optional.of(upper);
             } else { //? super ...
-                WildType.Lower lower = new WildTypeLowerImpl(system);
-                WildTypeLowerMeta<WildcardType> attached = new WildTypeLowerMeta<>(system, t -> lower);
-                attached.setMetadata(wType);
-
+                WildType.Lower lower = system.typeFactory().newLowerWildType();
+                lower.metadata().attach(new ReflectionType.Type(wType));
                 lower.setIdentity(System.identityHashCode(wType));
                 lower.lowerBounds().addAll(resolvedBounds);
                 lower.setUnmodifiable(true);
-                return Optional.of(attached);
+                return Optional.of(lower);
             }
         } else if (value instanceof ParameterizedType pType) {
             if (pType.getRawType() instanceof Class<?> cls) {
                 Optional<? extends Type> clsRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, cls);
                 if (clsRef.isPresent() && clsRef.get() instanceof ClassReference) {
-                    ParameterizedClassType result = new ParameterizedClassTypeImpl(system);
-                    ParameterizedClassTypeMeta<ParameterizedType> attached = new ParameterizedClassTypeMeta<>(system, t -> result);
-                    attached.setMetadata(pType);
+                    ParameterizedClassType result = system.typeFactory().newParameterizedClassType();
+                    result.metadata().attach(new ReflectionType.Type(pType));
 
-                    system.storage().cacheFor(java.lang.reflect.Type.class).put(value, attached);
+                    system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
                     result.setClassReference((ClassReference) clsRef.get());
 
                     List<ArgumentType> typeArguments = new ArrayList<>();
@@ -152,7 +137,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                     }
 
                     result.setUnmodifiable(true);
-                    return Optional.of(attached);
+                    return Optional.of(result);
                 }
             }
         }

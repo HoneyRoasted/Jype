@@ -4,7 +4,6 @@ import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.bounds.TypeBoundCompoundUnwrapper;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
 import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
 import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
@@ -45,8 +44,6 @@ import java.util.Set;
 
 public class TypeOperationsImpl implements TypeOperations {
     public static TypeBoundMapperApplier COMPATIBILITY_APPLIER = new TypeBoundMapperApplier(List.of(
-            new TypeBoundCompoundUnwrapper(),
-
             new EqualType(),
 
             new CompatibleExplicitCast(),
@@ -70,8 +67,6 @@ public class TypeOperationsImpl implements TypeOperations {
     ));
 
     public static TypeBoundMapperApplier INCORPORATION_APPLIER = new TypeBoundMapperApplier(List.of(
-            new TypeBoundCompoundUnwrapper(),
-
             new IncorporationEqualEqual(),
             new IncorporationEqualSubtype(),
             new IncorporationSubtypeSubtype(),
@@ -79,8 +74,6 @@ public class TypeOperationsImpl implements TypeOperations {
     ));
 
     public static TypeBoundMapperApplier REDUCTION_APPLIER = new TypeBoundMapperApplier(List.of(
-            new TypeBoundCompoundUnwrapper(),
-
             new ReduceSubtype(),
             new ReduceCompatible(),
             new ReduceSimplyTypedExpression(),

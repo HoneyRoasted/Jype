@@ -24,9 +24,9 @@ public class FindLeastUpperBoundTests {
 
         //Create test type to compare too
         ClassReference foo = ts.tryResolve(Foo.class);
-        ParameterizedClassType pct = ts.newParameterizedClassType();
+        ParameterizedClassType pct = ts.typeFactory().newParameterizedClassType();
         pct.setClassReference(foo);
-        WildType.Upper wtu = ts.newUpperWildType();
+        WildType.Upper wtu = ts.typeFactory().newUpperWildType();
         wtu.setUpperBounds(Set.of(pct));
         pct.setTypeArguments(List.of(wtu));
 

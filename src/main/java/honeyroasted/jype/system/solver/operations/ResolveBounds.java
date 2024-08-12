@@ -8,7 +8,6 @@ import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -104,7 +103,7 @@ public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder
 
             if (hasCapture || generatedBounds.isEmpty() || generatedBounds.stream().anyMatch(b -> b.bound() instanceof TypeBound.False)) {
                 Map<MetaVarType, MetaVarType> freshVars = new LinkedHashMap<>();
-                varsAndDeps.forEach(mv -> freshVars.put(mv, new MetaVarTypeImpl(mv.typeSystem(), mv.name() + "_y")));
+                varsAndDeps.forEach(mv -> freshVars.put(mv, mv.typeSystem().typeFactory().newMetaVarType( mv.name() + "_y")));
                 MetaVarTypeResolver theta = new MetaVarTypeResolver(freshVars);
 
                 Set<TypeBound.Result.Builder> newBounds = new LinkedHashSet<>(bounds);

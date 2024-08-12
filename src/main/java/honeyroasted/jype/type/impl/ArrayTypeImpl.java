@@ -1,6 +1,5 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -22,7 +21,7 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();
 
-        ArrayType copy = new ArrayTypeImpl(this.typeSystem());
+        ArrayType copy = this.typeSystem().typeFactory().newArrayType();
         copy.setComponent(this.component.copy());
         return (T) copy;
     }

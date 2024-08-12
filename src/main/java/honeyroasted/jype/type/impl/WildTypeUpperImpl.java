@@ -1,6 +1,5 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -26,7 +25,7 @@ public class WildTypeUpperImpl extends AbstractPossiblyUnmodifiableType implemen
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();
 
-        WildType.Upper copy = new WildTypeUpperImpl(this.typeSystem());
+        WildType.Upper copy = this.typeSystem().typeFactory().newUpperWildType();
         copy.setIdentity(this.identity);
         copy.setUpperBounds(this.upperBound.stream().map(t -> (Type) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);

@@ -30,36 +30,18 @@ public class TypeBoundMapperSolver implements TypeSolver {
         this(name, supported, List.of(appliers));
     }
 
-    private static TypeBound supportsImpl(TypeBound bound, Set<Class<? extends TypeBound>> supported) {
-        if (supported.stream().noneMatch(c -> c.isInstance(bound))) {
-            return bound;
-        }
-
-        if (bound instanceof TypeBound.Compound cmp) {
-            for (TypeBound child : cmp.children()) {
-                TypeBound subSupported = supportsImpl(child, supported);
-                if (subSupported != null) {
-                    return subSupported;
-                }
-            }
-        }
-
-        return null;
-    }
-
     @Override
     public boolean supports(TypeBound bound) {
         if (bound == null) return false;
-        return supportsImpl(bound, this.supported) == null;
+        return this.supported.stream().anyMatch(c -> c.isInstance(bound));
     }
 
     @Override
     public TypeSolver bind(TypeBound bound) {
         Objects.requireNonNull(bound);
-        TypeBound check = supportsImpl(bound, this.supported);
-        if (check != null) {
+        if (!this.supports(bound)) {
             throw new IllegalArgumentException(this.name + " does not support TypeBound of type " +
-                    check.getClass().getCanonicalName() + ", supported bounds are: [" +
+                    bound.getClass().getCanonicalName() + ", supported bounds are: [" +
                     supported.stream().map(Class::getCanonicalName).collect(Collectors.joining(", ")) + "]");
         }
         this.constraints.add(bound);

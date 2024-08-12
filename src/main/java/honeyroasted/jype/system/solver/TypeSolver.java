@@ -6,7 +6,6 @@ import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -76,10 +75,7 @@ public interface TypeSolver {
             } else if (results.size() == 1) {
                 return Optional.of(results.iterator().next());
             } else {
-                IntersectionType type = new IntersectionTypeImpl(var.typeSystem());
-                type.setChildren(IntersectionType.flatten(results));
-                type.setUnmodifiable(true);
-                return Optional.of(type);
+                return Optional.of(IntersectionType.of(results, var.typeSystem()));
             }
         }
 

@@ -4,7 +4,6 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.type.InstantiableType;
 import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -75,7 +74,6 @@ public interface ExpressionInformation {
             } else if (this.children().size() == 1) {
                 return this.children().get(0) instanceof SimplyTyped st ? Optional.of(st.type(system)) : this.children().get(0).getSimpleType(system);
             } else {
-                IntersectionType type = new IntersectionTypeImpl(system);
                 Set<Type> childrenTypes = new LinkedHashSet<>();
                 this.children().forEach(c -> {
                     Type childType = null;
@@ -92,9 +90,7 @@ public interface ExpressionInformation {
                     }
                 });
 
-                type.setChildren(childrenTypes);
-                type.setUnmodifiable(true);
-                return Optional.of(type);
+                return Optional.of(IntersectionType.of(childrenTypes, system));
             }
         }
     }

@@ -10,10 +10,6 @@ import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
-import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
-import honeyroasted.jype.type.impl.WildTypeLowerImpl;
-import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +86,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
 
             if (lubCache.containsKey(key)) return lubCache.get(key);
 
-            IntersectionType type = new IntersectionTypeImpl(system);
+            IntersectionType type = system.typeFactory().newIntersectionType();
             lubCache.put(key, type);
 
             Set<Type> lub = new LinkedHashSet<>();
@@ -114,7 +110,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
             } else if (lub.size() == 1) {
                 return lub.iterator().next();
             } else {
-                return type;
+                return type.simplify();
             }
         }
     }
@@ -135,7 +131,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
     }
 
     private ParameterizedClassType leastContainingParameterization(TypeSystem system, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ParameterizedClassType pct) {
-        ParameterizedClassType lcta = new ParameterizedClassTypeImpl(pct.typeSystem());
+        ParameterizedClassType lcta = system.typeFactory().newParameterizedClassType();
         lcta.setClassReference(pct.classReference());
 
         if (pct.outerType() instanceof ParameterizedClassType outer) {
@@ -154,7 +150,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
     }
 
     private ParameterizedClassType leastContainingParameterization(TypeSystem system, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, ParameterizedClassType left, ParameterizedClassType right) {
-        ParameterizedClassType lcta = new ParameterizedClassTypeImpl(left.typeSystem());
+        ParameterizedClassType lcta = system.typeFactory().newParameterizedClassType();
         lcta.setClassReference(left.classReference());
 
         if (left.outerType() instanceof ParameterizedClassType lo && right.outerType() instanceof ParameterizedClassType ro) {
@@ -225,21 +221,21 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
         bounds.addAll(left);
         bounds.addAll(right);
 
-        WildType.Lower lower = new WildTypeLowerImpl(system);
+        WildType.Lower lower = system.typeFactory().newLowerWildType();
         lower.setLowerBounds(bounds);
         lower.setUnmodifiable(true);
         return lower;
     }
 
     private WildType.Upper wildType(TypeSystem system) {
-        WildType.Upper wild = new WildTypeUpperImpl(system);
+        WildType.Upper wild = system.typeFactory().newUpperWildType();
         wild.setUpperBounds(Set.of(system.constants().object()));
         wild.setUnmodifiable(true);
         return wild;
     }
 
     private WildType.Upper lubWild(TypeSystem system, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache, Type... types) {
-        WildType.Upper result = new WildTypeUpperImpl(system);
+        WildType.Upper result = system.typeFactory().newUpperWildType();
         result.setUpperBounds(Set.of(this.findLub(system, Set.of(types), lubCache)));
         result.setUnmodifiable(true);
         return result;
@@ -249,7 +245,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
         Set<Type> bounds = new LinkedHashSet<>(set);
         Collections.addAll(bounds, types);
 
-        WildType.Upper result = new WildTypeUpperImpl(system);
+        WildType.Upper result = system.typeFactory().newUpperWildType();
         result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
         result.setUnmodifiable(true);
         return result;
@@ -259,7 +255,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
         Set<Type> bounds = new LinkedHashSet<>(set);
         bounds.addAll(other);
 
-        WildType.Upper result = new WildTypeUpperImpl(system);
+        WildType.Upper result = system.typeFactory().newUpperWildType();
         result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
         result.setUnmodifiable(true);
         return result;

@@ -1,6 +1,5 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -57,7 +56,7 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
 
     @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
-        MetaVarType mvt = new MetaVarTypeImpl(this.typeSystem(), this.identity, this.name);
+        MetaVarType mvt = this.typeSystem().typeFactory().newMetaVarType(this.identity, this.name);
         cache.put(this, mvt);
 
         this.upperBounds.stream().map(t -> (Type) t.copy(cache)).forEach(mvt.upperBounds()::add);

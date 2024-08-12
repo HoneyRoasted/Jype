@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public interface Type extends Copyable<Type> {
@@ -23,6 +24,8 @@ public interface Type extends Copyable<Type> {
     String simpleName();
 
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
+
+    Metadata metadata();
 
     default <R, P> R accept(TypeVisitor<R, P> visitor) {
         return accept(visitor, null);
@@ -222,6 +225,23 @@ public interface Type extends Copyable<Type> {
 
     default boolean hasCyclicTypeVariables(Set<VarType> seen) {
         return false;
+    }
+
+    interface Metadata {
+        <T> Metadata attach(Class<T> type, T data);
+
+        default  <T> Metadata attach(T data) {
+            if (data != null) {
+                this.attach((Class<T>) data.getClass(), data);
+            }
+            return this;
+        }
+
+        <T> Metadata detach(Class<T> type);
+
+        <T> Optional<T> get(Class<T> type);
+
+        <T> boolean has(Class<T> type);
     }
 
 }

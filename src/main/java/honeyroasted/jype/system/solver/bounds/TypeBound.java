@@ -5,6 +5,7 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,8 @@ public interface TypeBound {
 
     List<?> parameters();
 
+    TypeBound createNew(List<Object> parameters);
+
     String simpleName();
 
     class False implements TypeBound {
@@ -40,6 +43,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return INSTANCE;
+        }
+
+        @Override
         public String simpleName() {
             return "false";
         }
@@ -47,15 +55,6 @@ public interface TypeBound {
         @Override
         public String toString() {
             return "false";
-        }
-    }
-
-    interface Compound extends TypeBound {
-        List<TypeBound> children();
-
-        @Override
-        default List<?> parameters() {
-            return this.children();
         }
     }
 
@@ -139,20 +138,25 @@ public interface TypeBound {
         }
     }
 
-    final class Standalone extends Unary<ExpressionInformation> {
+    final class Infer extends Unary<VarType> {
 
-        public Standalone(ExpressionInformation type) {
-            super(type);
+        public Infer(VarType value) {
+            super(value);
+        }
+
+        @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Infer((VarType) parameters.get(0));
         }
 
         @Override
         public String simpleName() {
-            return "standalone(" + this.value.simpleName() + ")";
+            return "infer(" + this.value.simpleName() + ")";
         }
 
         @Override
         public String toString() {
-            return this.value + " IS STANDALONE";
+            return this.value + " SHOULD BE INFERRED";
         }
     }
 
@@ -168,41 +172,13 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new NarrowConstant((ExpressionInformation.Constant) parameters.get(0), (Type) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " <: " + this.right.simpleName();
-        }
-    }
-
-    final class CyclicSubtype extends Binary<Type, Type> {
-
-        public CyclicSubtype(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return "SUBTYPING " + left + " <: " + right + " FORMS A CYCLE";
-        }
-
-        @Override
-        public String simpleName() {
-            return "cyclic(" + this.left.simpleName() + " <: " + this.right.simpleName() + ")";
-        }
-    }
-
-    final class NonCyclic extends Unary<Type> {
-        public NonCyclic(Type type) {
-            super(type);
-        }
-
-        @Override
-        public String toString() {
-            return this.value + " DOES NOT HAVE CYCLIC TYPE VARIABLES";
-        }
-
-        @Override
-        public String simpleName() {
-            return "non-cyclic(" + this.value.simpleName() + ")";
         }
     }
 
@@ -229,6 +205,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Equal((Type) parameters.get(0), (Type) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " = " + this.right.simpleName();
         }
@@ -243,6 +224,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS INSTANTIATED AS " + this.right;
+        }
+
+        @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Instantiation((MetaVarType) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -290,6 +276,16 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Compatible((Type) parameters.get(0), (Type) parameters.get(1), (Context) parameters.get(2));
+        }
+
+        @Override
+        public List<Object> parameters() {
+            return List.of(this.left, this.right, this.context);
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " " + this.context.symbol() + " " + this.right.simpleName();
         }
@@ -331,6 +327,16 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new ExpressionCompatible((ExpressionInformation) parameters.get(0), (Type) parameters.get(1), (Compatible.Context) parameters.get(2));
+        }
+
+        @Override
+        public List<Object> parameters() {
+            return List.of(this.left, this.right, this.context);
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " " + this.context.symbol() + " " + this.right.simpleName();
         }
@@ -361,6 +367,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Contains((Type) parameters.get(0), (Type) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " <= " + this.right.simpleName();
         }
@@ -375,6 +386,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " THROWS " + this.right;
+        }
+
+        @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new LambdaThrows((ExpressionInformation) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -394,6 +410,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Throws((Type) parameters.get(0));
+        }
+
+        @Override
         public String simpleName() {
             return "throws(" + this.value.simpleName() + ")";
         }
@@ -410,6 +431,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Capture((ParameterizedClassType) parameters.get(0), (ParameterizedClassType) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " = capture(" + this.right.simpleName() + ")";
         }
@@ -423,6 +449,11 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS A SUBTYPE OF " + this.right;
+        }
+
+        @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new Subtype((Type) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -444,6 +475,11 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new TypeArgumentsMatch((ClassType) parameters.get(0), (ClassType) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return "<" + this.left.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + "> ~= <" +
                     this.right.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">";
@@ -461,24 +497,13 @@ public interface TypeBound {
         }
 
         @Override
+        public TypeBound createNew(List<Object> parameters) {
+            return new GenericParameter((Type) parameters.get(0), (Type) parameters.get(1));
+        }
+
+        @Override
         public String simpleName() {
             return this.left.simpleName() + " ~= " + this.right.simpleName();
-        }
-    }
-
-    class Unchecked extends Binary<Type, Type> {
-        public Unchecked(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left + " IS AN UNCHECKED SUBTYPE OF " + this.right;
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left.simpleName() + " <: " + this.right.simpleName();
         }
     }
 

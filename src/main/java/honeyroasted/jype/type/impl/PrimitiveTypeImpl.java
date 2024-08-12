@@ -1,7 +1,6 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.location.ClassNamespace;
-import honeyroasted.jype.modify.AbstractType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;

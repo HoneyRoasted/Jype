@@ -78,7 +78,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="delegate/IntersectionTypeDelegate.html" title="class in honeyroasted.jype.type.delegate">IntersectionTypeDelegate</a></code>, <code><a href="impl/IntersectionTypeImpl.html" title="class in honeyroasted.jype.type.impl">IntersectionTypeImpl</a></code>, <code><a href="meta/IntersectionTypeMeta.html" title="class in honeyroasted.jype.type.meta">IntersectionTypeMeta</a></code></dd>
+<dd><code><a href="impl/IntersectionTypeImpl.html" title="class in honeyroasted.jype.type.impl">IntersectionTypeImpl</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">IntersectionType</span><span class="extends-implements">
@@ -92,7 +92,7 @@ extends <a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.type.Type">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.type.<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></h2>
-<code><a href="Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a></code></div>
+<code><a href="Type.Equality.html" title="enum class in honeyroasted.jype.type">Type.Equality</a>, <a href="Type.Metadata.html" title="interface in honeyroasted.jype.type">Type.Metadata</a></code></div>
 </section>
 </li>
 <!-- ========== METHOD SUMMARY =========== -->
@@ -117,12 +117,18 @@ P&gt;&nbsp;R</code></div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#flatten(java.util.Set)" class="member-name-link">flatten</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;children)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.Set,honeyroasted.jype.system.TypeSystem)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;types,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSimplified()" class="member-name-link">isSimplified</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(java.util.Set,honeyroasted.jype.system.TypeSystem)" class="member-name-link">of</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;types,
  <a href="../system/TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setChildren(java.util.Set)" class="member-name-link">setChildren</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;children)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setChildren(java.util.Set)" class="member-name-link">setChildren</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;children)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#simplify()" class="member-name-link">simplify</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#typeContains(honeyroasted.jype.type.Type)" class="member-name-link">typeContains</a><wbr>(<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&nbsp;other)</code></div>
@@ -135,7 +141,7 @@ P&gt;&nbsp;R</code></div>
 <code><a href="../modify/PossiblyUnmodifiable.html#isUnmodifiable()">isUnmodifiable</a>, <a href="../modify/PossiblyUnmodifiable.html#setUnmodifiable(boolean)">setUnmodifiable</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.Type">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></h3>
-<code><a href="Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="Type.html#copy()">copy</a>, <a href="Type.html#copy(honeyroasted.jype.system.cache.TypeCache)">copy</a>, <a href="Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality,java.util.Set)">equals</a>, <a href="Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="Type.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="Type.html#hashCode(java.util.Set)">hashCode</a>, <a href="Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="Type.html#isNullType()">isNullType</a>, <a href="Type.html#isProperType()">isProperType</a>, <a href="Type.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="Type.html#simpleName()">simpleName</a>, <a href="Type.html#stripMetadata()">stripMetadata</a>, <a href="Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="Type.html#typeSystem()">typeSystem</a></code></div>
+<code><a href="Type.html#accept(honeyroasted.jype.system.visitor.TypeVisitor)">accept</a>, <a href="Type.html#copy()">copy</a>, <a href="Type.html#copy(honeyroasted.jype.system.cache.TypeCache)">copy</a>, <a href="Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality)">equals</a>, <a href="Type.html#equals(honeyroasted.jype.type.Type,honeyroasted.jype.type.Type.Equality,java.util.Set)">equals</a>, <a href="Type.html#hasCyclicTypeVariables()">hasCyclicTypeVariables</a>, <a href="Type.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="Type.html#hashCode(java.util.Set)">hashCode</a>, <a href="Type.html#isAssignableTo(honeyroasted.jype.type.Type)">isAssignableTo</a>, <a href="Type.html#isCompatibleTo(honeyroasted.jype.type.Type,honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Context)">isCompatibleTo</a>, <a href="Type.html#isNullType()">isNullType</a>, <a href="Type.html#isProperType()">isProperType</a>, <a href="Type.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="Type.html#metadata()">metadata</a>, <a href="Type.html#simpleName()">simpleName</a>, <a href="Type.html#stripMetadata()">stripMetadata</a>, <a href="Type.html#structuralEquals(honeyroasted.jype.type.Type)">structuralEquals</a>, <a href="Type.html#typeEquals(honeyroasted.jype.type.Type)">typeEquals</a>, <a href="Type.html#typeSystem()">typeSystem</a></code></div>
 </section>
 </li>
 </ul>
@@ -158,6 +164,18 @@ P&gt;&nbsp;R</code></div>
 <section class="detail" id="children()">
 <h3>children</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</span>&nbsp;<span class="element-name">children</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="simplify()">
+<h3>simplify</h3>
+<div class="member-signature"><span class="return-type"><a href="Type.html" title="interface in honeyroasted.jype.type">Type</a></span>&nbsp;<span class="element-name">simplify</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isSimplified()">
+<h3>isSimplified</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">isSimplified</span>()</div>
 </section>
 </li>
 <li>

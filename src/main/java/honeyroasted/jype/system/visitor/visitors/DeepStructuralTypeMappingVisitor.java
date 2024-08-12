@@ -16,15 +16,6 @@ import honeyroasted.jype.type.PrimitiveType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.impl.ArrayTypeImpl;
-import honeyroasted.jype.type.impl.ClassReferenceImpl;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
-import honeyroasted.jype.type.impl.MethodReferenceImpl;
-import honeyroasted.jype.type.impl.ParameterizedClassTypeImpl;
-import honeyroasted.jype.type.impl.ParameterizedMethodTypeImpl;
-import honeyroasted.jype.type.impl.VarTypeImpl;
-import honeyroasted.jype.type.impl.WildTypeLowerImpl;
-import honeyroasted.jype.type.impl.WildTypeUpperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -119,7 +110,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (this.overridesClassType(type)) return this.classTypeOverride(type, context);
 
         if (type instanceof ClassReference ref) {
-            ClassReference newRef = new ClassReferenceImpl(ref.typeSystem());
+            ClassReference newRef = ref.typeSystem().typeFactory().newClassReference();
             context.put(type, newRef);
             newRef.setNamespace(ref.namespace());
             newRef.setModifiers(ref.modifiers());
@@ -146,7 +137,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
 
             return newRef;
         } else if (type instanceof ParameterizedClassType pt) {
-            ParameterizedClassType newType = new ParameterizedClassTypeImpl(type.typeSystem());
+            ParameterizedClassType newType = type.typeSystem().typeFactory().newParameterizedClassType();
             context.put(type, newType);
 
             Type newRef = visit(pt.classReference(), context);
@@ -174,13 +165,13 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (this.overridesWildcardType(type)) return this.wildcardTypeOverride(type, context);
 
         if (type instanceof WildType.Lower lower) {
-            WildType.Lower newLower = new WildTypeLowerImpl(lower.typeSystem());
+            WildType.Lower newLower = lower.typeSystem().typeFactory().newLowerWildType();
             context.put(type, newLower);
             newLower.setLowerBounds(this.visit(lower.lowerBounds(), context));
             newLower.setUnmodifiable(true);
             return newLower;
         } else if (type instanceof WildType.Upper upper) {
-            WildType.Upper newUpper = new WildTypeUpperImpl(upper.typeSystem());
+            WildType.Upper newUpper = upper.typeSystem().typeFactory().newUpperWildType();
             context.put(type, newUpper);
             newUpper.setUpperBounds(this.visit(upper.upperBounds(), context));
             newUpper.setUnmodifiable(true);
@@ -195,7 +186,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (cached.isPresent()) return cached.get();
         if (this.overridesArrayType(type)) return this.arrayTypeOverride(type, context);
 
-        ArrayType newArray = new ArrayTypeImpl(type.typeSystem());
+        ArrayType newArray = type.typeSystem().typeFactory().newArrayType();
         context.put(type, newArray);
         newArray.setComponent(this.visit(newArray.component(), context));
         newArray.setUnmodifiable(true);
@@ -208,10 +199,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (cached.isPresent()) return cached.get();
         if (this.overridesIntersectionType(type)) return this.intersectionTypeOverride(type, context);
 
-        IntersectionType newType = new IntersectionTypeImpl(type.typeSystem());
-        newType.setChildren(this.visit(type.children(), context));
-        newType.setUnmodifiable(true);
-        return newType;
+        return IntersectionType.of(this.visit(type.children(), context), type.typeSystem());
     }
 
     @Override
@@ -221,7 +209,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (this.overridesMethodType(type)) return this.methodTypeOverride(type, context);
 
         if (type instanceof MethodReference ref) {
-            MethodReference newRef = new MethodReferenceImpl(ref.typeSystem());
+            MethodReference newRef = ref.typeSystem().typeFactory().newMethodReference();
             context.put(type, newRef);
             newRef.setLocation(ref.location());
 
@@ -244,7 +232,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
             newRef.setUnmodifiable(true);
             return newRef;
         } else if (type instanceof ParameterizedMethodType pt) {
-            ParameterizedMethodType newType = new ParameterizedMethodTypeImpl(type.typeSystem());
+            ParameterizedMethodType newType = type.typeSystem().typeFactory().newParameterizedMethodType();
             context.put(type, newType);
 
             Type newRef = this.visit(pt.methodReference(), context);
@@ -266,7 +254,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
         if (cached.isPresent()) return cached.get();
         if (this.overridesVarType(type)) return this.varTypeOverride(type, context);
 
-        VarType newType = new VarTypeImpl(type.typeSystem());
+        VarType newType = type.typeSystem().typeFactory().newVarType();
         context.put(type, newType);
         newType.setLocation(type.location());
         newType.setUpperBounds(this.visit(type.upperBounds(), context));

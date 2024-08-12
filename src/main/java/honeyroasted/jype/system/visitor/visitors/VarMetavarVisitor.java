@@ -4,7 +4,6 @@ import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
-import honeyroasted.jype.type.impl.MetaVarTypeImpl;
 
 import java.util.Optional;
 import java.util.Set;
@@ -58,7 +57,7 @@ public class VarMetavarVisitor implements DeepStructuralTypeMappingVisitor {
             return type;
         }
 
-        MetaVarType mvt = new MetaVarTypeImpl(type.typeSystem(), System.identityHashCode(type), type.simpleName());
+        MetaVarType mvt = type.typeSystem().typeFactory().newMetaVarType(System.identityHashCode(type), type.simpleName());
         cache.put(type, mvt);
         type.upperBounds().forEach(bound -> mvt.upperBounds().add(this.visitType(bound, cache)));
 

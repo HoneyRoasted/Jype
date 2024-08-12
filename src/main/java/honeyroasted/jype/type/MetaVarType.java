@@ -1,7 +1,6 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.jype.system.visitor.TypeVisitor;
-import honeyroasted.jype.type.impl.IntersectionTypeImpl;
 
 import java.util.Set;
 
@@ -28,10 +27,7 @@ public interface MetaVarType extends Type, ArgumentType {
         } else if (this.upperBounds().size() == 1) {
             return this.upperBounds().iterator().next();
         } else {
-            IntersectionType type = new IntersectionTypeImpl(this.typeSystem());
-            type.setChildren(IntersectionType.flatten(upperBounds()));
-            type.setUnmodifiable(true);
-            return type;
+            return IntersectionType.of(upperBounds(), this.typeSystem());
         }
     }
 
@@ -41,10 +37,7 @@ public interface MetaVarType extends Type, ArgumentType {
         } else if (this.lowerBounds().size() == 1) {
             return this.lowerBounds().iterator().next();
         } else {
-            IntersectionType type = new IntersectionTypeImpl(this.typeSystem());
-            type.setChildren(IntersectionType.flatten(lowerBounds()));
-            type.setUnmodifiable(true);
-            return type;
+            return IntersectionType.of(lowerBounds(), this.typeSystem());
         }
     }
 

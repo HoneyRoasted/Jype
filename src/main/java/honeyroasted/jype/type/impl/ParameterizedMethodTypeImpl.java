@@ -1,7 +1,6 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.jype.location.MethodLocation;
-import honeyroasted.jype.modify.AbstractPossiblyUnmodifiableType;
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -33,7 +32,7 @@ public final class ParameterizedMethodTypeImpl extends AbstractPossiblyUnmodifia
         Optional<Type> cached = cache.get(this);
         if (cached.isPresent()) return (T) cached.get();
 
-        ParameterizedMethodType copy = new ParameterizedMethodTypeImpl(this.typeSystem());
+        ParameterizedMethodType copy = this.typeSystem().typeFactory().newParameterizedMethodType();
         cache.put(this, copy);
 
         copy.setMethodReference(this.methodReference.copy(cache));
