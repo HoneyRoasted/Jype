@@ -43,6 +43,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         ClassReference copy = this.typeSystem().typeFactory().newClassReference();
         cache.put(this, copy);
 
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setNamespace(this.namespace);
         copy.setModifiers(this.modifiers);
         copy.setOuterClass(this.outerClass == null ? this.outerClass : this.outerClass.copy(cache));

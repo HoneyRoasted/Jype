@@ -94,6 +94,8 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
 
         IntersectionType copy = this.typeSystem().typeFactory().newIntersectionType();
         cache.put(this, copy);
+
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setChildren((Set) this.children.stream().map(Type::copy).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
         return (T) copy;

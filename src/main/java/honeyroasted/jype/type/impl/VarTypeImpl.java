@@ -30,6 +30,7 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
         VarType copy = this.typeSystem().typeFactory().newVarType();
         cache.put(this, copy);
 
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setLocation(this.location);
         copy.setUpperBounds(this.upperBounds.stream().map(t -> (Type) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);

@@ -22,6 +22,9 @@ public final class ArrayTypeImpl extends AbstractPossiblyUnmodifiableType implem
         if (cached.isPresent()) return (T) cached.get();
 
         ArrayType copy = this.typeSystem().typeFactory().newArrayType();
+        cache.put(this, copy);
+
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setComponent(this.component.copy());
         return (T) copy;
     }

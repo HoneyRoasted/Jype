@@ -26,6 +26,9 @@ public class WildTypeLowerImpl extends AbstractPossiblyUnmodifiableType implemen
         if (cached.isPresent()) return (T) cached.get();
 
         WildType.Lower copy = this.typeSystem().typeFactory().newLowerWildType();
+        cache.put(this, copy);
+
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setIdentity(this.identity);
         copy.setLowerBounds(this.lowerBound.stream().map(t -> (Type) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);

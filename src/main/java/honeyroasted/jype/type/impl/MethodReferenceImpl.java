@@ -39,6 +39,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         MethodReference copy = this.typeSystem().typeFactory().newMethodReference();
         cache.put(this, copy);
 
+        copy.metadata().copyFrom(this.metadata(), cache);
         copy.setLocation(this.location);
         copy.setModifiers(this.modifiers);
         copy.setOuterClass(this.outerClass.copy(cache));

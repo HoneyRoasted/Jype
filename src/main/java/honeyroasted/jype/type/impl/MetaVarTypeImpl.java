@@ -56,14 +56,15 @@ public class MetaVarTypeImpl extends AbstractType implements MetaVarType {
 
     @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
-        MetaVarType mvt = this.typeSystem().typeFactory().newMetaVarType(this.identity, this.name);
-        cache.put(this, mvt);
+        MetaVarType copy = this.typeSystem().typeFactory().newMetaVarType(this.identity, this.name);
+        cache.put(this, copy);
 
-        this.upperBounds.stream().map(t -> (Type) t.copy(cache)).forEach(mvt.upperBounds()::add);
-        this.lowerBounds.stream().map(t -> (Type) t.copy(cache)).forEach(mvt.lowerBounds()::add);
-        this.equalities.stream().map(t -> (Type) t.copy(cache)).forEach(mvt.equalities()::add);
+        copy.metadata().copyFrom(this.metadata(), cache);
+        this.upperBounds.stream().map(t -> (Type) t.copy(cache)).forEach(copy.upperBounds()::add);
+        this.lowerBounds.stream().map(t -> (Type) t.copy(cache)).forEach(copy.lowerBounds()::add);
+        this.equalities.stream().map(t -> (Type) t.copy(cache)).forEach(copy.equalities()::add);
 
-        return (T) mvt;
+        return (T) copy;
     }
 
     @Override

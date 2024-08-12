@@ -227,21 +227,34 @@ public interface Type extends Copyable<Type> {
         return false;
     }
 
-    interface Metadata {
-        <T> Metadata attach(Class<T> type, T data);
+    interface Metadata extends Copyable<Metadata> {
+        <T> Metadata attach(Class<? extends T> type, T data);
 
-        default  <T> Metadata attach(T data) {
+        default Metadata attach(Object data) {
             if (data != null) {
-                this.attach((Class<T>) data.getClass(), data);
+                this.attach(data.getClass(), data);
             }
             return this;
         }
 
-        <T> Metadata detach(Class<T> type);
+        Metadata detach(Class<?> type);
 
-        <T> Optional<T> get(Class<T> type);
+        <T> Optional<T> get(Class<? extends T> type);
 
-        <T> boolean has(Class<T> type);
+        boolean has(Class<?> type);
+
+        Set<Class<?>> allMetadata();
+
+        Metadata copyFrom(Metadata other, TypeCache<Type, Type> cache);
+
+        default Metadata merge(Metadata other) {
+            other.allMetadata().forEach(c -> {
+                if (!this.has(c)) {
+                    this.attach(c, other.get(c).get());
+                }
+            });
+            return this;
+        }
     }
 
 }
