@@ -70,7 +70,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
             return system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, genArrType.getGenericComponentType())
                     .map(t -> {
                         ArrayType result = t.typeSystem().typeFactory().newArrayType();
-                        result.metadata().attach(new ReflectionType.Type(genArrType));
+                        result.metadata().attach(ReflectionType.class, new ReflectionType.Type(genArrType));
                         result.setComponent(t);
                         result.setUnmodifiable(true);
                         return result;
@@ -90,14 +90,14 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
 
             if (wType.getLowerBounds().length == 0) { //? extends ...
                 WildType.Upper upper = system.typeFactory().newUpperWildType();
-                upper.metadata().attach(new ReflectionType.Type(wType));
+                upper.metadata().attach(ReflectionType.class, new ReflectionType.Type(wType));
                 upper.setIdentity(System.identityHashCode(wType));
                 upper.upperBounds().addAll(resolvedBounds);
                 upper.setUnmodifiable(true);
                 return Optional.of(upper);
             } else { //? super ...
                 WildType.Lower lower = system.typeFactory().newLowerWildType();
-                lower.metadata().attach(new ReflectionType.Type(wType));
+                lower.metadata().attach(ReflectionType.class, new ReflectionType.Type(wType));
                 lower.setIdentity(System.identityHashCode(wType));
                 lower.lowerBounds().addAll(resolvedBounds);
                 lower.setUnmodifiable(true);
@@ -108,7 +108,7 @@ public class ReflectionJavaTypeResolver implements TypeResolver<java.lang.reflec
                 Optional<? extends Type> clsRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, Type.class).resolve(system, cls);
                 if (clsRef.isPresent() && clsRef.get() instanceof ClassReference) {
                     ParameterizedClassType result = system.typeFactory().newParameterizedClassType();
-                    result.metadata().attach(new ReflectionType.Type(pType));
+                    result.metadata().attach(ReflectionType.class, new ReflectionType.Type(pType));
 
                     system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
                     result.setClassReference((ClassReference) clsRef.get());
