@@ -29,7 +29,6 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
     @Override
     public Type apply(TypeSystem system, Set<Type> types) {
         return findLub(system, types, new HashMap<>());
-
     }
 
     private Type findLub(TypeSystem system, Set<Type> types, Map<Pair<Set<Type>, Set<Type>>, Type> lubCache) {
@@ -55,7 +54,7 @@ public class FindLeastUpperBound implements TypeOperation<Set<Type>, Type> {
                 boolean permitted = true;
 
                 for (Type otherCand : erasedCandidates) {
-                    if (!erasedCandidate.typeEquals(otherCand) && system.operations().isSubtype(erasedCandidate, otherCand)) {
+                    if (!erasedCandidate.typeEquals(otherCand) && system.operations().isSubtype(otherCand, erasedCandidate)) {
                         permitted = false;
                         break;
                     }
