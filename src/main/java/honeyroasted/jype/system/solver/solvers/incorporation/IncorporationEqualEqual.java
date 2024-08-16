@@ -11,6 +11,11 @@ import java.util.Map;
 public class IncorporationEqualEqual implements BinaryTypeBoundMapper<TypeBound.Equal, TypeBound.Equal> {
 
     @Override
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.BOUND;
+    }
+
+    @Override
     public boolean commutative() {
         return false;
     }

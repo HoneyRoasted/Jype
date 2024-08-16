@@ -9,7 +9,7 @@ import static honeyroasted.jype.system.solver.bounds.TypeBound.Compatible.Contex
 public class CompatibleLooseInvocation implements UnaryTypeBoundMapper<TypeBound.Compatible> {
     @Override
     public boolean accepts(TypeBound.Result.Builder constraint, TypeBound.Compatible bound) {
-        return constraint.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN && bound.context() == LOOSE_INVOCATION || bound.context() == ASSIGNMENT;
+        return constraint.getSatisfied() == TypeBound.Result.Trinary.UNKNOWN && (bound.context() == LOOSE_INVOCATION || bound.context() == ASSIGNMENT);
     }
 
     @Override

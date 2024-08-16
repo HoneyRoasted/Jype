@@ -62,7 +62,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         QuadList<TypeBound.Result.Builder> bounds = new QuadList<>(inputBounds, ArrayList::new);
 
 
-        while (!constraints.compareMatchesCurrent() || !bounds.compareMatchesCurrent()) {
+        while ((!constraints.compareMatchesCurrent() || !bounds.compareMatchesCurrent())) {
             constraints.stepCompare();
             bounds.stepCompare();
 

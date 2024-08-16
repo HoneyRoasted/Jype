@@ -17,6 +17,7 @@ public class TypeBoundMapperSolver implements TypeSolver {
     private String name;
     private List<TypeBoundMapperApplier> appliers;
     private Set<Class<? extends TypeBound>> supported;
+    private TypeBound.Classification classification = TypeBound.Classification.CONSTRAINT;
 
     private Set<TypeBound> constraints = new LinkedHashSet<>();
 
@@ -28,6 +29,11 @@ public class TypeBoundMapperSolver implements TypeSolver {
 
     public TypeBoundMapperSolver(String name, Set<Class<? extends TypeBound>> supported, TypeBoundMapperApplier... appliers) {
         this(name, supported, List.of(appliers));
+    }
+
+    public TypeBoundMapperSolver setClassification(TypeBound.Classification classification) {
+        this.classification = classification;
+        return this;
     }
 
     @Override
@@ -57,8 +63,17 @@ public class TypeBoundMapperSolver implements TypeSolver {
     public Result solve(TypeSystem system) {
         List<TypeBound.Result.Builder> building = this.constraints.stream().map(TypeBound.Result::builder).collect(Collectors.toCollection(ArrayList::new));
 
-        List<TypeBound.Result.Builder> constraints = new ArrayList<>(building);
-        List<TypeBound.Result.Builder> bounds = new ArrayList<>();
+        List<TypeBound.Result.Builder> constraints;
+        List<TypeBound.Result.Builder> bounds;
+
+        if (this.classification == TypeBound.Classification.BOUND) {
+            constraints = new ArrayList<>();
+            bounds = new ArrayList<>(building);
+        } else {
+            constraints = new ArrayList<>(building);
+            bounds = new ArrayList<>();
+        }
+
         for (TypeBoundMapperApplier applier : this.appliers) {
             Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = applier.process(system, bounds, constraints);
             bounds = result.left();

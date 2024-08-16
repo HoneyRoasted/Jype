@@ -7,7 +7,7 @@ sourceCompatibility = 1.21
 targetCompatibility = 1.21
 
 group 'honeyroasted.jype'
-version '0.0.25'
+version '0.0.26'
 
 repositories {
     mavenCentral()
@@ -33,12 +33,12 @@ task ghpagesJavadocs(type: Javadoc) {
 
 task javadocJar(type: Jar) {
     from javadoc
-    archiveClassifier.set("javadoc")
+    archiveClassifier = "javadoc"
 }
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
-    archiveClassifier.set("source")
+    archiveClassifier = "source"
 }
 
 artifacts {

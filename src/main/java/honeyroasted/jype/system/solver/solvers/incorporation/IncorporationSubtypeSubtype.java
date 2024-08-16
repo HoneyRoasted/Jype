@@ -15,6 +15,11 @@ import java.util.Set;
 public class IncorporationSubtypeSubtype implements BinaryTypeBoundMapper<TypeBound.Subtype, TypeBound.Subtype> {
 
     @Override
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.BOUND;
+    }
+
+    @Override
     public void map(Context context, TypeBound.Result.Builder leftBuild, TypeBound.Subtype leftBound, TypeBound.Result.Builder rightBuilder, TypeBound.Subtype rightBound) {
         addAll(context.defaultConsumer(),
                 leftBuild, rightBuilder);

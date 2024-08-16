@@ -16,6 +16,11 @@ import java.util.Set;
 public class IncorporationCapture implements UnaryTypeBoundMapper<TypeBound.Capture> {
 
     @Override
+    public boolean accepts(TypeBound.Classification classification) {
+        return classification == TypeBound.Classification.BOUND;
+    }
+
+    @Override
     public void map(Context context, TypeBound.Result.Builder boundBuilder, TypeBound.Capture capture) {
         context.defaultConsumer().accept(boundBuilder);
 

@@ -34,7 +34,7 @@ public interface TypeBoundMapper {
 
 
     default boolean accepts(TypeBound.Classification classification) {
-        return classification == TypeBound.Classification.BOUND;
+        return classification == TypeBound.Classification.CONSTRAINT;
     }
 
     boolean accepts(TypeBound.Result.Builder builder);
