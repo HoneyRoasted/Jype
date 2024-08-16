@@ -92,7 +92,7 @@ extends <a href="ExpressionInformation.html" title="interface in honeyroasted.jy
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.system.expression.ExpressionInformation">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.system.expression.<a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a></h2>
-<code><a href="ExpressionInformation.Constant.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Constant</a>, <a href="ExpressionInformation.Instantiation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Instantiation</a>, <a href="ExpressionInformation.InstantiationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InstantiationReference</a>, <a href="ExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Invocation</a>, <a href="ExpressionInformation.InvocationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InvocationReference</a>, <a href="ExpressionInformation.Lambda.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Lambda</a>, <a href="ExpressionInformation.Multi.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a>, <a href="ExpressionInformation.SimplyTyped.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></div>
+<code><a href="ExpressionInformation.Constant.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Constant</a>, <a href="ExpressionInformation.Instantiation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Instantiation</a>, <a href="ExpressionInformation.InstantiationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InstantiationReference</a>, <a href="ExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Invocation</a>, <a href="ExpressionInformation.InvocationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InvocationReference</a>, <a href="ExpressionInformation.Lambda.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Lambda</a>, <a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;<a href="ExpressionInformation.Mapped.html" title="type parameter in ExpressionInformation.Mapped">T</a>&gt;, <a href="ExpressionInformation.Multi.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a>, <a href="ExpressionInformation.SimplyTyped.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></div>
 </section>
 </li>
 <!-- ========== METHOD SUMMARY =========== -->
@@ -106,14 +106,21 @@ extends <a href="ExpressionInformation.html" title="interface in honeyroasted.jy
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#children()" class="member-name-link">children</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getSimpleType(honeyroasted.jype.system.TypeSystem)" class="member-name-link">getSimpleType</a><wbr>(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ExpressionInformation.Multi.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#createNew(java.util.List)" class="member-name-link">createNew</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;&nbsp;children)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getSimpleType(honeyroasted.jype.system.TypeSystem)" class="member-name-link">getSimpleType</a><wbr>(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isSimplyTyped()" class="member-name-link">isSimplyTyped</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isSimplyTyped()" class="member-name-link">isSimplyTyped</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#mapped(honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor,java.util.function.Supplier)" class="member-name-link">mapped</a><wbr>(<a href="../visitor/visitors/TypeMappingVisitor.html" title="interface in honeyroasted.jype.system.visitor.visitors">TypeMappingVisitor</a>&lt;T&gt;&nbsp;mapper,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;contextFactory)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
@@ -135,7 +142,24 @@ extends <a href="ExpressionInformation.html" title="interface in honeyroasted.jy
 <li>
 <section class="detail" id="children()">
 <h3>children</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;</span>&nbsp;<span class="element-name">children</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;? extends <a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;</span>&nbsp;<span class="element-name">children</span>()</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createNew(java.util.List)">
+<h3>createNew</h3>
+<div class="member-signature"><span class="return-type"><a href="ExpressionInformation.Multi.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a></span>&nbsp;<span class="element-name">createNew</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a>&gt;&nbsp;children)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="mapped(honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor,java.util.function.Supplier)">
+<h3>mapped</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;T&gt;</span>&nbsp;<span class="element-name">mapped</span><wbr><span class="parameters">(<a href="../visitor/visitors/TypeMappingVisitor.html" title="interface in honeyroasted.jype.system.visitor.visitors">TypeMappingVisitor</a>&lt;T&gt;&nbsp;mapper,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;contextFactory)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="ExpressionInformation.html#mapped(honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor,java.util.function.Supplier)">mapped</a></code>&nbsp;in interface&nbsp;<code><a href="ExpressionInformation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation</a></code></dd>
+</dl>
 </section>
 </li>
 <li>

@@ -2,16 +2,13 @@ package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.IntersectionType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -52,22 +49,9 @@ public interface TypeSolver {
             return this.all().stream().anyMatch(r -> r.satisfied() && r.bound().equals(bound));
         }
 
-        public VarTypeResolveVisitor varTypeResolver() {
-            Map<VarType, Type> cache = new LinkedHashMap<>();
-            return new VarTypeResolveVisitor(v -> {
-                Optional<Type> res = resolution(v);
-                if (res.isPresent()) {
-                    cache.put(v, res.get());
-                    return true;
-                }
-                return false;
-            }, v -> cache.computeIfAbsent(v, k -> resolution(v).get()));
-        }
-
-        public Optional<Type> resolution(VarType var) {
-            Set<Type> results = this.all().stream().filter(r -> r.satisfied() && r.bound() instanceof TypeBound.Equal eq &&
-                    (eq.left().equals(var) || eq.right().equals(var))).map(r -> (TypeBound.Equal) r.bound())
-                    .map(eq -> eq.left().equals(var) ? eq.right() : eq.left())
+        public Optional<Type> instantiation(MetaVarType mvt) {
+            Set<Type> results = this.all().stream().filter(r -> r.satisfied() && r.bound() instanceof TypeBound.Instantiation inst &&
+                    inst.left().equals(mvt)).map(r -> ((TypeBound.Instantiation) r.bound()).right())
                     .collect(Collectors.toCollection(LinkedHashSet::new));
 
             if (results.isEmpty()) {
@@ -75,7 +59,7 @@ public interface TypeSolver {
             } else if (results.size() == 1) {
                 return Optional.of(results.iterator().next());
             } else {
-                return Optional.of(IntersectionType.of(results, var.typeSystem()));
+                return Optional.of(IntersectionType.of(results, mvt.typeSystem()));
             }
         }
 
@@ -124,6 +108,11 @@ public interface TypeSolver {
             } else {
                 result.children().forEach(r -> leavesImpl(r, building));
             }
+        }
+
+        public Set<TypeBound.Result> instantiations() {
+            return all().stream().filter(r -> r.satisfied() && r.bound() instanceof TypeBound.Instantiation)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
         }
 
         private Set<TypeBound.Result> all;

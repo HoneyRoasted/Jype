@@ -25,8 +25,13 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
 
     void setOuterClass(ClassReference outerClass);
 
+    MethodReference outerMethod();
+
+    void setOuterMethod(MethodReference outerMethod);
+
     default boolean hasRelevantOuterType() {
-        return !Modifier.isStatic(this.modifiers()) && this.outerType() != null;
+        return !Modifier.isStatic(this.modifiers()) && this.outerType() != null
+                && (this.outerMethod() == null || !Modifier.isStatic(this.outerMethod().modifiers()));
     }
 
     ParameterizedClassType directSupertype(ClassType supertypeInstance);

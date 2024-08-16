@@ -11,6 +11,7 @@ import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
+import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -27,6 +28,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     private ClassNamespace namespace;
     private int modifiers;
     private ClassReference outerClass;
+    private MethodReference outerMethod;
     private ClassType superClass;
     private List<ClassType> interfaces = new ArrayList<>();
     private List<VarType> typeParameters = new ArrayList<>();
@@ -47,6 +49,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         copy.setNamespace(this.namespace);
         copy.setModifiers(this.modifiers);
         copy.setOuterClass(this.outerClass == null ? this.outerClass : this.outerClass.copy(cache));
+        copy.setOuterMethod(this.outerMethod == null ? this.outerMethod : this.outerMethod.copy(cache));
         copy.setSuperClass(this.superClass == null ? this.superClass : this.superClass.copy(cache));
         copy.setInterfaces(this.interfaces.stream().map(c -> (ClassType) c.copy(cache)).toList());
         copy.setTypeParameters(this.typeParameters.stream().map(v -> (VarType) v.copy(cache)).toList());
@@ -144,6 +147,17 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
     public void setOuterClass(ClassReference outerClass) {
         this.checkUnmodifiable();
         this.outerClass = outerClass;
+    }
+
+    @Override
+    public MethodReference outerMethod() {
+        return this.outerMethod;
+    }
+
+    @Override
+    public void setOuterMethod(MethodReference outerMethod) {
+        this.checkUnmodifiable();
+        this.outerMethod = outerMethod;
     }
 
     @Override

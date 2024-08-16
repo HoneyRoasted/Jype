@@ -205,10 +205,6 @@ public interface Type extends Copyable<Type> {
         return Collections.emptySet();
     }
 
-    default <T extends Type> T stripMetadata() {
-        return (T) this;
-    }
-
     <T extends Type> T copy(TypeCache<Type, Type> cache);
 
     default <T extends Type> T copy() {
@@ -238,6 +234,8 @@ public interface Type extends Copyable<Type> {
         }
 
         Metadata detach(Class<?> type);
+
+        Metadata detachAll();
 
         <T> Optional<T> get(Class<? extends T> type);
 

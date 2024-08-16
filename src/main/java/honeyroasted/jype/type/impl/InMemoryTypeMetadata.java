@@ -25,6 +25,12 @@ public class InMemoryTypeMetadata implements Type.Metadata {
     }
 
     @Override
+    public Type.Metadata detachAll() {
+        this.metadata.clear();
+        return this;
+    }
+
+    @Override
     public <T> Optional<T> get(Class<? extends T> type) {
         return (Optional<T>) Optional.ofNullable(this.metadata.get(type));
     }

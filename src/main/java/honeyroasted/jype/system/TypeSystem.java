@@ -4,6 +4,7 @@ import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.cache.TypeStorage;
+import honeyroasted.jype.system.expression.ExpressionInspector;
 import honeyroasted.jype.system.resolver.TypeResolver;
 import honeyroasted.jype.system.resolver.TypeResolvers;
 import honeyroasted.jype.system.resolver.reflection.TypeToken;
@@ -26,6 +27,10 @@ public interface TypeSystem {
     TypeResolvers resolvers();
 
     TypeOperations operations();
+
+    TypeFactory typeFactory();
+
+    ExpressionInspector expressionInspector();
 
     <I, O extends Type> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key);
 
@@ -58,6 +63,4 @@ public interface TypeSystem {
     void registerResolvers(Collection<? extends TypeResolver> resolvers);
 
     void registerResolver(TypeResolver resolver);
-
-    TypeFactory typeFactory();
 }

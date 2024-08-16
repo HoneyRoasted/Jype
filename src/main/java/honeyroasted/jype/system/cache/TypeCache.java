@@ -2,6 +2,7 @@ package honeyroasted.jype.system.cache;
 
 import honeyroasted.jype.type.Type;
 
+import java.util.Map;
 import java.util.Optional;
 
 public interface TypeCache<K, T extends Type> {
@@ -13,5 +14,7 @@ public interface TypeCache<K, T extends Type> {
     void put(K key, T val);
 
     void remove(K key);
+
+    Map<K, T> asMap();
 
 }

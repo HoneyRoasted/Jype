@@ -33,6 +33,8 @@ import honeyroasted.jype.system.solver.solvers.reduction.ReduceContains;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceEqual;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.solvers.reduction.ReduceSubtype;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -40,6 +42,7 @@ import honeyroasted.jype.type.VarType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class TypeOperationsImpl implements TypeOperations {
@@ -180,6 +183,20 @@ public class TypeOperationsImpl implements TypeOperations {
     @Override
     public Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolveBounds(Set<TypeBound.Result.Builder> bounds) {
         return RESOLVE_BOUNDS.apply(this.typeSystem, bounds);
+    }
+
+    @Override
+    public Optional<ClassType> outerTypeFromDeclaring(ClassReference instance, ClassReference declaring) {
+        if (instance.hasRelevantOuterType()) {
+            ClassReference target = instance.outerClass();
+
+            ClassType current = declaring;
+            while (current != null && !isSubtype(current.classReference(), target)) {
+                current = current.outerType();
+            }
+            return Optional.ofNullable(current);
+        }
+        return Optional.empty();
     }
 
 

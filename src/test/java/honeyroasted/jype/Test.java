@@ -19,7 +19,7 @@ public class Test {
     public static void main(String[] args) {
         TypeSystem system = TypeSystem.SIMPLE_RUNTIME;
 
-        ClassReference list = (ClassReference) system.<ArgumentType>tryResolve(List.class);
+        ClassReference list = system.tryResolve(List.class);
 
         TypeBound.Result.Builder builder = TypeBound.Result.builder(new TypeBound.Compatible(
                 list.parameterized(system.typeFactory().newMetaVarType("T")),

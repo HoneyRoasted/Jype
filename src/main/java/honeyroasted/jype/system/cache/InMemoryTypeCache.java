@@ -36,4 +36,9 @@ public class InMemoryTypeCache<K, T extends Type> implements TypeCache<K, T> {
     public void remove(K key) {
         this.cache.remove(key);
     }
+
+    @Override
+    public Map<K, T> asMap() {
+        return new HashMap<>(this.cache);
+    }
 }

@@ -11,6 +11,7 @@ import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MethodReference;
+import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
@@ -250,6 +251,21 @@ public interface ReflectionTypeResolution {
                 return Optional.empty();
             } else {
                 reference.setOuterClass(((ClassType) enclosing.get()).classReference());
+            }
+        }
+
+        if (cls.getEnclosingMethod() != null || cls.getEnclosingConstructor() != null) {
+            Executable enclsoingExecutable = cls.getEnclosingMethod() != null ? cls.getEnclosingMethod() : cls.getEnclosingConstructor();
+
+            Optional<? extends honeyroasted.jype.type.Type> enclosing = system.resolvers().resolverFor(Executable.class, honeyroasted.jype.type.Type.class)
+                    .resolve(system, enclsoingExecutable);
+
+            if (enclosing.isEmpty() || !(enclosing.get() instanceof MethodType)) {
+                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(ClassLocation.class).remove(reference.namespace().location());
+                return Optional.empty();
+            } else {
+                reference.setOuterMethod(((MethodType) enclosing.get()).methodReference());
             }
         }
 

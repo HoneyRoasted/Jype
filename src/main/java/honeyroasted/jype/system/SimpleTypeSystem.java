@@ -7,6 +7,8 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.cache.InMemoryTypeStorage;
 import honeyroasted.jype.system.cache.TypeCacheFactory;
 import honeyroasted.jype.system.cache.TypeStorage;
+import honeyroasted.jype.system.expression.ExpressionInspector;
+import honeyroasted.jype.system.expression.ReflectionExpressionInspector;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
 import honeyroasted.jype.system.resolver.InMemoryTypeResolvers;
 import honeyroasted.jype.system.resolver.ResolutionAttemptFailedException;
@@ -34,6 +36,7 @@ public class SimpleTypeSystem implements TypeSystem {
     private TypeConstants constants;
     private TypeOperations operations;
     private TypeFactory typeFactory;
+    private ExpressionInspector expressionInspector;
 
     public SimpleTypeSystem() {
         this(TypeCacheFactory.IN_MEMORY_FACTORY);
@@ -48,14 +51,15 @@ public class SimpleTypeSystem implements TypeSystem {
     }
 
     public SimpleTypeSystem(TypeCacheFactory cacheFactory, TypeResolver... initialResolvers) {
-        this(cacheFactory, List.of(initialResolvers), SimpleTypeFactory::new);
+        this(cacheFactory, List.of(initialResolvers), SimpleTypeFactory::new, ReflectionExpressionInspector::new);
     }
 
-    public SimpleTypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers, Function<TypeSystem, TypeFactory> typeFactory) {
+    public SimpleTypeSystem(TypeCacheFactory cacheFactory, Collection<? extends TypeResolver> initialResolvers, Function<TypeSystem, TypeFactory> typeFactory, Function<TypeSystem, ExpressionInspector> expressionInspector) {
         this.storage = new InMemoryTypeStorage(cacheFactory);
         this.resolvers = new InMemoryTypeResolvers();
         this.registerResolvers(initialResolvers);
         this.typeFactory = typeFactory.apply(this);
+        this.expressionInspector = expressionInspector.apply(this);
 
         this.constants = new InMemoryTypeConstants(
                 this.tryLocResolve(Object.class), this.tryLocResolve(Cloneable.class), this.tryLocResolve(Serializable.class),
@@ -191,6 +195,11 @@ public class SimpleTypeSystem implements TypeSystem {
     @Override
     public TypeFactory typeFactory() {
         return this.typeFactory;
+    }
+
+    @Override
+    public ExpressionInspector expressionInspector() {
+        return this.expressionInspector;
     }
 
 

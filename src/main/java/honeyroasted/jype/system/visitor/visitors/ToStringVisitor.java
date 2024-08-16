@@ -12,9 +12,15 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
+
+    @Override
+    default String visit(Type type) {
+        return visit(type, new HashSet<>());
+    }
 
     @Override
     default String visitClassType(ClassType type, Set<Type> context) {
@@ -41,7 +47,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
         
-        return "[" + visit(type.component(), context) + "]";
+        return arrayToString(type, context);
     }
 
     String arrayToString(ArrayType type, Set<Type> context);

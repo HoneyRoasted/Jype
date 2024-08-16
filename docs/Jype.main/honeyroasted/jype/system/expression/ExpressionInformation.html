@@ -76,6 +76,10 @@ loadScripts(document, 'script');</script>
 <dt>All Known Subinterfaces:</dt>
 <dd><code><a href="ExpressionInformation.Constant.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Constant</a></code>, <code><a href="ExpressionInformation.Instantiation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Instantiation</a></code>, <code><a href="ExpressionInformation.InstantiationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InstantiationReference</a></code>, <code><a href="ExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Invocation</a></code>, <code><a href="ExpressionInformation.InvocationReference.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.InvocationReference</a></code>, <code><a href="ExpressionInformation.Lambda.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Lambda</a></code>, <code><a href="ExpressionInformation.Multi.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a></code>, <code><a href="ExpressionInformation.SimplyTyped.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></dd>
 </dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a></code>, <code><a href="ExpressionInformation.SimplyTyped.Just.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped.Just</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">ExpressionInformation</span></div>
 </section>
@@ -108,12 +112,15 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="ExpressionInformation.Lambda.html" class="type-name-link" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Lambda</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="ExpressionInformation.Multi.html" class="type-name-link" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a></code></div>
+<div class="col-first even-row-color"><code>static class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ExpressionInformation.Mapped.html" class="type-name-link" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;<a href="ExpressionInformation.Mapped.html" title="type parameter in ExpressionInformation.Mapped">T</a>&gt;</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="ExpressionInformation.SimplyTyped.html" class="type-name-link" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></div>
+<div class="col-second odd-row-color"><code><a href="ExpressionInformation.Multi.html" class="type-name-link" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.Multi</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="ExpressionInformation.SimplyTyped.html" class="type-name-link" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -122,7 +129,7 @@ loadScripts(document, 'script');</script>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel">
 <div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
 <div class="table-header col-first">Modifier and Type</div>
@@ -134,6 +141,13 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isSimplyTyped()" class="member-name-link">isSimplyTyped</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T&gt;&nbsp;<a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#mapped(honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor,java.util.function.Supplier)" class="member-name-link">mapped</a><wbr>(<a href="../visitor/visitors/TypeMappingVisitor.html" title="interface in honeyroasted.jype.system.visitor.visitors">TypeMappingVisitor</a>&lt;T&gt;&nbsp;mapper,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;contextFactory)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ExpressionInformation.SimplyTyped.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#of(honeyroasted.jype.type.Type)" class="member-name-link">of</a><wbr>(<a href="../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
@@ -152,6 +166,12 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
+<section class="detail" id="of(honeyroasted.jype.type.Type)">
+<h3>of</h3>
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="ExpressionInformation.SimplyTyped.html" title="interface in honeyroasted.jype.system.expression">ExpressionInformation.SimplyTyped</a></span>&nbsp;<span class="element-name">of</span><wbr><span class="parameters">(<a href="../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&nbsp;type)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="simpleName()">
 <h3>simpleName</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">simpleName</span>()</div>
@@ -167,6 +187,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getSimpleType(honeyroasted.jype.system.TypeSystem)">
 <h3>getSimpleType</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</span>&nbsp;<span class="element-name">getSimpleType</span><wbr><span class="parameters">(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="mapped(honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor,java.util.function.Supplier)">
+<h3>mapped</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type"><a href="ExpressionInformation.Mapped.html" title="class in honeyroasted.jype.system.expression">ExpressionInformation.Mapped</a>&lt;T&gt;</span>&nbsp;<span class="element-name">mapped</span><wbr><span class="parameters">(<a href="../visitor/visitors/TypeMappingVisitor.html" title="interface in honeyroasted.jype.system.visitor.visitors">TypeMappingVisitor</a>&lt;T&gt;&nbsp;mapper,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html" title="class or interface in java.util.function" class="external-link">Supplier</a>&lt;T&gt;&nbsp;contextFactory)</span></div>
 </section>
 </li>
 </ul>

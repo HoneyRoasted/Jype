@@ -4,12 +4,15 @@ import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.solver.TypeSolver;
 import honeyroasted.jype.system.solver.bounds.TypeBound;
 import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
+import honeyroasted.jype.type.ClassReference;
+import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public interface TypeOperations {
@@ -42,4 +45,6 @@ public interface TypeOperations {
     Collection<TypeBound.Result.Builder> updateMetaVars(Collection<TypeBound.Result.Builder> constraints);
 
     Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolveBounds(Set<TypeBound.Result.Builder> bounds);
+
+    Optional<ClassType> outerTypeFromDeclaring(ClassReference instance, ClassReference declaring);
 }

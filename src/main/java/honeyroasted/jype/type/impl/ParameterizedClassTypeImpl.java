@@ -8,6 +8,7 @@ import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
@@ -175,6 +176,16 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
     @Override
     public void setOuterClass(ClassReference outerClass) {
         classReference.setOuterClass(outerClass);
+    }
+
+    @Override
+    public MethodReference outerMethod() {
+        return classReference.outerMethod();
+    }
+
+    @Override
+    public void setOuterMethod(MethodReference outerMethod) {
+        classReference.setOuterMethod(outerMethod);
     }
 
     @Override

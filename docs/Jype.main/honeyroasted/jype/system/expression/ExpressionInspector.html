@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="ReflectionExpressionInspector.html" title="class in honeyroasted.jype.system.expression">ReflectionExpressionInspector</a></code></dd>
+<dd><code><a href="MultiExpressionInspector.html" title="class in honeyroasted.jype.system.expression">MultiExpressionInspector</a></code>, <code><a href="ReflectionExpressionInspector.html" title="class in honeyroasted.jype.system.expression">ReflectionExpressionInspector</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">ExpressionInspector</span></div>
@@ -93,13 +93,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../location/MethodLocation.html" title="class in honeyroasted.jype.location">MethodLocation</a>,<wbr><a href="../../type/MethodReference.html" title="interface in honeyroasted.jype.type">MethodReference</a>&gt;&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getDeclaredMethods(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.ClassReference)" class="member-name-link">getDeclaredMethods</a><wbr>(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
- <a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getDeclaredConstructors(honeyroasted.jype.type.ClassReference)" class="member-name-link">getDeclaredConstructors</a><wbr>(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isFunctionalInterface(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.ClassReference)" class="member-name-link">isFunctionalInterface</a><wbr>(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
- <a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../location/MethodLocation.html" title="class in honeyroasted.jype.location">MethodLocation</a>,<wbr><a href="../../type/MethodReference.html" title="interface in honeyroasted.jype.type">MethodReference</a>&gt;&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getDeclaredMethods(honeyroasted.jype.type.ClassReference)" class="member-name-link">getDeclaredMethods</a><wbr>(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isFunctionalInterface(honeyroasted.jype.type.ClassReference)" class="member-name-link">isFunctionalInterface</a><wbr>(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -115,17 +116,21 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getDeclaredMethods(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.ClassReference)">
+<section class="detail" id="getDeclaredMethods(honeyroasted.jype.type.ClassReference)">
 <h3>getDeclaredMethods</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../location/MethodLocation.html" title="class in honeyroasted.jype.location">MethodLocation</a>,<wbr><a href="../../type/MethodReference.html" title="interface in honeyroasted.jype.type">MethodReference</a>&gt;&gt;</span>&nbsp;<span class="element-name">getDeclaredMethods</span><wbr><span class="parameters">(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
- <a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../location/MethodLocation.html" title="class in honeyroasted.jype.location">MethodLocation</a>,<wbr><a href="../../type/MethodReference.html" title="interface in honeyroasted.jype.type">MethodReference</a>&gt;&gt;</span>&nbsp;<span class="element-name">getDeclaredMethods</span><wbr><span class="parameters">(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="isFunctionalInterface(honeyroasted.jype.system.TypeSystem,honeyroasted.jype.type.ClassReference)">
+<section class="detail" id="getDeclaredConstructors(honeyroasted.jype.type.ClassReference)">
+<h3>getDeclaredConstructors</h3>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="../../location/MethodLocation.html" title="class in honeyroasted.jype.location">MethodLocation</a>,<wbr><a href="../../type/MethodReference.html" title="interface in honeyroasted.jype.type">MethodReference</a>&gt;&gt;</span>&nbsp;<span class="element-name">getDeclaredConstructors</span><wbr><span class="parameters">(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="isFunctionalInterface(honeyroasted.jype.type.ClassReference)">
 <h3>isFunctionalInterface</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">isFunctionalInterface</span><wbr><span class="parameters">(<a href="../TypeSystem.html" title="interface in honeyroasted.jype.system">TypeSystem</a>&nbsp;system,
- <a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">isFunctionalInterface</span><wbr><span class="parameters">(<a href="../../type/ClassReference.html" title="interface in honeyroasted.jype.type">ClassReference</a>&nbsp;reference)</span></div>
 </section>
 </li>
 </ul>

@@ -61,8 +61,8 @@ public class TypeBoundMapperSolver implements TypeSolver {
         List<TypeBound.Result.Builder> bounds = new ArrayList<>();
         for (TypeBoundMapperApplier applier : this.appliers) {
             Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = applier.process(system, bounds, constraints);
-            bounds.addAll(result.left());
-            constraints.addAll(result.right());
+            bounds = result.left();
+            constraints = result.right();
         }
 
         return new Result(building.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));

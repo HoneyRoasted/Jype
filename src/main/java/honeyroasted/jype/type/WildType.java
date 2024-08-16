@@ -64,11 +64,6 @@ public interface WildType extends PossiblyUnmodifiable, Type, ArgumentType {
         }
 
         @Override
-        default WildType.Upper stripMetadata() {
-            return this;
-        }
-
-        @Override
         default boolean hasCyclicTypeVariables(Set<VarType> seen) {
             return this.upperBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
         }
@@ -76,10 +71,6 @@ public interface WildType extends PossiblyUnmodifiable, Type, ArgumentType {
     }
 
     interface Lower extends WildType {
-        @Override
-        default WildType.Lower stripMetadata() {
-            return this;
-        }
 
         @Override
         default boolean hasCyclicTypeVariables(Set<VarType> seen) {
