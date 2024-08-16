@@ -123,7 +123,7 @@ public class TypeOperationsImpl implements TypeOperations {
 
     @Override
     public TypeSolver compatibilitySolver() {
-        return new TypeBoundMapperSolver("CompatibilityTypeSolver",
+        return new TypeBoundMapperSolver("CompatibilityTypeSolver", TypeBound.Classification.CONSTRAINT,
                 Set.of(TypeBound.Equal.class, TypeBound.Subtype.class, TypeBound.Compatible.class),
                 COMPATIBILITY_APPLIER);
     }

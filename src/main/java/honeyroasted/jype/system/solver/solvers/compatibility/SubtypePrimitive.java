@@ -27,6 +27,9 @@ public class SubtypePrimitive implements UnaryTypeBoundMapper<TypeBound.Subtype>
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
-        context.bounds().accept(builder.setSatisfied(PRIM_SUPERS.get(((PrimitiveType) bound.left()).name()).contains(((PrimitiveType) bound.right()).name())));
+        PrimitiveType left = context.view(bound.left());
+        PrimitiveType right = context.view(bound.right());
+
+        context.bounds().accept(builder.setSatisfied(PRIM_SUPERS.get(left.name()).contains(right.name())));
     }
 }

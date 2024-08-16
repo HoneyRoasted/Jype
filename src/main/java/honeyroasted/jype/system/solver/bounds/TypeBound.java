@@ -5,7 +5,6 @@ import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,8 +25,6 @@ public interface TypeBound {
 
     List<?> parameters();
 
-    TypeBound createNew(List<Object> parameters);
-
     String simpleName();
 
     class False implements TypeBound {
@@ -40,11 +37,6 @@ public interface TypeBound {
         @Override
         public List<?> parameters() {
             return Collections.emptyList();
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return INSTANCE;
         }
 
         @Override
@@ -138,15 +130,10 @@ public interface TypeBound {
         }
     }
 
-    final class Infer extends Unary<VarType> {
+    final class Infer extends Unary<Type> {
 
-        public Infer(VarType value) {
+        public Infer(Type value) {
             super(value);
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Infer((VarType) parameters.get(0));
         }
 
         @Override
@@ -160,6 +147,24 @@ public interface TypeBound {
         }
     }
 
+    final class Replaced extends Binary<Type, Type> {
+
+
+        public Replaced(Type left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String simpleName() {
+            return "infer(" + this.left.simpleName() + " = " + this.right.simpleName() +" )";
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " = " + this.right + " SHOULD BE INFERRED";
+        }
+    }
+
     final class NarrowConstant extends Binary<ExpressionInformation.Constant, Type> {
 
         public NarrowConstant(ExpressionInformation.Constant left, Type right) {
@@ -169,11 +174,6 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " FITS IN " + this.right;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new NarrowConstant((ExpressionInformation.Constant) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -205,30 +205,20 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Equal((Type) parameters.get(0), (Type) parameters.get(1));
-        }
-
-        @Override
         public String simpleName() {
             return this.left.simpleName() + " = " + this.right.simpleName();
         }
     }
 
-    final class Instantiation extends Binary<MetaVarType, Type> {
+    final class Instantiation extends Binary<Type, Type> {
 
-        public Instantiation(MetaVarType left, Type right) {
+        public Instantiation(Type left, Type right) {
             super(left, right);
         }
 
         @Override
         public String toString() {
             return this.left + " IS INSTANTIATED AS " + this.right;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Instantiation((MetaVarType) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -273,11 +263,6 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS COMPATIBLE WITH " + this.right + " IN " + this.context;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Compatible((Type) parameters.get(0), (Type) parameters.get(1), (Context) parameters.get(2));
         }
 
         @Override
@@ -327,11 +312,6 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new ExpressionCompatible((ExpressionInformation) parameters.get(0), (Type) parameters.get(1), (Compatible.Context) parameters.get(2));
-        }
-
-        @Override
         public List<Object> parameters() {
             return List.of(this.left, this.right, this.context);
         }
@@ -367,19 +347,14 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Contains((Type) parameters.get(0), (Type) parameters.get(1));
-        }
-
-        @Override
         public String simpleName() {
             return this.left.simpleName() + " <= " + this.right.simpleName();
         }
     }
 
-    final class LambdaThrows extends Binary<ExpressionInformation, Type> {
+    final class LambdaThrows extends Binary<ExpressionInformation.Lambda, Type> {
 
-        public LambdaThrows(ExpressionInformation left, Type right) {
+        public LambdaThrows(ExpressionInformation.Lambda left, Type right) {
             super(left, right);
         }
 
@@ -389,8 +364,20 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new LambdaThrows((ExpressionInformation) parameters.get(0), (Type) parameters.get(1));
+        public String simpleName() {
+            return this.left.simpleName() + " throws(" + this.right.simpleName() + ")";
+        }
+    }
+
+    final class InvocationReferenceThrows extends Binary<ExpressionInformation.InvocationReference, Type> {
+
+        public InvocationReferenceThrows(ExpressionInformation.InvocationReference left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " THROWS " + this.right;
         }
 
         @Override
@@ -399,19 +386,31 @@ public interface TypeBound {
         }
     }
 
-    final class Throws extends Unary<Type> {
-        public Throws(Type type) {
+    final class InstantiationReferenceThrows extends Binary<ExpressionInformation.InstantiationReference, Type> {
+
+        public InstantiationReferenceThrows(ExpressionInformation.InstantiationReference left, Type right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left + " THROWS " + this.right;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left.simpleName() + " throws(" + this.right.simpleName() + ")";
+        }
+    }
+
+    final class Throws extends Unary<MetaVarType> {
+        public Throws(MetaVarType type) {
             super(type);
         }
 
         @Override
         public String toString() {
             return "THROWS " + this.value;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Throws((Type) parameters.get(0));
         }
 
         @Override
@@ -431,11 +430,6 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Capture((ParameterizedClassType) parameters.get(0), (ParameterizedClassType) parameters.get(1));
-        }
-
-        @Override
         public String simpleName() {
             return this.left.simpleName() + " = capture(" + this.right.simpleName() + ")";
         }
@@ -449,11 +443,6 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS A SUBTYPE OF " + this.right;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new Subtype((Type) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override
@@ -475,11 +464,6 @@ public interface TypeBound {
         }
 
         @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new TypeArgumentsMatch((ClassType) parameters.get(0), (ClassType) parameters.get(1));
-        }
-
-        @Override
         public String simpleName() {
             return "<" + this.left.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + "> ~= <" +
                     this.right.typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">";
@@ -494,11 +478,6 @@ public interface TypeBound {
         @Override
         public String toString() {
             return this.left + " IS A COMPATIBLE GENERIC ARGUMENT WITH " + this.right;
-        }
-
-        @Override
-        public TypeBound createNew(List<Object> parameters) {
-            return new GenericParameter((Type) parameters.get(0), (Type) parameters.get(1));
         }
 
         @Override

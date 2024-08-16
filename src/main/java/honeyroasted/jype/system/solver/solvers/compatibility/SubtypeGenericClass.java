@@ -22,8 +22,8 @@ public class SubtypeGenericClass implements UnaryTypeBoundMapper<TypeBound.Subty
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
         builder.setPropagation(TypeBound.Result.Propagation.AND);
 
-        ClassType l = (ClassType) bound.left();
-        ParameterizedClassType pcr = (ParameterizedClassType) bound.right();
+        ClassType l = context.view(bound.left());
+        ParameterizedClassType pcr = context.view(bound.right());
 
         Optional<ClassType> superTypeOpt = (l instanceof ParameterizedClassType pcl ? pcl : l.classReference().parameterized())
                 .relativeSupertype(pcr.classReference());

@@ -44,7 +44,7 @@ public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder
         }
 
         if (foundAllInstantiations) {
-            return Pair.of(instantiations, Collections.emptySet());
+            return Pair.of(instantiations, bounds);
         }
 
         Set<MetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
@@ -90,11 +90,11 @@ public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder
                     });
 
                     Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> incorporation = system.operations()
-                            .incorporationApplier().process(system, newBounds, new ArrayList<>());
+                            .incorporationApplier().process(system, new ArrayList<>(), newBounds, new ArrayList<>());
                     List<TypeBound.Result.Builder> incorporated = incorporation.left();
 
                     if (!incorporation.right().isEmpty()) {
-                        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, incorporated, incorporation.right());
+                        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, new ArrayList<>(), incorporated, incorporation.right());
                         incorporated = redux.left();
                     }
                     generatedBounds.addAll(incorporated);
@@ -138,11 +138,11 @@ public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder
 
 
             Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> incorporation = system.operations()
-                    .incorporationApplier().process(system, new ArrayList<>(generatedBounds), new ArrayList<>());
+                    .incorporationApplier().process(system, new ArrayList<>(), new ArrayList<>(generatedBounds), new ArrayList<>());
             List<TypeBound.Result.Builder> incorporated = incorporation.left();
 
             if (!incorporation.right().isEmpty()) {
-                Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, incorporated, incorporation.right());
+                Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> redux = system.operations().reductionApplier().process(system, new ArrayList<>(), incorporated, incorporation.right());
                 incorporated = redux.left();
             }
 
@@ -224,19 +224,20 @@ public class ResolveBounds implements TypeOperation<Set<TypeBound.Result.Builder
     }
 
     private Type findInstantiation(MetaVarType mvt, Set<TypeBound.Result.Builder> bounds) {
+        Set<Type> types = new LinkedHashSet<>();
+
         for (TypeBound.Result.Builder boundBuilder : bounds) {
             TypeBound bound = boundBuilder.bound();
             if (bound instanceof TypeBound.Equal eq) {
                 if (eq.left().typeEquals(mvt) && eq.right().isProperType()) {
-                    TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.right()), boundBuilder).setSatisfied(true);
-                    return eq.right();
+                    types.add(eq.right());
                 } else if (eq.right().equals(mvt) && eq.left().isProperType()) {
-                    TypeBound.Result.builder(new TypeBound.Instantiation(mvt, eq.left()), boundBuilder).setSatisfied(true);
-                    return eq.left();
+                    types.add(eq.left());
                 }
             }
         }
-        return null;
+
+        return types.isEmpty() ? null : mvt.typeSystem().operations().findMostSpecificType(types);
     }
 
     public Map<MetaVarType, Set<MetaVarType>> discoverDependencies(Set<TypeBound.Result.Builder> bounds) {

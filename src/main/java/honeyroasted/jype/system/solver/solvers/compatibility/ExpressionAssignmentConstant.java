@@ -18,13 +18,13 @@ public class ExpressionAssignmentConstant implements UnaryTypeBoundMapper<TypeBo
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
         builder.setPropagation(TypeBound.Result.Propagation.OR);
 
-        Type target = bound.right();
         ExpressionInformation.Constant constantExpression = (ExpressionInformation.Constant) bound.left();
-        Type subtype = constantExpression.type(target.typeSystem());
+        Type subtype = constantExpression.type(context.system());
 
-        TypeConstants c = target.typeSystem().constants();
+        TypeConstants c = context.system().constants();
 
-        Type cnst = constantExpression.type(subtype.typeSystem());
+        Type target = context.view(bound.right());
+        Type cnst = context.view(subtype);
         Object val = constantExpression.value();
 
         if (cnst.typeEquals(c.byteType()) || cnst.typeEquals(c.shortType()) || cnst.typeEquals(c.charType()) || cnst.typeEquals(c.intType())) {
@@ -55,7 +55,7 @@ public class ExpressionAssignmentConstant implements UnaryTypeBoundMapper<TypeBo
             }
         }
 
-        context.constraints().accept(TypeBound.Result.builder(new TypeBound.Compatible(subtype, target, LOOSE_INVOCATION), builder));
+        context.constraints().accept(TypeBound.Result.builder(new TypeBound.Compatible(subtype, bound.right(), LOOSE_INVOCATION), builder));
     }
 
     private static boolean fits(Object obj, long min, long max) {

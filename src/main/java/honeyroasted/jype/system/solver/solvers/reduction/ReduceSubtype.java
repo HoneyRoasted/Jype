@@ -26,38 +26,41 @@ public class ReduceSubtype implements UnaryTypeBoundMapper<TypeBound.Subtype> {
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
         builder.setPropagation(TypeBound.Result.Propagation.AND);
 
-        if (bound.left().isProperType() && bound.right().isProperType()) {
+        Type left = context.view(bound.left());
+        Type right = context.view(bound.right());
+
+        if (left.isProperType() && right.isProperType()) {
             context.system().operations().compatibilityApplier()
                     .apply(context.system(), bound, TypeBound.Classification.BOUND, builder);
-        } else if (bound.left().isNullType()) {
+        } else if (left.isNullType()) {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
             builder.setSatisfied(true);
-        } else if (bound.right().isNullType()) {
+        } else if (right.isNullType()) {
             builder.setPropagation(TypeBound.Result.Propagation.NONE);
             builder.setSatisfied(false);
-        } else if (bound.left() instanceof MetaVarType || bound.right() instanceof MetaVarType) {
+        } else if (left instanceof MetaVarType || right instanceof MetaVarType) {
             context.bounds().accept(TypeBound.Result.builder(bound, builder));
-        } else if (bound.right() instanceof VarType vt) {
-            if (bound.left() instanceof IntersectionType it && it.typeContains(vt)) {
+        } else if (right instanceof VarType vt) {
+            if (left instanceof IntersectionType it && it.typeContains(vt)) {
                 builder.setSatisfied(true);
             } else {
                 builder.setSatisfied(false);
             }
-        } else if (bound.right() instanceof MetaVarType mvt) {
-            if (bound.left() instanceof IntersectionType it && it.typeContains(mvt)) {
+        } else if (right instanceof MetaVarType mvt) {
+            if (left instanceof IntersectionType it && it.typeContains(mvt)) {
                 builder.setSatisfied(true);
             } else if (!mvt.lowerBounds().isEmpty()) {
-                context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), mvt.lowerBound()), builder));
+                context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(left, mvt.lowerBound()), builder));
             } else {
                 builder.setSatisfied(false);
             }
-        } else if (bound.right() instanceof IntersectionType it) {
-            it.children().forEach(t -> context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), t), builder)));
-        } else if (bound.right() instanceof ClassType ct) {
+        } else if (right instanceof IntersectionType it) {
+            it.children().forEach(t -> context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(left, t), builder)));
+        } else if (right instanceof ClassType ct) {
             if (ct.hasAnyTypeArguments()) {
-                TypeBound.Result.Builder classTypeMatch = TypeBound.Result.builder(new TypeBound.Subtype(bound.left(), ct.classReference()), TypeBound.Result.Propagation.OR, builder);
+                TypeBound.Result.Builder classTypeMatch = TypeBound.Result.builder(new TypeBound.Subtype(left, ct.classReference()), TypeBound.Result.Propagation.OR, builder);
 
-                Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), bound.left(), classTypeMatch);
+                Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), left, classTypeMatch);
                 if (supertypeOpt.isPresent()) {
                     ClassType supertype = supertypeOpt.get();
                     if (supertype.hasAnyTypeArguments() && supertype.typeArguments().size() == ct.typeArguments().size()) {
@@ -77,15 +80,15 @@ public class ReduceSubtype implements UnaryTypeBoundMapper<TypeBound.Subtype> {
                 context.system().operations().compatibilityApplier()
                         .apply(context.system(), bound, TypeBound.Classification.BOUND, builder);
             }
-        } else if (bound.right() instanceof ArrayType at) {
-            if (bound.left() instanceof ArrayType lat) {
+        } else if (right instanceof ArrayType at) {
+            if (left instanceof ArrayType lat) {
                 if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
                     context.bounds().accept(TypeBound.Result.builder(new TypeBound.Equal(lat.component(), at.component()), builder));
                 } else {
                     context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(lat.component(), at.component()), builder));
                 }
             } else {
-                Set<Type> arr = findMostSpecificArrayTypes(bound.left());
+                Set<Type> arr = findMostSpecificArrayTypes(left);
                 if (arr.isEmpty()) {
                     builder.setSatisfied(false);
                 } else {

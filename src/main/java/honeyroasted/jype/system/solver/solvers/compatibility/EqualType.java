@@ -12,6 +12,6 @@ public class EqualType implements UnaryTypeBoundMapper<TypeBound.Equal> {
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Equal bound) {
-        context.bounds().accept(builder.setSatisfied(bound.left().typeEquals(bound.right())));
+        context.bounds().accept(builder.setSatisfied(context.view(bound.left()).typeEquals(context.view(bound.right()))));
     }
 }

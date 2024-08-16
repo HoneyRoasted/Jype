@@ -21,15 +21,15 @@ public class IncorporationEqualSubtype implements BinaryTypeBoundMapper<TypeBoun
                 leftBuild, rightBuilder);
 
         if (leftBound.hasMetaVar()) {
-            MetaVarType mvt = leftBound.getMetaVar().orElse(null);
-            Type otherType = leftBound.getOtherType().orElse(null);
+            MetaVarType mvt = context.view(leftBound.getMetaVar().orElse(null));
+            Type otherType = context.view(leftBound.getOtherType().orElse(null));
             MetaVarTypeResolver subResolver = new MetaVarTypeResolver(Map.of(mvt, otherType));
 
-            if (rightBound.left().typeEquals(mvt)) {
+            if (context.view(rightBound.left()).typeEquals(mvt)) {
                 //Case where alpha = S and alpha <: T => S <: T (18.3.1, Bullet #2)
                 context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(otherType, rightBound.right()), TypeBound.Result.Propagation.AND,
                         leftBuild, rightBuilder));
-            } else if (rightBound.right().typeEquals(mvt)) {
+            } else if (context.view(rightBound.right()).typeEquals(mvt)) {
                 //Case where alpha = S and T <: alpha => T <: S (18.3.1, Bullet #3)
                 context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(rightBound.left(), otherType), TypeBound.Result.Propagation.AND,
                         leftBuild, rightBuilder));

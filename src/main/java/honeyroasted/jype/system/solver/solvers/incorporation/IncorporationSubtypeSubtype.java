@@ -24,15 +24,15 @@ public class IncorporationSubtypeSubtype implements BinaryTypeBoundMapper<TypeBo
         addAll(context.defaultConsumer(),
                 leftBuild, rightBuilder);
 
-        if (leftBound.left() instanceof MetaVarType mvt && mvt.typeEquals(rightBound.right())) {
+        if (context.view(leftBound.left()) instanceof MetaVarType mvt && mvt.typeEquals(context.view(rightBound.right()))) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
             context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(leftBound.right(), rightBound.left()), leftBuild, rightBuilder));
         }
 
-        if (leftBound.left() instanceof MetaVarType mvt && mvt.typeEquals(rightBound.left())) {
+        if (context.view(leftBound.left()) instanceof MetaVarType mvt && mvt.typeEquals(context.view(rightBound.left()))) {
             //Case where alpha <: T and alpha <: S and generic supertype G of T and S exists => generic parameters
             // that aren't wildcards are equal (18.3.1, Last Paragraph)
-            commonSupertypes(leftBound.right(), rightBound.right()).forEach(pair -> {
+            commonSupertypes(context.view(leftBound.right()), context.view(rightBound.right())).forEach(pair -> {
                 if (pair.left().typeArguments().size() == pair.right().typeArguments().size()) {
                     for (int i = 0; i < pair.left().typeArguments().size(); i++) {
                         Type left = pair.left().typeArguments().get(i);

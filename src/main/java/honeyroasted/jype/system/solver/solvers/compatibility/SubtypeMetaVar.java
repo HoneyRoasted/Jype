@@ -13,8 +13,8 @@ public class SubtypeMetaVar implements UnaryTypeBoundMapper<TypeBound.Subtype> {
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
-        Type subtype = bound.left();
-        Type supertype = bound.right();
+        Type subtype = context.view(bound.left());
+        Type supertype = context.view(bound.right());
         if (subtype instanceof MetaVarType mvt) {
             if (mvt.upperBounds().isEmpty()) {
                 context.bounds().accept(builder.setSatisfied(false));

@@ -14,8 +14,8 @@ public class SubtypeRawClass implements UnaryTypeBoundMapper<TypeBound.Subtype> 
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
-        ClassType l = (ClassType) bound.left();
-        ClassType r = (ClassType) bound.right();
+        ClassType l = context.view(bound.left());
+        ClassType r = context.view(bound.right());
 
         if (l.hasRelevantOuterType() || r.hasRelevantOuterType()) {
             if (l.hasAnyTypeArguments() && r.hasAnyTypeArguments()) {

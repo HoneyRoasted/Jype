@@ -14,8 +14,8 @@ public class ReduceEqual implements UnaryTypeBoundMapper<TypeBound.Equal> {
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Equal bound) {
-        Type s = bound.left();
-        Type t = bound.right();
+        Type s = context.view(bound.left());
+        Type t = context.view(bound.right());
 
         if (s.isProperType() && t.isProperType()) {
             context.bounds().accept(builder.setSatisfied(s.typeEquals(t)));

@@ -13,8 +13,8 @@ public class ReduceContains implements UnaryTypeBoundMapper<TypeBound.Contains> 
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Contains bound) {
-        Type s = bound.left();
-        Type t = bound.right();
+        Type s = context.view(bound.left());
+        Type t = context.view(bound.right());
 
         if (t instanceof WildType) {
             if (t instanceof WildType.Upper wtu) {

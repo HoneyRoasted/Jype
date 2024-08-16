@@ -24,7 +24,7 @@ public class ReduceInstantiationExpression implements UnaryTypeBoundMapper<TypeB
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.ExpressionCompatible bound) {
         ExpressionInformation.Instantiation inst = (ExpressionInformation.Instantiation) bound.left();
-        ClassReference targetType = inst.type();
+        ClassReference targetType = context.view(inst.type());
 
         List<ExpressionInformation> params = new ArrayList<>(inst.parameters());
 

@@ -13,7 +13,7 @@ public class FindMostSpecificTypes implements TypeOperation<Set<Type>, Set<Type>
         Set<Type> result = new LinkedHashSet<>();
         for (Type curr : types) {
             if (types.stream().noneMatch(t ->
-                    system.operations().isSubtype(t, curr))) {
+                    t != curr && system.operations().isSubtype(t, curr))) {
                 result.add(curr);
             }
         }

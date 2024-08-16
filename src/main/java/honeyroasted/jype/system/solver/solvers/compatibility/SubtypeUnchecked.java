@@ -15,8 +15,8 @@ public class SubtypeUnchecked implements UnaryTypeBoundMapper<TypeBound.Subtype>
 
     @Override
     public void map(Context context, TypeBound.Result.Builder builder, TypeBound.Subtype bound) {
-        ClassType l = (ClassType) bound.left();
-        ClassType r = (ClassType) bound.right();
+        ClassType l = context.view(bound.left());
+        ClassType r = context.view(bound.right());
 
         context.bounds().accept(TypeBound.Result.builder(new TypeBound.Subtype(l.classReference(), r.classReference()), builder)
                 .setSatisfied(l.classReference().hasSupertype(r.classReference())));

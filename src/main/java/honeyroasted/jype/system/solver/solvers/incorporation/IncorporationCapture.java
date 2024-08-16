@@ -25,8 +25,8 @@ public class IncorporationCapture implements UnaryTypeBoundMapper<TypeBound.Capt
         context.defaultConsumer().accept(boundBuilder);
 
         //Bounds Involving Capture Conversion, 18.3.2
-        ParameterizedClassType left = capture.left(); //G<alpha_1...alpha_n>
-        ParameterizedClassType right = capture.right(); //G<A_1...A_n>
+        ParameterizedClassType left = context.view(capture.left()); //G<alpha_1...alpha_n>
+        ParameterizedClassType right = context.view(capture.right()); //G<A_1...A_n>
         //P_l = parameter l of G
         //B_l = bound of P_l
 
@@ -57,14 +57,14 @@ public class IncorporationCapture implements UnaryTypeBoundMapper<TypeBound.Capt
                     if (a instanceof WildType) {
                         for (TypeBound.Result.Builder otherBuilder : context.currentBounds()) {
                             TypeBound other = otherBuilder.bound();
-                            if (other instanceof TypeBound.Equal eq && ((eq.left().typeEquals(alpha) && !(eq.right() instanceof MetaVarType))
-                                    || (eq.right().typeEquals(alpha) && !(eq.left() instanceof MetaVarType)))) {
+                            if (other instanceof TypeBound.Equal eq && ((context.view(eq.left()).typeEquals(alpha) && !(context.view(eq.right()) instanceof MetaVarType))
+                                    || (context.view(eq.right()).typeEquals(alpha) && !(context.view(eq.left()) instanceof MetaVarType)))) {
                                 //Case where Ai is a wildcard and alpha_i = R => false (18.3.2 Bullets #2.1, 3.1, 4.1)
                                 context.bounds().accept(TypeBound.Result.builder(TypeBound.False.INSTANCE, boundBuilder, otherBuilder));
                             } else if (other instanceof TypeBound.Subtype st) {
-                                if (st.left().typeEquals(alpha) && !(st.right() instanceof MetaVarType)) {
+                                if (context.view(st.left()).typeEquals(alpha) && !(context.view(st.right()) instanceof MetaVarType)) {
                                     //alpha <: R
-                                    Type r = st.right();
+                                    Type r = context.view(st.right());
                                     if (a instanceof WildType.Upper wtu) {
                                         if (wtu.hasDefaultBounds()) { //?
                                             //Case where A_i is a wildcard of form ? and alpha_i <: R => B_i[theta] <: R (18.3.2 Bullets #2.2, 3.3)
@@ -82,9 +82,9 @@ public class IncorporationCapture implements UnaryTypeBoundMapper<TypeBound.Capt
                                         bi.forEach(bii -> context.constraints().accept(TypeBound.Result.builder(
                                                 new TypeBound.Subtype(theta.apply(bii), r), boundBuilder, otherBuilder)));
                                     }
-                                } else if (st.right().typeEquals(alpha) && !(st.left() instanceof MetaVarType)) {
+                                } else if (context.view(st.right()).typeEquals(alpha) && !(context.view(st.left()) instanceof MetaVarType)) {
                                     //r <: alpha
-                                    Type r = st.left();
+                                    Type r = context.view(st.left());
                                     if (a instanceof WildType.Upper wtu) {
                                         //Case where A_i is a wildcard of form ? or ? extends T and R <: alpha_i => false (18.3.2 Bullets #2.3, 3.4)
                                         context.bounds().accept(TypeBound.Result.builder(

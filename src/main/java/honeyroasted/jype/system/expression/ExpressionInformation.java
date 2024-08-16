@@ -29,10 +29,6 @@ public interface ExpressionInformation {
         return Optional.empty();
     }
 
-    default <T> ExpressionInformation.Mapped<T> mapped(TypeMappingVisitor<T> mapper, Supplier<T> contextFactory) {
-        return new Mapped<>(this, mapper, contextFactory);
-    }
-
     class Mapped<T> implements ExpressionInformation {
         private ExpressionInformation delegate;
         private TypeMappingVisitor<T> mapper;
@@ -122,14 +118,6 @@ public interface ExpressionInformation {
     interface Multi extends ExpressionInformation {
         List<? extends ExpressionInformation> children();
 
-        Multi createNew(List<ExpressionInformation> children);
-
-        @Override
-        default <T> Mapped<T> mapped(TypeMappingVisitor<T> mapper, Supplier<T> contextFactory) {
-            return new Mapped<>(this.createNew(this.children().stream().map(expr -> (ExpressionInformation) expr.mapped(mapper, contextFactory)).toList()),
-                    mapper, contextFactory);
-        }
-
         @Override
         default boolean isSimplyTyped() {
             return this.children().stream().allMatch(ExpressionInformation::isSimplyTyped);
@@ -192,6 +180,8 @@ public interface ExpressionInformation {
 
     interface InstantiationReference extends ExpressionInformation {
         InstantiableType type();
+
+        List<Type> explicitTypeArguments();
     }
 
     interface InvocationReference extends ExpressionInformation {

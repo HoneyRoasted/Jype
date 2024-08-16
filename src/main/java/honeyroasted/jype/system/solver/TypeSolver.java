@@ -45,6 +45,10 @@ public interface TypeSolver {
             this.success = this.parents().stream().allMatch(TypeBound.Result::satisfied);
         }
 
+        public static Result build(Set<TypeBound.Result.Builder> bounds) {
+            return new Result(bounds.stream().map(TypeBound.Result.Builder::build).collect(Collectors.toCollection(LinkedHashSet::new)));
+        }
+
         public boolean satisfied(TypeBound bound) {
             return this.all().stream().anyMatch(r -> r.satisfied() && r.bound().equals(bound));
         }
@@ -191,8 +195,8 @@ public interface TypeSolver {
         public String toString(boolean useSimpleName) {
             StringBuilder sb = new StringBuilder();
             Set<TypeBound.Result> originators = this.parents();
-            sb.append("\n")
-                    .append("== Results: ").append(originators.size()).append(" ==\n");
+            sb.append("\n").append("==== Results: ").append(originators.size())
+                    .append(", Successful: ").append(this.success).append(" ====\n");
 
             Iterator<TypeBound.Result> iter = originators.iterator();
             while (iter.hasNext()) {

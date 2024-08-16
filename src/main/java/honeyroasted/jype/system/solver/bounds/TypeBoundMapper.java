@@ -1,9 +1,8 @@
 package honeyroasted.jype.system.solver.bounds;
 
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.Type;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +10,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public interface TypeBoundMapper {
 
@@ -45,17 +45,6 @@ public interface TypeBoundMapper {
 
     void map(Context context, TypeBound.Result.Builder... input);
 
-    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeSystem system, TypeBound.Classification classification, TypeBound.Result.Builder... input) {
-        List<TypeBound.Result.Builder> bounds = new ArrayList<>();
-        List<TypeBound.Result.Builder> constraints = new ArrayList<>();
-        this.map(new Context(bounds::add, constraints::add, bounds, constraints, system, classification), input);
-        return Pair.of(bounds, constraints);
-    }
-
-    default Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> map(TypeSystem system, TypeBound.Classification classification, List<TypeBound.Result.Builder> input) {
-        return this.map(system, classification, input.toArray(TypeBound.Result.Builder[]::new));
-    }
-
     default <T> void addAll(Consumer<? super T> collection, T... arr) {
         for (T t : arr) {
             collection.accept(t);
@@ -70,7 +59,8 @@ public interface TypeBoundMapper {
 
     record Context(Consumer<TypeBound.Result.Builder> bounds, Consumer<TypeBound.Result.Builder> constraints,
                    Collection<TypeBound.Result.Builder> currentBounds, Collection<TypeBound.Result.Builder> currentConstraints,
-                   TypeSystem system, TypeBound.Classification classification) {
+                   TypeSystem system, TypeBound.Classification classification,
+                   List<Function<Type, Type>> typeModifiers) {
 
         public Consumer<TypeBound.Result.Builder> consumerFor(TypeBound.Classification classification) {
             return classification == TypeBound.Classification.BOUND ? this.bounds : this.constraints;
@@ -80,5 +70,17 @@ public interface TypeBoundMapper {
             return consumerFor(this.classification);
         }
 
+        public Context addTypeModifier(Function<Type, Type> fn) {
+            this.typeModifiers.add(fn);
+            return this;
+        }
+
+        public <T extends Type> T view(Type type) {
+            Type current = type;
+            for (Function<Type, Type> mods : this.typeModifiers) {
+                current = mods.apply(current);
+            }
+            return (T) current;
+        }
     }
 }

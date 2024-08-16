@@ -2,6 +2,7 @@ package honeyroasted.jype.system.solver.bounds;
 
 import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.Type;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,6 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -41,14 +43,14 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
             Collections.addAll(constraintSet, input);
         }
 
-        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = this.process(context.system(), boundSet, constraintSet);
+        Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> result = this.process(context.system(), context.typeModifiers(), boundSet, constraintSet);
         addAll(context.bounds(), result.left());
         addAll(context.constraints(), result.right());
     }
 
     public TypeBound.Result.Builder apply(TypeSystem system, TypeBound bound, TypeBound.Classification classification, TypeBound.Result.Builder... parents) {
         TypeBound.Result.Builder child = TypeBound.Result.builder(bound, parents);
-        this.process(system, classification == TypeBound.Classification.BOUND ? List.of(child) : Collections.emptyList(),
+        this.process(system, new ArrayList<>(), classification == TypeBound.Classification.BOUND ? List.of(child) : Collections.emptyList(),
                 classification == TypeBound.Classification.BOUND ? Collections.emptyList() : List.of(child));
         return child;
     }
@@ -57,7 +59,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         return apply(system, bound, classification, parents).satisfied();
     }
 
-    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(TypeSystem system, List<TypeBound.Result.Builder> inputBounds, List<TypeBound.Result.Builder> inputConstraints) {
+    public Pair<List<TypeBound.Result.Builder>, List<TypeBound.Result.Builder>> process(TypeSystem system, List<Function<Type, Type>> typeMappers, List<TypeBound.Result.Builder> inputBounds, List<TypeBound.Result.Builder> inputConstraints) {
         QuadList<TypeBound.Result.Builder> constraints = new QuadList<>(inputConstraints, ArrayList::new);
         QuadList<TypeBound.Result.Builder> bounds = new QuadList<>(inputBounds, ArrayList::new);
 
@@ -71,13 +73,13 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
                 bounds.stepForwards();
 
                 if (mapper.accepts(TypeBound.Classification.CONSTRAINT)) {
-                    applyMapper(system, mapper, TypeBound.Classification.CONSTRAINT, constraints, bounds, constraints);
+                    applyMapper(system, mapper, TypeBound.Classification.CONSTRAINT, typeMappers, constraints, bounds, constraints);
                 } else {
                     constraints.addPreviousToCurrent();
                 }
 
                 if (mapper.accepts(TypeBound.Classification.BOUND)) {
-                    applyMapper(system, mapper, TypeBound.Classification.BOUND, bounds, bounds, constraints);
+                    applyMapper(system, mapper, TypeBound.Classification.BOUND, typeMappers, bounds, bounds, constraints);
                 } else {
                     bounds.addPreviousToCurrent();
                 }
@@ -86,7 +88,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         return Pair.of(bounds.current(), constraints.current());
     }
 
-    private static void applyMapper(TypeSystem system, TypeBoundMapper mapper, TypeBound.Classification classification, QuadList<TypeBound.Result.Builder> input, QuadList<TypeBound.Result.Builder> bounds, QuadList<TypeBound.Result.Builder> constraints) {
+    private static void applyMapper(TypeSystem system, TypeBoundMapper mapper, TypeBound.Classification classification, List<Function<Type, Type>> typeMappers, QuadList<TypeBound.Result.Builder> input, QuadList<TypeBound.Result.Builder> bounds, QuadList<TypeBound.Result.Builder> constraints) {
         for (TypeBound.Result.Builder constraint : input.previous()) {
             if (mapper.accepts(constraint)) {
                 input.processing().add(constraint);
@@ -99,7 +101,7 @@ public class TypeBoundMapperApplier implements TypeBoundMapper {
         consumeSubsets(input.processing(), mapper.arity(), mapper.commutative(), arr -> {
             if (mapper.accepts(arr)) {
                 Collections.addAll(consumed, arr);
-                mapper.map(new Context(t -> addToBoundList(t, bounds.current()), t -> addToBoundList(t, constraints.current()), bounds.previous(), constraints.previous(), system, classification), arr);
+                mapper.map(new Context(t -> addToBoundList(t, bounds.current()), t -> addToBoundList(t, constraints.current()), bounds.previous(), constraints.previous(), system, classification, typeMappers), arr);
             }
         });
 
