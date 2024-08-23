@@ -1,11 +1,12 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.Copyable;
-import honeyroasted.jype.modify.Pair;
+import honeyroasted.collect.copy.Copyable;
+import honeyroasted.collect.multi.Pair;
+import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
-import honeyroasted.jype.system.solver.bounds.TypeBound;
+import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 
@@ -14,10 +15,9 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
-public interface Type extends Copyable<Type> {
+public interface Type extends Copyable<Type, TypeCache<Type, Type>> {
 
     TypeSystem typeSystem();
 
@@ -25,20 +25,20 @@ public interface Type extends Copyable<Type> {
 
     <R, P> R accept(TypeVisitor<R, P> visitor, P context);
 
-    Metadata metadata();
+    PropertySet metadata();
 
     default <R, P> R accept(TypeVisitor<R, P> visitor) {
         return accept(visitor, null);
     }
 
-    default boolean isCompatibleTo(Type other, TypeBound.Compatible.Context context) {
+    default boolean isCompatibleTo(Type other, TypeConstraints.Compatible.Context context) {
         return this.typeSystem().operations().isCompatible(this, other, context);
     }
 
     default boolean isAssignableTo(Type other) {
-        return this.isCompatibleTo(other, TypeBound.Compatible.Context.ASSIGNMENT);
+        return this.isCompatibleTo(other, TypeConstraints.Compatible.Context.ASSIGNMENT);
     }
-    
+
     static boolean baseCaseEquivalence(Type left, Type other, Set<Pair<Type, Type>> seen) {
         if (left == other) return true;
         if (seen.contains(Pair.identity(left, other))) return true;
@@ -50,7 +50,7 @@ public interface Type extends Copyable<Type> {
             seen = concat(seen, Pair.identity(other, left));
             return other.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && other.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
         }
-        
+
         if (other instanceof MetaVarType mvt) {
             Set<Pair<Type, Type>> finalSeen = concat(seen, Pair.identity(left, other));
             return left.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.equals(other, Equality.EQUIVALENT, finalSeen));
@@ -58,8 +58,8 @@ public interface Type extends Copyable<Type> {
             seen = concat(seen, Pair.identity(left, other));
             return left.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && left.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
         }
-        
-        
+
+
         return false;
     }
 
@@ -98,13 +98,13 @@ public interface Type extends Copyable<Type> {
         if (left == null || right == null) return false;
         return left.equals(right, Equality.STRUCTURAL, seen);
     }
-    
+
     static boolean equals(Type left, Type right, Equality kind, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
         if (left == null || right == null) return false;
-        return left.equals(right, kind, seen);    
+        return left.equals(right, kind, seen);
     }
-    
+
 
     static boolean equals(List<? extends Type> left, List<? extends Type> right, Equality kind, Set<Pair<Type, Type>> seen) {
         if (left == right) return true;
@@ -147,7 +147,7 @@ public interface Type extends Copyable<Type> {
         if (type == null) return 0;
         return type.hashCode(seen);
     }
-    
+
     static int hashCode(List<? extends Type> list, Set<Type> seen) {
         if (list == null) return 0;
 
@@ -189,7 +189,7 @@ public interface Type extends Copyable<Type> {
     default boolean structuralEquals(Type other) {
         return this.equals(other, Equality.STRUCTURAL);
     }
-    
+
     enum Equality {
         STRUCTURAL,
         EQUIVALENT
@@ -207,8 +207,9 @@ public interface Type extends Copyable<Type> {
 
     <T extends Type> T copy(TypeCache<Type, Type> cache);
 
+    @Override
     default <T extends Type> T copy() {
-        return copy(new InMemoryTypeCache<>());
+        return copy(new InMemoryTypeCache<>(Type.class, Type.class));
     }
 
     default boolean isProperType() {
@@ -223,36 +224,13 @@ public interface Type extends Copyable<Type> {
         return false;
     }
 
-    interface Metadata extends Copyable<Metadata> {
-        <T> Metadata attach(Class<? extends T> type, T data);
-
-        default Metadata attach(Object data) {
-            if (data != null) {
-                this.attach(data.getClass(), data);
-            }
-            return this;
-        }
-
-        Metadata detach(Class<?> type);
-
-        Metadata detachAll();
-
-        <T> Optional<T> get(Class<? extends T> type);
-
-        boolean has(Class<?> type);
-
-        Set<Class<?>> allMetadata();
-
-        Metadata copyFrom(Metadata other, TypeCache<Type, Type> cache);
-
-        default Metadata merge(Metadata other) {
-            other.allMetadata().forEach(c -> {
-                if (!this.has(c)) {
-                    this.attach(c, other.get(c).get());
-                }
-            });
-            return this;
-        }
+    @Override
+    default boolean isResultType(Object object) {
+        return object instanceof Type;
     }
 
+    @Override
+    default boolean isContextType(Object object) {
+        return object instanceof TypeCache<?, ?> tc && tc.keyType() == Type.class && tc.valueType() == Type.class;
+    }
 }

@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.location.ClassNamespace;
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ClassReference;
@@ -63,6 +63,10 @@ public final class PrimitiveTypeImpl extends AbstractType implements PrimitiveTy
 
     @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
-        return (T) this;
+        PrimitiveType copy = this.typeSystem().typeFactory().newPrimitiveType(this.namespace, this.box, this.descriptor);
+        cache.put(this, copy);
+
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
+        return (T) copy;
     }
 }

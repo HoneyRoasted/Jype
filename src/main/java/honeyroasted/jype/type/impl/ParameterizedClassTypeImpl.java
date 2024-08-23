@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.location.ClassNamespace;
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
@@ -40,7 +40,7 @@ public final class ParameterizedClassTypeImpl extends AbstractPossiblyUnmodifiab
         ParameterizedClassType copy = this.typeSystem().typeFactory().newParameterizedClassType();
         cache.put(this, copy);
 
-        copy.metadata().copyFrom(this.metadata(), cache);
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setClassReference(this.classReference.copy(cache));
         copy.setOuterType(this.outerType == null ? outerType : outerType.copy(cache));
         copy.setTypeArguments(this.typeArguments.stream().map(t -> (ArgumentType) t.copy(cache)).toList());

@@ -1,1 +1,1 @@
-moduleSearchIndex = [{"l":"Jype.main"}];updateSearchResults();
+moduleSearchIndex = [];updateSearchResults();

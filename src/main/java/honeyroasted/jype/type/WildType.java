@@ -1,6 +1,6 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.collect.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
 import java.util.Collection;

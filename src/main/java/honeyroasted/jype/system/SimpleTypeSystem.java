@@ -150,7 +150,7 @@ public class SimpleTypeSystem implements TypeSystem {
     }
 
     @Override
-    public<T extends MethodReference> Optional<T> resolve(MethodLocation methodLocation) {
+    public <T extends MethodReference> Optional<T> resolve(MethodLocation methodLocation) {
         return (Optional<T>) this.resolve(MethodLocation.class, MethodReference.class, methodLocation);
     }
 

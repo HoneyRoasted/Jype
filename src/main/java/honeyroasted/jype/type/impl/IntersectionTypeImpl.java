@@ -1,6 +1,6 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.Pair;
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.IntersectionType;
@@ -95,7 +95,7 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
         IntersectionType copy = this.typeSystem().typeFactory().newIntersectionType();
         cache.put(this, copy);
 
-        copy.metadata().copyFrom(this.metadata(), cache);
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setChildren((Set) this.children.stream().map(Type::copy).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
         return (T) copy;

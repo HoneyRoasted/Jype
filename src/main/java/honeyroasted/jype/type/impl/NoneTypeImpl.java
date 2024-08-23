@@ -1,6 +1,6 @@
 package honeyroasted.jype.type.impl;
 
-import honeyroasted.jype.modify.Pair;
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.NoneType;
@@ -52,6 +52,10 @@ public final class NoneTypeImpl extends AbstractType implements NoneType {
 
     @Override
     public <T extends Type> T copy(TypeCache<Type, Type> cache) {
-        return (T) this;
+        NoneType copy = this.typeSystem().typeFactory().newNoneType(this.name);
+        cache.put(this, copy);
+
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
+        return (T) copy;
     }
 }

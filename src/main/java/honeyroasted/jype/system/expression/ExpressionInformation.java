@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.expression;
 
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.visitor.visitors.TypeMappingVisitor;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.InstantiableType;
 import honeyroasted.jype.type.IntersectionType;
@@ -11,7 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public interface ExpressionInformation {
 
@@ -25,39 +24,8 @@ public interface ExpressionInformation {
         return false;
     }
 
-    default Optional<Type> getSimpleType(TypeSystem system) {
+    default Optional<Type> getSimpleType(TypeSystem system, Function<Type, Type> mapper) {
         return Optional.empty();
-    }
-
-    class Mapped<T> implements ExpressionInformation {
-        private ExpressionInformation delegate;
-        private TypeMappingVisitor<T> mapper;
-        private Supplier<T> contextFactory;
-
-        public Mapped(ExpressionInformation delegate, TypeMappingVisitor<T> mapper, Supplier<T> contextFactory) {
-            this.delegate = delegate;
-            this.mapper = mapper;
-            this.contextFactory = contextFactory;
-        }
-
-        public ExpressionInformation delegate() {
-            return this.delegate;
-        }
-
-        @Override
-        public String simpleName() {
-            return this.delegate.simpleName();
-        }
-
-        @Override
-        public boolean isSimplyTyped() {
-            return this.delegate.isSimplyTyped();
-        }
-
-        @Override
-        public Optional<Type> getSimpleType(TypeSystem system) {
-            return this.delegate.getSimpleType(system).map(t -> this.mapper.visit(t, this.contextFactory.get()));
-        }
     }
 
     interface SimplyTyped extends ExpressionInformation {
@@ -91,8 +59,8 @@ public interface ExpressionInformation {
         }
 
         @Override
-        default Optional<Type> getSimpleType(TypeSystem system) {
-            return Optional.of(this.type(system));
+        default Optional<Type> getSimpleType(TypeSystem system, Function<Type, Type> mapper) {
+            return Optional.of(mapper.apply(this.type(system)));
         }
     }
 
@@ -124,7 +92,7 @@ public interface ExpressionInformation {
         }
 
         @Override
-        default Optional<Type> getSimpleType(TypeSystem system) {
+        default Optional<Type> getSimpleType(TypeSystem system, Function<Type, Type> mapper) {
             if (!this.isSimplyTyped()) {
                 return Optional.empty();
             }
@@ -132,11 +100,11 @@ public interface ExpressionInformation {
             if (this.children().isEmpty()) {
                 return Optional.of(system.constants().nullType());
             } else if (this.children().size() == 1) {
-                return this.children().get(0).getSimpleType(system);
+                return this.children().get(0).getSimpleType(system, Function.identity());
             } else {
                 Set<Type> childrenTypes = new LinkedHashSet<>();
                 this.children().forEach(c -> {
-                    Type childType = c.getSimpleType(system).get();
+                    Type childType = c.getSimpleType(system, Function.identity()).get();
 
                     if (childType instanceof IntersectionType it) {
                         childrenTypes.addAll(it.children());
@@ -145,7 +113,7 @@ public interface ExpressionInformation {
                     }
                 });
 
-                return Optional.of(IntersectionType.of(childrenTypes, system));
+                return Optional.of(mapper.apply(IntersectionType.of(childrenTypes, system)));
             }
         }
     }
@@ -186,7 +154,9 @@ public interface ExpressionInformation {
 
     interface InvocationReference extends ExpressionInformation {
         ExpressionInformation source();
+
         String methodName();
+
         List<Type> explicitTypeArguments();
     }
 

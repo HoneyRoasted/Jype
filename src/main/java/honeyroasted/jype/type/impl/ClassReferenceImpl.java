@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.location.ClassNamespace;
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.InMemoryTypeCache;
 import honeyroasted.jype.system.cache.TypeCache;
@@ -45,7 +45,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         ClassReference copy = this.typeSystem().typeFactory().newClassReference();
         cache.put(this, copy);
 
-        copy.metadata().copyFrom(this.metadata(), cache);
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setNamespace(this.namespace);
         copy.setModifiers(this.modifiers);
         copy.setOuterClass(this.outerClass == null ? this.outerClass : this.outerClass.copy(cache));
@@ -88,7 +88,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         });
 
         TypeVisitor<Type, Void> resolver = new VarTypeResolveVisitor(typeMap)
-                .withContext(new InMemoryTypeCache<>());
+                .withContext(new InMemoryTypeCache<>(Type.class, Type.class));
         for (int i = 0; i < mvts.size(); i++) {
             VarType param = this.typeParameters.get(i);
             MetaVarType mvt = mvts.get(i);

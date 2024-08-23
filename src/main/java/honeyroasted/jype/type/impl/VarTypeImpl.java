@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.location.TypeParameterLocation;
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.Type;
@@ -30,7 +30,7 @@ public final class VarTypeImpl extends AbstractPossiblyUnmodifiableType implemen
         VarType copy = this.typeSystem().typeFactory().newVarType();
         cache.put(this, copy);
 
-        copy.metadata().copyFrom(this.metadata(), cache);
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setLocation(this.location);
         copy.setUpperBounds(this.upperBounds.stream().map(t -> (Type) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);

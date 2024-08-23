@@ -59,7 +59,7 @@ public interface ReflectionTypeResolution {
     static <T> Optional<T> getReflectionType(Type type) {
         try {
             if (type.metadata().has(ReflectionType.class)) {
-                ReflectionType<?> meta = type.metadata().get(ReflectionType.class).get();
+                ReflectionType<?> meta = type.metadata().first(ReflectionType.class).get();
                 return (Optional<T>) Optional.of(meta.type());
             } else if (type instanceof ClassReference cr) {
                 return (Optional<T>) Optional.of(classFromLocation(cr.namespace().location()));
@@ -143,7 +143,7 @@ public interface ReflectionTypeResolution {
 
     static Optional<MethodReference> createMethodReference(TypeSystem system, Executable executable, MethodLocation location) {
         MethodReference mRef = system.typeFactory().newMethodReference();
-        mRef.metadata().attach(ReflectionType.class, new ReflectionType.Executable(executable));
+        mRef.metadata().attach(new ReflectionType.Executable(executable));
         mRef.setLocation(location);
         mRef.setModifiers(executable.getModifiers());
         Optional<? extends honeyroasted.jype.type.Type> outerClass = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.Type.class, executable.getDeclaringClass());
@@ -208,14 +208,14 @@ public interface ReflectionTypeResolution {
                 ArrayType type = system.typeFactory().newArrayType();
                 type.setComponent(c);
                 type.setUnmodifiable(true);
-                type.metadata().attach(ReflectionType.class, new ReflectionType.Type(cls));
+                type.metadata().attach(new ReflectionType.Type(cls));
                 return type;
             });
         }
 
         ClassReference reference = system.typeFactory().newClassReference();
 
-        reference.metadata().attach(ReflectionType.class, new ReflectionType.Type(cls));
+        reference.metadata().attach(new ReflectionType.Type(cls));
         reference.setNamespace(ClassNamespace.of(cls));
         reference.setModifiers(cls.getModifiers());
         system.storage().cacheFor(java.lang.reflect.Type.class).put(location, reference);
@@ -302,7 +302,7 @@ public interface ReflectionTypeResolution {
 
     static Optional<VarType> createVarType(TypeSystem system, TypeVariable<?> var, TypeParameterLocation location) {
         VarType varType = system.typeFactory().newVarType();
-        varType.metadata().attach(ReflectionType.class, new ReflectionType.Type(var));
+        varType.metadata().attach(new ReflectionType.Type(var));
         varType.setLocation(location);
         system.storage().cacheFor(TypeParameterLocation.class).put(location, varType);
 

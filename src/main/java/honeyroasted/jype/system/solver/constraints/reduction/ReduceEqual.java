@@ -1,0 +1,29 @@
+package honeyroasted.jype.system.solver.constraints.reduction;
+
+import honeyroasted.almonds.ConstraintNode;
+import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.type.MetaVarType;
+import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Type;
+
+import java.util.function.Function;
+
+public class ReduceEqual implements ConstraintMapper.Unary<TypeConstraints.Equal> {
+    @Override
+    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Equal constraint) {
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Type s = mapper.apply(constraint.left());
+        Type t = mapper.apply(constraint.right());
+
+        if (s.isProperType() && t.isProperType()) {
+            node.overrideStatus(s.typeEquals(t));
+        } else if (s.isNullType() || t.isNullType()) {
+            node.overrideStatus(false);
+        } else if ((t instanceof MetaVarType && !(s instanceof PrimitiveType)) ||
+                (s instanceof MetaVarType && !(t instanceof PrimitiveType))) {
+            node.overrideStatus(true);
+        }
+    }
+}

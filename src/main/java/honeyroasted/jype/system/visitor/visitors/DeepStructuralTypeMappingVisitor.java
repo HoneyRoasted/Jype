@@ -100,7 +100,7 @@ public interface DeepStructuralTypeMappingVisitor extends TypeMappingVisitor<Typ
 
     @Override
     default Type visit(Type type) {
-        return visit(type, new InMemoryTypeCache<>());
+        return visit(type, new InMemoryTypeCache<>(Type.class, Type.class));
     }
 
     @Override

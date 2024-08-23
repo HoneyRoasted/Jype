@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.modify.Pair;
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.ArgumentType;

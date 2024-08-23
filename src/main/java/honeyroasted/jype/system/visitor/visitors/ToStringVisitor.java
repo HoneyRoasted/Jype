@@ -26,7 +26,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
     default String visitClassType(ClassType type, Set<Type> context) {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
-        
+
         return classToString(type, context);
     }
 
@@ -36,7 +36,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
     default String visitWildcardType(WildType type, Set<Type> context) {
         if (context.contains(type)) return "?...";
         context = Type.concat(context, type);
-        
+
         return wildcardToString(type, context);
     }
 
@@ -46,7 +46,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
     default String visitArrayType(ArrayType type, Set<Type> context) {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
-        
+
         return arrayToString(type, context);
     }
 
@@ -56,7 +56,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
     default String visitIntersectionType(IntersectionType type, Set<Type> context) {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
-        
+
         return intersectionToString(type, context);
     }
 
@@ -66,7 +66,7 @@ public interface ToStringVisitor extends TypeVisitor<String, Set<Type>> {
     default String visitMethodType(MethodType type, Set<Type> context) {
         if (context.contains(type)) return "...";
         context = Type.concat(context, type);
-        
+
         return methodToString(type, context);
     }
 

@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.location.MethodLocation;
-import honeyroasted.jype.modify.Pair;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.cache.TypeCache;
 import honeyroasted.jype.type.ArgumentType;
@@ -39,7 +39,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
         MethodReference copy = this.typeSystem().typeFactory().newMethodReference();
         cache.put(this, copy);
 
-        copy.metadata().copyFrom(this.metadata(), cache);
+        copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setLocation(this.location);
         copy.setModifiers(this.modifiers);
         copy.setOuterClass(this.outerClass.copy(cache));
@@ -155,7 +155,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public boolean equals(Type other,  Equality kind, Set<Pair<Type, Type>> seen) {
+    public boolean equals(Type other, Equality kind, Set<Pair<Type, Type>> seen) {
         if (seen.contains(Pair.identity(this, other))) return true;
         seen = Type.concat(seen, Pair.identity(this, other));
 

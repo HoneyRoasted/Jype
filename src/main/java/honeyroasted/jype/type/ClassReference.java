@@ -1,6 +1,6 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.collect.modify.PossiblyUnmodifiable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -24,7 +24,7 @@ public interface ClassReference extends PossiblyUnmodifiable, ClassType {
 
     @Override
     default Set<Type> knownDirectSupertypes() {
-        Set<Type> supertypes =  new LinkedHashSet<>();
+        Set<Type> supertypes = new LinkedHashSet<>();
         if (this.superClass() != null) {
             supertypes.add(this.superClass());
         }

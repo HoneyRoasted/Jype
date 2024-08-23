@@ -1,32 +1,43 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.modify.Pair;
-import honeyroasted.jype.system.solver.TypeSolver;
-import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
+import honeyroasted.almonds.solver.ConstraintMapperApplier;
+import honeyroasted.almonds.solver.ConstraintSolver;
+import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public interface TypeOperations {
-    TypeSolver noOpSolver();
+    default ConstraintSolver noOpSolver() {
+        return new ConstraintSolver(Collections.emptyList());
+    }
 
-    TypeBoundMapperApplier reductionApplier();
+    ConstraintMapperApplier reductionApplier();
 
-    TypeBoundMapperApplier incorporationApplier();
+    ConstraintMapperApplier incorporationApplier();
 
-    TypeBoundMapperApplier compatibilityApplier();
+    ConstraintMapperApplier compatibilityApplier();
 
-    TypeSolver compatibilitySolver();
+    ConstraintMapperApplier initialBoundsApplier();
 
-    boolean isCompatible(Type subtype, Type supertype, TypeBound.Compatible.Context ctx);
+    ConstraintSolver compatibilitySolver();
+
+    ConstraintSolver inferenceSolver();
+
+    default ConstraintSolver inferenceSolver(Map<VarType, MetaVarType> correspondence) {
+        ConstraintSolver solver = this.inferenceSolver();
+        correspondence.forEach((vt, mvt) -> solver.bind(new TypeConstraints.Infer(mvt, vt)));
+        return solver;
+    }
+
+    boolean isCompatible(Type subtype, Type supertype, TypeConstraints.Compatible.Context ctx);
 
     boolean isSubtype(Type subtype, Type supertype);
 
@@ -39,12 +50,6 @@ public interface TypeOperations {
     Type findMostSpecificType(Set<Type> types);
 
     Set<Type> findMostSpecificTypes(Set<Type> types);
-
-    Set<TypeBound.Result.Builder> buildInitialBounds(Map<VarType, MetaVarType> metaVars);
-
-    Collection<TypeBound.Result.Builder> updateMetaVars(Collection<TypeBound.Result.Builder> constraints);
-
-    Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolveBounds(Set<TypeBound.Result.Builder> bounds);
 
     Optional<ClassType> outerTypeFromDeclaring(ClassReference instance, ClassReference declaring);
 }

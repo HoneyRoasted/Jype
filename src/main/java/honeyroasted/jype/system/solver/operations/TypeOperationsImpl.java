@@ -1,52 +1,55 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.modify.Pair;
+import honeyroasted.almonds.solver.ConstraintMapperApplier;
+import honeyroasted.almonds.solver.ConstraintSolver;
+import honeyroasted.almonds.solver.mappers.FalseConstraintMapper;
+import honeyroasted.almonds.solver.mappers.TrueConstraintMapper;
+import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.solver.TypeSolver;
-import honeyroasted.jype.system.solver.bounds.TypeBound;
-import honeyroasted.jype.system.solver.bounds.TypeBoundMapperApplier;
-import honeyroasted.jype.system.solver.solvers.NoOpTypeSolver;
-import honeyroasted.jype.system.solver.solvers.TypeBoundMapperSolver;
-import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleExplicitCast;
-import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleLooseInvocation;
-import honeyroasted.jype.system.solver.solvers.compatibility.CompatibleStrictInvocation;
-import honeyroasted.jype.system.solver.solvers.compatibility.EqualType;
-import honeyroasted.jype.system.solver.solvers.compatibility.ExpressionAssignmentConstant;
-import honeyroasted.jype.system.solver.solvers.compatibility.ExpressionSimplyTyped;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeArray;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeEquality;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeGenericClass;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeIntersection;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeMetaVar;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeNone;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypePrimitive;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeRawClass;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeUnchecked;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeVar;
-import honeyroasted.jype.system.solver.solvers.compatibility.SubtypeWild;
-import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationCapture;
-import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationEqualEqual;
-import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationEqualSubtype;
-import honeyroasted.jype.system.solver.solvers.incorporation.IncorporationSubtypeSubtype;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceCompatible;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceContains;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceEqual;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceSimplyTypedExpression;
-import honeyroasted.jype.system.solver.solvers.reduction.ReduceSubtype;
+import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleExplicitCast;
+import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleLooseInvocation;
+import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleStrictInvocation;
+import honeyroasted.jype.system.solver.constraints.compatibility.EqualType;
+import honeyroasted.jype.system.solver.constraints.compatibility.ExpressionAssignmentConstant;
+import honeyroasted.jype.system.solver.constraints.compatibility.ExpressionSimplyTyped;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeArray;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeEquality;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeGenericClass;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeIntersection;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeNone;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypePrimitive;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeRawClass;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeUnchecked;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeVar;
+import honeyroasted.jype.system.solver.constraints.compatibility.SubtypeWild;
+import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationCapture;
+import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationEqualEqual;
+import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationEqualSubtype;
+import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationSubtypeSubtype;
+import honeyroasted.jype.system.solver.constraints.inference.BuildInitialBounds;
+import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
+import honeyroasted.jype.system.solver.constraints.inference.VarTypeMapper;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceEqual;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceSimplyTypedExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceSubtype;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
-import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.VarType;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public class TypeOperationsImpl implements TypeOperations {
-    public static TypeBoundMapperApplier COMPATIBILITY_APPLIER = new TypeBoundMapperApplier(List.of(
+    public static ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
+            TrueConstraintMapper.INSTANCE,
+            FalseConstraintMapper.INSTANCE,
+
+            new VarTypeMapper(),
+
             new EqualType(),
 
             new CompatibleExplicitCast(),
@@ -64,19 +67,28 @@ public class TypeOperationsImpl implements TypeOperations {
             new SubtypeGenericClass(),
             new SubtypeArray(),
             new SubtypeVar(),
-            new SubtypeMetaVar(),
             new SubtypeWild(),
             new SubtypeIntersection()
     ));
 
-    public static TypeBoundMapperApplier INCORPORATION_APPLIER = new TypeBoundMapperApplier(List.of(
+    public static ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
+            TrueConstraintMapper.INSTANCE,
+            FalseConstraintMapper.INSTANCE,
+
+            new VarTypeMapper(),
+
             new IncorporationEqualEqual(),
             new IncorporationEqualSubtype(),
             new IncorporationSubtypeSubtype(),
             new IncorporationCapture()
     ));
 
-    public static TypeBoundMapperApplier REDUCTION_APPLIER = new TypeBoundMapperApplier(List.of(
+    public static ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
+            TrueConstraintMapper.INSTANCE,
+            FalseConstraintMapper.INSTANCE,
+
+            new VarTypeMapper(),
+
             new ReduceSubtype(),
             new ReduceCompatible(),
             new ReduceSimplyTypedExpression(),
@@ -84,7 +96,20 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceContains(),
             new ReduceEqual(),
 
-            INCORPORATION_APPLIER
+            new IncorporationEqualEqual(),
+            new IncorporationEqualSubtype(),
+            new IncorporationSubtypeSubtype(),
+            new IncorporationCapture()
+    ));
+
+    public static ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = new ConstraintMapperApplier(List.of(
+            new VarTypeMapper(),
+            new BuildInitialBounds()
+    ));
+
+    public static ConstraintMapperApplier RESOLUTION_APPLIER = new ConstraintMapperApplier(List.of(
+            new VarTypeMapper(),
+            new ResolveBounds()
     ));
 
     public static final TypeOperation<Type, Set<Type>> FIND_ALL_KNOWN_SUPERTYPES = new FindAllKnownSupertypes();
@@ -92,9 +117,6 @@ public class TypeOperationsImpl implements TypeOperations {
     public static final TypeOperation<Set<Type>, Type> FIND_LEAST_UPPER_BOUND = new FindLeastUpperBound();
     public static final TypeOperation<Set<Type>, Type> FIND_MOST_SPECIFIC_TYPE = new FindMostSpecificType();
     public static final TypeOperation<Set<Type>, Set<Type>> FIND_MOST_SPECIFIC_TYPES = new FindMostSpecificTypes();
-    public static final TypeOperation<Map<VarType, MetaVarType>, Set<TypeBound.Result.Builder>> BUILD_INITIAL_BOUNDS = new BuildInitialBounds();
-    public static final TypeOperation<TypeBound.Result.Builder, TypeBound.Result.Builder> UPDATE_META_VARS = new UpdateMetaVars();
-    public static final TypeOperation<Set<TypeBound.Result.Builder>, Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>>> RESOLVE_BOUNDS = new ResolveBounds();
 
     private TypeSystem typeSystem;
 
@@ -102,45 +124,54 @@ public class TypeOperationsImpl implements TypeOperations {
         this.typeSystem = typeSystem;
     }
 
-    public TypeSolver noOpSolver() {
-        return new NoOpTypeSolver();
-    }
-
     @Override
-    public TypeBoundMapperApplier reductionApplier() {
+    public ConstraintMapperApplier reductionApplier() {
         return REDUCTION_APPLIER;
     }
 
     @Override
-    public TypeBoundMapperApplier incorporationApplier() {
+    public ConstraintMapperApplier incorporationApplier() {
         return INCORPORATION_APPLIER;
     }
 
     @Override
-    public TypeBoundMapperApplier compatibilityApplier() {
+    public ConstraintMapperApplier compatibilityApplier() {
         return COMPATIBILITY_APPLIER;
     }
 
     @Override
-    public TypeSolver compatibilitySolver() {
-        return new TypeBoundMapperSolver("CompatibilityTypeSolver", TypeBound.Classification.CONSTRAINT,
-                Set.of(TypeBound.Equal.class, TypeBound.Subtype.class, TypeBound.Compatible.class),
-                COMPATIBILITY_APPLIER);
+    public ConstraintMapperApplier initialBoundsApplier() {
+        return BUILD_INITIAL_BOUNDS_APPLIER;
     }
 
     @Override
-    public boolean isCompatible(Type subtype, Type supertype, TypeBound.Compatible.Context ctx) {
+    public ConstraintSolver compatibilitySolver() {
+        return new ConstraintSolver(List.of(COMPATIBILITY_APPLIER));
+    }
+
+    @Override
+    public ConstraintSolver inferenceSolver() {
+        return new ConstraintSolver(List.of(
+                BUILD_INITIAL_BOUNDS_APPLIER,
+                REDUCTION_APPLIER,
+                INCORPORATION_APPLIER,
+                RESOLUTION_APPLIER
+        )).withContext(new PropertySet().attach(this.typeSystem));
+    }
+
+    @Override
+    public boolean isCompatible(Type subtype, Type supertype, TypeConstraints.Compatible.Context ctx) {
         return this.compatibilitySolver()
-                .bind(new TypeBound.Compatible(subtype, supertype, ctx))
-                .solve(this.typeSystem)
+                .bind(new TypeConstraints.Compatible(subtype, ctx, supertype))
+                .solve(new PropertySet().attach(subtype.typeSystem()))
                 .success();
     }
 
     @Override
     public boolean isSubtype(Type subtype, Type supertype) {
         return this.compatibilitySolver()
-                .bind(new TypeBound.Subtype(subtype, supertype))
-                .solve(this.typeSystem)
+                .bind(new TypeConstraints.Subtype(subtype, supertype))
+                .solve(new PropertySet().attach(subtype.typeSystem()))
                 .success();
     }
 
@@ -167,22 +198,6 @@ public class TypeOperationsImpl implements TypeOperations {
     @Override
     public Set<Type> findMostSpecificTypes(Set<Type> types) {
         return FIND_MOST_SPECIFIC_TYPES.apply(this.typeSystem, types);
-    }
-
-    @Override
-    public Set<TypeBound.Result.Builder> buildInitialBounds(Map<VarType, MetaVarType> metaVars) {
-        return BUILD_INITIAL_BOUNDS.apply(this.typeSystem, metaVars);
-    }
-
-    @Override
-    public Collection<TypeBound.Result.Builder> updateMetaVars(Collection<TypeBound.Result.Builder> constraints) {
-        constraints.forEach(t -> UPDATE_META_VARS.apply(this.typeSystem, t));
-        return constraints;
-    }
-
-    @Override
-    public Pair<Map<MetaVarType, Type>, Set<TypeBound.Result.Builder>> resolveBounds(Set<TypeBound.Result.Builder> bounds) {
-        return RESOLVE_BOUNDS.apply(this.typeSystem, bounds);
     }
 
     @Override

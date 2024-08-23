@@ -10,9 +10,9 @@ public class FindAllKnownSupertypes implements TypeOperation<Type, Set<Type>> {
 
     @Override
     public Set<Type> apply(TypeSystem system, Type type) {
-            Set<Type> result = new LinkedHashSet<>();
-            allKnownSupertypes(type, result);
-            return result;
+        Set<Type> result = new LinkedHashSet<>();
+        allKnownSupertypes(type, result);
+        return result;
     }
 
     private void allKnownSupertypes(Type type, Set<Type> building) {

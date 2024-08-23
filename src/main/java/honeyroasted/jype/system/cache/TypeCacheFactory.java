@@ -6,11 +6,11 @@ public interface TypeCacheFactory {
 
     TypeCacheFactory IN_MEMORY_FACTORY = new TypeCacheFactory() {
         @Override
-        public <K, T extends Type> TypeCache<K, T> createCache(Class<K> keyType) {
-            return new InMemoryTypeCache<>();
+        public <K> TypeCache<K, Type> createCache(Class<K> keyType) {
+            return new InMemoryTypeCache<>(keyType, Type.class);
         }
     };
 
-    <K, T extends Type> TypeCache<K, T> createCache(Class<K> keyType);
+    <K> TypeCache<K, Type> createCache(Class<K> keyType);
 
 }

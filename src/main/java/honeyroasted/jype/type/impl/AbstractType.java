@@ -1,5 +1,6 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.visitor.TypeVisitors;
 import honeyroasted.jype.type.Type;
@@ -10,7 +11,7 @@ import java.util.IdentityHashMap;
 
 public abstract class AbstractType implements Type {
     private TypeSystem typeSystem;
-    private Type.Metadata metadata = new InMemoryTypeMetadata();
+    private PropertySet metadata = new PropertySet();
 
     public AbstractType(TypeSystem typeSystem) {
         this.typeSystem = typeSystem;
@@ -22,7 +23,7 @@ public abstract class AbstractType implements Type {
     }
 
     @Override
-    public Metadata metadata() {
+    public PropertySet metadata() {
         return this.metadata;
     }
 

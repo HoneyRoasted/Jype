@@ -8,13 +8,17 @@ import java.util.Optional;
 
 public class InMemoryTypeCache<K, T extends Type> implements TypeCache<K, T> {
     private final Map<K, T> cache;
+    private Class<K> keyType;
+    private Class<T> valueType;
 
-    public InMemoryTypeCache(Map<K, T> cache) {
+    public InMemoryTypeCache(Map<K, T> cache, Class<K> keyType, Class<T> valueType) {
         this.cache = cache;
+        this.keyType = keyType;
+        this.valueType = valueType;
     }
 
-    public InMemoryTypeCache() {
-        this(new HashMap<>());
+    public InMemoryTypeCache(Class<K> keyType, Class<T> valueType) {
+        this(new HashMap<>(), keyType, valueType);
     }
 
     @Override

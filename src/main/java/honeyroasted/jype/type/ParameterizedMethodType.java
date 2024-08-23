@@ -1,6 +1,6 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.modify.PossiblyUnmodifiable;
+import honeyroasted.collect.modify.PossiblyUnmodifiable;
 
 import java.util.HashSet;
 import java.util.Set;
