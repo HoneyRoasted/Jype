@@ -14,7 +14,7 @@ public class CompatibleExplicitCast implements ConstraintMapper.Unary<TypeConstr
 
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 

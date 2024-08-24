@@ -1,5 +1,6 @@
 package honeyroasted.jype;
 
+import honeyroasted.almonds.solver.SolveResult;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.ArgumentType;
@@ -22,13 +23,16 @@ public class Test {
         VarType vt = list.typeParameters().get(0);
         MetaVarType mvt = system.typeFactory().newMetaVarType(vt.name());
 
-        Type subtype = list.parameterized(mvt);
+        Type subtype = list.parameterized(vt);
         Type supertype = list.parameterized(system.<ArgumentType>tryResolve(String.class));
 
-        System.out.println(system.operations().inferenceSolver()
+        SolveResult solve = system.operations().inferenceSolver()
                 .bind(new TypeConstraints.Infer(mvt, vt),
                         new TypeConstraints.Compatible(subtype, LOOSE_INVOCATION, supertype))
-                .solve().toString(true));
+                .solve();
+        
+        solve.allTrackedConstraints().stream().filter(tr -> tr.constraint() instanceof TypeConstraints.Instantiation).forEach(System.out::println);
+        System.out.println(solve);
     }
 
 }

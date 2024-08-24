@@ -46,8 +46,8 @@ public class ResolveBounds implements ConstraintMapper {
 
     @Override
     public void process(PropertySet context, ConstraintNode... nodes) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
         ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND);
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(bounds);
 
         TypeSystem system = context.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
 
@@ -63,7 +63,9 @@ public class ResolveBounds implements ConstraintMapper {
         boolean foundAllInstantiations = instantiations.size() == varsAndDeps.size();
 
         if (foundAllInstantiations) {
-            instantiations.forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked().createLeaf().overrideStatus(true)));
+            instantiations.forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked(
+                    bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)
+            ).createLeaf().overrideStatus(true)));
             return;
         }
 
@@ -100,10 +102,9 @@ public class ResolveBounds implements ConstraintMapper {
 
                 if (foundAllCandidates) {
                     ConstraintTree newBounds = bounds.root(ConstraintNode.Operation.AND).copy().expandInPlace(ConstraintNode.Operation.AND);
-                    Map<MetaVarType, Type> finalInstantiations = instantiations;
                     candidates.forEach((k, v) -> {
                         newBounds.attach(v.right());
-                        finalInstantiations.put(k, v.left());
+                        instantiations.put(k, v.left());
                     });
 
                     ConstraintNode incorp = system.operations().incorporationApplier().process(newBounds);
@@ -160,7 +161,10 @@ public class ResolveBounds implements ConstraintMapper {
 
 
             if (incorp.satisfied()) {
-                findAllInstantiations(varsAndDeps, incorp).forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked().createLeaf().overrideStatus(true)));
+                ConstraintNode finalIncorp = incorp;
+                findAllInstantiations(varsAndDeps, incorp).forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked(
+                        finalIncorp.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)
+                ).createLeaf().overrideStatus(true)));
             }
         } else {
             bounds.attach(Constraint.FALSE.tracked(bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)));
@@ -242,7 +246,7 @@ public class ResolveBounds implements ConstraintMapper {
         for (MetaVarType mvt : mvts) {
             Type instantiation = instantiations.getOrDefault(mvt, findInstantiation(mvt, bounds));
             if (instantiation == null) {
-                return Collections.emptyMap();
+                return new LinkedHashMap<>();
             } else {
                 instantiations.put(mvt, instantiation);
             }

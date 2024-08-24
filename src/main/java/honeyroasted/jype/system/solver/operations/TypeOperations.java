@@ -31,6 +31,10 @@ public interface TypeOperations {
 
     ConstraintSolver inferenceSolver();
 
+    TypeConstraints.TypeMapper varTypeMapper();
+
+    TypeConstraints.TypeMapper metaVarTypeMapper();
+
     default ConstraintSolver inferenceSolver(Map<VarType, MetaVarType> correspondence) {
         ConstraintSolver solver = this.inferenceSolver();
         correspondence.forEach((vt, mvt) -> solver.bind(new TypeConstraints.Infer(mvt, vt)));

@@ -27,7 +27,7 @@ public class IncorporationCapture implements ConstraintMapper.Unary<TypeConstrai
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Capture constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type leftMapped = mapper.apply(constraint.left());
         Type rightMapped = mapper.apply(constraint.right());
 

@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintNode;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
@@ -14,9 +15,9 @@ import java.util.stream.Collectors;
 
 public interface TypeConstraints {
 
-    TypeMapper NO_OP = new TypeMapper(Function.identity());
+    TypeMapper NO_OP = new TypeMapper(cn -> Function.identity());
 
-    record TypeMapper(Function<Type, Type> mapper) {
+    record TypeMapper(Function<ConstraintNode, Function<Type, Type>> mapper) {
     }
 
     final class Infer extends Constraint.Binary<MetaVarType, VarType> {

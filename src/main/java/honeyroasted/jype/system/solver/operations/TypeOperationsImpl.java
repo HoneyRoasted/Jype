@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.almonds.ConstraintNode;
 import honeyroasted.almonds.solver.ConstraintMapperApplier;
 import honeyroasted.almonds.solver.ConstraintSolver;
 import honeyroasted.almonds.solver.mappers.FalseConstraintMapper;
@@ -29,26 +30,30 @@ import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationEq
 import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationSubtypeSubtype;
 import honeyroasted.jype.system.solver.constraints.inference.BuildInitialBounds;
 import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
-import honeyroasted.jype.system.solver.constraints.inference.VarTypeMapper;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSubtype;
+import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
+import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
+import honeyroasted.jype.type.VarType;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 public class TypeOperationsImpl implements TypeOperations {
     public static ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
             TrueConstraintMapper.INSTANCE,
             FalseConstraintMapper.INSTANCE,
-
-            new VarTypeMapper(),
 
             new EqualType(),
 
@@ -75,8 +80,6 @@ public class TypeOperationsImpl implements TypeOperations {
             TrueConstraintMapper.INSTANCE,
             FalseConstraintMapper.INSTANCE,
 
-            new VarTypeMapper(),
-
             new IncorporationEqualEqual(),
             new IncorporationEqualSubtype(),
             new IncorporationSubtypeSubtype(),
@@ -86,8 +89,6 @@ public class TypeOperationsImpl implements TypeOperations {
     public static ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
             TrueConstraintMapper.INSTANCE,
             FalseConstraintMapper.INSTANCE,
-
-            new VarTypeMapper(),
 
             new ReduceSubtype(),
             new ReduceCompatible(),
@@ -103,12 +104,10 @@ public class TypeOperationsImpl implements TypeOperations {
     ));
 
     public static ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = new ConstraintMapperApplier(List.of(
-            new VarTypeMapper(),
             new BuildInitialBounds()
     ));
 
     public static ConstraintMapperApplier RESOLUTION_APPLIER = new ConstraintMapperApplier(List.of(
-            new VarTypeMapper(),
             new ResolveBounds()
     ));
 
@@ -156,7 +155,50 @@ public class TypeOperationsImpl implements TypeOperations {
                 REDUCTION_APPLIER,
                 INCORPORATION_APPLIER,
                 RESOLUTION_APPLIER
-        )).withContext(new PropertySet().attach(this.typeSystem));
+        )).withContext(new PropertySet()
+                .attach(this.typeSystem)
+                .attach(varTypeMapper()));
+    }
+
+    @Override
+    public TypeConstraints.TypeMapper varTypeMapper() {
+        return new TypeConstraints.TypeMapper(bounds -> {
+            Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
+
+            bounds.neighbors(ConstraintNode.Operation.AND).forEach(cn -> {
+                if (cn.constraint() instanceof TypeConstraints.Infer inf) {
+                    metaVars.put(inf.right(), inf.left());
+                    cn.overrideStatus(true);
+                }
+            });
+
+            if (metaVars.isEmpty()) {
+                return Function.identity();
+            } else {
+                VarTypeResolveVisitor resolver = new VarTypeResolveVisitor(metaVars);
+                return resolver::visit;
+            }
+        });
+    }
+
+    @Override
+    public TypeConstraints.TypeMapper metaVarTypeMapper() {
+        return new TypeConstraints.TypeMapper(bounds -> {
+            Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
+
+            bounds.neighbors(ConstraintNode.Operation.AND).forEach(cn -> {
+                if (cn.constraint() instanceof TypeConstraints.Instantiation inst) {
+                    instantiations.put(inst.left(), inst.right());
+                }
+            });
+
+            if (instantiations.isEmpty()) {
+                return Function.identity();
+            } else {
+                MetaVarTypeResolver resolver = new MetaVarTypeResolver(instantiations);
+                return resolver::visit;
+            }
+        });
     }
 
     @Override

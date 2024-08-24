@@ -13,7 +13,7 @@ import java.util.function.Function;
 public class SubtypeWild implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -23,7 +23,7 @@ public class SubtypeWild implements ConstraintMapper.Unary<TypeConstraints.Subty
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 

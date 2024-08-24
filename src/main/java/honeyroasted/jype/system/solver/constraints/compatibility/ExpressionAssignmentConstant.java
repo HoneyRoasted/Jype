@@ -19,7 +19,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type right = mapper.apply(constraint.right());
 
         return constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
@@ -27,7 +27,7 @@ public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<Type
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type right = mapper.apply(constraint.right());
 
         Set<ConstraintLeaf> newChildren = new LinkedHashSet<>();

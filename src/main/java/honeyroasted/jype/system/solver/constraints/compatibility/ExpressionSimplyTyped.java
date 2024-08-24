@@ -19,7 +19,7 @@ public class ExpressionSimplyTyped implements ConstraintMapper.Unary<TypeConstra
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
 
         Type supertype = mapper.apply(constraint.right());
         node.expand(ConstraintNode.Operation.OR, new TypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));

@@ -16,7 +16,7 @@ public class ReduceSimplyTypedExpression implements ConstraintMapper.Unary<TypeC
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         node.expandInPlace(ConstraintNode.Operation.OR)
                 .attach(new TypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), mapper).get(), constraint.middle(), constraint.right()));
     }

@@ -26,7 +26,7 @@ public class SubtypePrimitive implements ConstraintMapper.Unary<TypeConstraints.
 
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -35,7 +35,7 @@ public class SubtypePrimitive implements ConstraintMapper.Unary<TypeConstraints.
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 

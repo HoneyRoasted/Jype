@@ -13,7 +13,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class CompatibleStrictInvocation implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -22,7 +22,7 @@ public class CompatibleStrictInvocation implements ConstraintMapper.Unary<TypeCo
 
     @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper();
+        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
