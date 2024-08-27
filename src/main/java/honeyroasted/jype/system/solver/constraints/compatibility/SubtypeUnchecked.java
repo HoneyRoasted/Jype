@@ -16,7 +16,7 @@ public class SubtypeUnchecked implements ConstraintMapper.Unary<TypeConstraints.
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 left instanceof ClassType l && right instanceof ClassType r &&
                 ((l.hasAnyTypeArguments() && !r.hasAnyTypeArguments()) || (!l.hasAnyTypeArguments() && r.hasAnyTypeArguments()));
     }
@@ -30,6 +30,6 @@ public class SubtypeUnchecked implements ConstraintMapper.Unary<TypeConstraints.
         ClassType l = (ClassType) left;
         ClassType r = (ClassType) right;
 
-        node.expandInPlace(ConstraintNode.Operation.OR).attach(new TypeConstraints.Subtype(l.classReference(), r.classReference()));
+        node.expandInPlace(ConstraintNode.Operation.AND, false).attach(new TypeConstraints.Subtype(l.classReference(), r.classReference()));
     }
 }

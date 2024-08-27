@@ -17,7 +17,7 @@ public class SubtypeVar implements ConstraintMapper.Unary<TypeConstraints.Subtyp
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 left instanceof VarType;
     }
 
@@ -28,6 +28,6 @@ public class SubtypeVar implements ConstraintMapper.Unary<TypeConstraints.Subtyp
         Type right = mapper.apply(constraint.right());
 
         VarType l = (VarType) left;
-        node.expand(ConstraintNode.Operation.OR, l.upperBounds().stream().map(b -> new TypeConstraints.Subtype(b, right)).toArray(Constraint[]::new));
+        node.expand(ConstraintNode.Operation.AND, false, l.upperBounds().stream().map(b -> new TypeConstraints.Subtype(b, right)).toArray(Constraint[]::new));
     }
 }

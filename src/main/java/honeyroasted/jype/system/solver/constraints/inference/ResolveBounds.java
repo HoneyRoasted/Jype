@@ -3,7 +3,6 @@ package honeyroasted.jype.system.solver.constraints.inference;
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintNode;
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.almonds.TrackedConstraint;
 import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
@@ -46,7 +45,7 @@ public class ResolveBounds implements ConstraintMapper {
 
     @Override
     public void process(PropertySet context, ConstraintNode... nodes) {
-        ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND);
+        ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND, false);
         Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(bounds);
 
         TypeSystem system = context.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
@@ -63,45 +62,43 @@ public class ResolveBounds implements ConstraintMapper {
         boolean foundAllInstantiations = instantiations.size() == varsAndDeps.size();
 
         if (foundAllInstantiations) {
-            instantiations.forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked(
-                    bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)
-            ).createLeaf().overrideStatus(true)));
+            instantiations.forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).createLeaf().overrideStatus(true)));
             return;
         }
 
         Set<MetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
         if (!subset.isEmpty()) {
-            ConstraintTree generatedBounds = new ConstraintTree(Constraint.and().tracked(), ConstraintNode.Operation.AND);
+            ConstraintTree generatedBounds = new ConstraintTree(Constraint.and(), ConstraintNode.Operation.AND);
 
             //Bound set does not contain any bound of the form G<..., a_i, ...> = capture(G<...>)
             boolean hasCapture = bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().anyMatch(node -> node.constraint() instanceof TypeConstraints.Capture cpt &&
                     ((ClassType) mapper.apply(cpt.left())).typeArguments().stream().anyMatch(subset::contains));
 
             if (!hasCapture) {
-                Map<MetaVarType, Pair<Type, TrackedConstraint>> candidates = new LinkedHashMap<>();
+                Map<MetaVarType, Pair<Type, Constraint>> candidates = new LinkedHashMap<>();
                 boolean foundAllCandidates = true;
                 for (MetaVarType mvt : subset) {
-                    Pair<Map<Type, TrackedConstraint>, Map<Type, TrackedConstraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
-                    Map<Type, TrackedConstraint> properUpper = properBounds.left();
-                    Map<Type, TrackedConstraint> properLower = properBounds.right();
+                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
+                    Map<Type, Constraint> properUpper = properBounds.left();
+                    Map<Type, Constraint> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
                         Type lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        candidates.put(mvt, Pair.of(lub, new TypeConstraints.Equal(mvt, lub).tracked(properLower.values().toArray(TrackedConstraint[]::new))));
+                        candidates.put(mvt, Pair.of(lub, new TypeConstraints.Equal(mvt, lub)));
                     } else if (bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().anyMatch(cn -> cn.constraint() instanceof TypeConstraints.Throws thr && mapper.apply(thr.value()).equals(mvt)) &&
                             properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
                         Type cand = mvt.typeSystem().constants().runtimeException();
-                        candidates.put(mvt, Pair.of(cand, new TypeConstraints.Equal(mvt, cand).tracked(properLower.values().toArray(TrackedConstraint[]::new))));
+                        candidates.put(mvt, Pair.of(cand, new TypeConstraints.Equal(mvt, cand)));
                     } else if (!properUpper.isEmpty()) {
                         Type glb = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet());
-                        candidates.put(mvt, Pair.of(glb, new TypeConstraints.Equal(mvt, glb).tracked(properLower.values().toArray(TrackedConstraint[]::new))));
+                        candidates.put(mvt, Pair.of(glb, new TypeConstraints.Equal(mvt, glb)));
                     } else {
                         foundAllCandidates = false;
                     }
                 }
 
                 if (foundAllCandidates) {
-                    ConstraintTree newBounds = bounds.root(ConstraintNode.Operation.AND).copy().expandInPlace(ConstraintNode.Operation.AND);
+                    ConstraintTree newBounds = bounds.root(ConstraintNode.Operation.AND).copy().expandInPlace(ConstraintNode.Operation.AND, false);
                     candidates.forEach((k, v) -> {
                         newBounds.attach(v.right());
                         instantiations.put(k, v.left());
@@ -118,27 +115,25 @@ public class ResolveBounds implements ConstraintMapper {
                 varsAndDeps.forEach(mv -> freshVars.put(mv, mv.typeSystem().typeFactory().newMetaVarType(mv.name() + "_y")));
                 MetaVarTypeResolver theta = new MetaVarTypeResolver(freshVars);
 
-                ConstraintTree newBounds = new ConstraintTree(Constraint.and().tracked(), ConstraintNode.Operation.AND);
-                bounds.visitNeighbors(ConstraintNode.Operation.AND, ConstraintNode::satisfied, cn -> newBounds.attach(cn.trackedConstraint()));
+                ConstraintTree newBounds = new ConstraintTree(Constraint.and(), ConstraintNode.Operation.AND);
+                bounds.visitNeighbors(ConstraintNode.Operation.AND, ConstraintNode::satisfied, cn -> newBounds.attach(cn));
 
                 for (MetaVarType mvt : varsAndDeps) {
                     MetaVarType y = freshVars.get(mvt);
 
-                    Pair<Map<Type, TrackedConstraint>, Map<Type, TrackedConstraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
-                    Map<Type, TrackedConstraint> properUpper = properBounds.left();
-                    Map<Type, TrackedConstraint> properLower = properBounds.right();
+                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
+                    Map<Type, Constraint> properUpper = properBounds.left();
+                    Map<Type, Constraint> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
                         Type lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        TrackedConstraint bound = TrackedConstraint.of(new TypeConstraints.Equal(mvt, lower), properLower.values().toArray(TrackedConstraint[]::new));
-                        newBounds.attach(bound);
+                        newBounds.attach(new TypeConstraints.Equal(mvt, lower));
                         y.lowerBounds().add(lower);
                     }
 
                     if (!properUpper.isEmpty()) {
                         Type upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                        TrackedConstraint bound = TrackedConstraint.of(new TypeConstraints.Equal(mvt, upper), properLower.values().toArray(TrackedConstraint[]::new));
-                        newBounds.attach(bound);
+                        newBounds.attach(new TypeConstraints.Equal(mvt, upper));
                         y.upperBounds().add(upper);
                     }
                 }
@@ -149,7 +144,7 @@ public class ResolveBounds implements ConstraintMapper {
                         .forEach(cn -> cn.parent().detach(cn));
 
 
-                freshVars.forEach((mv, fresh) -> newBounds.attach(TrackedConstraint.of(new TypeConstraints.Equal(mv, fresh))));
+                freshVars.forEach((mv, fresh) -> newBounds.attach(new TypeConstraints.Equal(mv, fresh)));
 
                 generatedBounds = newBounds;
             }
@@ -162,20 +157,18 @@ public class ResolveBounds implements ConstraintMapper {
 
             if (incorp.satisfied()) {
                 ConstraintNode finalIncorp = incorp;
-                findAllInstantiations(varsAndDeps, incorp).forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).tracked(
-                        finalIncorp.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)
-                ).createLeaf().overrideStatus(true)));
+                findAllInstantiations(varsAndDeps, incorp).forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).createLeaf().overrideStatus(true)));
             }
         } else {
-            bounds.attach(Constraint.FALSE.tracked(bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().map(ConstraintNode::trackedConstraint).toArray(TrackedConstraint[]::new)));
+            bounds.attach(Constraint.FALSE);
         }
 
     }
 
 
-    private Pair<Map<Type, TrackedConstraint>, Map<Type, TrackedConstraint>> findProperBounds(MetaVarType mvt, ConstraintNode bounds, Function<Type, Type> mapper) {
-        Map<Type, TrackedConstraint> upperBounds = new LinkedHashMap<>();
-        Map<Type, TrackedConstraint> lowerBounds = new LinkedHashMap<>();
+    private Pair<Map<Type, Constraint>, Map<Type, Constraint>> findProperBounds(MetaVarType mvt, ConstraintNode bounds, Function<Type, Type> mapper) {
+        Map<Type, Constraint> upperBounds = new LinkedHashMap<>();
+        Map<Type, Constraint> lowerBounds = new LinkedHashMap<>();
 
         for (ConstraintNode node : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
             Constraint bound = node.constraint();
@@ -184,11 +177,11 @@ public class ResolveBounds implements ConstraintMapper {
                 Type right = mapper.apply(st.right());
 
                 if (left.equals(mvt) && right.isProperType()) {
-                    upperBounds.put(right, node.trackedConstraint());
+                    upperBounds.put(right, node.constraint());
                 }
 
                 if (right.equals(mvt) && left.isProperType()) {
-                    lowerBounds.put(left, node.trackedConstraint());
+                    lowerBounds.put(left, node.constraint());
                 }
             }
         }

@@ -17,7 +17,7 @@ public class SubtypeWild implements ConstraintMapper.Unary<TypeConstraints.Subty
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 (left instanceof WildType.Upper || right instanceof WildType.Lower);
     }
 
@@ -28,10 +28,10 @@ public class SubtypeWild implements ConstraintMapper.Unary<TypeConstraints.Subty
         Type right = mapper.apply(constraint.right());
 
         if (left instanceof WildType.Upper l) {
-            node.expand(ConstraintNode.Operation.OR,
+            node.expand(ConstraintNode.Operation.OR, false,
                     l.upperBounds().stream().map(b -> new TypeConstraints.Subtype(b, right)).toArray(Constraint[]::new));
         } else if (right instanceof WildType.Lower r) {
-            node.expand(ConstraintNode.Operation.AND,
+            node.expand(ConstraintNode.Operation.AND, false,
                     r.upperBounds().stream().map(b -> new TypeConstraints.Subtype(left, b)).toArray(Constraint[]::new));
         }
     }

@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.expression;
 
 import honeyroasted.jype.system.TypeSystem;
+import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.InstantiableType;
 import honeyroasted.jype.type.IntersectionType;
@@ -37,7 +38,7 @@ public interface ExpressionInformation {
         record Just(Type type) implements SimplyTyped {
             @Override
             public String simpleName() {
-                return this.type.simpleName();
+                return "expr(" + this.type.simpleName() + ")";
             }
 
             @Override
@@ -47,7 +48,7 @@ public interface ExpressionInformation {
 
             @Override
             public String toString() {
-                return "just(" + this.type + ")";
+                return "simply-typed(" + this.type + ")";
             }
         }
 
@@ -125,7 +126,7 @@ public interface ExpressionInformation {
 
         List<ExpressionInformation> parameters();
 
-        List<Type> explicitTypeArguments();
+        List<ArgumentType> explicitTypeArguments();
     }
 
     interface Invocation extends ExpressionInformation {
@@ -133,7 +134,7 @@ public interface ExpressionInformation {
 
         List<ExpressionInformation> parameters();
 
-        List<Type> explicitTypeArguments();
+        List<ArgumentType> explicitTypeArguments();
     }
 
     interface Lambda extends ExpressionInformation {
@@ -149,7 +150,7 @@ public interface ExpressionInformation {
     interface InstantiationReference extends ExpressionInformation {
         InstantiableType type();
 
-        List<Type> explicitTypeArguments();
+        List<ArgumentType> explicitTypeArguments();
     }
 
     interface InvocationReference extends ExpressionInformation {
@@ -157,7 +158,7 @@ public interface ExpressionInformation {
 
         String methodName();
 
-        List<Type> explicitTypeArguments();
+        List<ArgumentType> explicitTypeArguments();
     }
 
 }

@@ -30,7 +30,7 @@ public class SubtypePrimitive implements ConstraintMapper.Unary<TypeConstraints.
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left instanceof PrimitiveType && right instanceof PrimitiveType;
+        return node.isLeaf() && (left instanceof PrimitiveType || right instanceof PrimitiveType);
     }
 
     @Override
@@ -39,6 +39,10 @@ public class SubtypePrimitive implements ConstraintMapper.Unary<TypeConstraints.
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        node.overrideStatus(PRIM_SUPERS.get(((PrimitiveType) left).name()).contains(((PrimitiveType) right).name()));
+        if (left instanceof PrimitiveType && right instanceof PrimitiveType) {
+            node.overrideStatus(PRIM_SUPERS.get(((PrimitiveType) left).name()).contains(((PrimitiveType) right).name()));
+        } else {
+            node.overrideStatus(false);
+        }
     }
 }

@@ -59,6 +59,10 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
 
     @Override
     public ParameterizedClassType parameterized(List<ArgumentType> typeArguments) {
+        if (typeArguments.size() != this.typeParameters.size()) {
+            throw new IllegalArgumentException("Expected exactly " + this.typeParameters.size() + " type arguments");
+        }
+
         ParameterizedClassType parameterizedClassType = this.typeSystem().typeFactory().newParameterizedClassType();
         parameterizedClassType.setClassReference(this);
         parameterizedClassType.setTypeArguments(typeArguments);
@@ -82,7 +86,7 @@ public final class ClassReferenceImpl extends AbstractPossiblyUnmodifiableType i
         Map<VarType, MetaVarType> typeMap = new HashMap<>();
 
         this.typeParameters.forEach(v -> {
-            MetaVarType mvt = v.typeSystem().typeFactory().newMetaVarType(v.name());
+            MetaVarType mvt = v.createMetaVar();
             mvts.add(mvt);
             typeMap.put(v, mvt);
         });

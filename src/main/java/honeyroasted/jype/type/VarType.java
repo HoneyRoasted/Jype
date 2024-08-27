@@ -24,6 +24,10 @@ public interface VarType extends PossiblyUnmodifiable, Type, ArgumentType {
         return this.upperBounds().isEmpty() || this.upperBounds().equals(Set.of(this.typeSystem().constants().object()));
     }
 
+    default MetaVarType createMetaVar() {
+        return this.typeSystem().typeFactory().newMetaVarType(System.identityHashCode(this), this.name());
+    }
+
     @Override
     default Set<Type> knownDirectSupertypes() {
         return this.upperBounds();

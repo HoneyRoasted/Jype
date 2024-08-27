@@ -13,22 +13,27 @@ import java.util.function.Function;
 
 public class ReduceCompatible implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
     @Override
+    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
+        return node.isLeaf();
+    }
+
+    @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
         Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
         if (left.isProperType() && right.isProperType()) {
-            node.expandInPlace(ConstraintNode.Operation.OR)
+            node.expandInPlace(ConstraintNode.Operation.AND, false)
                     .attach(left.typeSystem().operations().compatibilityApplier().process(
-                            node.trackedConstraint().createLeaf(),
+                            node.constraint().createLeaf(),
                             new PropertySet().inheritUnique(context)));
         } else if (left instanceof PrimitiveType pt) {
-            node.expandInPlace(ConstraintNode.Operation.OR)
-                    .attach(new TypeConstraints.Compatible(pt.box(), constraint.middle(), right).tracked(node.trackedConstraint()));
+            node.expandInPlace(ConstraintNode.Operation.AND, false)
+                    .attach(new TypeConstraints.Compatible(pt.box(), constraint.middle(), right));
         } else if (right instanceof PrimitiveType pt) {
-            node.expandInPlace(ConstraintNode.Operation.OR)
-                    .attach(new TypeConstraints.Compatible(left, constraint.middle(), pt.box()).tracked(node.trackedConstraint()));
+            node.expandInPlace(ConstraintNode.Operation.AND, false)
+                    .attach(new TypeConstraints.Compatible(left, constraint.middle(), pt.box()));
         } else if (left instanceof ClassType pct && pct.hasAnyTypeArguments() && right instanceof ClassType ct && !ct.hasTypeArguments() &&
                 left.typeSystem().operations().isSubtype(pct.classReference(), ct.classReference())) {
             node.overrideStatus(true);
@@ -38,7 +43,7 @@ public class ReduceCompatible implements ConstraintMapper.Unary<TypeConstraints.
                 left.typeSystem().operations().isSubtype(pct.classReference(), rpct.classReference())) {
             node.overrideStatus(true);
         } else {
-            node.expandInPlace(ConstraintNode.Operation.OR)
+            node.expandInPlace(ConstraintNode.Operation.AND, false)
                     .attach(new TypeConstraints.Subtype(left, right));
         }
     }

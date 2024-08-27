@@ -15,7 +15,7 @@ public class EqualType implements ConstraintMapper.Unary<TypeConstraints.Equal> 
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType();
+        return node.isLeaf() && left.isProperType() && right.isProperType();
     }
 
     @Override

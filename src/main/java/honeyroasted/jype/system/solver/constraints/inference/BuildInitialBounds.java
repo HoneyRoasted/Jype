@@ -2,7 +2,6 @@ package honeyroasted.jype.system.solver.constraints.inference;
 
 import honeyroasted.almonds.ConstraintNode;
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.almonds.TrackedConstraint;
 import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -34,7 +33,7 @@ public class BuildInitialBounds implements ConstraintMapper {
 
     @Override
     public void process(PropertySet context, ConstraintNode... nodes) {
-        ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND);
+        ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND, false);
         Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
         Map<VarType, ConstraintNode> source = new HashMap<>();
 
@@ -47,11 +46,10 @@ public class BuildInitialBounds implements ConstraintMapper {
 
         VarTypeResolveVisitor resolver = new VarTypeResolveVisitor(metaVars);
         metaVars.forEach((vt, mvt) -> {
-            TrackedConstraint parent = source.get(vt).trackedConstraint();
             if (vt.upperBounds().isEmpty()) {
                 //Case where P_l has no upper bound, alpha_l <: Object
                 bounds.attach(new TypeConstraints.Subtype(mvt, vt.typeSystem().constants().object())
-                        .tracked(parent).createLeaf().overrideStatus(true));
+                        .createLeaf().overrideStatus(true));
             } else {
                 //Case where P_l has upper bounds
                 boolean foundProperUpper = false;
@@ -62,13 +60,13 @@ public class BuildInitialBounds implements ConstraintMapper {
                     }
                     //Upper bounds imply alpha_l <: T[P_1 = alpha_1... P_n = alpha_n], for each bound T
                     bounds.attach(new TypeConstraints.Subtype(mvt, resolved)
-                            .tracked(parent).createLeaf().overrideStatus(true));
+                            .createLeaf().overrideStatus(true));
                 }
 
                 if (!foundProperUpper) {
                     //If there is no proper upper bound, alpha_l <: Object
                     bounds.attach(new TypeConstraints.Subtype(mvt, vt.typeSystem().constants().object())
-                            .tracked(parent).createLeaf().overrideStatus(true));
+                            .createLeaf().overrideStatus(true));
                 }
             }
         });

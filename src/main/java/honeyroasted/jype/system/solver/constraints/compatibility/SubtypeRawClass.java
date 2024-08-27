@@ -16,7 +16,7 @@ public class SubtypeRawClass implements ConstraintMapper.Unary<TypeConstraints.S
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 left instanceof ClassType l && !l.hasTypeArguments() &&
                 right instanceof ClassType r && !r.hasTypeArguments();
     }

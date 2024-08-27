@@ -22,7 +22,7 @@ public class CompatibleLooseInvocation implements ConstraintMapper.Unary<TypeCon
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return (constraint.middle() == LOOSE_INVOCATION || constraint.middle() == ASSIGNMENT) &&
+        return node.isLeaf() && (constraint.middle() == LOOSE_INVOCATION || constraint.middle() == ASSIGNMENT) &&
                 left.isProperType() && right.isProperType();
     }
 
@@ -41,6 +41,6 @@ public class CompatibleLooseInvocation implements ConstraintMapper.Unary<TypeCon
             newChildren.add(new TypeConstraints.Subtype(left, r.box()));
         }
 
-        node.expand(ConstraintNode.Operation.OR, newChildren.stream().map(c -> c.tracked(node.trackedConstraint()).createLeaf()).toList());
+        node.expand(ConstraintNode.Operation.OR, newChildren.stream().map(Constraint::createLeaf).toList(), false);
     }
 }

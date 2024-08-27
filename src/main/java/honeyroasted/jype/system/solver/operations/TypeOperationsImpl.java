@@ -33,6 +33,7 @@ import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceEqual;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSubtype;
 import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
@@ -93,6 +94,7 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceSubtype(),
             new ReduceCompatible(),
             new ReduceSimplyTypedExpression(),
+            new ReduceInstantiation(),
             //TODO implement non-simply typed expressions
             new ReduceContains(),
             new ReduceEqual(),
@@ -151,10 +153,14 @@ public class TypeOperationsImpl implements TypeOperations {
     @Override
     public ConstraintSolver inferenceSolver() {
         return new ConstraintSolver(List.of(
-                BUILD_INITIAL_BOUNDS_APPLIER,
-                REDUCTION_APPLIER,
-                INCORPORATION_APPLIER,
-                RESOLUTION_APPLIER
+                new ConstraintMapperApplier(
+                        List.of(
+                                BUILD_INITIAL_BOUNDS_APPLIER,
+                                REDUCTION_APPLIER,
+                                INCORPORATION_APPLIER,
+                                RESOLUTION_APPLIER
+                        )
+                )
         )).withContext(new PropertySet()
                 .attach(this.typeSystem)
                 .attach(varTypeMapper()));

@@ -19,7 +19,7 @@ public class SubtypeArray implements ConstraintMapper.Unary<TypeConstraints.Subt
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left instanceof ArrayType && left.isProperType() && right.isProperType();
+        return node.isLeaf() && left instanceof ArrayType && left.isProperType() && right.isProperType();
     }
 
     @Override
@@ -32,13 +32,13 @@ public class SubtypeArray implements ConstraintMapper.Unary<TypeConstraints.Subt
         Type supertype = right;
         if (supertype instanceof ArrayType r) {
             if (l.component() instanceof PrimitiveType || r.component() instanceof PrimitiveType) {
-                node.expand(ConstraintNode.Operation.OR, new TypeConstraints.Equal(l.component(), r.component()));
+                node.expand(ConstraintNode.Operation.OR, false, new TypeConstraints.Equal(l.component(), r.component()));
             } else {
-                node.expand(ConstraintNode.Operation.OR, new TypeConstraints.Subtype(l.component(), r.component()));
+                node.expand(ConstraintNode.Operation.OR, false, new TypeConstraints.Subtype(l.component(), r.component()));
             }
         } else {
             TypeConstants c = supertype.typeSystem().constants();
-            node.expand(ConstraintNode.Operation.OR,
+            node.expand(ConstraintNode.Operation.OR, false,
                     new TypeConstraints.Subtype(c.object(), supertype),
                     new TypeConstraints.Subtype(c.cloneable(), supertype),
                     new TypeConstraints.Subtype(c.serializable(), supertype));

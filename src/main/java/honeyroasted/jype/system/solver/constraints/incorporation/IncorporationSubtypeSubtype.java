@@ -35,8 +35,8 @@ public class IncorporationSubtypeSubtype implements ConstraintMapper.Binary<Type
 
         if (ll instanceof MetaVarType mvt && mvt.typeEquals(rr)) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
-            leftNode.expandRoot(ConstraintNode.Operation.AND)
-                    .attach(new TypeConstraints.Subtype(lr, rl).tracked(leftNode.trackedConstraint(), rightNode.trackedConstraint()).createLeaf().overrideStatus(true));
+            leftNode.expandRoot(ConstraintNode.Operation.AND, false)
+                    .attach(new TypeConstraints.Subtype(lr, rl).createLeaf().overrideStatus(true));
         }
 
         if (ll instanceof MetaVarType mvt && mvt.typeEquals(rl)) {
@@ -49,8 +49,8 @@ public class IncorporationSubtypeSubtype implements ConstraintMapper.Binary<Type
                         Type right = pair.right().typeArguments().get(i);
 
                         if (!(left instanceof WildType) && !(right instanceof WildType)) {
-                            leftNode.expandRoot(ConstraintNode.Operation.AND)
-                                    .attach(new TypeConstraints.Equal(left, right).tracked(leftNode.trackedConstraint(), rightNode.trackedConstraint()).createLeaf().overrideStatus(true));
+                            leftNode.expandRoot(ConstraintNode.Operation.AND, false)
+                                    .attach(new TypeConstraints.Equal(left, right).createLeaf().overrideStatus(true));
                         }
                     }
                 }

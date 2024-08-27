@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.HoneyRoasted:Almonds:e68ec2a4ef",
+    implementation("com.github.HoneyRoasted:Almonds:54c95b82e1",
             "com.github.HoneyRoasted:Collect:8d53ff6f74")
 
     testImplementation('org.ow2.asm:asm:9.5',

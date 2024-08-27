@@ -4,6 +4,7 @@ import honeyroasted.collect.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
+import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
@@ -14,6 +15,10 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
     void setLocation(MethodLocation location);
 
     int modifiers();
+
+    default boolean hasModifier(AccessFlag flag) {
+        return (flag.mask() & modifiers()) != 0;
+    }
 
     void setModifiers(int modifiers);
 

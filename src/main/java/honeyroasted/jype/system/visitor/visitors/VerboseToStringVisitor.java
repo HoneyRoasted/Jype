@@ -200,7 +200,7 @@ public class VerboseToStringVisitor implements ToStringVisitor {
     }
 
     public String metaVarToString(MetaVarType type, Set<Type> context) {
-        return "#" + type.name() + ":" + Integer.toString(type.identity(), 36);
+        return "#" + type.name() + ":" + Integer.toString(type.identity(), 16);
     }
 
     public String noneToString(NoneType type, Set<Type> context) {

@@ -2,7 +2,6 @@ package honeyroasted.jype.system.solver.constraints.reduction;
 
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.TrackedConstraint;
 import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -24,6 +23,11 @@ import java.util.stream.Collectors;
 
 public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
+    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
+        return node.isLeaf();
+    }
+
+    @Override
     public void process(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
         Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
@@ -31,7 +35,7 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
 
         if (left.isProperType() && right.isProperType()) {
             left.typeSystem().operations().compatibilityApplier()
-                    .process(TrackedConstraint.of(constraint, node.trackedConstraint()).createLeaf());
+                    .process(constraint.createLeaf());
         } else if (left.isNullType()) {
             node.overrideStatus(true);
         } else if (right.isNullType()) {
@@ -48,19 +52,19 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
             if (left instanceof IntersectionType it && it.typeContains(mvt)) {
                 node.overrideStatus(true);
             } else if (!mvt.lowerBounds().isEmpty()) {
-                node.expand(ConstraintNode.Operation.AND, new TypeConstraints.Subtype(left, mvt.lowerBound()))
+                node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Subtype(left, mvt.lowerBound()))
                         .overrideStatus(true);
             } else {
                 node.overrideStatus(false);
             }
         } else if (right instanceof IntersectionType it) {
-            node.expand(ConstraintNode.Operation.AND, it.children().stream().map(t -> new TypeConstraints.Subtype(left, t)).toArray(Constraint[]::new))
+            node.expand(ConstraintNode.Operation.AND, false, it.children().stream().map(t -> new TypeConstraints.Subtype(left, t)).toArray(Constraint[]::new))
                     .overrideStatus(true);
         } else if (right instanceof ClassType ct) {
             if (ct.hasAnyTypeArguments()) {
-                TrackedConstraint classTypeMatch = new TypeConstraints.Subtype(left, ct.classReference()).tracked(node.trackedConstraint());
+                Constraint classTypeMatch = new TypeConstraints.Subtype(left, ct.classReference());
 
-                Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), left, classTypeMatch);
+                Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), left);
                 if (supertypeOpt.isPresent()) {
                     ClassType supertype = supertypeOpt.get();
                     if (supertype.hasAnyTypeArguments() && supertype.typeArguments().size() == ct.typeArguments().size()) {
@@ -69,10 +73,10 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
                             Type ti = supertype.typeArguments().get(i);
                             Type si = ct.typeArguments().get(i);
 
-                            newChildren.add(new TypeConstraints.Contains(ti, si).tracked(node.trackedConstraint()).createLeaf());
+                            newChildren.add(new TypeConstraints.Contains(ti, si).createLeaf());
                         }
 
-                        node.expand(ConstraintNode.Operation.AND, newChildren);
+                        node.expand(ConstraintNode.Operation.AND, newChildren, false);
                     } else {
                         node.overrideStatus(false);
                     }
@@ -80,16 +84,16 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
                     node.overrideStatus(false);
                 }
             } else {
-                node.expandInPlace(ConstraintNode.Operation.OR).attach(left.typeSystem().operations().compatibilityApplier()
-                        .process(node.trackedConstraint().createLeaf(), new PropertySet().inheritUnique(context)));
+                node.expandInPlace(ConstraintNode.Operation.AND, false).attach(left.typeSystem().operations().compatibilityApplier()
+                        .process(node.constraint().createLeaf(), new PropertySet().inheritUnique(context)));
             }
         } else if (right instanceof ArrayType at) {
             if (left instanceof ArrayType lat) {
                 if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
-                    node.expand(ConstraintNode.Operation.AND, new TypeConstraints.Equal(lat.component(), at.component()))
+                    node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Equal(lat.component(), at.component()))
                             .overrideStatus(true);
                 } else {
-                    node.expand(ConstraintNode.Operation.AND, new TypeConstraints.Subtype(lat.component(), at.component()))
+                    node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Subtype(lat.component(), at.component()))
                             .overrideStatus(true);
                 }
             } else {
@@ -97,7 +101,7 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
                 if (arr.isEmpty()) {
                     node.overrideStatus(false);
                 } else {
-                    node.expand(ConstraintNode.Operation.OR, arr.stream().map(st -> new TypeConstraints.Subtype(st, at)).toArray(Constraint[]::new))
+                    node.expand(ConstraintNode.Operation.OR, false, arr.stream().map(st -> new TypeConstraints.Subtype(st, at)).toArray(Constraint[]::new))
                             .overrideStatus(true);
                 }
             }
@@ -106,26 +110,22 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
         }
     }
 
-    private Optional<ClassType> identifySuperclass(ClassReference target, Type type, TrackedConstraint constraint) {
+    private Optional<ClassType> identifySuperclass(ClassReference target, Type type) {
         if (type instanceof ClassType ct) {
             Optional<ClassType> found = ct.relativeSupertype(ct);
-            TrackedConstraint.of(new TypeConstraints.Equal(ct.classReference(), target), constraint);
             return found;
         } else {
             for (Type supertype : type.knownDirectSupertypes()) {
                 if (supertype instanceof ClassType ct) {
                     Optional<ClassType> found = ct.relativeSupertype(target);
                     if (found.isPresent()) {
-                        TrackedConstraint.of(new TypeConstraints.Equal(ct.classReference(), target), constraint);
                         return found;
                     }
                 }
             }
 
             for (Type supertype : type.knownDirectSupertypes()) {
-                TrackedConstraint classTypeMatch = TrackedConstraint.of(new TypeConstraints.Subtype(supertype, target), constraint);
-
-                Optional<ClassType> found = identifySuperclass(target.classReference(), supertype, classTypeMatch);
+                Optional<ClassType> found = identifySuperclass(target.classReference(), supertype);
                 if (found.isPresent()) {
                     return found;
                 }

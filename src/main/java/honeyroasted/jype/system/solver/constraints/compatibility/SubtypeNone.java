@@ -17,7 +17,7 @@ public class SubtypeNone implements ConstraintMapper.Unary<TypeConstraints.Subty
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 (left instanceof NoneType || right instanceof NoneType);
     }
 

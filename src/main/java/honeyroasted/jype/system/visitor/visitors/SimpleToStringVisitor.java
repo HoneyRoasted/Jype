@@ -101,7 +101,7 @@ public class SimpleToStringVisitor implements ToStringVisitor {
 
     @Override
     public String metaVarToString(MetaVarType type, Set<Type> context) {
-        return "#" + type.name() + ":" + Integer.toString(type.identity(), 36);
+        return "#" + type.name() + ":" + Integer.toString(type.identity(), 16);
     }
 
     @Override

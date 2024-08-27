@@ -14,7 +14,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class ExpressionSimplyTyped implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
     public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        return constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant);
+        return node.isLeaf() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant);
     }
 
     @Override
@@ -22,6 +22,6 @@ public class ExpressionSimplyTyped implements ConstraintMapper.Unary<TypeConstra
         Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
 
         Type supertype = mapper.apply(constraint.right());
-        node.expand(ConstraintNode.Operation.OR, new TypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));
+        node.expand(ConstraintNode.Operation.OR, false, new TypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));
     }
 }

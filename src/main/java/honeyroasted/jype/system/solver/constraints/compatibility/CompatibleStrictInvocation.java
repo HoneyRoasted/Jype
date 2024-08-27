@@ -17,7 +17,7 @@ public class CompatibleStrictInvocation implements ConstraintMapper.Unary<TypeCo
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return constraint.middle() == STRICT_INVOCATION && left.isProperType() && right.isProperType();
+        return node.isLeaf() && constraint.middle() == STRICT_INVOCATION && left.isProperType() && right.isProperType();
     }
 
     @Override
@@ -26,6 +26,6 @@ public class CompatibleStrictInvocation implements ConstraintMapper.Unary<TypeCo
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        node.expand(ConstraintNode.Operation.OR, new TypeConstraints.Subtype(left, right));
+        node.expand(ConstraintNode.Operation.OR, false, new TypeConstraints.Subtype(left, right));
     }
 }

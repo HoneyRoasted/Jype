@@ -1,7 +1,6 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
 import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.TrackedConstraint;
 import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -16,7 +15,7 @@ public class SubtypeEquality implements ConstraintMapper.Unary<TypeConstraints.S
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType();
+        return node.isLeaf() && left.isProperType() && right.isProperType();
     }
 
     @Override
@@ -26,7 +25,6 @@ public class SubtypeEquality implements ConstraintMapper.Unary<TypeConstraints.S
         Type right = mapper.apply(constraint.right());
 
         if (left.typeEquals(right)) {
-            TrackedConstraint.of(new TypeConstraints.Equal(left, right), node.trackedConstraint());
             node.overrideStatus(true);
         }
     }

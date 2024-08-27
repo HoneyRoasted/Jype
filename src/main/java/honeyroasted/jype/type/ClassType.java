@@ -4,6 +4,7 @@ import honeyroasted.collect.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.location.ClassNamespace;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 
+import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -18,6 +19,10 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
     void setNamespace(ClassNamespace namespace);
 
     int modifiers();
+
+    default boolean hasModifier(AccessFlag flag) {
+        return (flag.mask() & modifiers()) != 0;
+    }
 
     void setModifiers(int modifiers);
 

@@ -36,14 +36,14 @@ public class IncorporationEqualSubtype implements ConstraintMapper.Binary<TypeCo
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
-                leftNode.expandRoot(ConstraintNode.Operation.AND)
-                        .attach(new TypeConstraints.Subtype(otherType, rr).tracked(leftNode.trackedConstraint(), rightNode.trackedConstraint()).createLeaf().overrideStatus(true));
+                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
+                        .attach(new TypeConstraints.Subtype(otherType, rr).createLeaf().overrideStatus(true));
             } else if (rr.typeEquals(mvt)) {
-                leftNode.expandRoot(ConstraintNode.Operation.AND)
-                        .attach(new TypeConstraints.Subtype(rl, otherType).tracked(leftNode.trackedConstraint(), rightNode.trackedConstraint()).createLeaf().overrideStatus(true));
+                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
+                        .attach(new TypeConstraints.Subtype(rl, otherType).createLeaf().overrideStatus(true));
             } else {
-                leftNode.expandRoot(ConstraintNode.Operation.AND)
-                        .attach(new TypeConstraints.Subtype(subResolver.visit(rl), subResolver.visit(rr)).tracked(leftNode.trackedConstraint(), rightNode.trackedConstraint()).createLeaf().overrideStatus(true));
+                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
+                        .attach(new TypeConstraints.Subtype(subResolver.visit(rl), subResolver.visit(rr)).createLeaf().overrideStatus(true));
             }
         }
     }

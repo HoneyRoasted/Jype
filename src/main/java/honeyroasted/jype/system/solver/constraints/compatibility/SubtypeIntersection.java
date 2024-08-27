@@ -19,7 +19,7 @@ public class SubtypeIntersection implements ConstraintMapper.Unary<TypeConstrain
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 (left instanceof IntersectionType || right instanceof IntersectionType);
     }
 
@@ -40,6 +40,6 @@ public class SubtypeIntersection implements ConstraintMapper.Unary<TypeConstrain
             operation = ConstraintNode.Operation.AND;
         }
 
-        node.expand(operation, newChildren.stream().map(cn -> cn.tracked(node.trackedConstraint()).createLeaf()).toList());
+        node.expand(operation, newChildren.stream().map(Constraint::createLeaf).toList(), false);
     }
 }

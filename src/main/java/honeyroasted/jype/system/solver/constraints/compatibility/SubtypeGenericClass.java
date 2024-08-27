@@ -2,7 +2,6 @@ package honeyroasted.jype.system.solver.constraints.compatibility;
 
 import honeyroasted.almonds.ConstraintNode;
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.almonds.TrackedConstraint;
 import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -25,7 +24,7 @@ public class SubtypeGenericClass implements ConstraintMapper.Unary<TypeConstrain
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return left.isProperType() && right.isProperType() &&
+        return node.isLeaf() && left.isProperType() && right.isProperType() &&
                 left instanceof ClassType && right instanceof ClassType ct && ct.hasTypeArguments();
     }
 
@@ -43,36 +42,33 @@ public class SubtypeGenericClass implements ConstraintMapper.Unary<TypeConstrain
         if (superTypeOpt.isPresent()) {
             Set<ConstraintNode> newChildren = new LinkedHashSet<>();
 
-            TrackedConstraint.of(new TypeConstraints.Subtype(l.classReference(), pcr.classReference()), node.trackedConstraint());
-
             ClassType relative = superTypeOpt.get();
 
             if (relative.typeArguments().size() == pcr.typeArguments().size()) {
-                ConstraintTree argsMatch = new ConstraintTree(new TypeConstraints.TypeArgumentsMatch(relative, pcr).tracked(node.trackedConstraint()), ConstraintNode.Operation.AND);
+                ConstraintTree argsMatch = new ConstraintTree(new TypeConstraints.TypeArgumentsMatch(relative, pcr), ConstraintNode.Operation.AND);
                 newChildren.add(argsMatch);
                 for (int i = 0; i < relative.typeArguments().size(); i++) {
                     Type ti = relative.typeArguments().get(i);
                     Type si = pcr.typeArguments().get(i);
 
                     if (si instanceof WildType || si instanceof VarType || si instanceof MetaVarType) {
-                        TrackedConstraint argMatch = TrackedConstraint.of(new TypeConstraints.GenericParameter(ti, si), argsMatch.trackedConstraint());
                         if (si instanceof WildType.Upper siwtu) {
                             pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
-                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound).tracked(argMatch)));
+                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound)));
                             siwtu.upperBounds()
-                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, wildBound).tracked(argMatch)));
+                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, wildBound)));
                         } else if (si instanceof WildType.Lower siwtl) {
                             pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
-                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound).tracked(argMatch)));
+                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound)));
                             siwtl.lowerBounds()
-                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(wildBound, ti).tracked(argMatch)));
+                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(wildBound, ti)));
                         } else if (si instanceof MetaVarType mvt) {
                             pcr.typeParameters().get(i).upperBounds().stream().map(pcr.varTypeResolver())
-                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound).tracked(argMatch)));
+                                    .forEach(argBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, argBound)));
                             mvt.upperBounds()
-                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, wildBound).tracked(argMatch)));
+                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(ti, wildBound)));
                             mvt.lowerBounds()
-                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(wildBound, ti).tracked(argMatch)));
+                                    .forEach(wildBound -> argsMatch.attach(new TypeConstraints.Subtype(wildBound, ti)));
                         }
                     } else {
                         argsMatch.attach(new TypeConstraints.Equal(ti, si));
@@ -80,15 +76,14 @@ public class SubtypeGenericClass implements ConstraintMapper.Unary<TypeConstrain
                 }
 
                 if (l.hasRelevantOuterType() && pcr.hasRelevantOuterType()) {
-                    newChildren.add(new TypeConstraints.Subtype(l.outerType(), pcr.outerType()).tracked(node.trackedConstraint()).createLeaf());
+                    newChildren.add(new TypeConstraints.Subtype(l.outerType(), pcr.outerType()).createLeaf());
                 }
             } else {
-                newChildren.add(new TypeConstraints.TypeArgumentsMatch(relative, pcr).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                newChildren.add(new TypeConstraints.TypeArgumentsMatch(relative, pcr).createLeaf().setStatus(ConstraintNode.Status.FALSE));
             }
 
-            node.expand(ConstraintNode.Operation.AND, newChildren);
+            node.expand(ConstraintNode.Operation.AND, newChildren, false);
         } else {
-            TrackedConstraint.of(new TypeConstraints.Subtype(l.classReference(), pcr.classReference()), node.trackedConstraint());
             node.overrideStatus(false);
         }
     }

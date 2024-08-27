@@ -22,7 +22,7 @@ public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<Type
         Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type right = mapper.apply(constraint.right());
 
-        return constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
+        return node.isLeaf() && constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
     }
 
     @Override
@@ -43,28 +43,28 @@ public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<Type
         if (subtype.typeEquals(c.byteType()) || subtype.typeEquals(c.shortType()) || subtype.typeEquals(c.charType()) || subtype.typeEquals(c.intType())) {
             if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.TRUE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
                 } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
                 }
             } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.TRUE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
                 } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
                 }
             } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.TRUE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
                 } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).tracked(node.trackedConstraint()).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
                 }
             }
         }
 
-        newChildren.add(new TypeConstraints.Compatible(subtype, LOOSE_INVOCATION, right).tracked(node.trackedConstraint()).createLeaf());
+        newChildren.add(new TypeConstraints.Compatible(subtype, LOOSE_INVOCATION, right).createLeaf());
 
-        node.expand(ConstraintNode.Operation.OR, newChildren);
+        node.expand(ConstraintNode.Operation.OR, newChildren, false);
 
     }
 
