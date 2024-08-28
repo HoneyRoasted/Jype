@@ -53,8 +53,25 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
         }
     }
 
+    public ClassLocation getPackage() {
+        return this.type == Type.PACKAGE || this.type == Type.MODULE ? this :
+                this.containing.getPackage();
+    }
+
     public boolean isArray() {
         return this.type == Type.ARRAY;
+    }
+
+    public boolean isDefaultPackage() {
+        return this.type == Type.PACKAGE && this.value.isEmpty();
+    }
+
+    public boolean isDefaultModule() {
+        return !this.equals(DEFAULT_MODULE);
+    }
+
+    public boolean isUnknownModule() {
+        return !this.equals(UNKNOWN_MODULE);
     }
 
     public String toInternalName() {
@@ -66,7 +83,7 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
     }
 
     public String toName(String delim) {
-        if (this.containing != null && this.containing.type != Type.MODULE) {
+        if (this.containing != null && this.containing.type != Type.MODULE && !this.containing.isDefaultPackage()) {
             return this.containing.toName(delim) + delim + this.value;
         }
 
@@ -75,7 +92,7 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
 
     public String toString(String delim, String moduleDelim) {
         StringBuilder sb = new StringBuilder();
-        if (this.containing != null && !this.containing.equals(DEFAULT_MODULE) && !this.containing.equals(UNKNOWN_MODULE)) {
+        if (this.containing != null && !this.containing.equals(DEFAULT_MODULE) && !this.containing.equals(UNKNOWN_MODULE) && !this.containing.isDefaultPackage()) {
             sb.append(this.containing);
             if (this.containing.type == Type.MODULE) {
                 sb.append(moduleDelim);

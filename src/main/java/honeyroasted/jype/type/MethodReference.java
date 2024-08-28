@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 public interface MethodReference extends PossiblyUnmodifiable, MethodType {
-    ParameterizedMethodType asMethodType(List<ArgumentType> typeArguments);
+    ParameterizedMethodType parameterized(List<ArgumentType> typeArguments);
 
-    ParameterizedMethodType asMethodType(ArgumentType... typeArguments);
+    ParameterizedMethodType parameterized(ArgumentType... typeArguments);
 
     ParameterizedMethodType parameterizedWithTypeVars();
 

@@ -149,15 +149,13 @@ public class ResolveBounds implements ConstraintMapper {
                 generatedBounds = newBounds;
             }
 
-
             ConstraintNode incorp = generatedBounds.copy();
             incorp = system.operations().incorporationApplier().process(incorp);
             incorp = system.operations().reductionApplier().process(incorp);
 
 
             if (incorp.satisfied()) {
-                ConstraintNode finalIncorp = incorp;
-                findAllInstantiations(varsAndDeps, incorp).forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).createLeaf().overrideStatus(true)));
+                bounds.attach(incorp);
             }
         } else {
             bounds.attach(Constraint.FALSE);

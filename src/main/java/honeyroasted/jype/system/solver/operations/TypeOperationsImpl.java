@@ -32,8 +32,10 @@ import honeyroasted.jype.system.solver.constraints.inference.BuildInitialBounds;
 import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceDelayedExpressionCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceInstantiation;
+import honeyroasted.jype.system.solver.constraints.reduction.ReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceSubtype;
 import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
@@ -95,6 +97,8 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceCompatible(),
             new ReduceSimplyTypedExpression(),
             new ReduceInstantiation(),
+            new ReduceMethodInvocation(),
+            new ReduceDelayedExpressionCompatible(),
             //TODO implement non-simply typed expressions
             new ReduceContains(),
             new ReduceEqual(),
@@ -156,7 +160,9 @@ public class TypeOperationsImpl implements TypeOperations {
                 new ConstraintMapperApplier(
                         List.of(
                                 BUILD_INITIAL_BOUNDS_APPLIER,
+                                INCORPORATION_APPLIER,
                                 REDUCTION_APPLIER,
+                                BUILD_INITIAL_BOUNDS_APPLIER,
                                 INCORPORATION_APPLIER,
                                 RESOLUTION_APPLIER
                         )

@@ -21,14 +21,14 @@ public class ReflectionExpressionInspector implements ExpressionInspector {
     }
 
     @Override
-    public Optional<Map<MethodLocation, MethodReference>> getDeclaredMethods(ClassReference reference) {
+    public Optional<Map<MethodLocation, MethodReference>> getAllMethods(ClassReference reference) {
         Optional<Class<?>> clsOpt = ReflectionTypeResolution.getReflectionType(reference);
         if (clsOpt.isEmpty()) return Optional.empty();
 
         Map<MethodLocation, MethodReference> methods = new LinkedHashMap<>();
         Class<?> cls = clsOpt.get();
 
-        for (Method method : cls.getDeclaredMethods()) {
+        for (Method method : ReflectionTypeResolution.getAllMethods(cls)) {
             MethodLocation loc = MethodLocation.of(method);
             system.resolve(method).ifPresent(mr -> methods.put(loc, mr));
         }
@@ -37,14 +37,14 @@ public class ReflectionExpressionInspector implements ExpressionInspector {
     }
 
     @Override
-    public Optional<Map<MethodLocation, MethodReference>> getDeclaredConstructors(ClassReference reference) {
+    public Optional<Map<MethodLocation, MethodReference>> getAllConstructors(ClassReference reference) {
         Optional<Class<?>> clsOpt = ReflectionTypeResolution.getReflectionType(reference);
         if (clsOpt.isEmpty()) return Optional.empty();
 
         Map<MethodLocation, MethodReference> methods = new LinkedHashMap<>();
         Class<?> cls = clsOpt.get();
 
-        for (Constructor<?> constructor : cls.getConstructors()) {
+        for (Constructor<?> constructor : ReflectionTypeResolution.getAllConstructors(cls)) {
             MethodLocation loc = MethodLocation.of(constructor);
             system.resolve(constructor).ifPresent(mr -> methods.put(loc, mr));
         }

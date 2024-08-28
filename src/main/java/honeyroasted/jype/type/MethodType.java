@@ -16,6 +16,14 @@ public interface MethodType extends Type, PossiblyUnmodifiable {
 
     int modifiers();
 
+    default Access access() {
+        return Access.fromFlags(modifiers());
+    }
+
+    default boolean hasModifier(Access flag) {
+        return flag.canAccess(this.modifiers());
+    }
+
     default boolean hasModifier(AccessFlag flag) {
         return (flag.mask() & modifiers()) != 0;
     }

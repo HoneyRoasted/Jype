@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface ExpressionInspector {
 
-    Optional<Map<MethodLocation, MethodReference>> getDeclaredMethods(ClassReference reference);
+    Optional<Map<MethodLocation, MethodReference>> getAllMethods(ClassReference reference);
 
-    Optional<Map<MethodLocation, MethodReference>> getDeclaredConstructors(ClassReference reference);
+    Optional<Map<MethodLocation, MethodReference>> getAllConstructors(ClassReference reference);
 
     Optional<Boolean> isFunctionalInterface(ClassReference reference);
 

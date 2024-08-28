@@ -16,9 +16,9 @@ public class MultiExpressionInspector implements ExpressionInspector {
     }
 
     @Override
-    public Optional<Map<MethodLocation, MethodReference>> getDeclaredMethods(ClassReference reference) {
+    public Optional<Map<MethodLocation, MethodReference>> getAllMethods(ClassReference reference) {
         for (ExpressionInspector inspector : this.delegates) {
-            Optional<Map<MethodLocation, MethodReference>> result = inspector.getDeclaredMethods(reference);
+            Optional<Map<MethodLocation, MethodReference>> result = inspector.getAllMethods(reference);
             if (result.isPresent()) {
                 return result;
             }
@@ -28,9 +28,9 @@ public class MultiExpressionInspector implements ExpressionInspector {
     }
 
     @Override
-    public Optional<Map<MethodLocation, MethodReference>> getDeclaredConstructors(ClassReference reference) {
+    public Optional<Map<MethodLocation, MethodReference>> getAllConstructors(ClassReference reference) {
         for (ExpressionInspector inspector : this.delegates) {
-            Optional<Map<MethodLocation, MethodReference>> result = inspector.getDeclaredMethods(reference);
+            Optional<Map<MethodLocation, MethodReference>> result = inspector.getAllMethods(reference);
             if (result.isPresent()) {
                 return result;
             }

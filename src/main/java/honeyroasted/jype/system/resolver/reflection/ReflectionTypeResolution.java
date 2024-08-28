@@ -7,6 +7,7 @@ import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
 import honeyroasted.jype.system.resolver.ResolutionFailedException;
+import honeyroasted.jype.type.Access;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -19,10 +20,16 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface ReflectionTypeResolution {
 
@@ -356,4 +363,113 @@ public interface ReflectionTypeResolution {
         }
     }
 
+    static Collection<Method> getAllMethods(Class<?> clazz) {
+        Set<Method> result = new LinkedHashSet<>();
+        getAllImpl(clazz, result, Class::getDeclaredMethods);
+        return result;
+    }
+
+    static Collection<Constructor<?>> getAllConstructors(Class<?> clazz) {
+        Set<Constructor<?>> result = new LinkedHashSet<>();
+        getAllImpl(clazz, result, Class::getDeclaredConstructors);
+        return result;
+    }
+
+    private static <T extends Executable> void getAllImpl(Class<?> clazz, Set<T> building, Function<Class<?>, T[]> getDeclared) {
+        for (T exec : getDeclared.apply(clazz)) {
+            if (building.stream().noneMatch(t -> isOverriddenBy(exec, t))) {
+                building.add(exec);
+            }
+        }
+
+        if (clazz.getSuperclass() != null) getAllImpl(clazz.getSuperclass(), building, getDeclared);
+        for (Class<?> inter : clazz.getInterfaces()) {
+            getAllImpl(inter, building, getDeclared);
+        }
+    }
+
+    private static boolean isOverriddenBy(Executable left, Executable right) {
+        if (left instanceof Method mLeft && right instanceof Method) {
+            Method bridge = findBridgeMethod(mLeft);
+            if (bridge != null) {
+                return isOverriddenBy(bridge, right);
+            }
+        }
+
+        return left.getName().equals(right.getName()) &&
+                isOverridableIn(left, right.getDeclaringClass()) &&
+                !Access.fromFlags(right.getModifiers()).isMoreRestrictiveThan(Access.fromFlags(left.getModifiers())) &&
+                getReturnType(left).equals(getReturnType(right)) &&
+                areParametersEqual(left, right);
+
+    }
+
+    private static java.lang.reflect.Type getReturnType(Executable exec) {
+        return exec instanceof Method m ? m.getReturnType() :
+                exec instanceof Constructor<?> c ? c.getDeclaringClass() :
+                        exec.getAnnotatedReturnType().getType();
+    }
+
+    private static Method findBridgeMethod(Method me) {
+        if (me.isBridge()) return null;
+        return Stream.of(me.getDeclaringClass().getDeclaredMethods())
+                .filter(it -> it != me && it.isBridge() && it.getName().equals(me.getName()) &&
+                        areParametersCovariant(me, it) && it.getReturnType().isAssignableFrom(me.getReturnType()))
+                .findFirst().orElse(null);
+    }
+
+    private static boolean isOverridableIn(Executable me, Class<?> cls) {
+        if (!isOverridable(me.getModifiers())) return false;
+        if (!isSubclassVisible(me.getModifiers())) return false;
+        if (!me.getDeclaringClass().isAssignableFrom(cls)) return false;
+
+        if (Modifier.isPublic(me.getModifiers())) return true;
+        if (isPackageVisible(me.getModifiers()) && cls.getPackage() == me.getDeclaringClass().getPackage()) return true;
+
+        return false;
+    }
+
+    private static boolean areParametersCovariant(Executable left, Executable right) {
+        Class<?>[] leftParams = left.getParameterTypes();
+        Class<?>[] rightParams = right.getParameterTypes();
+
+        if (leftParams.length != rightParams.length) return false;
+
+        for (int i = 0; i < leftParams.length; i++) {
+            if (!rightParams[i].isAssignableFrom(leftParams[i])) return false;
+        }
+
+        return true;
+    }
+
+    private static boolean areParametersEqual(Executable left, Executable right) {
+        Class<?>[] leftParams = left.getParameterTypes();
+        Class<?>[] rightParams = right.getParameterTypes();
+
+        if (leftParams.length != rightParams.length) return false;
+
+        for (int i = 0; i < leftParams.length; i++) {
+            if (!rightParams[i].equals(leftParams[i])) return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isAccessMoreRestrictive(int left, int right) {
+        return Access.fromFlags(left).compareTo(Access.fromFlags(right)) < 0;
+    }
+
+    private static boolean isOverridable(int mods) {
+        return !Modifier.isStatic(mods) &&
+                !Modifier.isFinal(mods) &&
+                !Modifier.isPrivate(mods);
+    }
+
+    private static boolean isPackageVisible(int mods) {
+        return !Modifier.isPrivate(mods);
+    }
+
+    private static boolean isSubclassVisible(int mods) {
+        return Modifier.isPublic(mods) || Modifier.isProtected(mods);
+    }
 }

@@ -155,6 +155,22 @@ public interface TypeConstraints {
         }
     }
 
+    final class DelayedExpressionCompatible extends Constraint.Binary<MetaVarType, ExpressionCompatible> {
+        public DelayedExpressionCompatible(MetaVarType left, ExpressionCompatible right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.right() + " WAITING FOR " + this.left();
+        }
+
+        @Override
+        public String simpleName() {
+            return "delayed(" + this.left().simpleName() + ", " + this.right().simpleName() + ")";
+        }
+    }
+
     final class Contains extends Constraint.Binary<Type, Type> {
         public Contains(Type left, Type right) {
             super(left, right);
@@ -350,6 +366,10 @@ public interface TypeConstraints {
 
         public boolean varargInvocation() {
             return this.right();
+        }
+
+        public String toString() {
+            return this.left().location().name() + "(...) IN " + this.middle();
         }
 
         @Override

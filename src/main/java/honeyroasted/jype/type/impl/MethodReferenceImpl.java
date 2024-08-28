@@ -52,7 +52,7 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(List<ArgumentType> typeArguments) {
+    public ParameterizedMethodType parameterized(List<ArgumentType> typeArguments) {
         ParameterizedMethodType parameterizedMethodType = this.typeSystem().typeFactory().newParameterizedMethodType();
         parameterizedMethodType.setMethodReference(this);
         parameterizedMethodType.setTypeArguments(typeArguments);
@@ -61,13 +61,13 @@ public final class MethodReferenceImpl extends AbstractPossiblyUnmodifiableType 
     }
 
     @Override
-    public ParameterizedMethodType asMethodType(ArgumentType... typeArguments) {
-        return asMethodType(List.of(typeArguments));
+    public ParameterizedMethodType parameterized(ArgumentType... typeArguments) {
+        return parameterized(List.of(typeArguments));
     }
 
     @Override
     public ParameterizedMethodType parameterizedWithTypeVars() {
-        return this.asMethodType((List<ArgumentType>) (List) this.typeParameters);
+        return this.parameterized((List<ArgumentType>) (List) this.typeParameters);
     }
 
     @Override

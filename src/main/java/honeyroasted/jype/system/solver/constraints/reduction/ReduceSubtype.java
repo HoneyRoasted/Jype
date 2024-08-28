@@ -62,8 +62,6 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
                     .overrideStatus(true);
         } else if (right instanceof ClassType ct) {
             if (ct.hasAnyTypeArguments()) {
-                Constraint classTypeMatch = new TypeConstraints.Subtype(left, ct.classReference());
-
                 Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), left);
                 if (supertypeOpt.isPresent()) {
                     ClassType supertype = supertypeOpt.get();

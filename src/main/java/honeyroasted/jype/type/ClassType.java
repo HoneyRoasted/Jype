@@ -20,6 +20,14 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
 
     int modifiers();
 
+    default Access access() {
+        return Access.fromFlags(modifiers());
+    }
+
+    default boolean hasModifier(Access flag) {
+        return flag.canAccess(this.modifiers());
+    }
+
     default boolean hasModifier(AccessFlag flag) {
         return (flag.mask() & modifiers()) != 0;
     }
@@ -39,9 +47,27 @@ public interface ClassType extends InstantiableType, PossiblyUnmodifiable, Argum
                 && (this.outerMethod() == null || !Modifier.isStatic(this.outerMethod().modifiers()));
     }
 
+    default boolean hasOuterType() {
+        return this.outerType() != null;
+    }
+
     ParameterizedClassType directSupertype(ClassType supertypeInstance);
 
     Optional<ClassType> relativeSupertype(ClassType superType);
+
+    default Access accessFrom(ClassType other) {
+        if (this.classReference().equals(other.classReference())) {
+            return Access.PRIVATE;
+        } else if (other.hasSupertype(this.classReference())) {
+            return Access.PROTECTED;
+        } else if (this.namespace().location().getPackage().equals(other.namespace().location().getPackage())) {
+            return Access.PACKAGE_PROTECTED;
+        } else if (other.hasOuterType()) {
+            return this.accessFrom(other.outerType());
+        } else {
+            return Access.PUBLIC;
+        }
+    }
 
     @Override
     default Set<Type> knownDirectSupertypes() {

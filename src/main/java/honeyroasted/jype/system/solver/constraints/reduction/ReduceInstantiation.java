@@ -57,10 +57,10 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
         }
         parameters.addAll(inst.parameters());
 
-        Optional<Map<MethodLocation, MethodReference>> consOpt = system.expressionInspector().getDeclaredConstructors(inst.type());
+        Optional<Map<MethodLocation, MethodReference>> consOpt = system.expressionInspector().getAllConstructors(inst.type());
         if (!consOpt.isPresent()) {
             node.expandInPlace(ConstraintNode.Operation.AND, true)
-                            .attach(new TypeConstraints.MethodNotFound(inst.type(), "<init>"));
+                            .attach(new TypeConstraints.MethodNotFound(inst.type(), MethodLocation.CONSTRUCTOR_NAME));
         } else {
             Set<Constraint> typeParams = new LinkedHashSet<>();
             if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
@@ -75,15 +75,17 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
                     target.parameterizedWithMetaVars();
 
             consOpt.get().forEach((loc, ref) -> {
-                if (ref.parameters().size() == parameters.size()) {
-                    newChildren.add(createInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters));
-                    newChildren.add(createInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters));
-                }
+                if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
+                    if (ref.parameters().size() == parameters.size()) {
+                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters));
+                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters));
+                    }
 
-                if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
-                        ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
-                    newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
-                    newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
+                    if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
+                            ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
+                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
+                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
+                    }
                 }
             });
 
@@ -91,14 +93,15 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
                 node.expand(ConstraintNode.Operation.OR, newChildren, false);
             } else {
                 node.expandInPlace(ConstraintNode.Operation.AND, true)
-                                .attach(new TypeConstraints.MethodNotFound(inst.type(), "<init>"));
+                                .attach(new TypeConstraints.MethodNotFound(inst.type(), MethodLocation.CONSTRUCTOR_NAME));
             }
         }
     }
 
-    private static ConstraintTree createInvoke(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
-        invoke.preserve();
+    private static ConstraintTree createConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters) {
+        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND)
+                .preserve();
+
         invoke.attach(typeParams.toArray(Constraint[]::new));
         invoke.attach(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()));
         for (int i = 0; i < parameters.size(); i++) {
@@ -108,9 +111,10 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
         return invoke;
     }
 
-    private static ConstraintTree createVarargInvoke(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters, ArrayType vararg) {
+    private static ConstraintTree createVarargConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters, ArrayType vararg) {
         ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, true), ConstraintNode.Operation.AND);
         invoke.preserve();
+
         invoke.attach(typeParams.toArray(Constraint[]::new));
         invoke.attach(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()));
         int index;

@@ -7,11 +7,11 @@ import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.type.Type;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,33 +24,45 @@ public class Test {
 
         ClassReference declaring = system.tryResolve(Test.class);
         List<ArgumentType> explicitTypeArguments = List.of();
+        List<ExpressionInformation> parameters = List.of();
+        ClassReference source = system.tryResolve(Collections.class);
 
-        ClassReference integer = system.constants().intBox();
-        List<ExpressionInformation> intParams = List.of(ExpressionInformation.of(system.constants().intType()));
+        ClassReference list = system.tryResolve(List.class);
+        ClassReference string = system.tryResolve(String.class);
 
-        ExpressionInformation.Instantiation subInst = new SimpleInst(declaring, integer, intParams, explicitTypeArguments);
+        Type target = list.parameterized(string);
 
-        ClassReference type = system.tryResolve(ArrayList.class);
-        List<ExpressionInformation> parameters = List.of(subInst);
+        ExpressionInformation.Invocation<ClassReference> invocation =
+                new SimpleInvocation<>("emptyList", declaring, parameters, explicitTypeArguments, source);
 
-        ExpressionInformation.Instantiation instantiation = new SimpleInst(declaring, type, parameters, explicitTypeArguments);
-        ClassType targetType = system.<ClassReference>tryResolve(List.class).parameterized(system.<ArgumentType>tryResolve(String.class));
-
-        TypeConstraints.ExpressionCompatible constraint = new TypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
+        TypeConstraints.ExpressionCompatible constraint = new TypeConstraints.ExpressionCompatible(invocation, LOOSE_INVOCATION, target);
 
         SolveResult solve = system.operations().inferenceSolver()
                 .bind(constraint)
                 .solve();
 
-        solve.toString();
-        Files.writeString(Paths.get("test.txt"), solve.toString(true));
+        System.out.println(solve.toString(true));
     }
 
-    record SimpleInst(ClassReference declaring, ClassReference type, List<ExpressionInformation> parameters, List<ArgumentType> explicitTypeArguments) implements ExpressionInformation.Instantiation {
+    record SimpleInst(ClassReference declaring, ClassReference type, List<ExpressionInformation> parameters,
+                      List<ArgumentType> explicitTypeArguments) implements ExpressionInformation.Instantiation {
 
         @Override
         public String simpleName() {
             return "new " + this.type.simpleName() + (this.explicitTypeArguments.isEmpty() ? "" : "<" + explicitTypeArguments.stream().map(ArgumentType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                    "(" + this.parameters.stream().map(ExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+        }
+    }
+
+    record SimpleInvocation<T>(String name, ClassReference declaring, List<ExpressionInformation> parameters,
+                               List<ArgumentType> explicitTypeArguments,
+                               T source) implements ExpressionInformation.Invocation<T> {
+
+        @Override
+        public String simpleName() {
+            return (this.source instanceof ClassReference cr ? cr.simpleName() :
+                    this.source instanceof ExpressionInformation ei ? ei.simpleName() :
+                            this.source) + "." + this.name + "(" + (this.explicitTypeArguments.isEmpty() ? "" : "<" + explicitTypeArguments.stream().map(ArgumentType::simpleName).collect(Collectors.joining(", ")) + ">") +
                     "(" + this.parameters.stream().map(ExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
         }
     }
