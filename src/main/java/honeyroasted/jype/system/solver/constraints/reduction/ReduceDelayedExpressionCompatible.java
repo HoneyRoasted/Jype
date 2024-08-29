@@ -9,12 +9,12 @@ import java.util.Optional;
 
 public class ReduceDelayedExpressionCompatible implements ConstraintMapper.Unary<TypeConstraints.DelayedExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
         return node.isLeaf();
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
         Optional<TypeConstraints.Instantiation> instOpt = node.root(ConstraintNode.Operation.AND).stream().filter(cn -> cn.constraint() instanceof TypeConstraints.Instantiation inst && inst.left().equals(constraint.left())).map(cn -> (TypeConstraints.Instantiation) cn.constraint()).findFirst();
         if (instOpt.isPresent()) {
             node.expandInPlace(ConstraintNode.Operation.AND, false)

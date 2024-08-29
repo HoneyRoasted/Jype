@@ -12,13 +12,13 @@ import java.util.function.Function;
 
 public class ReduceEqual implements ConstraintMapper.Unary<TypeConstraints.Equal> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Equal constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
         return node.isLeaf();
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Equal constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type s = mapper.apply(constraint.left());
         Type t = mapper.apply(constraint.right());
 

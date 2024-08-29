@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 
 public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
         return node.isLeaf() && constraint.left() instanceof ExpressionInformation.Invocation<?> invoc &&
                 (invoc.source() instanceof ClassReference || invoc.source() instanceof ExpressionInformation);
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
 
         ExpressionInformation.Invocation<?> invocation = (ExpressionInformation.Invocation<?>) constraint.left();
         Type target = mapper.apply(constraint.right());
@@ -64,7 +64,7 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
                 stat = false;
             } else {
                 MetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
-                node.expand(ConstraintNode.Operation.AND, true,
+                node.expand(ConstraintNode.Operation.AND, false,
                         new TypeConstraints.ExpressionCompatible(expr, TypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt),
                         new TypeConstraints.DelayedExpressionCompatible(mvt, constraint));
                 return;
@@ -74,7 +74,7 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
         }
 
         if (methods.isEmpty()) {
-            node.expand(ConstraintNode.Operation.AND, true,
+            node.expand(ConstraintNode.Operation.AND, false,
                             checked.stream().map(ct -> new TypeConstraints.MethodNotFound(ct.classReference(), invocation.name())).toArray(Constraint[]::new));
         } else {
             Set<ConstraintNode> newChildren = new LinkedHashSet<>();
@@ -104,9 +104,7 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
     }
 
     private static ConstraintTree createInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND)
-                .preserve();
-
+        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
 
@@ -119,9 +117,7 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
     }
 
     private static ConstraintTree createVarargInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters, ArrayType vararg) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND)
-                .preserve();
-
+        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
 

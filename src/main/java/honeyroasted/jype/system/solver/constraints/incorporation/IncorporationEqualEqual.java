@@ -14,12 +14,12 @@ import java.util.function.Function;
 public class IncorporationEqualEqual implements ConstraintMapper.Binary<TypeConstraints.Equal, TypeConstraints.Equal> {
 
     @Override
-    public boolean filterLeft(PropertySet context, ConstraintNode node, TypeConstraints.Equal constraint) {
+    public boolean filterLeft(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
         return node.status() == ConstraintNode.Status.TRUE;
     }
 
     @Override
-    public boolean filterRight(PropertySet context, ConstraintNode node, TypeConstraints.Equal constraint) {
+    public boolean filterRight(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
         return node.status() == ConstraintNode.Status.TRUE;
     }
 
@@ -29,8 +29,8 @@ public class IncorporationEqualEqual implements ConstraintMapper.Binary<TypeCons
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode leftNode, TypeConstraints.Equal leftConstraint, ConstraintNode rightNode, TypeConstraints.Equal rightConstraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode leftNode, TypeConstraints.Equal leftConstraint, ConstraintNode rightNode, TypeConstraints.Equal rightConstraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 

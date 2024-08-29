@@ -33,22 +33,22 @@ public class ResolveBounds implements ConstraintMapper {
     }
 
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node) {
         return node.neighbors(ConstraintNode.Operation.AND).stream()
                 .noneMatch(cn -> cn.constraint() instanceof TypeConstraints.Instantiation);
     }
 
     @Override
-    public boolean accepts(PropertySet context, ConstraintNode... nodes) {
+    public boolean accepts(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
         return true;
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode... nodes) {
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
         ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND, false);
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(bounds);
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(bounds);
 
-        TypeSystem system = context.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
+        TypeSystem system = instanceContext.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
 
         Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(bounds, mapper);
 

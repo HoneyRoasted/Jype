@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
 
 public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
         return node.isLeaf();
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -83,7 +83,7 @@ public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Sub
                 }
             } else {
                 node.expandInPlace(ConstraintNode.Operation.AND, false).attach(left.typeSystem().operations().compatibilityApplier()
-                        .process(node.constraint().createLeaf(), new PropertySet().inheritUnique(context)));
+                        .process(node.constraint().createLeaf(), new PropertySet().inheritUnique(instanceContext)));
             }
         } else if (right instanceof ArrayType at) {
             if (left instanceof ArrayType lat) {

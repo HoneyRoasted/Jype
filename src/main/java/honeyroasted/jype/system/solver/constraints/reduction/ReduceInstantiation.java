@@ -28,13 +28,13 @@ import java.util.function.Function;
 public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
 
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
         return node.isLeaf() && constraint.left() instanceof ExpressionInformation.Instantiation;
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
 
         Type left = mapper.apply(constraint.right());
         ExpressionInformation.Instantiation inst = (ExpressionInformation.Instantiation) constraint.left();
@@ -49,7 +49,7 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
             if (outerType.isPresent()) {
                 parameters.add(ExpressionInformation.of(outerType.get()));
             } else {
-                node.expandInPlace(ConstraintNode.Operation.AND, true)
+                node.expandInPlace(ConstraintNode.Operation.AND, false)
                                 .attach(new TypeConstraints.LackingOuterType(inst));
                 node.overrideStatus(false);
                 return;
@@ -59,7 +59,7 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
 
         Optional<Map<MethodLocation, MethodReference>> consOpt = system.expressionInspector().getAllConstructors(inst.type());
         if (!consOpt.isPresent()) {
-            node.expandInPlace(ConstraintNode.Operation.AND, true)
+            node.expandInPlace(ConstraintNode.Operation.AND, false)
                             .attach(new TypeConstraints.MethodNotFound(inst.type(), MethodLocation.CONSTRUCTOR_NAME));
         } else {
             Set<Constraint> typeParams = new LinkedHashSet<>();
@@ -92,15 +92,15 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
             if (!newChildren.isEmpty()) {
                 node.expand(ConstraintNode.Operation.OR, newChildren, false);
             } else {
-                node.expandInPlace(ConstraintNode.Operation.AND, true)
+                node.expandInPlace(ConstraintNode.Operation.AND, false)
                                 .attach(new TypeConstraints.MethodNotFound(inst.type(), MethodLocation.CONSTRUCTOR_NAME));
             }
         }
     }
 
     private static ConstraintTree createConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND)
-                .preserve();
+        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
+        invoke.metadata().attach(invoke.constraint());
 
         invoke.attach(typeParams.toArray(Constraint[]::new));
         invoke.attach(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()));
@@ -113,7 +113,7 @@ public class ReduceInstantiation implements ConstraintMapper.Unary<TypeConstrain
 
     private static ConstraintTree createVarargConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters, ArrayType vararg) {
         ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, true), ConstraintNode.Operation.AND);
-        invoke.preserve();
+        invoke.metadata().attach(invoke.constraint());
 
         invoke.attach(typeParams.toArray(Constraint[]::new));
         invoke.attach(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()));

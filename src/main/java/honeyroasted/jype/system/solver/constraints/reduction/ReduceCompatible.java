@@ -13,13 +13,13 @@ import java.util.function.Function;
 
 public class ReduceCompatible implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
         return node.isLeaf();
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -27,7 +27,7 @@ public class ReduceCompatible implements ConstraintMapper.Unary<TypeConstraints.
             node.expandInPlace(ConstraintNode.Operation.AND, false)
                     .attach(left.typeSystem().operations().compatibilityApplier().process(
                             node.constraint().createLeaf(),
-                            new PropertySet().inheritUnique(context)));
+                            new PropertySet().inheritUnique(instanceContext)));
         } else if (left instanceof PrimitiveType pt) {
             node.expandInPlace(ConstraintNode.Operation.AND, false)
                     .attach(new TypeConstraints.Compatible(pt.box(), constraint.middle(), right));

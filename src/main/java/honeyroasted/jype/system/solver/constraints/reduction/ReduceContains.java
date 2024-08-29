@@ -11,13 +11,13 @@ import java.util.function.Function;
 
 public class ReduceContains implements ConstraintMapper.Unary<TypeConstraints.Contains> {
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Contains constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Contains constraint) {
         return node.isLeaf();
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Contains constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Contains constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type s = mapper.apply(constraint.left());
         Type t = mapper.apply(constraint.right());
 

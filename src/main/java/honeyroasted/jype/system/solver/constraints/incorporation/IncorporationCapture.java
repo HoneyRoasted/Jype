@@ -20,13 +20,13 @@ import java.util.function.Function;
 public class IncorporationCapture implements ConstraintMapper.Unary<TypeConstraints.Capture> {
 
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Capture constraint) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Capture constraint) {
         return node.status() == ConstraintNode.Status.TRUE;
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Capture constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Capture constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type leftMapped = mapper.apply(constraint.left());
         Type rightMapped = mapper.apply(constraint.right());
 

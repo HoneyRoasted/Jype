@@ -18,18 +18,18 @@ import java.util.function.Function;
 public class IncorporationSubtypeSubtype implements ConstraintMapper.Binary<TypeConstraints.Subtype, TypeConstraints.Subtype> {
 
     @Override
-    public boolean filterLeft(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
+    public boolean filterLeft(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
         return node.status() == ConstraintNode.Status.TRUE;
     }
 
     @Override
-    public boolean filterRight(PropertySet context, ConstraintNode node, TypeConstraints.Subtype constraint) {
+    public boolean filterRight(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
         return node.status() == ConstraintNode.Status.TRUE;
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode leftNode, TypeConstraints.Subtype leftConstraint, ConstraintNode rightNode, TypeConstraints.Subtype rightConstraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode leftNode, TypeConstraints.Subtype leftConstraint, ConstraintNode rightNode, TypeConstraints.Subtype rightConstraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 

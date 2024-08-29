@@ -13,8 +13,8 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class CompatibleExplicitCast implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
 
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = context.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -22,7 +22,7 @@ public class CompatibleExplicitCast implements ConstraintMapper.Unary<TypeConstr
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode node, TypeConstraints.Compatible constraint) {
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
         node.expand(ConstraintNode.Operation.OR, false,
                 new TypeConstraints.Compatible(constraint.left(), LOOSE_INVOCATION, constraint.right()),
                 new TypeConstraints.Compatible(constraint.right(), LOOSE_INVOCATION, constraint.left()));

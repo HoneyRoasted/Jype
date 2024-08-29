@@ -22,17 +22,17 @@ public class BuildInitialBounds implements ConstraintMapper {
     }
 
     @Override
-    public boolean filter(PropertySet context, ConstraintNode node) {
+    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node) {
         return true;
     }
 
     @Override
-    public boolean accepts(PropertySet context, ConstraintNode... nodes) {
+    public boolean accepts(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
         return true;
     }
 
     @Override
-    public void process(PropertySet context, ConstraintNode... nodes) {
+    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
         ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND, false);
         Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
         Map<VarType, ConstraintNode> source = new HashMap<>();
