@@ -6,6 +6,7 @@ import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleExplicitCast;
 import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleLooseInvocation;
 import honeyroasted.jype.system.solver.constraints.compatibility.CompatibleStrictInvocation;
@@ -171,8 +172,8 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
-    public TypeConstraints.TypeMapper varTypeMapper() {
-        return new TypeConstraints.TypeMapper(bounds -> {
+    public TypeContext.TypeMapper varTypeMapper() {
+        return new TypeContext.TypeMapper(bounds -> {
             Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
 
             bounds.constraints().forEach((con, status) -> {
@@ -191,8 +192,8 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
-    public TypeConstraints.TypeMapper metaVarTypeMapper() {
-        return new TypeConstraints.TypeMapper(bounds -> {
+    public TypeContext.TypeMapper metaVarTypeMapper() {
+        return new TypeContext.TypeMapper(bounds -> {
             Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
 
             bounds.constraints().forEach((con, status) -> {

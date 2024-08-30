@@ -119,27 +119,22 @@ public interface ExpressionInformation {
         }
     }
 
-    interface Instantiation extends ExpressionInformation {
+    interface Invocation extends ExpressionInformation {
         ClassReference declaring();
-
-        ClassReference type();
 
         List<ExpressionInformation> parameters();
 
         List<ArgumentType> explicitTypeArguments();
     }
 
-    interface Invocation<T> extends ExpressionInformation {
+    interface Instantiation extends Invocation {
+        ClassReference type();
+    }
+
+    interface MethodInvocation<T> extends Invocation {
+        T source();
 
         String name();
-
-        ClassReference declaring();
-
-        List<ExpressionInformation> parameters();
-
-        List<ArgumentType> explicitTypeArguments();
-
-        T source();
     }
 
     interface Lambda extends ExpressionInformation {

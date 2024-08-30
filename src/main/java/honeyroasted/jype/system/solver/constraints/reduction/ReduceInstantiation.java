@@ -8,6 +8,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -34,7 +35,7 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
 
         Type left = mapper.apply(constraint.right());
         ExpressionInformation.Instantiation inst = (ExpressionInformation.Instantiation) constraint.left();
@@ -74,14 +75,14 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
             consOpt.get().forEach((loc, ref) -> {
                 if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                     if (ref.parameters().size() == parameters.size()) {
-                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters));
-                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters));
+                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
+                        newChildren.add(createConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
                     }
 
                     if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
                             ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
-                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
-                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, constraint, ref, result, parameters, vararg));
+                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
+                        newChildren.add(createVarargConstruct(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
                     }
                 }
             });
@@ -94,7 +95,7 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
         }
     }
 
-    private static ConstraintBranch.Snapshot createConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters) {
+    private static ConstraintBranch.Snapshot createConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, ExpressionInformation.Instantiation inst, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters) {
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
         branch.put(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
@@ -102,10 +103,10 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
             branch.put(new TypeConstraints.ExpressionCompatible(parameters.get(i), context, ref.parameters().get(i)), Constraint.Status.UNKNOWN);
         }
 
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, false)), branch);
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeContext.ChosenMethod(inst, ref, context, false)), branch);
     }
 
-    private static ConstraintBranch.Snapshot createVarargConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters, ArrayType vararg) {
+    private static ConstraintBranch.Snapshot createVarargConstruct(TypeConstraints.Compatible.Context context, Set<Constraint> typeParams, ExpressionInformation.Instantiation inst, TypeConstraints.ExpressionCompatible constraint, MethodReference ref, Type result, List<ExpressionInformation> parameters, ArrayType vararg) {
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
         branch.put(new TypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
@@ -118,6 +119,6 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
             branch.put(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, vararg.component()), Constraint.Status.UNKNOWN);
         }
 
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, true)), branch);
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeContext.ChosenMethod(inst, ref, context, true)), branch);
     }
 }

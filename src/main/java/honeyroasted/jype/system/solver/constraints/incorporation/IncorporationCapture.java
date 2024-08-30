@@ -5,6 +5,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -24,7 +25,7 @@ public class IncorporationCapture extends ConstraintMapper.Unary<TypeConstraints
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Capture constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type leftMapped = mapper.apply(constraint.left());
         Type rightMapped = mapper.apply(constraint.right());
 

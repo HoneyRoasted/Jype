@@ -3,6 +3,7 @@ package honeyroasted.jype.system.solver.operations;
 import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
@@ -31,9 +32,9 @@ public interface TypeOperations {
 
     ConstraintSolver inferenceSolver();
 
-    TypeConstraints.TypeMapper varTypeMapper();
+    TypeContext.TypeMapper varTypeMapper();
 
-    TypeConstraints.TypeMapper metaVarTypeMapper();
+    TypeContext.TypeMapper metaVarTypeMapper();
 
     default ConstraintSolver inferenceSolver(Map<VarType, MetaVarType> correspondence) {
         ConstraintSolver solver = this.inferenceSolver();

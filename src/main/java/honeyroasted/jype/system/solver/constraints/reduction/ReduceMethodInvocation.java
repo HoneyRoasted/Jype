@@ -9,6 +9,7 @@ import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
@@ -32,15 +33,15 @@ import java.util.stream.Collectors;
 public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left() instanceof ExpressionInformation.Invocation<?> invoc &&
+        return status.isUnknown() && constraint.left() instanceof ExpressionInformation.MethodInvocation<?> invoc &&
                 (invoc.source() instanceof ClassReference || invoc.source() instanceof ExpressionInformation);
     }
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
 
-        ExpressionInformation.Invocation<?> invocation = (ExpressionInformation.Invocation<?>) constraint.left();
+        ExpressionInformation.MethodInvocation<?> invocation = (ExpressionInformation.MethodInvocation<?>) constraint.left();
         Type target = mapper.apply(constraint.right());
         TypeSystem system = target.typeSystem();
 
@@ -102,7 +103,7 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
         }
     }
 
-    private static ConstraintBranch.Snapshot createInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters) {
+    private static ConstraintBranch.Snapshot createInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.MethodInvocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters) {
         Map<Constraint, Constraint.Status> invoke = new HashMap<>();
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
@@ -112,10 +113,10 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
         for (int i = 0; i < parameters.size(); i++) {
             invoke.put(new TypeConstraints.ExpressionCompatible(parameters.get(i), context, resolve.apply(ref.parameters().get(i))), Constraint.Status.UNKNOWN);
         }
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, false)), invoke);
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeContext.ChosenMethod(invocation, ref, context, false)), invoke);
     }
 
-    private static ConstraintBranch.Snapshot createVarargInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters, ArrayType vararg) {
+    private static ConstraintBranch.Snapshot createVarargInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.MethodInvocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters, ArrayType vararg) {
         Map<Constraint, Constraint.Status> invoke = new HashMap<>();
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
@@ -132,10 +133,10 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
             invoke.put(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(vararg.component())), Constraint.Status.UNKNOWN);
         }
 
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, true)), invoke);
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeContext.ChosenMethod(invocation, ref, context, true)), invoke);
     }
 
-    private static Pair<Set<Constraint>, VarTypeResolveVisitor> createTypeParams(MethodReference ref, ExpressionInformation.Invocation<?> invoc) {
+    private static Pair<Set<Constraint>, VarTypeResolveVisitor> createTypeParams(MethodReference ref, ExpressionInformation.MethodInvocation<?> invoc) {
         Set<Constraint> newConstraints = new LinkedHashSet<>();
         Map<VarType, Type> resolution = new LinkedHashMap<>();
 

@@ -5,6 +5,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.Type;
@@ -25,7 +26,7 @@ public class IncorporationEqualSubtype extends ConstraintMapper.Binary<TypeConst
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal leftConstraint, Constraint.Status leftStatus, TypeConstraints.Subtype rightConstraint, Constraint.Status rightStatus) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 

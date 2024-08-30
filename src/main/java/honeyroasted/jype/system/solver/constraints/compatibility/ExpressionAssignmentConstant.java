@@ -7,6 +7,7 @@ import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeConstants;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.type.Type;
 
 import java.util.function.Function;
@@ -17,7 +18,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class ExpressionAssignmentConstant extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type right = mapper.apply(constraint.right());
 
         return status.isUnknown() && constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
@@ -25,7 +26,7 @@ public class ExpressionAssignmentConstant extends ConstraintMapper.Unary<TypeCon
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type right = mapper.apply(constraint.right());
 
         ExpressionInformation.Constant constantExpression = (ExpressionInformation.Constant) constraint.left();

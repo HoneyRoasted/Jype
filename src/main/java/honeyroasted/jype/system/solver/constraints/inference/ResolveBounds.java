@@ -8,6 +8,7 @@ import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.system.visitor.TypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
 import honeyroasted.jype.system.visitor.visitors.RecursiveTypeVisitor;
@@ -31,7 +32,7 @@ public class ResolveBounds implements ConstraintMapper {
     @Override
     public void accept(ConstraintBranch branch) {
         PropertySet instanceContext = branch.parent().metadata();
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
 
         TypeSystem system = instanceContext.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
 

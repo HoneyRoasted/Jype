@@ -5,6 +5,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
@@ -18,7 +19,7 @@ import java.util.function.Function;
 public class SubtypeGenericClass extends ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -28,7 +29,7 @@ public class SubtypeGenericClass extends ConstraintMapper.Unary<TypeConstraints.
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 

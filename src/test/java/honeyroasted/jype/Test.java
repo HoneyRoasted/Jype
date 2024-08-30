@@ -1,6 +1,5 @@
 package honeyroasted.jype;
 
-import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.expression.ExpressionInformation;
@@ -10,7 +9,6 @@ import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,6 +48,11 @@ public class Test {
         public String simpleName() {
             return "new " + this.type.simpleName() + (this.explicitTypeArguments.isEmpty() ? "" : "<" + explicitTypeArguments.stream().map(ArgumentType::simpleName).collect(Collectors.joining(", ")) + ">") +
                     "(" + this.parameters.stream().map(ExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+        }
+
+        @Override
+        public String toString() {
+            return simpleName();
         }
     }
 

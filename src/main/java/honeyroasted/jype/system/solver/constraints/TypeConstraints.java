@@ -1,27 +1,13 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.jype.system.expression.ExpressionInformation;
-import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.ClassType;
 import honeyroasted.jype.type.MetaVarType;
-import honeyroasted.jype.type.MethodReference;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 public interface TypeConstraints {
-
-    TypeMapper NO_OP = new TypeMapper(cn -> Function.identity());
-
-    record TypeMapper(Function<ConstraintBranch, Function<Type, Type>> mapper) {
-    }
-
     final class Infer extends Constraint.Binary<MetaVarType, VarType> {
         public Infer(MetaVarType left, VarType right) {
             super(left, right);
@@ -285,97 +271,4 @@ public interface TypeConstraints {
             return this.left().simpleName() + " <: " + this.right().simpleName();
         }
     }
-
-    // ------------------ Purely Informational ---------------------
-
-    interface Informational extends Constraint {}
-
-    class TypeArgumentsMatch extends Constraint.Binary<ClassType, ClassType> implements Informational {
-
-        public TypeArgumentsMatch(ClassType left, ClassType right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return "<" + this.left().typeArguments().stream().map(Objects::toString).collect(Collectors.joining(", ")) + "> ARE COMPATIBLE WITH <" +
-                    this.right().typeArguments().stream().map(Objects::toString).collect(Collectors.joining(", ")) + ">";
-        }
-
-        @Override
-        public String simpleName() {
-            return "<" + this.left().typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + "> ~= <" +
-                    this.right().typeArguments().stream().map(Type::simpleName).collect(Collectors.joining(", ")) + ">";
-        }
-    }
-
-    class GenericParameter extends Constraint.Binary<Type, Type> implements Informational {
-        public GenericParameter(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " IS A COMPATIBLE GENERIC ARGUMENT WITH " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " ~= " + this.right().simpleName();
-        }
-    }
-
-    class LackingOuterType extends Constraint.Unary<ExpressionInformation.Instantiation> implements Informational {
-
-        public LackingOuterType(ExpressionInformation.Instantiation value) {
-            super(value);
-        }
-
-        @Override
-        public String toString() {
-            return this.value().type() + " CANNOT BE INSTANTIATED IN " + this.value().declaring();
-        }
-
-        @Override
-        public String simpleName() {
-            return "bad-context(" + this.value().type().simpleName() + " in " + this.value().declaring().simpleName() + ")";
-        }
-    }
-
-    class MethodNotFound extends Constraint.Binary<ClassReference, String> implements Informational {
-        public MethodNotFound(ClassReference left, String right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return "NO METHOD CALLED " + this.right() + " IN " + this.left();
-        }
-
-        @Override
-        public String simpleName() {
-            return "method-not-found(" + this.right() + ", " + this.left().simpleName() + ")";
-        }
-    }
-
-    class MethodInvocation extends Constraint.Trinary<MethodReference, Compatible.Context, Boolean> implements Informational {
-
-        public MethodInvocation(MethodReference left, Compatible.Context middle, Boolean right) {
-            super(left, middle, right);
-        }
-
-        public boolean varargInvocation() {
-            return this.right();
-        }
-
-        public String toString() {
-            return this.left().location() + " IN " + this.middle();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " in " + this.middle();
-        }
-    }
-
 }

@@ -6,6 +6,7 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
+import honeyroasted.jype.system.solver.constraints.TypeContext;
 import honeyroasted.jype.type.MetaVarType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.Type;
@@ -29,7 +30,7 @@ public class IncorporationSubtypeSubtype extends ConstraintMapper.Binary<TypeCon
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype leftConstraint, Constraint.Status leftStatus, TypeConstraints.Subtype rightConstraint, Constraint.Status rightStatus) {
-        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        Function<Type, Type> mapper = allContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 
