@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.Type;
@@ -9,60 +10,53 @@ import honeyroasted.jype.type.WildType;
 
 import java.util.function.Function;
 
-public class ReduceContains implements ConstraintMapper.Unary<TypeConstraints.Contains> {
+public class ReduceContains extends ConstraintMapper.Unary<TypeConstraints.Contains> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Contains constraint) {
-        return node.isLeaf();
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Contains constraint, Constraint.Status status) {
+        return status.isUnknown();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Contains constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Contains constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type s = mapper.apply(constraint.left());
         Type t = mapper.apply(constraint.right());
 
         if (t instanceof WildType) {
             if (t instanceof WildType.Upper wtu) {
                 if (wtu.hasDefaultBounds()) {
-                    node.overrideStatus(false);
+                    branch.setStatus(constraint, Constraint.Status.FALSE);
                 } else {
                     if (s instanceof WildType) {
                         if (s instanceof WildType.Upper swtu) {
                             if (swtu.hasDefaultBounds()) {
-                                node.expandInPlace(ConstraintNode.Operation.AND, false)
-                                        .attach(new TypeConstraints.Subtype(s.typeSystem().constants().object(), wtu.upperBound()));
+                                branch.drop(constraint).add(new TypeConstraints.Subtype(s.typeSystem().constants().object(), wtu.upperBound()));
                             } else {
-                                node.expandInPlace(ConstraintNode.Operation.AND, false)
-                                        .attach(new TypeConstraints.Subtype(swtu.upperBound(), wtu.upperBound()));
+                                branch.drop(constraint).add(new TypeConstraints.Subtype(swtu.upperBound(), wtu.upperBound()));
                             }
                         } else if (s instanceof WildType.Lower swtl) {
-                            node.expandInPlace(ConstraintNode.Operation.AND, false)
-                                    .attach(new TypeConstraints.Equal(s.typeSystem().constants().object(), wtu.upperBound()));
+                            branch.drop(constraint).add(new TypeConstraints.Equal(s.typeSystem().constants().object(), wtu.upperBound()));
                         }
                     } else {
-                        node.expandInPlace(ConstraintNode.Operation.AND, false)
-                                .attach(new TypeConstraints.Subtype(s, wtu.upperBound()));
+                        branch.drop(constraint).add(new TypeConstraints.Subtype(s, wtu.upperBound()));
                     }
                 }
             } else if (t instanceof WildType.Lower wtl) {
                 if (s instanceof WildType) {
                     if (s instanceof WildType.Lower swtl) {
-                        node.expandInPlace(ConstraintNode.Operation.AND, false)
-                                .attach(new TypeConstraints.Subtype(wtl.lowerBound(), swtl.lowerBound()));
+                        branch.drop(constraint).add(new TypeConstraints.Subtype(wtl.lowerBound(), swtl.lowerBound()));
                     } else {
-                        node.overrideStatus(false);
+                        branch.setStatus(constraint, Constraint.Status.FALSE);
                     }
                 } else {
-                    node.expandInPlace(ConstraintNode.Operation.AND, false)
-                            .attach(new TypeConstraints.Subtype(wtl.lowerBound(), s));
+                    branch.drop(constraint).add(new TypeConstraints.Subtype(wtl.lowerBound(), s));
                 }
             }
         } else {
             if (s instanceof WildType) {
-                node.overrideStatus(false);
+                branch.setStatus(constraint, Constraint.Status.FALSE);
             } else {
-                node.expandInPlace(ConstraintNode.Operation.AND, false)
-                        .attach(new TypeConstraints.Equal(s, t));
+                branch.drop(constraint).add(new TypeConstraints.Equal(s, t));
             }
         }
     }

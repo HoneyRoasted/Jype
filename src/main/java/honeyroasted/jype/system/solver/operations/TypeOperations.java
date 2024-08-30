@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.almonds.solver.ConstraintMapperApplier;
-import honeyroasted.almonds.solver.ConstraintSolver;
+import honeyroasted.almonds.ConstraintMapperApplier;
+import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;

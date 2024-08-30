@@ -1,45 +1,39 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.IntersectionType;
 import honeyroasted.jype.type.Type;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.function.Function;
 
-public class SubtypeIntersection implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
+public class SubtypeIntersection extends ConstraintMapper.Unary<TypeConstraints.Subtype> {
+
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return node.isLeaf() && left.isProperType() && right.isProperType() &&
+        return status.isUnknown() && left.isProperType() && right.isProperType() &&
                 (left instanceof IntersectionType || right instanceof IntersectionType);
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        Set<Constraint> newChildren = new LinkedHashSet<>();
-        ConstraintNode.Operation operation = null;
-
         if (left instanceof IntersectionType l) {
-            l.children().forEach(t -> newChildren.add(new TypeConstraints.Subtype(t, right)));
-            operation = ConstraintNode.Operation.OR;
+            branch.drop(constraint)
+                    .diverge(l.children().stream().map(t -> new TypeConstraints.Subtype(t, right)).toList());
         } else if (right instanceof IntersectionType r) {
-            r.children().forEach(t -> newChildren.add(new TypeConstraints.Subtype(left, t)));
-            operation = ConstraintNode.Operation.AND;
+            branch.drop(constraint);
+            r.children().forEach(t -> branch.add(new TypeConstraints.Subtype(left, t)));
         }
-
-        node.expand(operation, newChildren.stream().map(Constraint::createLeaf).toList(), false);
     }
 }

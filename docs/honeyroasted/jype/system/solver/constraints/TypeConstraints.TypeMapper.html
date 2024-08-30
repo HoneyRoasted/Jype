@@ -95,7 +95,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="TypeConstraints.html" title="interface in honeyroasted.jype.system.solver.constraints">TypeConstraints</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">TypeConstraints.TypeMapper</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;mapper)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">TypeConstraints.TypeMapper</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;honeyroasted.almonds.ConstraintBranch,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&gt;&nbsp;mapper)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
 </section>
 <section class="summary">
@@ -108,7 +108,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.function.Function)" class="member-name-link">TypeMapper</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;mapper)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.function.Function)" class="member-name-link">TypeMapper</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;honeyroasted.almonds.ConstraintBranch,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&gt;&nbsp;mapper)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Creates an instance of a <code>TypeMapper</code> record class.</div>
 </div>
@@ -136,7 +136,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a><wbr>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a><wbr>&lt;honeyroasted.almonds.ConstraintBranch,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mapper()" class="member-name-link">mapper</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <code>mapper</code> record component.</div>
@@ -166,7 +166,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.util.function.Function)">
 <h3>TypeMapper</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeMapper</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&nbsp;mapper)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">TypeMapper</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;honeyroasted.almonds.ConstraintBranch,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&gt;&nbsp;mapper)</span></div>
 <div class="block">Creates an instance of a <code>TypeMapper</code> record class.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -226,7 +226,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="mapper()">
 <h3>mapper</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;</span>&nbsp;<span class="element-name">mapper</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;honeyroasted.almonds.ConstraintBranch,<wbr><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>,<wbr><a href="../../../type/Type.html" title="interface in honeyroasted.jype.type">Type</a>&gt;&gt;</span>&nbsp;<span class="element-name">mapper</span>()</div>
 <div class="block">Returns the value of the <code>mapper</code> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>

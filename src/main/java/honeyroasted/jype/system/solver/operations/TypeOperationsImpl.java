@@ -1,10 +1,8 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapperApplier;
-import honeyroasted.almonds.solver.ConstraintSolver;
-import honeyroasted.almonds.solver.mappers.FalseConstraintMapper;
-import honeyroasted.almonds.solver.mappers.TrueConstraintMapper;
+import honeyroasted.almonds.ConstraintMapper;
+import honeyroasted.almonds.ConstraintMapperApplier;
+import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -55,8 +53,8 @@ import java.util.function.Function;
 
 public class TypeOperationsImpl implements TypeOperations {
     public static ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
-            TrueConstraintMapper.INSTANCE,
-            FalseConstraintMapper.INSTANCE,
+            new ConstraintMapper.True(),
+            new ConstraintMapper.False(),
 
             new EqualType(),
 
@@ -80,8 +78,8 @@ public class TypeOperationsImpl implements TypeOperations {
     ));
 
     public static ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
-            TrueConstraintMapper.INSTANCE,
-            FalseConstraintMapper.INSTANCE,
+            new ConstraintMapper.True(),
+            new ConstraintMapper.False(),
 
             new IncorporationEqualEqual(),
             new IncorporationEqualSubtype(),
@@ -90,8 +88,8 @@ public class TypeOperationsImpl implements TypeOperations {
     ));
 
     public static ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
-            TrueConstraintMapper.INSTANCE,
-            FalseConstraintMapper.INSTANCE,
+            new ConstraintMapper.True(),
+            new ConstraintMapper.False(),
 
             new ReduceSubtype(),
             new ReduceCompatible(),
@@ -177,10 +175,9 @@ public class TypeOperationsImpl implements TypeOperations {
         return new TypeConstraints.TypeMapper(bounds -> {
             Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
 
-            bounds.neighbors(ConstraintNode.Operation.AND).forEach(cn -> {
-                if (cn.constraint() instanceof TypeConstraints.Infer inf) {
+            bounds.constraints().forEach((con, status) -> {
+                if (con instanceof TypeConstraints.Infer inf) {
                     metaVars.put(inf.right(), inf.left());
-                    cn.overrideStatus(true);
                 }
             });
 
@@ -198,8 +195,8 @@ public class TypeOperationsImpl implements TypeOperations {
         return new TypeConstraints.TypeMapper(bounds -> {
             Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
 
-            bounds.neighbors(ConstraintNode.Operation.AND).forEach(cn -> {
-                if (cn.constraint() instanceof TypeConstraints.Instantiation inst) {
+            bounds.constraints().forEach((con, status) -> {
+                if (con instanceof TypeConstraints.Instantiation inst && status.isTrue()) {
                     instantiations.put(inst.left(), inst.right());
                 }
             });
@@ -218,7 +215,7 @@ public class TypeOperationsImpl implements TypeOperations {
         return this.compatibilitySolver()
                 .bind(new TypeConstraints.Compatible(subtype, ctx, supertype))
                 .solve(new PropertySet().attach(subtype.typeSystem()))
-                .success();
+                .status().isTrue();
     }
 
     @Override
@@ -226,7 +223,7 @@ public class TypeOperationsImpl implements TypeOperations {
         return this.compatibilitySolver()
                 .bind(new TypeConstraints.Subtype(subtype, supertype))
                 .solve(new PropertySet().attach(subtype.typeSystem()))
-                .success();
+                .status().isTrue();
     }
 
     @Override

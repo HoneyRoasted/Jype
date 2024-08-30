@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.incorporation;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -15,28 +16,26 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public class IncorporationSubtypeSubtype implements ConstraintMapper.Binary<TypeConstraints.Subtype, TypeConstraints.Subtype> {
-
+public class IncorporationSubtypeSubtype extends ConstraintMapper.Binary<TypeConstraints.Subtype, TypeConstraints.Subtype> {
     @Override
-    public boolean filterLeft(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        return node.status() == ConstraintNode.Status.TRUE;
+    protected boolean filterLeft(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        return status.isTrue();
     }
 
     @Override
-    public boolean filterRight(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        return node.status() == ConstraintNode.Status.TRUE;
+    protected boolean filterRight(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        return status.isTrue();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode leftNode, TypeConstraints.Subtype leftConstraint, ConstraintNode rightNode, TypeConstraints.Subtype rightConstraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype leftConstraint, Constraint.Status leftStatus, TypeConstraints.Subtype rightConstraint, Constraint.Status rightStatus) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 
         if (ll instanceof MetaVarType mvt && mvt.typeEquals(rr)) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
-            leftNode.expandRoot(ConstraintNode.Operation.AND, false)
-                    .attach(new TypeConstraints.Subtype(lr, rl).createLeaf().overrideStatus(true));
+            branch.add(new TypeConstraints.Subtype(lr, rl), Constraint.Status.ASSUMED);
         }
 
         if (ll instanceof MetaVarType mvt && mvt.typeEquals(rl)) {
@@ -49,8 +48,7 @@ public class IncorporationSubtypeSubtype implements ConstraintMapper.Binary<Type
                         Type right = pair.right().typeArguments().get(i);
 
                         if (!(left instanceof WildType) && !(right instanceof WildType)) {
-                            leftNode.expandRoot(ConstraintNode.Operation.AND, false)
-                                    .attach(new TypeConstraints.Equal(left, right).createLeaf().overrideStatus(true));
+                            branch.add(new TypeConstraints.Equal(left, right), Constraint.Status.ASSUMED);
                         }
                     }
                 }

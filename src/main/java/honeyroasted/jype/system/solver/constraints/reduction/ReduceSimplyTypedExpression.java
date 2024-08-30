@@ -1,23 +1,23 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.Type;
 
 import java.util.function.Function;
 
-public class ReduceSimplyTypedExpression implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
+public class ReduceSimplyTypedExpression extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        return node.isLeaf() && constraint.left().isSimplyTyped();
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        return status.isUnknown() && constraint.left().isSimplyTyped();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
-        node.expandInPlace(ConstraintNode.Operation.AND, false)
-                .attach(new TypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), mapper).get(), constraint.middle(), constraint.right()));
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
+        branch.drop(constraint).add(new TypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), mapper).get(), constraint.middle(), constraint.right()));
     }
 }

@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.Type;
@@ -10,24 +10,25 @@ import honeyroasted.jype.type.VarType;
 
 import java.util.function.Function;
 
-public class SubtypeVar implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
+public class SubtypeVar extends ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return node.isLeaf() && left.isProperType() && right.isProperType() &&
+        return status.isUnknown() && left.isProperType() && right.isProperType() &&
                 left instanceof VarType;
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
         VarType l = (VarType) left;
-        node.expand(ConstraintNode.Operation.AND, false, l.upperBounds().stream().map(b -> new TypeConstraints.Subtype(b, right)).toArray(Constraint[]::new));
+        branch.drop(constraint);
+        l.upperBounds().stream().forEach(b -> branch.add(new TypeConstraints.Subtype(b, right)));
     }
 }

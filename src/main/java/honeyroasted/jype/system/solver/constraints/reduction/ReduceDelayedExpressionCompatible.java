@@ -1,24 +1,24 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 
 import java.util.Optional;
 
-public class ReduceDelayedExpressionCompatible implements ConstraintMapper.Unary<TypeConstraints.DelayedExpressionCompatible> {
+public class ReduceDelayedExpressionCompatible extends ConstraintMapper.Unary<TypeConstraints.DelayedExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
-        return node.isLeaf();
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.DelayedExpressionCompatible constraint, Constraint.Status status) {
+        return status.isUnknown();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.DelayedExpressionCompatible constraint) {
-        Optional<TypeConstraints.Instantiation> instOpt = node.root(ConstraintNode.Operation.AND).stream().filter(cn -> cn.constraint() instanceof TypeConstraints.Instantiation inst && inst.left().equals(constraint.left())).map(cn -> (TypeConstraints.Instantiation) cn.constraint()).findFirst();
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.DelayedExpressionCompatible constraint, Constraint.Status status) {
+        Optional<TypeConstraints.Instantiation> instOpt = branch.constraints().entrySet().stream().filter(cn -> cn.getValue().isTrue() && cn.getKey() instanceof TypeConstraints.Instantiation inst && inst.left().equals(constraint.left())).map(cn -> (TypeConstraints.Instantiation) cn.getKey()).findFirst();
         if (instOpt.isPresent()) {
-            node.expandInPlace(ConstraintNode.Operation.AND, false)
-                    .attach(new TypeConstraints.ExpressionCompatible(constraint.right().left(), constraint.right().middle(), instOpt.get().right()));
+            branch.drop(constraint).add(new TypeConstraints.ExpressionCompatible(constraint.right().left(), constraint.right().middle(), instOpt.get().right()));
         }
     }
 }

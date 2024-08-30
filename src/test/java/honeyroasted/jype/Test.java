@@ -1,6 +1,7 @@
 package honeyroasted.jype;
 
-import honeyroasted.almonds.solver.SolveResult;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -8,10 +9,8 @@ import honeyroasted.jype.type.ArgumentType;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 
 public class Test {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         TypeSystem system = TypeSystem.SIMPLE_RUNTIME;
 
         ClassReference declaring = system.tryResolve(Test.class);
@@ -38,7 +37,7 @@ public class Test {
 
         TypeConstraints.ExpressionCompatible constraint = new TypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
 
-        SolveResult solve = system.operations().inferenceSolver()
+        ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)
                 .solve();
 

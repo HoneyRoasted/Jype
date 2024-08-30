@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
+import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.type.ClassReference;
 import honeyroasted.jype.type.ClassType;
@@ -19,7 +19,7 @@ public interface TypeConstraints {
 
     TypeMapper NO_OP = new TypeMapper(cn -> Function.identity());
 
-    record TypeMapper(Function<ConstraintNode, Function<Type, Type>> mapper) {
+    record TypeMapper(Function<ConstraintBranch, Function<Type, Type>> mapper) {
     }
 
     final class Infer extends Constraint.Binary<MetaVarType, VarType> {
@@ -369,7 +369,7 @@ public interface TypeConstraints {
         }
 
         public String toString() {
-            return this.left().location().name() + "(...) IN " + this.middle();
+            return this.left().location() + " IN " + this.middle();
         }
 
         @Override

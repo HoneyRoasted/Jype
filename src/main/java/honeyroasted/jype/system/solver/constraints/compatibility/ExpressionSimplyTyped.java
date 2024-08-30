@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
@@ -11,17 +12,18 @@ import java.util.function.Function;
 
 import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compatible.Context.*;
 
-public class ExpressionSimplyTyped implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
+public class ExpressionSimplyTyped extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        return node.isLeaf() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        return status.isUnknown() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant);
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
 
         Type supertype = mapper.apply(constraint.right());
-        node.expand(ConstraintNode.Operation.OR, false, new TypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));
+        branch.drop(constraint)
+                .add(new TypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));
     }
 }

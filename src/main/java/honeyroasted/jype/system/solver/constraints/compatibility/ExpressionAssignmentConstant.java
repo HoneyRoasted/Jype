@@ -1,36 +1,32 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
-import honeyroasted.almonds.ConstraintLeaf;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeConstants;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.Type;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.function.Function;
 
 import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compatible.Context.*;
 
 
-public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
+public class ExpressionAssignmentConstant extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type right = mapper.apply(constraint.right());
 
-        return node.isLeaf() && constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
+        return status.isUnknown() && constraint.middle() == ASSIGNMENT && constraint.left() instanceof ExpressionInformation.Constant && right.isProperType();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type right = mapper.apply(constraint.right());
-
-        Set<ConstraintLeaf> newChildren = new LinkedHashSet<>();
 
         ExpressionInformation.Constant constantExpression = (ExpressionInformation.Constant) constraint.left();
         Type subtype = constantExpression.getSimpleType(right.typeSystem(), mapper).get();
@@ -43,29 +39,24 @@ public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<Type
         if (subtype.typeEquals(c.byteType()) || subtype.typeEquals(c.shortType()) || subtype.typeEquals(c.charType()) || subtype.typeEquals(c.intType())) {
             if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
-                } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    return;
                 }
             } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
-                } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    return;
                 }
             } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.TRUE));
-                } else {
-                    newChildren.add(new TypeConstraints.NarrowConstant(constantExpression, target).createLeaf().setStatus(ConstraintNode.Status.FALSE));
+                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    return;
                 }
             }
         }
 
-        newChildren.add(new TypeConstraints.Compatible(subtype, LOOSE_INVOCATION, right).createLeaf());
-
-        node.expand(ConstraintNode.Operation.OR, newChildren, false);
-
+        branch.drop(constraint)
+                .add(new TypeConstraints.Compatible(subtype, LOOSE_INVOCATION, right));
     }
 
     private static boolean fits(Object obj, long min, long max) {
@@ -76,4 +67,5 @@ public class ExpressionAssignmentConstant implements ConstraintMapper.Unary<Type
         }
         return false;
     }
+
 }

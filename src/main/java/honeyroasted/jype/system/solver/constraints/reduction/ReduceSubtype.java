@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.ArrayType;
@@ -15,96 +15,87 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ReduceSubtype implements ConstraintMapper.Unary<TypeConstraints.Subtype> {
+public class ReduceSubtype extends ConstraintMapper.Unary<TypeConstraints.Subtype> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        return node.isLeaf();
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        return status.isUnknown();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Subtype constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Subtype constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
         if (left.isProperType() && right.isProperType()) {
-            left.typeSystem().operations().compatibilityApplier()
-                    .process(constraint.createLeaf());
+            branch.setStatus(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
         } else if (left.isNullType()) {
-            node.overrideStatus(true);
+            branch.setStatus(constraint, Constraint.Status.TRUE);
         } else if (right.isNullType()) {
-            node.overrideStatus(false);
+            branch.setStatus(constraint, Constraint.Status.FALSE);
         } else if (left instanceof MetaVarType || right instanceof MetaVarType) {
-            node.overrideStatus(true);
+            branch.setStatus(constraint, Constraint.Status.ASSUMED);
         } else if (right instanceof VarType vt) {
             if (left instanceof IntersectionType it && it.typeContains(vt)) {
-                node.overrideStatus(true);
+                branch.setStatus(constraint, Constraint.Status.TRUE);
             } else {
-                node.overrideStatus(false);
+                branch.setStatus(constraint, Constraint.Status.FALSE);
             }
         } else if (right instanceof MetaVarType mvt) {
             if (left instanceof IntersectionType it && it.typeContains(mvt)) {
-                node.overrideStatus(true);
+                branch.setStatus(constraint, Constraint.Status.TRUE);
             } else if (!mvt.lowerBounds().isEmpty()) {
-                node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Subtype(left, mvt.lowerBound()))
-                        .overrideStatus(true);
+                branch.drop(constraint).add(new TypeConstraints.Subtype(left, mvt.lowerBound()));
             } else {
-                node.overrideStatus(false);
+                branch.setStatus(constraint, Constraint.Status.FALSE);
             }
         } else if (right instanceof IntersectionType it) {
-            node.expand(ConstraintNode.Operation.AND, false, it.children().stream().map(t -> new TypeConstraints.Subtype(left, t)).toArray(Constraint[]::new))
-                    .overrideStatus(true);
+            branch.drop(constraint);
+            it.children().forEach(t -> branch.add(new TypeConstraints.Subtype(left, t)));
         } else if (right instanceof ClassType ct) {
             if (ct.hasAnyTypeArguments()) {
                 Optional<ClassType> supertypeOpt = identifySuperclass(ct.classReference(), left);
                 if (supertypeOpt.isPresent()) {
                     ClassType supertype = supertypeOpt.get();
                     if (supertype.hasAnyTypeArguments() && supertype.typeArguments().size() == ct.typeArguments().size()) {
-                        Set<ConstraintNode> newChildren = new LinkedHashSet<>();
+                        branch.drop(constraint);
                         for (int i = 0; i < ct.typeArguments().size(); i++) {
                             Type ti = supertype.typeArguments().get(i);
                             Type si = ct.typeArguments().get(i);
 
-                            newChildren.add(new TypeConstraints.Contains(ti, si).createLeaf());
+                            branch.add(new TypeConstraints.Contains(ti, si));
                         }
-
-                        node.expand(ConstraintNode.Operation.AND, newChildren, false);
                     } else {
-                        node.overrideStatus(false);
+                        branch.setStatus(constraint, Constraint.Status.FALSE);
                     }
                 } else {
-                    node.overrideStatus(false);
+                    branch.setStatus(constraint, Constraint.Status.FALSE);
                 }
             } else {
-                node.expandInPlace(ConstraintNode.Operation.AND, false).attach(left.typeSystem().operations().compatibilityApplier()
-                        .process(node.constraint().createLeaf(), new PropertySet().inheritUnique(instanceContext)));
+                branch.setStatus(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
             }
         } else if (right instanceof ArrayType at) {
             if (left instanceof ArrayType lat) {
                 if (at.component() instanceof PrimitiveType && lat.component() instanceof PrimitiveType) {
-                    node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Equal(lat.component(), at.component()))
-                            .overrideStatus(true);
+                    branch.drop(constraint).add(new TypeConstraints.Equal(lat.component(), at.component()), Constraint.Status.ASSUMED);
                 } else {
-                    node.expand(ConstraintNode.Operation.AND, false, new TypeConstraints.Subtype(lat.component(), at.component()))
-                            .overrideStatus(true);
+                    branch.drop(constraint).add(new TypeConstraints.Subtype(lat.component(), at.component()), Constraint.Status.ASSUMED);
                 }
             } else {
                 Set<Type> arr = findMostSpecificArrayTypes(left);
                 if (arr.isEmpty()) {
-                    node.overrideStatus(false);
+                    branch.setStatus(constraint, Constraint.Status.FALSE);
                 } else {
-                    node.expand(ConstraintNode.Operation.OR, false, arr.stream().map(st -> new TypeConstraints.Subtype(st, at)).toArray(Constraint[]::new))
-                            .overrideStatus(true);
+                    branch.drop(constraint).diverge(arr.stream().map(st -> new TypeConstraints.Subtype(st, at)).toList());
                 }
             }
         } else {
-            node.overrideStatus(false);
+            branch.setStatus(constraint, Constraint.Status.FALSE);
         }
     }
 

@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.Type;
@@ -10,21 +11,21 @@ import java.util.function.Function;
 
 import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compatible.Context.*;
 
-public class CompatibleExplicitCast implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
+public class CompatibleExplicitCast extends ConstraintMapper.Unary<TypeConstraints.Compatible> {
 
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Compatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return node.isLeaf() && constraint.middle() == EXPLICIT_CAST && left.isProperType() && right.isProperType();
+        return status.isUnknown() && constraint.middle() == EXPLICIT_CAST && left.isProperType() && right.isProperType();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        node.expand(ConstraintNode.Operation.OR, false,
-                new TypeConstraints.Compatible(constraint.left(), LOOSE_INVOCATION, constraint.right()),
-                new TypeConstraints.Compatible(constraint.right(), LOOSE_INVOCATION, constraint.left()));
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Compatible constraint, Constraint.Status status) {
+        branch.drop(constraint)
+                .diverge(new TypeConstraints.Compatible(constraint.left(), LOOSE_INVOCATION, constraint.right()),
+                        new TypeConstraints.Compatible(constraint.right(), LOOSE_INVOCATION, constraint.left()));
     }
 }

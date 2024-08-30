@@ -1,9 +1,9 @@
 package honeyroasted.jype.system.solver.constraints.inference;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.almonds.solver.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.TypeSystem;
@@ -18,6 +18,7 @@ import honeyroasted.jype.type.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,29 +29,13 @@ import java.util.stream.Collectors;
 public class ResolveBounds implements ConstraintMapper {
 
     @Override
-    public int arity() {
-        return PARENT_BRANCH_NODE;
-    }
-
-    @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node) {
-        return node.neighbors(ConstraintNode.Operation.AND).stream()
-                .noneMatch(cn -> cn.constraint() instanceof TypeConstraints.Instantiation);
-    }
-
-    @Override
-    public boolean accepts(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
-        return true;
-    }
-
-    @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode... nodes) {
-        ConstraintTree bounds = nodes[0].expandRoot(ConstraintNode.Operation.AND, false);
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(bounds);
+    public void accept(ConstraintBranch branch) {
+        PropertySet instanceContext = branch.parent().metadata();
+        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
 
         TypeSystem system = instanceContext.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
 
-        Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(bounds, mapper);
+        Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(branch, mapper);
 
         Set<MetaVarType> varsAndDeps = new LinkedHashSet<>();
         dependencies.forEach((mvt, deps) -> {
@@ -58,34 +43,34 @@ public class ResolveBounds implements ConstraintMapper {
             varsAndDeps.addAll(deps);
         });
 
-        Map<MetaVarType, Type> instantiations = findAllInstantiations(varsAndDeps, bounds);
+        Map<MetaVarType, Type> instantiations = findAllInstantiations(varsAndDeps, branch);
         boolean foundAllInstantiations = instantiations.size() == varsAndDeps.size();
 
         if (foundAllInstantiations) {
-            instantiations.forEach((mvt, t) -> bounds.attach(new TypeConstraints.Instantiation(mvt, t).createLeaf().overrideStatus(true)));
+            instantiations.forEach((mvt, t) -> branch.add(new TypeConstraints.Instantiation(mvt, t), Constraint.Status.TRUE));
             return;
         }
 
         Set<MetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
         if (!subset.isEmpty()) {
-            ConstraintTree generatedBounds = new ConstraintTree(Constraint.and(), ConstraintNode.Operation.AND);
+            Map<Constraint, Constraint.Status> generatedBounds = new HashMap<>();
 
             //Bound set does not contain any bound of the form G<..., a_i, ...> = capture(G<...>)
-            boolean hasCapture = bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().anyMatch(node -> node.constraint() instanceof TypeConstraints.Capture cpt &&
+            boolean hasCapture = branch.constraints().entrySet().stream().anyMatch(node -> node.getValue().isTrue() && node.getKey() instanceof TypeConstraints.Capture cpt &&
                     ((ClassType) mapper.apply(cpt.left())).typeArguments().stream().anyMatch(subset::contains));
 
             if (!hasCapture) {
                 Map<MetaVarType, Pair<Type, Constraint>> candidates = new LinkedHashMap<>();
                 boolean foundAllCandidates = true;
                 for (MetaVarType mvt : subset) {
-                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
+                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, branch.constraints(), mapper);
                     Map<Type, Constraint> properUpper = properBounds.left();
                     Map<Type, Constraint> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
                         Type lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
                         candidates.put(mvt, Pair.of(lub, new TypeConstraints.Equal(mvt, lub)));
-                    } else if (bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE).stream().anyMatch(cn -> cn.constraint() instanceof TypeConstraints.Throws thr && mapper.apply(thr.value()).equals(mvt)) &&
+                    } else if (branch.constraints().entrySet().stream().anyMatch(cn -> cn.getValue().isTrue() && cn.getKey() instanceof TypeConstraints.Throws thr && mapper.apply(thr.value()).equals(mvt)) &&
                             properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
                         Type cand = mvt.typeSystem().constants().runtimeException();
                         candidates.put(mvt, Pair.of(cand, new TypeConstraints.Equal(mvt, cand)));
@@ -98,91 +83,108 @@ public class ResolveBounds implements ConstraintMapper {
                 }
 
                 if (foundAllCandidates) {
-                    ConstraintTree newBounds = bounds.root(ConstraintNode.Operation.AND).copy().expandInPlace(ConstraintNode.Operation.AND, false);
+                    ConstraintTree temp = new ConstraintTree(1); //We do not expect this to grow
+                    ConstraintBranch snap = branch.copy(temp);
+                    temp.addBranch(snap);
+
                     candidates.forEach((k, v) -> {
-                        newBounds.attach(v.right());
+                        snap.add(v.right(), Constraint.Status.TRUE);
                         instantiations.put(k, v.left());
                     });
 
-                    ConstraintNode incorp = system.operations().incorporationApplier().process(newBounds);
-                    incorp = system.operations().reductionApplier().process(incorp);
-                    incorp.visitNeighbors(ConstraintNode.Operation.AND, ConstraintNode::satisfied, generatedBounds::attach);
+                    system.operations().incorporationApplier().accept(temp);
+                    system.operations().reductionApplier().accept(temp);
+
+                    if (temp.numBranches() == 1 && snap.status().isTrue()) {
+                        //Diverging means it failed, I think
+                        generatedBounds.putAll(snap.constraints());
+                    }
                 }
             }
 
-            if (hasCapture || generatedBounds.children().isEmpty() || generatedBounds.neighbors(ConstraintNode.Operation.AND).stream().anyMatch(b -> b.constraint() instanceof Constraint.False)) {
+            if (hasCapture || generatedBounds.isEmpty() || generatedBounds.entrySet().stream().anyMatch(e -> e.getKey() instanceof False || e.getValue() == Constraint.Status.FALSE)) {
                 Map<MetaVarType, MetaVarType> freshVars = new LinkedHashMap<>();
                 varsAndDeps.forEach(mv -> freshVars.put(mv, mv.typeSystem().typeFactory().newMetaVarType(mv.name() + "_y")));
                 MetaVarTypeResolver theta = new MetaVarTypeResolver(freshVars);
 
-                ConstraintTree newBounds = new ConstraintTree(Constraint.and(), ConstraintNode.Operation.AND);
-                bounds.visitNeighbors(ConstraintNode.Operation.AND, ConstraintNode::satisfied, cn -> newBounds.attach(cn));
+                Map<Constraint, Constraint.Status> newBounds = new HashMap<>();
+                branch.constraints().forEach((con, stat) -> {
+                    if (stat.isTrue()) {
+                        newBounds.put(con, stat);
+                    }
+                });
 
                 for (MetaVarType mvt : varsAndDeps) {
                     MetaVarType y = freshVars.get(mvt);
 
-                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, bounds, mapper);
+                    Pair<Map<Type, Constraint>, Map<Type, Constraint>> properBounds = this.findProperBounds(mvt, branch.constraints(), mapper);
                     Map<Type, Constraint> properUpper = properBounds.left();
                     Map<Type, Constraint> properLower = properBounds.right();
 
                     if (!properLower.isEmpty()) {
                         Type lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        newBounds.attach(new TypeConstraints.Equal(mvt, lower));
+                        newBounds.put(new TypeConstraints.Equal(mvt, lower), Constraint.Status.ASSUMED);
                         y.lowerBounds().add(lower);
                     }
 
                     if (!properUpper.isEmpty()) {
                         Type upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                        newBounds.attach(new TypeConstraints.Equal(mvt, upper));
+                        newBounds.put(new TypeConstraints.Equal(mvt, upper), Constraint.Status.ASSUMED);
                         y.upperBounds().add(upper);
                     }
                 }
 
-                newBounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode::satisfied)
-                        .stream()
-                        .filter(cn -> cn.parent() != null && cn.constraint() instanceof TypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains))
-                        .forEach(cn -> cn.parent().detach(cn));
+                Iterator<Map.Entry<Constraint, Constraint.Status>> iter = newBounds.entrySet().iterator();
+                while (iter.hasNext()) {
+                    Map.Entry<Constraint, Constraint.Status> entry = iter.next();
+                    if (entry.getKey() instanceof TypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains)) {
+                        iter.remove();
+                    }
+                }
 
+                freshVars.forEach((mv, fresh) -> newBounds.put(new TypeConstraints.Equal(mv, fresh), Constraint.Status.ASSUMED));
 
-                freshVars.forEach((mv, fresh) -> newBounds.attach(new TypeConstraints.Equal(mv, fresh)));
-
-                generatedBounds = newBounds;
+                generatedBounds.clear();
+                generatedBounds.putAll(newBounds);
             }
 
-            ConstraintNode incorp = generatedBounds.copy();
-            incorp = system.operations().incorporationApplier().process(incorp);
-            incorp = system.operations().reductionApplier().process(incorp);
+            ConstraintTree temp = new ConstraintTree(1); //We do not expect this to grow
+            ConstraintBranch snap = new ConstraintBranch(temp);
+            temp.addBranch(snap);
+            generatedBounds.forEach(snap::add);
 
+            system.operations().incorporationApplier().accept(temp);
+            system.operations().reductionApplier().accept(temp);
 
-            if (incorp.satisfied()) {
-                bounds.attach(incorp);
+            if (temp.numBranches() == 1 && snap.status().isTrue()) {
+                //Diverging means it failed, I think
+                snap.constraints().forEach(branch::add);
             }
         } else {
-            bounds.attach(Constraint.FALSE);
+            branch.add(Constraint.FALSE, Constraint.Status.FALSE);
         }
-
     }
 
-
-    private Pair<Map<Type, Constraint>, Map<Type, Constraint>> findProperBounds(MetaVarType mvt, ConstraintNode bounds, Function<Type, Type> mapper) {
+    private Pair<Map<Type, Constraint>, Map<Type, Constraint>> findProperBounds(MetaVarType mvt, Map<Constraint, Constraint.Status> bounds, Function<Type, Type> mapper) {
         Map<Type, Constraint> upperBounds = new LinkedHashMap<>();
         Map<Type, Constraint> lowerBounds = new LinkedHashMap<>();
 
-        for (ConstraintNode node : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
-            Constraint bound = node.constraint();
-            if (bound instanceof TypeConstraints.Subtype st) {
-                Type left = mapper.apply(st.left());
-                Type right = mapper.apply(st.right());
+        bounds.forEach((bound, status) -> {
+            if (status.isTrue()) {
+                if (bound instanceof TypeConstraints.Subtype st) {
+                    Type left = mapper.apply(st.left());
+                    Type right = mapper.apply(st.right());
 
-                if (left.equals(mvt) && right.isProperType()) {
-                    upperBounds.put(right, node.constraint());
-                }
+                    if (left.equals(mvt) && right.isProperType()) {
+                        upperBounds.put(right, bound);
+                    }
 
-                if (right.equals(mvt) && left.isProperType()) {
-                    lowerBounds.put(left, node.constraint());
+                    if (right.equals(mvt) && left.isProperType()) {
+                        lowerBounds.put(left, bound);
+                    }
                 }
             }
-        }
+        });
 
         return Pair.of(upperBounds, lowerBounds);
     }
@@ -232,7 +234,7 @@ public class ResolveBounds implements ConstraintMapper {
         return res;
     }
 
-    private Map<MetaVarType, Type> findAllInstantiations(Set<MetaVarType> mvts, ConstraintNode bounds) {
+    private Map<MetaVarType, Type> findAllInstantiations(Set<MetaVarType> mvts, ConstraintBranch bounds) {
         Map<MetaVarType, Type> instantiations = new LinkedHashMap<>();
         for (MetaVarType mvt : mvts) {
             Type instantiation = instantiations.getOrDefault(mvt, findInstantiation(mvt, bounds));
@@ -246,32 +248,29 @@ public class ResolveBounds implements ConstraintMapper {
         return instantiations;
     }
 
-    private Type findInstantiation(MetaVarType mvt, ConstraintNode bounds) {
+    private Type findInstantiation(MetaVarType mvt, ConstraintBranch bounds) {
         Set<Type> types = new LinkedHashSet<>();
-
-        for (ConstraintNode node : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
-            Constraint constraint = node.constraint();
-            if (constraint instanceof TypeConstraints.Equal eq) {
-                if (eq.left().typeEquals(mvt) && eq.right().isProperType()) {
-                    types.add(eq.right());
-                } else if (eq.right().typeEquals(mvt) && eq.left().isProperType()) {
-                    types.add(eq.left());
-                }
-            } else if (constraint instanceof TypeConstraints.Instantiation inst) {
-                if (inst.left().typeEquals(mvt)) {
-                    types.add(inst.right());
+        bounds.constraints().forEach((bound, status) -> {
+            if (status.isTrue()) {
+                if (bound instanceof TypeConstraints.Equal eq) {
+                    if (eq.left().typeEquals(mvt) && eq.right().isProperType()) {
+                        types.add(eq.right());
+                    } else if (eq.right().typeEquals(mvt) && eq.left().isProperType()) {
+                        types.add(eq.left());
+                    }
+                } else if (bound instanceof TypeConstraints.Instantiation inst) {
+                    if (inst.left().typeEquals(mvt)) {
+                        types.add(inst.right());
+                    }
                 }
             }
-        }
-
+        });
         return types.isEmpty() ? null : mvt.typeSystem().operations().findMostSpecificType(types);
     }
 
-    public Map<MetaVarType, Set<MetaVarType>> discoverDependencies(ConstraintNode bounds, Function<Type, Type> mapper) {
+    public Map<MetaVarType, Set<MetaVarType>> discoverDependencies(ConstraintBranch bounds, Function<Type, Type> mapper) {
         Map<MetaVarType, Set<MetaVarType>> dependencies = new LinkedHashMap<>();
-
-        for (ConstraintNode node : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
-            Constraint bound = node.constraint();
+        bounds.constraints().forEach((bound, status) -> {
             if (bound instanceof Constraint.Trinary<?, ?, ?> tri) {
                 if (tri.left() instanceof Type lt) {
                     initDependencies(mapper.apply(lt), dependencies);
@@ -295,42 +294,44 @@ public class ResolveBounds implements ConstraintMapper {
             } else if (bound instanceof Constraint.Unary<?> un && un.value() instanceof Type t) {
                 initDependencies(mapper.apply(t), dependencies);
             }
-        }
+        });
 
-        for (ConstraintNode node : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
-            Constraint bound = node.constraint();
-            if (bound instanceof TypeConstraints.Equal || bound instanceof TypeConstraints.Subtype) {
-                Constraint.Binary<Type, Type> bin = (Constraint.Binary<Type, Type>) bound;
-                if (mapper.apply(bin.left()) instanceof MetaVarType || mapper.apply(bin.right()) instanceof MetaVarType) {
-                    MetaVarType mvt = (MetaVarType) mapper.apply(bin.left() instanceof MetaVarType ? bin.left() : bin.right());
-                    Type otherType = mapper.apply(bin.left() instanceof MetaVarType ? bin.right() : bin.left());
+        bounds.constraints().forEach((bound, status) -> {
+            if (status.isTrue()) {
+                if (bound instanceof TypeConstraints.Equal || bound instanceof TypeConstraints.Subtype) {
+                    Constraint.Binary<Type, Type> bin = (Constraint.Binary<Type, Type>) bound;
+                    if (mapper.apply(bin.left()) instanceof MetaVarType || mapper.apply(bin.right()) instanceof MetaVarType) {
+                        MetaVarType mvt = (MetaVarType) mapper.apply(bin.left() instanceof MetaVarType ? bin.left() : bin.right());
+                        Type otherType = mapper.apply(bin.left() instanceof MetaVarType ? bin.right() : bin.left());
 
-                    boolean foundInCapture = false;
-                    for (ConstraintNode otherNode : bounds.neighbors(ConstraintNode.Operation.AND, ConstraintNode.Status.TRUE)) {
-                        if (otherNode == node) continue;
-
-                        Constraint other = otherNode.constraint();
-                        if (other instanceof TypeConstraints.Capture capture) {
-                            if (discoverMetaVars(mapper.apply(capture.left())).contains(mvt)) {
-                                foundInCapture = true;
-                                break;
+                        boolean foundInCapture = false;
+                        for (Map.Entry<Constraint, Constraint.Status> entry : bounds.constraints().entrySet()) {
+                            Constraint other = entry.getKey();
+                            Constraint.Status otherStatus = entry.getValue();
+                            if (otherStatus.isTrue() && other != bound) {
+                                if (other instanceof TypeConstraints.Capture capture) {
+                                    if (discoverMetaVars(mapper.apply(capture.left())).contains(mvt)) {
+                                        foundInCapture = true;
+                                        break;
+                                    }
+                                }
                             }
                         }
-                    }
 
-                    MetaVarType alpha = mvt;
-                    if (foundInCapture) {
-                        discoverMetaVars(otherType).forEach(beta -> dependencies.get(beta).add(alpha));
-                    } else {
-                        discoverMetaVars(otherType).forEach(beta -> dependencies.get(alpha).add(beta));
+                        MetaVarType alpha = mvt;
+                        if (foundInCapture) {
+                            discoverMetaVars(otherType).forEach(beta -> dependencies.get(beta).add(alpha));
+                        } else {
+                            discoverMetaVars(otherType).forEach(beta -> dependencies.get(alpha).add(beta));
+                        }
                     }
+                } else if (bound instanceof TypeConstraints.Capture capture) {
+                    Set<MetaVarType> mvts = discoverMetaVars(mapper.apply(capture.left()));
+                    mvts.addAll(discoverMetaVars(mapper.apply(capture.right())));
+                    mvts.forEach(mvt -> dependencies.get(mvt).addAll(mvts));
                 }
-            } else if (bound instanceof TypeConstraints.Capture capture) {
-                Set<MetaVarType> mvts = discoverMetaVars(mapper.apply(capture.left()));
-                mvts.addAll(discoverMetaVars(mapper.apply(capture.right())));
-                mvts.forEach(mvt -> dependencies.get(mvt).addAll(mvts));
             }
-        }
+        });
 
         Map<MetaVarType, Set<MetaVarType>> previous = dependencies;
         Map<MetaVarType, Set<MetaVarType>> current;

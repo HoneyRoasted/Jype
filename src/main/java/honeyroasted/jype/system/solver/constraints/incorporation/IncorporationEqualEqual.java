@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.incorporation;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.system.visitor.visitors.MetaVarTypeResolver;
@@ -11,26 +12,21 @@ import honeyroasted.jype.type.Type;
 import java.util.Map;
 import java.util.function.Function;
 
-public class IncorporationEqualEqual implements ConstraintMapper.Binary<TypeConstraints.Equal, TypeConstraints.Equal> {
+public class IncorporationEqualEqual extends ConstraintMapper.Binary<TypeConstraints.Equal, TypeConstraints.Equal> {
 
     @Override
-    public boolean filterLeft(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
-        return node.status() == ConstraintNode.Status.TRUE;
+    protected boolean filterLeft(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal constraint, Constraint.Status status) {
+        return status.isTrue();
     }
 
     @Override
-    public boolean filterRight(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
-        return node.status() == ConstraintNode.Status.TRUE;
+    protected boolean filterRight(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal constraint, Constraint.Status status) {
+        return super.filterRight(allContext, branchContext, branch, constraint, status);
     }
 
     @Override
-    public boolean commutative() {
-        return false;
-    }
-
-    @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode leftNode, TypeConstraints.Equal leftConstraint, ConstraintNode rightNode, TypeConstraints.Equal rightConstraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(leftNode);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal leftConstraint, Constraint.Status leftStatus, TypeConstraints.Equal rightConstraint, Constraint.Status rightStatus) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
                 rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
 
@@ -41,14 +37,11 @@ public class IncorporationEqualEqual implements ConstraintMapper.Binary<TypeCons
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
-                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
-                        .attach(new TypeConstraints.Equal(otherType, rr).createLeaf().overrideStatus(true));
+                branch.add(new TypeConstraints.Equal(otherType, rr), Constraint.Status.ASSUMED);
             } else if (rr.typeEquals(mvt)) {
-                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
-                        .attach(new TypeConstraints.Equal(otherType, rl).createLeaf().overrideStatus(true));
+                branch.add(new TypeConstraints.Equal(otherType, rl), Constraint.Status.ASSUMED);
             } else {
-                leftNode.expandRoot(ConstraintNode.Operation.AND, false)
-                        .attach(new TypeConstraints.Equal(subResolver.visit(rl), subResolver.visit(rr)).createLeaf().overrideStatus(true));
+                branch.add(new TypeConstraints.Equal(subResolver.visit(rl), subResolver.visit(rr)), Constraint.Status.ASSUMED);
             }
         }
     }

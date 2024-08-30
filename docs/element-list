@@ -4,7 +4,6 @@ honeyroasted.jype.system.cache
 honeyroasted.jype.system.expression
 honeyroasted.jype.system.resolver
 honeyroasted.jype.system.resolver.reflection
-honeyroasted.jype.system.solver._old
 honeyroasted.jype.system.solver.constraints
 honeyroasted.jype.system.solver.constraints.compatibility
 honeyroasted.jype.system.solver.constraints.incorporation

@@ -1,9 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.location.MethodLocation;
@@ -20,6 +19,8 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 import java.lang.reflect.AccessFlag;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -28,16 +29,16 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
+public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstraints.ExpressionCompatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        return node.isLeaf() && constraint.left() instanceof ExpressionInformation.Invocation<?> invoc &&
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        return status.isUnknown() && constraint.left() instanceof ExpressionInformation.Invocation<?> invoc &&
                 (invoc.source() instanceof ClassReference || invoc.source() instanceof ExpressionInformation);
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.ExpressionCompatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
 
         ExpressionInformation.Invocation<?> invocation = (ExpressionInformation.Invocation<?>) constraint.left();
         Type target = mapper.apply(constraint.right());
@@ -64,9 +65,9 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
                 stat = false;
             } else {
                 MetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
-                node.expand(ConstraintNode.Operation.AND, false,
-                        new TypeConstraints.ExpressionCompatible(expr, TypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt),
-                        new TypeConstraints.DelayedExpressionCompatible(mvt, constraint));
+                branch.drop(constraint)
+                        .add(new TypeConstraints.ExpressionCompatible(expr, TypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
+                        .add(new TypeConstraints.DelayedExpressionCompatible(mvt, constraint));
                 return;
             }
         } else {
@@ -74,10 +75,9 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
         }
 
         if (methods.isEmpty()) {
-            node.expand(ConstraintNode.Operation.AND, false,
-                            checked.stream().map(ct -> new TypeConstraints.MethodNotFound(ct.classReference(), invocation.name())).toArray(Constraint[]::new));
+            branch.setStatus(constraint, Constraint.Status.FALSE);
         } else {
-            Set<ConstraintNode> newChildren = new LinkedHashSet<>();
+            List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
 
             methods.forEach((loc, ref) -> {
                 if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access()) && (stat || !ref.hasModifier(AccessFlag.STATIC))) {
@@ -87,7 +87,7 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
                     }
 
                     if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
-                        ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
+                            ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
                         newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg));
                         newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg));
                     }
@@ -95,44 +95,44 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
             });
 
             if (!newChildren.isEmpty()) {
-                node.expand(ConstraintNode.Operation.OR, newChildren, false);
+                branch.drop(constraint).divergeBranches(newChildren);
             } else {
-                node.expand(ConstraintNode.Operation.AND, true,
-                        checked.stream().map(ct -> new TypeConstraints.MethodNotFound(ct.classReference(), invocation.name())).toArray(Constraint[]::new));
+                branch.setStatus(constraint, Constraint.Status.FALSE);
             }
         }
     }
 
-    private static ConstraintTree createInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
+    private static ConstraintBranch.Snapshot createInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters) {
+        Map<Constraint, Constraint.Status> invoke = new HashMap<>();
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
 
-        invoke.attach(typeParams.left().toArray(Constraint[]::new));
-        invoke.attach(new TypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()));
+        typeParams.left().forEach(c -> invoke.put(c, Constraint.Status.UNKNOWN));
+        invoke.put(new TypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
         for (int i = 0; i < parameters.size(); i++) {
-            invoke.attach(new TypeConstraints.ExpressionCompatible(parameters.get(i), context, resolve.apply(ref.parameters().get(i))));
+            invoke.put(new TypeConstraints.ExpressionCompatible(parameters.get(i), context, resolve.apply(ref.parameters().get(i))), Constraint.Status.UNKNOWN);
         }
-        return invoke;
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, false)), invoke);
     }
 
-    private static ConstraintTree createVarargInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters, ArrayType vararg) {
-        ConstraintTree invoke = new ConstraintTree(new TypeConstraints.MethodInvocation(ref, context, false), ConstraintNode.Operation.AND);
+    private static ConstraintBranch.Snapshot createVarargInvoke(TypeConstraints.Compatible.Context context, TypeConstraints.ExpressionCompatible constraint, ExpressionInformation.Invocation<?> invocation, MethodReference ref, List<ExpressionInformation> parameters, ArrayType vararg) {
+        Map<Constraint, Constraint.Status> invoke = new HashMap<>();
         Pair<Set<Constraint>, VarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         VarTypeResolveVisitor resolve = typeParams.right();
 
-        invoke.attach(typeParams.left().toArray(Constraint[]::new));
-        invoke.attach(new TypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()));
+        typeParams.left().forEach(c -> invoke.put(c, Constraint.Status.UNKNOWN));
+        invoke.put(new TypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
 
         int index;
         for (index = 0; index < ref.parameters().size() - 1; index++) {
-            invoke.attach(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(ref.parameters().get(index))));
+            invoke.put(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(ref.parameters().get(index))), Constraint.Status.UNKNOWN);
         }
 
         for(; index < parameters.size(); index++) {
-            invoke.attach(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(vararg.component())));
+            invoke.put(new TypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(vararg.component())), Constraint.Status.UNKNOWN);
         }
-        return invoke;
+
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new TypeConstraints.MethodInvocation(ref, context, true)), invoke);
     }
 
     private static Pair<Set<Constraint>, VarTypeResolveVisitor> createTypeParams(MethodReference ref, ExpressionInformation.Invocation<?> invoc) {
@@ -172,4 +172,5 @@ public class ReduceMethodInvocation implements ConstraintMapper.Unary<TypeConstr
             return attempt;
         }
     }
+
 }

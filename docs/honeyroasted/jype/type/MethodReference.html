@@ -119,12 +119,6 @@ extends honeyroasted.collect.modify.PossiblyUnmodifiable, <a href="MethodType.ht
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#asMethodType(honeyroasted.jype.type.ArgumentType...)" class="member-name-link">asMethodType</a><wbr>(<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>...&nbsp;typeArguments)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#asMethodType(java.util.List)" class="member-name-link">asMethodType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>&gt;&nbsp;typeArguments)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#hasCyclicTypeVariables(java.util.Set)" class="member-name-link">hasCyclicTypeVariables</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="VarType.html" title="interface in honeyroasted.jype.type">VarType</a>&gt;&nbsp;seen)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
@@ -138,6 +132,12 @@ extends honeyroasted.collect.modify.PossiblyUnmodifiable, <a href="MethodType.ht
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#outerType()" class="member-name-link">outerType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#parameterized(honeyroasted.jype.type.ArgumentType...)" class="member-name-link">parameterized</a><wbr>(<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>...&nbsp;typeArguments)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#parameterized(java.util.List)" class="member-name-link">parameterized</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>&gt;&nbsp;typeArguments)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#parameterizedWithTypeVars()" class="member-name-link">parameterizedWithTypeVars</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>&gt;</code></div>
@@ -148,7 +148,7 @@ extends honeyroasted.collect.modify.PossiblyUnmodifiable, <a href="MethodType.ht
 </div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.MethodType">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="MethodType.html" title="interface in honeyroasted.jype.type">MethodType</a></h3>
-<code><a href="MethodType.html#accept(honeyroasted.jype.system.visitor.TypeVisitor,P)">accept</a>, <a href="MethodType.html#exceptionTypes()">exceptionTypes</a>, <a href="MethodType.html#hasRelevantOuterType()">hasRelevantOuterType</a>, <a href="MethodType.html#hasTypeParameters()">hasTypeParameters</a>, <a href="MethodType.html#location()">location</a>, <a href="MethodType.html#modifiers()">modifiers</a>, <a href="MethodType.html#outerClass()">outerClass</a>, <a href="MethodType.html#parameters()">parameters</a>, <a href="MethodType.html#returnType()">returnType</a>, <a href="MethodType.html#setExceptionTypes(java.util.List)">setExceptionTypes</a>, <a href="MethodType.html#setLocation(honeyroasted.jype.location.MethodLocation)">setLocation</a>, <a href="MethodType.html#setModifiers(int)">setModifiers</a>, <a href="MethodType.html#setOuterClass(honeyroasted.jype.type.ClassReference)">setOuterClass</a>, <a href="MethodType.html#setParameters(java.util.List)">setParameters</a>, <a href="MethodType.html#setReturnType(honeyroasted.jype.type.Type)">setReturnType</a>, <a href="MethodType.html#setTypeParameters(java.util.List)">setTypeParameters</a>, <a href="MethodType.html#typeParameters()">typeParameters</a></code></div>
+<code><a href="MethodType.html#accept(honeyroasted.jype.system.visitor.TypeVisitor,P)">accept</a>, <a href="MethodType.html#access()">access</a>, <a href="MethodType.html#exceptionTypes()">exceptionTypes</a>, <a href="MethodType.html#hasModifier(honeyroasted.jype.type.Access)">hasModifier</a>, <a href="MethodType.html#hasModifier(java.lang.reflect.AccessFlag)">hasModifier</a>, <a href="MethodType.html#hasRelevantOuterType()">hasRelevantOuterType</a>, <a href="MethodType.html#hasTypeParameters()">hasTypeParameters</a>, <a href="MethodType.html#location()">location</a>, <a href="MethodType.html#modifiers()">modifiers</a>, <a href="MethodType.html#outerClass()">outerClass</a>, <a href="MethodType.html#parameters()">parameters</a>, <a href="MethodType.html#returnType()">returnType</a>, <a href="MethodType.html#setExceptionTypes(java.util.List)">setExceptionTypes</a>, <a href="MethodType.html#setLocation(honeyroasted.jype.location.MethodLocation)">setLocation</a>, <a href="MethodType.html#setModifiers(int)">setModifiers</a>, <a href="MethodType.html#setOuterClass(honeyroasted.jype.type.ClassReference)">setOuterClass</a>, <a href="MethodType.html#setParameters(java.util.List)">setParameters</a>, <a href="MethodType.html#setReturnType(honeyroasted.jype.type.Type)">setReturnType</a>, <a href="MethodType.html#setTypeParameters(java.util.List)">setTypeParameters</a>, <a href="MethodType.html#typeParameters()">typeParameters</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.collect.modify.PossiblyUnmodifiable">Methods inherited from interface&nbsp;honeyroasted.collect.modify.PossiblyUnmodifiable</h3>
 <code>isUnmodifiable, setUnmodifiable</code></div>
@@ -167,15 +167,15 @@ extends honeyroasted.collect.modify.PossiblyUnmodifiable, <a href="MethodType.ht
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="asMethodType(java.util.List)">
-<h3>asMethodType</h3>
-<div class="member-signature"><span class="return-type"><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></span>&nbsp;<span class="element-name">asMethodType</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>&gt;&nbsp;typeArguments)</span></div>
+<section class="detail" id="parameterized(java.util.List)">
+<h3>parameterized</h3>
+<div class="member-signature"><span class="return-type"><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></span>&nbsp;<span class="element-name">parameterized</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>&gt;&nbsp;typeArguments)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="asMethodType(honeyroasted.jype.type.ArgumentType...)">
-<h3>asMethodType</h3>
-<div class="member-signature"><span class="return-type"><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></span>&nbsp;<span class="element-name">asMethodType</span><wbr><span class="parameters">(<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>...&nbsp;typeArguments)</span></div>
+<section class="detail" id="parameterized(honeyroasted.jype.type.ArgumentType...)">
+<h3>parameterized</h3>
+<div class="member-signature"><span class="return-type"><a href="ParameterizedMethodType.html" title="interface in honeyroasted.jype.type">ParameterizedMethodType</a></span>&nbsp;<span class="element-name">parameterized</span><wbr><span class="parameters">(<a href="ArgumentType.html" title="interface in honeyroasted.jype.type">ArgumentType</a>...&nbsp;typeArguments)</span></div>
 </section>
 </li>
 <li>

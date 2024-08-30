@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.compatibility;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.PrimitiveType;
@@ -14,21 +14,20 @@ import java.util.function.Function;
 
 import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compatible.Context.*;
 
-public class CompatibleLooseInvocation implements ConstraintMapper.Unary<TypeConstraints.Compatible> {
-
+public class CompatibleLooseInvocation extends ConstraintMapper.Unary<TypeConstraints.Compatible> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Compatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        return node.isLeaf() && (constraint.middle() == LOOSE_INVOCATION || constraint.middle() == ASSIGNMENT) &&
+        return status.isUnknown() && (constraint.middle() == LOOSE_INVOCATION || constraint.middle() == ASSIGNMENT) &&
                 left.isProperType() && right.isProperType();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Compatible constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Compatible constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
@@ -41,6 +40,6 @@ public class CompatibleLooseInvocation implements ConstraintMapper.Unary<TypeCon
             newChildren.add(new TypeConstraints.Subtype(left, r.box()));
         }
 
-        node.expand(ConstraintNode.Operation.OR, newChildren.stream().map(Constraint::createLeaf).toList(), false);
+        branch.drop(constraint).diverge(newChildren);
     }
 }

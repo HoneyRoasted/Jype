@@ -1,7 +1,8 @@
 package honeyroasted.jype.system.solver.constraints.reduction;
 
-import honeyroasted.almonds.ConstraintNode;
-import honeyroasted.almonds.solver.ConstraintMapper;
+import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.type.MetaVarType;
@@ -10,25 +11,25 @@ import honeyroasted.jype.type.Type;
 
 import java.util.function.Function;
 
-public class ReduceEqual implements ConstraintMapper.Unary<TypeConstraints.Equal> {
+public class ReduceEqual extends ConstraintMapper.Unary<TypeConstraints.Equal> {
     @Override
-    public boolean filter(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
-        return node.isLeaf();
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal constraint, Constraint.Status status) {
+        return status.isUnknown();
     }
 
     @Override
-    public void process(PropertySet instanceContext, PropertySet branchContext, ConstraintNode node, TypeConstraints.Equal constraint) {
-        Function<Type, Type> mapper = instanceContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(node);
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, TypeConstraints.Equal constraint, Constraint.Status status) {
+        Function<Type, Type> mapper = allContext.firstOr(TypeConstraints.TypeMapper.class, TypeConstraints.NO_OP).mapper().apply(branch);
         Type s = mapper.apply(constraint.left());
         Type t = mapper.apply(constraint.right());
 
         if (s.isProperType() && t.isProperType()) {
-            node.overrideStatus(s.typeEquals(t));
+            branch.setStatus(constraint, Constraint.Status.known(s.typeEquals(t)));
         } else if (s.isNullType() || t.isNullType()) {
-            node.overrideStatus(false);
+            branch.setStatus(constraint, Constraint.Status.FALSE);
         } else if ((t instanceof MetaVarType && !(s instanceof PrimitiveType)) ||
                 (s instanceof MetaVarType && !(t instanceof PrimitiveType))) {
-            node.overrideStatus(true);
+            branch.setStatus(constraint, Constraint.Status.ASSUMED);
         }
     }
 }
