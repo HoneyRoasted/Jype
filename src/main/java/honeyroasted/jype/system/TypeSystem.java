@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 public interface TypeSystem {
-    TypeSystem SIMPLE_RUNTIME = new SimpleTypeSystem();
+    TypeSystem RUNTIME_REFLECTION = new SimpleTypeSystem();
 
     TypeConstants constants();
 

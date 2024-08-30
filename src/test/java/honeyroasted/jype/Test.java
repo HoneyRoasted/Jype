@@ -17,7 +17,7 @@ import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compat
 public class Test {
 
     public static void main(String[] args) {
-        TypeSystem system = TypeSystem.SIMPLE_RUNTIME;
+        TypeSystem system = TypeSystem.RUNTIME_REFLECTION;
 
         ClassReference declaring = system.tryResolve(Test.class);
         List<ArgumentType> explicitTypeArguments = List.of();
@@ -39,7 +39,7 @@ public class Test {
                 .bind(constraint)
                 .solve();
 
-        System.out.println(solve.toString(true));
+        System.out.println(solve.toString(false));
     }
 
     record SimpleInst(ClassReference declaring, ClassReference type, List<ExpressionInformation> parameters, List<ArgumentType> explicitTypeArguments) implements ExpressionInformation.Instantiation {

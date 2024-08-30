@@ -20,7 +20,7 @@ public class FindLeastUpperBoundTests {
 
     @Test
     public void testInfiniteLub() {
-        TypeSystem ts = TypeSystem.SIMPLE_RUNTIME;
+        TypeSystem ts = TypeSystem.RUNTIME_REFLECTION;
 
         //Create test type to compare too
         ClassReference foo = ts.tryResolve(Foo.class);

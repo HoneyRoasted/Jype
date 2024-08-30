@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
@@ -29,6 +30,7 @@ import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationEq
 import honeyroasted.jype.system.solver.constraints.incorporation.IncorporationSubtypeSubtype;
 import honeyroasted.jype.system.solver.constraints.inference.BuildInitialBounds;
 import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
+import honeyroasted.jype.system.solver.constraints.inference.VerifyBounds;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceDelayedExpressionCompatible;
@@ -129,6 +131,11 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
+    public TypeSystem system() {
+        return this.typeSystem;
+    }
+
+    @Override
     public ConstraintMapperApplier reductionApplier() {
         return REDUCTION_APPLIER;
     }
@@ -164,8 +171,8 @@ public class TypeOperationsImpl implements TypeOperations {
                                 BUILD_INITIAL_BOUNDS_APPLIER,
                                 INCORPORATION_APPLIER,
                                 RESOLUTION_APPLIER
-                        )
-                )
+                        )),
+                new ConstraintMapperApplier(List.of(new VerifyBounds()))
         )).withContext(new PropertySet()
                 .attach(this.typeSystem)
                 .attach(varTypeMapper()));
@@ -212,19 +219,11 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
-    public boolean isCompatible(Type subtype, Type supertype, TypeConstraints.Compatible.Context ctx) {
+    public Constraint.Status checkStatus(Constraint constraint, PropertySet context) {
         return this.compatibilitySolver()
-                .bind(new TypeConstraints.Compatible(subtype, ctx, supertype))
-                .solve(new PropertySet().attach(subtype.typeSystem()))
-                .status().isTrue();
-    }
-
-    @Override
-    public boolean isSubtype(Type subtype, Type supertype) {
-        return this.compatibilitySolver()
-                .bind(new TypeConstraints.Subtype(subtype, supertype))
-                .solve(new PropertySet().attach(subtype.typeSystem()))
-                .status().isTrue();
+                .bind(constraint)
+                .solve(context)
+                .status();
     }
 
     @Override

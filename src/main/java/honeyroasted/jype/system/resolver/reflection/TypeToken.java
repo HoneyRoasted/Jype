@@ -16,7 +16,7 @@ public abstract class TypeToken<T> {
     }
 
     public final <K extends honeyroasted.jype.type.Type> K resolve() {
-        return this.resolve(TypeSystem.SIMPLE_RUNTIME);
+        return this.resolve(TypeSystem.RUNTIME_REFLECTION);
     }
 
     @Override

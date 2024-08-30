@@ -99,7 +99,7 @@ public interface ExpressionInformation {
             }
 
             if (this.children().isEmpty()) {
-                return Optional.of(system.constants().nullType());
+                return Optional.of(system.constants().voidType());
             } else if (this.children().size() == 1) {
                 return this.children().get(0).getSimpleType(system, Function.identity());
             } else {
@@ -118,6 +118,7 @@ public interface ExpressionInformation {
             }
         }
     }
+
 
     interface Invocation extends ExpressionInformation {
         ClassReference declaring();

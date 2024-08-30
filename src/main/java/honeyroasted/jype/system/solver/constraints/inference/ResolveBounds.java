@@ -28,13 +28,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ResolveBounds implements ConstraintMapper {
-
     @Override
     public void accept(ConstraintBranch branch) {
         PropertySet instanceContext = branch.parent().metadata();
         Function<Type, Type> mapper = instanceContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
 
-        TypeSystem system = instanceContext.firstOr(TypeSystem.class, TypeSystem.SIMPLE_RUNTIME);
+        TypeSystem system = instanceContext.firstOr(TypeSystem.class, TypeSystem.RUNTIME_REFLECTION);
 
         Map<MetaVarType, Set<MetaVarType>> dependencies = this.discoverDependencies(branch, mapper);
 
