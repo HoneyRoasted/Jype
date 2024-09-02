@@ -42,6 +42,7 @@ public class SubtypeGenericClass extends ConstraintMapper.Unary<TypeConstraints.
             ClassType relative = superTypeOpt.get();
 
             if (relative.typeArguments().size() == pcr.typeArguments().size()) {
+                branch.drop(constraint);
                 for (int i = 0; i < relative.typeArguments().size(); i++) {
                     Type ti = relative.typeArguments().get(i);
                     Type si = pcr.typeArguments().get(i);
