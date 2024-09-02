@@ -7,7 +7,7 @@ sourceCompatibility = 1.21
 targetCompatibility = 1.21
 
 group 'honeyroasted.jype'
-version '0.0.26'
+version '0.0.27'
 
 repositories {
     mavenCentral()
@@ -15,8 +15,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.HoneyRoasted:Collect:400dedca83",
-    "com.github.HoneyRoasted:Almonds:e2f416e68c")
+    implementation("com.github.HoneyRoasted:Collect:0.0.10",
+            "com.github.HoneyRoasted:Almonds:0.0.17")
 
     testImplementation('org.ow2.asm:asm:9.5',
             'org.ow2.asm:asm-util:9.5',

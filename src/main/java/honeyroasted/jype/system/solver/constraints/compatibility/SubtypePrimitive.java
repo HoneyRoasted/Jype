@@ -42,9 +42,9 @@ public class SubtypePrimitive extends ConstraintMapper.Unary<TypeConstraints.Sub
         Type right = mapper.apply(constraint.right());
 
         if (left instanceof PrimitiveType && right instanceof PrimitiveType) {
-            branch.setStatus(constraint, Constraint.Status.known(PRIM_SUPERS.get(((PrimitiveType) left).name()).contains(((PrimitiveType) right).name())));
+            branch.set(constraint, Constraint.Status.known(PRIM_SUPERS.get(((PrimitiveType) left).name()).contains(((PrimitiveType) right).name())));
         } else {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         }
     }
 }

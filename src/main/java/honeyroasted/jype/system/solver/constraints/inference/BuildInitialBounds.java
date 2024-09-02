@@ -18,9 +18,9 @@ public class BuildInitialBounds implements ConstraintMapper {
         Map<VarType, MetaVarType> metaVars = new LinkedHashMap<>();
 
         branch.constraints().forEach((con, status) -> {
-            if (con instanceof TypeConstraints.Infer inf && status.isUnknown()) {
+            if (con instanceof TypeConstraints.Infer inf && status == Constraint.Status.UNKNOWN) {
                 metaVars.put(inf.right(), inf.left());
-                branch.drop(inf);
+                branch.set(inf, Constraint.Status.ASSUMED);
             }
         });
 

@@ -49,7 +49,6 @@ public class IncorporationCapture extends ConstraintMapper.Unary<TypeConstraints
 
             //Initial bounds generated from G<P_1...P_n> per 18.1.3
             varMap.forEach(con -> branch.add(con, Constraint.Status.ASSUMED));
-            left.typeSystem().operations().initialBoundsApplier().accept(branch);
 
             for (int i = 0; i < left.typeArguments().size() && i < right.typeArguments().size(); i++) {
                 Type alphaType = left.typeArguments().get(i);
@@ -64,8 +63,8 @@ public class IncorporationCapture extends ConstraintMapper.Unary<TypeConstraints
                                 if (other instanceof TypeConstraints.Equal eq && ((eq.left().typeEquals(alpha) && !(eq.right() instanceof MetaVarType))
                                         || (eq.right().typeEquals(alpha) && !(eq.left() instanceof MetaVarType)))) {
                                     //Case where Ai is a wildcard and alpha_i = R => false (18.3.2 Bullets #2.1, 3.1, 4.1)
-                                    branch.setStatus(constraint, Constraint.Status.FALSE);
-                                    branch.setStatus(other, Constraint.Status.FALSE);
+                                    branch.set(constraint, Constraint.Status.FALSE);
+                                    branch.set(other, Constraint.Status.FALSE);
                                 } else if (other instanceof TypeConstraints.Subtype st) {
                                     if (st.left().typeEquals(alpha) && !(st.right() instanceof MetaVarType)) {
                                         //alpha <: R
@@ -89,8 +88,8 @@ public class IncorporationCapture extends ConstraintMapper.Unary<TypeConstraints
                                         Type r = st.left();
                                         if (a instanceof WildType.Upper wtu) {
                                             //Case where A_i is a wildcard of form ? or ? extends T and R <: alpha_i => false (18.3.2 Bullets #2.3, 3.4)
-                                            branch.setStatus(constraint, Constraint.Status.FALSE);
-                                            branch.setStatus(other, Constraint.Status.FALSE);
+                                            branch.set(constraint, Constraint.Status.FALSE);
+                                            branch.set(other, Constraint.Status.FALSE);
                                         } else if (a instanceof WildType.Lower wtl) { //? super
                                             //Case where A_I is a wildcard of form ? super T and R <: alpha_i => R <: T (18.3.2 Bullet #4.3)
                                             wtl.lowerBounds().forEach(ti -> branch.add(new TypeConstraints.Subtype(r, ti)));

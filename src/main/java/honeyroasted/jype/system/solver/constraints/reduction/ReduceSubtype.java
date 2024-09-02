@@ -34,26 +34,26 @@ public class ReduceSubtype extends ConstraintMapper.Unary<TypeConstraints.Subtyp
         Type right = mapper.apply(constraint.right());
 
         if (left.isProperType() && right.isProperType()) {
-            branch.setStatus(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
+            branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
         } else if (left.isNullType()) {
-            branch.setStatus(constraint, Constraint.Status.TRUE);
+            branch.set(constraint, Constraint.Status.TRUE);
         } else if (right.isNullType()) {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         } else if (left instanceof MetaVarType || right instanceof MetaVarType) {
-            branch.setStatus(constraint, Constraint.Status.ASSUMED);
+            branch.set(constraint, Constraint.Status.ASSUMED);
         } else if (right instanceof VarType vt) {
             if (left instanceof IntersectionType it && it.typeContains(vt)) {
-                branch.setStatus(constraint, Constraint.Status.TRUE);
+                branch.set(constraint, Constraint.Status.TRUE);
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         } else if (right instanceof MetaVarType mvt) {
             if (left instanceof IntersectionType it && it.typeContains(mvt)) {
-                branch.setStatus(constraint, Constraint.Status.TRUE);
+                branch.set(constraint, Constraint.Status.TRUE);
             } else if (!mvt.lowerBounds().isEmpty()) {
                 branch.drop(constraint).add(new TypeConstraints.Subtype(left, mvt.lowerBound()));
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         } else if (right instanceof IntersectionType it) {
             branch.drop(constraint);
@@ -72,13 +72,13 @@ public class ReduceSubtype extends ConstraintMapper.Unary<TypeConstraints.Subtyp
                             branch.add(new TypeConstraints.Contains(ti, si));
                         }
                     } else {
-                        branch.setStatus(constraint, Constraint.Status.FALSE);
+                        branch.set(constraint, Constraint.Status.FALSE);
                     }
                 } else {
-                    branch.setStatus(constraint, Constraint.Status.FALSE);
+                    branch.set(constraint, Constraint.Status.FALSE);
                 }
             } else {
-                branch.setStatus(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
+                branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
             }
         } else if (right instanceof ArrayType at) {
             if (left instanceof ArrayType lat) {
@@ -90,13 +90,13 @@ public class ReduceSubtype extends ConstraintMapper.Unary<TypeConstraints.Subtyp
             } else {
                 Set<Type> arr = findMostSpecificArrayTypes(left);
                 if (arr.isEmpty()) {
-                    branch.setStatus(constraint, Constraint.Status.FALSE);
+                    branch.set(constraint, Constraint.Status.FALSE);
                 } else {
                     branch.drop(constraint).diverge(arr.stream().map(st -> new TypeConstraints.Subtype(st, at)).toList());
                 }
             }
         } else {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         }
     }
 

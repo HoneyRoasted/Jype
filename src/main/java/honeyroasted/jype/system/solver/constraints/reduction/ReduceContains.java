@@ -26,7 +26,7 @@ public class ReduceContains extends ConstraintMapper.Unary<TypeConstraints.Conta
         if (t instanceof WildType) {
             if (t instanceof WildType.Upper wtu) {
                 if (wtu.hasDefaultBounds()) {
-                    branch.setStatus(constraint, Constraint.Status.FALSE);
+                    branch.set(constraint, Constraint.Status.FALSE);
                 } else {
                     if (s instanceof WildType) {
                         if (s instanceof WildType.Upper swtu) {
@@ -47,7 +47,7 @@ public class ReduceContains extends ConstraintMapper.Unary<TypeConstraints.Conta
                     if (s instanceof WildType.Lower swtl) {
                         branch.drop(constraint).add(new TypeConstraints.Subtype(wtl.lowerBound(), swtl.lowerBound()));
                     } else {
-                        branch.setStatus(constraint, Constraint.Status.FALSE);
+                        branch.set(constraint, Constraint.Status.FALSE);
                     }
                 } else {
                     branch.drop(constraint).add(new TypeConstraints.Subtype(wtl.lowerBound(), s));
@@ -55,7 +55,7 @@ public class ReduceContains extends ConstraintMapper.Unary<TypeConstraints.Conta
             }
         } else {
             if (s instanceof WildType) {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             } else {
                 branch.drop(constraint).add(new TypeConstraints.Equal(s, t));
             }

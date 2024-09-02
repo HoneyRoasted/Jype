@@ -25,12 +25,12 @@ public class ReduceEqual extends ConstraintMapper.Unary<TypeConstraints.Equal> {
         Type t = mapper.apply(constraint.right());
 
         if (s.isProperType() && t.isProperType()) {
-            branch.setStatus(constraint, Constraint.Status.known(s.typeEquals(t)));
+            branch.set(constraint, Constraint.Status.known(s.typeEquals(t)));
         } else if (s.isNullType() || t.isNullType()) {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         } else if ((t instanceof MetaVarType && !(s instanceof PrimitiveType)) ||
                 (s instanceof MetaVarType && !(t instanceof PrimitiveType))) {
-            branch.setStatus(constraint, Constraint.Status.ASSUMED);
+            branch.set(constraint, Constraint.Status.ASSUMED);
         }
     }
 }

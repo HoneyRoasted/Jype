@@ -15,4 +15,8 @@ public interface TypeContext {
     record ChosenMethod(ExpressionInformation.Invocation expression, MethodReference chosen, TypeConstraints.Compatible.Context context, boolean vararg) {
 
     }
+
+    record TriedAdvancedReduction() {
+
+    }
 }

@@ -30,9 +30,9 @@ public class SubtypeNone extends ConstraintMapper.Unary<TypeConstraints.Subtype>
         Type right = mapper.apply(constraint.right());
 
         if (right instanceof NoneType) {
-            branch.setStatus(constraint, Constraint.Status.TRUE);
+            branch.set(constraint, Constraint.Status.TRUE);
         } else if (left instanceof NoneType) {
-            branch.setStatus(constraint, Constraint.Status.known(left.isNullType() && !(right instanceof PrimitiveType)));
+            branch.set(constraint, Constraint.Status.known(left.isNullType() && !(right instanceof PrimitiveType)));
         }
     }
 }

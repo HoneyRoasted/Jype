@@ -26,6 +26,6 @@ public class EqualType extends ConstraintMapper.Unary<TypeConstraints.Equal> {
         Type left = mapper.apply(constraint.left());
         Type right = mapper.apply(constraint.right());
 
-        branch.setStatus(constraint, Constraint.Status.known(left.typeEquals(right)));
+        branch.set(constraint, Constraint.Status.known(left.typeEquals(right)));
     }
 }

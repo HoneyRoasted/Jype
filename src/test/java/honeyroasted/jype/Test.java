@@ -34,6 +34,7 @@ public class Test {
         ClassType targetType = system.<ClassReference>tryResolve(List.class).parameterized(system.<ArgumentType>tryResolve(String.class));
 
         TypeConstraints.ExpressionCompatible constraint = new TypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
+        System.out.println(constraint.simpleName());
 
         ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)

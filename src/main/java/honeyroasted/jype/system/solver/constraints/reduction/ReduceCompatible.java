@@ -26,19 +26,19 @@ public class ReduceCompatible extends ConstraintMapper.Unary<TypeConstraints.Com
         Type right = mapper.apply(constraint.right());
 
         if (left.isProperType() && right.isProperType()) {
-            branch.setStatus(constraint, Constraint.Status.known(left.typeSystem().operations().isCompatible(left, right, constraint.middle())));
+            branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isCompatible(left, right, constraint.middle())));
         } else if (left instanceof PrimitiveType pt) {
             branch.drop(constraint).add(new TypeConstraints.Compatible(pt.box(), constraint.middle(), right));
         } else if (right instanceof PrimitiveType pt) {
             branch.drop(constraint).add(new TypeConstraints.Compatible(left, constraint.middle(), pt.box()));
         } else if (left instanceof ClassType pct && pct.hasAnyTypeArguments() && right instanceof ClassType ct && !ct.hasTypeArguments() &&
                 left.typeSystem().operations().isSubtype(pct.classReference(), ct.classReference())) {
-            branch.setStatus(constraint, Constraint.Status.TRUE);
+            branch.set(constraint, Constraint.Status.TRUE);
         } else if (left instanceof ArrayType at && at.deepComponent() instanceof ClassType pct && pct.hasAnyTypeArguments() &&
                 right instanceof ArrayType rat && rat.deepComponent() instanceof ClassType rpct && !rpct.hasAnyTypeArguments() &&
                 at.depth() == rat.depth() &&
                 left.typeSystem().operations().isSubtype(pct.classReference(), rpct.classReference())) {
-            branch.setStatus(constraint, Constraint.Status.TRUE);
+            branch.set(constraint, Constraint.Status.TRUE);
         } else {
             branch.drop(constraint).add(new TypeConstraints.Subtype(left, right));
         }

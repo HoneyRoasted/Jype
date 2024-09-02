@@ -50,7 +50,7 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
             if (outerType.isPresent()) {
                 parameters.add(ExpressionInformation.of(outerType.get()));
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
                 return;
             }
         }
@@ -58,7 +58,7 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
 
         Optional<Map<MethodLocation, MethodReference>> consOpt = system.expressionInspector().getAllConstructors(inst.type());
         if (!consOpt.isPresent()) {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         } else {
             Set<Constraint> typeParams = new LinkedHashSet<>();
             if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
@@ -90,7 +90,7 @@ public class ReduceInstantiation extends ConstraintMapper.Unary<TypeConstraints.
             if (!newChildren.isEmpty()) {
                 branch.drop(constraint).divergeBranches(newChildren);
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         }
     }

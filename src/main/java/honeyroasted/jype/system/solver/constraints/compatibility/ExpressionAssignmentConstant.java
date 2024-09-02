@@ -40,17 +40,17 @@ public class ExpressionAssignmentConstant extends ConstraintMapper.Unary<TypeCon
         if (subtype.typeEquals(c.byteType()) || subtype.typeEquals(c.shortType()) || subtype.typeEquals(c.charType()) || subtype.typeEquals(c.intType())) {
             if (target.typeEquals(c.charType()) || target.typeEquals(c.charBox())) {
                 if (fits(val, Character.MIN_VALUE, Character.MAX_VALUE)) {
-                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    branch.set(constraint, Constraint.Status.TRUE);
                     return;
                 }
             } else if (target.typeEquals(c.byteType()) || target.typeEquals(c.byteBox())) {
                 if (fits(val, Byte.MIN_VALUE, Byte.MAX_VALUE)) {
-                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    branch.set(constraint, Constraint.Status.TRUE);
                     return;
                 }
             } else if (target.typeEquals(c.shortType()) || target.typeEquals(c.shortBox())) {
                 if (fits(val, Short.MIN_VALUE, Short.MAX_VALUE)) {
-                    branch.setStatus(constraint, Constraint.Status.TRUE);
+                    branch.set(constraint, Constraint.Status.TRUE);
                     return;
                 }
             }

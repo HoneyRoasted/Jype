@@ -83,7 +83,7 @@ public class ResolveBounds implements ConstraintMapper {
                 }
 
                 if (foundAllCandidates) {
-                    ConstraintTree temp = new ConstraintTree(1); //We do not expect this to grow
+                    ConstraintTree temp = new ConstraintTree();
                     ConstraintBranch snap = branch.copy(temp);
                     temp.addBranch(snap);
 
@@ -148,7 +148,7 @@ public class ResolveBounds implements ConstraintMapper {
                 generatedBounds.putAll(newBounds);
             }
 
-            ConstraintTree temp = new ConstraintTree(1); //We do not expect this to grow
+            ConstraintTree temp = new ConstraintTree();
             ConstraintBranch snap = new ConstraintBranch(temp);
             temp.addBranch(snap);
             generatedBounds.forEach(snap::add);
@@ -158,6 +158,7 @@ public class ResolveBounds implements ConstraintMapper {
 
             if (temp.numBranches() == 1 && snap.status().isTrue()) {
                 //Diverging means it failed, I think
+                branch.metadata().inheritFrom(snap.metadata());
                 snap.constraints().forEach(branch::add);
             }
         } else {

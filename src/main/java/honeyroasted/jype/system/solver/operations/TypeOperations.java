@@ -27,6 +27,10 @@ public interface TypeOperations {
 
     ConstraintMapperApplier reductionApplier();
 
+    ConstraintMapperApplier resolutionApplier();
+
+    ConstraintMapperApplier verifyApplier();
+
     ConstraintMapperApplier incorporationApplier();
 
     ConstraintMapperApplier compatibilityApplier();
@@ -68,4 +72,5 @@ public interface TypeOperations {
     Set<Type> findMostSpecificTypes(Set<Type> types);
 
     Optional<ClassType> outerTypeFromDeclaring(ClassReference instance, ClassReference declaring);
+
 }

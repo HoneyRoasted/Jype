@@ -74,10 +74,10 @@ public class SubtypeGenericClass extends ConstraintMapper.Unary<TypeConstraints.
                     branch.add(new TypeConstraints.Subtype(l.outerType(), pcr.outerType()));
                 }
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         } else {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         }
     }
 }

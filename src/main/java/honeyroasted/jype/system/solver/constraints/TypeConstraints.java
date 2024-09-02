@@ -24,38 +24,6 @@ public interface TypeConstraints {
         }
     }
 
-    final class Replaced extends Constraint.Binary<Type, Type> {
-        public Replaced(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String simpleName() {
-            return "infer(" + this.left().simpleName() + " = " + this.right().simpleName() + " )";
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " = " + this.right() + " SHOULD BE INFERRED";
-        }
-    }
-
-    final class NarrowConstant extends Constraint.Binary<ExpressionInformation.Constant, Type> {
-        public NarrowConstant(ExpressionInformation.Constant left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " FITS IN " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " <: " + this.right().simpleName();
-        }
-    }
-
     final class Equal extends Constraint.Binary<Type, Type> {
         public Equal(Type left, Type right) {
             super(left, right);

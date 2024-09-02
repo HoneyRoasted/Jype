@@ -27,7 +27,7 @@ public class SubtypeEquality extends ConstraintMapper.Unary<TypeConstraints.Subt
         Type right = mapper.apply(constraint.right());
 
         if (left.typeEquals(right)) {
-            branch.setStatus(constraint, Constraint.Status.TRUE);
+            branch.set(constraint, Constraint.Status.TRUE);
         }
     }
 }

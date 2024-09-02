@@ -76,7 +76,7 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
         }
 
         if (methods.isEmpty()) {
-            branch.setStatus(constraint, Constraint.Status.FALSE);
+            branch.set(constraint, Constraint.Status.FALSE);
         } else {
             List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
 
@@ -98,7 +98,7 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
             if (!newChildren.isEmpty()) {
                 branch.drop(constraint).divergeBranches(newChildren);
             } else {
-                branch.setStatus(constraint, Constraint.Status.FALSE);
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         }
     }

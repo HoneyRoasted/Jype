@@ -32,6 +32,6 @@ public class SubtypeRawClass extends ConstraintMapper.Unary<TypeConstraints.Subt
         ClassType l = (ClassType) left;
         ClassType r = (ClassType) right;
 
-        branch.setStatus(constraint, Constraint.Status.known(l.classReference().hasSupertype(r.classReference())));
+        branch.set(constraint, Constraint.Status.known(l.classReference().hasSupertype(r.classReference())));
     }
 }

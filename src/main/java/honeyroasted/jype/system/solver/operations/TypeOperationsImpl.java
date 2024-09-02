@@ -55,7 +55,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class TypeOperationsImpl implements TypeOperations {
-    public static ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -80,7 +80,7 @@ public class TypeOperationsImpl implements TypeOperations {
             new SubtypeIntersection()
     ));
 
-    public static ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -90,7 +90,7 @@ public class TypeOperationsImpl implements TypeOperations {
             new IncorporationCapture()
     ));
 
-    public static ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -110,12 +110,41 @@ public class TypeOperationsImpl implements TypeOperations {
             new IncorporationCapture()
     ));
 
-    public static ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = new ConstraintMapperApplier(List.of(
-            new BuildInitialBounds()
+    public static final ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = new ConstraintMapperApplier(List.of(new BuildInitialBounds()));
+
+    public static final ConstraintMapperApplier INFERENCE_APPLIER = new ConstraintMapperApplier(List.of(
+            new ConstraintMapper.True(),
+            new ConstraintMapper.False(),
+
+            new BuildInitialBounds(),
+
+            new IncorporationEqualEqual(),
+            new IncorporationEqualSubtype(),
+            new IncorporationSubtypeSubtype(),
+            new IncorporationCapture(),
+
+            new ReduceSubtype(),
+            new ReduceCompatible(),
+            new ReduceSimplyTypedExpression(),
+            new ReduceInstantiation(),
+            new ReduceMethodInvocation(),
+            new ReduceDelayedExpressionCompatible(),
+            //TODO implement non-simply typed expressions
+            new ReduceContains(),
+            new ReduceEqual(),
+
+            new IncorporationEqualEqual(),
+            new IncorporationEqualSubtype(),
+            new IncorporationSubtypeSubtype(),
+            new IncorporationCapture()
     ));
 
-    public static ConstraintMapperApplier RESOLUTION_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier RESOLVE_APPLIER = new ConstraintMapperApplier(List.of(
             new ResolveBounds()
+    ));
+
+    public static final ConstraintMapperApplier VERIFY_APPLIER = new ConstraintMapperApplier(List.of(
+            new VerifyBounds()
     ));
 
     public static final TypeOperation<Type, Set<Type>> FIND_ALL_KNOWN_SUPERTYPES = new FindAllKnownSupertypes();
@@ -141,6 +170,16 @@ public class TypeOperationsImpl implements TypeOperations {
     }
 
     @Override
+    public ConstraintMapperApplier resolutionApplier() {
+        return RESOLVE_APPLIER;
+    }
+
+    @Override
+    public ConstraintMapperApplier verifyApplier() {
+        return VERIFY_APPLIER;
+    }
+
+    @Override
     public ConstraintMapperApplier incorporationApplier() {
         return INCORPORATION_APPLIER;
     }
@@ -163,16 +202,9 @@ public class TypeOperationsImpl implements TypeOperations {
     @Override
     public ConstraintSolver inferenceSolver() {
         return new ConstraintSolver(List.of(
-                new ConstraintMapperApplier(
-                        List.of(
-                                BUILD_INITIAL_BOUNDS_APPLIER,
-                                INCORPORATION_APPLIER,
-                                REDUCTION_APPLIER,
-                                BUILD_INITIAL_BOUNDS_APPLIER,
-                                INCORPORATION_APPLIER,
-                                RESOLUTION_APPLIER
-                        )),
-                new ConstraintMapperApplier(List.of(new VerifyBounds()))
+                INFERENCE_APPLIER,
+                RESOLVE_APPLIER,
+                VERIFY_APPLIER
         )).withContext(new PropertySet()
                 .attach(this.typeSystem)
                 .attach(varTypeMapper()));
