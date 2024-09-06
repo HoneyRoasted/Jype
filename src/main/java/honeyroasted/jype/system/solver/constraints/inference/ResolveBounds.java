@@ -19,7 +19,6 @@ import honeyroasted.jype.type.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -27,9 +26,14 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ResolveBounds implements ConstraintMapper {
+public class ResolveBounds extends ConstraintMapper.All {
     @Override
-    public void accept(ConstraintBranch branch) {
+    protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch) {
+        return branch.status().isTrue();
+    }
+
+    @Override
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch) {
         PropertySet instanceContext = branch.parent().metadata();
         Function<Type, Type> mapper = instanceContext.firstOr(TypeContext.TypeMapper.class, TypeContext.TypeMapper.NO_OP).mapper().apply(branch);
 
@@ -94,11 +98,7 @@ public class ResolveBounds implements ConstraintMapper {
 
                     system.operations().incorporationApplier().accept(temp);
                     system.operations().reductionApplier().accept(temp);
-
-                    if (temp.numBranches() == 1 && snap.status().isTrue()) {
-                        //Diverging means it failed, I think
-                        generatedBounds.putAll(snap.constraints());
-                    }
+                    generatedBounds.putAll(snap.constraints());
                 }
             }
 
@@ -134,13 +134,7 @@ public class ResolveBounds implements ConstraintMapper {
                     }
                 }
 
-                Iterator<Map.Entry<Constraint, Constraint.Status>> iter = newBounds.entrySet().iterator();
-                while (iter.hasNext()) {
-                    Map.Entry<Constraint, Constraint.Status> entry = iter.next();
-                    if (entry.getKey() instanceof TypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains)) {
-                        iter.remove();
-                    }
-                }
+                newBounds.entrySet().removeIf(entry -> entry.getKey() instanceof TypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains));
 
                 freshVars.forEach((mv, fresh) -> newBounds.put(new TypeConstraints.Equal(mv, fresh), Constraint.Status.ASSUMED));
 
@@ -160,6 +154,8 @@ public class ResolveBounds implements ConstraintMapper {
                 //Diverging means it failed, I think
                 branch.metadata().inheritFrom(snap.metadata());
                 snap.constraints().forEach(branch::add);
+            } else {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
             }
         } else {
             branch.add(Constraint.FALSE, Constraint.Status.FALSE);

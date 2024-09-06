@@ -9,10 +9,10 @@ import honeyroasted.jype.type.MethodType;
 import honeyroasted.jype.type.NoneType;
 import honeyroasted.jype.type.ParameterizedClassType;
 import honeyroasted.jype.type.PrimitiveType;
+import honeyroasted.jype.type.Signature;
 import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 import honeyroasted.jype.type.WildType;
-import honeyroasted.jype.type.signature.Signature;
 
 import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
         StringBuilder sb = new StringBuilder();
         if (context.useDelims()) sb.append("L");
 
-        if (context == Mode.DECLARATION) {
+        if (context.isDeclaration()) {
             if (type.hasTypeParameters()) {
                 sb.append("<");
                 type.typeParameters().forEach(t -> sb.append(this.visit(t, Mode.DECLARATION)));
@@ -43,7 +43,7 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
             type.interfaces().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
             if (context.useDelims()) sb.append(";");
 
-            return new Signature.Class(sb.toString());
+            return new Signature.ClassDeclaration(sb.toString());
         } else {
             ClassType outerType = type instanceof ParameterizedClassType pct ? pct.outerType() : type.outerClass();
             if (outerType != null && !Modifier.isStatic(type.modifiers()) && outerType.hasTypeArguments()) {
@@ -67,7 +67,7 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
     @Override
     public Signature visitMethodType(MethodType type, Mode context) {
         StringBuilder sb = new StringBuilder();
-        if (context == Mode.DECLARATION) {
+        if (context.isDeclaration()) {
             if (type.hasTypeParameters()) {
                 sb.append("<");
                 type.typeParameters().forEach(t -> sb.append(this.visit(t, Mode.DECLARATION)));
@@ -79,14 +79,14 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
             sb.append(this.visit(type.returnType(), Mode.USAGE));
             type.exceptionTypes().forEach(t -> sb.append("^").append(this.visit(t, Mode.USAGE)));
 
-            return new Signature.Method(sb.toString());
+            return new Signature.MethodDeclaration(sb.toString());
         } else {
             sb.append("(");
             type.parameters().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
             sb.append(")");
             sb.append(this.visit(type.returnType(), Mode.USAGE));
 
-            return new Signature.Type(sb.toString());
+            return new Signature.MethodReference(sb.toString());
         }
     }
 
@@ -106,8 +106,8 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
 
     @Override
     public Signature visitVarType(VarType type, Mode context) {
-        if (context == Mode.DECLARATION) {
-            return new Signature.Type(type.name() + ":" +
+        if (context.isDeclaration()) {
+            return new Signature.Type(type.name() + ":" + (type.upperBounds().size() > 1 ? ":" : "") +
                     type.upperBounds().stream().map(t -> visit(t, Mode.USAGE).value()).collect(Collectors.joining(":")));
         } else {
             return new Signature.Type("T" + type.name() + ";");
@@ -121,7 +121,7 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
 
     @Override
     public Signature visitArrayType(ArrayType type, Mode context) {
-        return new Signature.Type("[" + visit(type, context));
+        return new Signature.Type("[" + visit(type.component(), context));
     }
 
     @Override
@@ -173,6 +173,10 @@ public class ToSignatureTypeVisitor implements TypeVisitor<Signature, ToSignatur
                 return false;
             }
         };
+
+        boolean isDeclaration() {
+            return !isUsage();
+        }
 
         abstract boolean isUsage();
 

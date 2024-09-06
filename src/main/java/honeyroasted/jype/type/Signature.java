@@ -1,4 +1,4 @@
-package honeyroasted.jype.type.signature;
+package honeyroasted.jype.type;
 
 public interface Signature {
 
@@ -11,14 +11,21 @@ public interface Signature {
         }
     }
 
-    record Method(String value) implements Signature {
+    record MethodDeclaration(String value) implements Signature {
         @Override
         public String toString() {
             return this.value;
         }
     }
 
-    record Class(String value) implements Signature {
+    record MethodReference(String value) implements Signature {
+        @Override
+        public String toString() {
+            return this.value;
+        }
+    }
+
+    record ClassDeclaration(String value) implements Signature {
         @Override
         public String toString() {
             return this.value;

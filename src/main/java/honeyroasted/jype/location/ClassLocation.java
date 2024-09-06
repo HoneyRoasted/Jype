@@ -1,37 +1,42 @@
 package honeyroasted.jype.location;
 
-public record ClassLocation(Type type, ClassLocation containing, String value) {
-    public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null);
-    public static final ClassLocation UNKNOWN_MODULE = new ClassLocation(Type.MODULE, null, null);
+public record ClassLocation(Type type, ClassLocation containing, GenericDeclarationLocation declaring, String value) {
+    public static final ClassLocation DEFAULT_MODULE = new ClassLocation(Type.MODULE, null, null, null);
+    public static final ClassLocation UNKNOWN_MODULE = new ClassLocation(Type.MODULE, null, null, null);
     public static final ClassLocation VOID = ClassLocation.of(void.class);
 
-    public static ClassLocation of(String internalName) {
-        return of(UNKNOWN_MODULE, internalName);
+    public static ClassLocation of(String internalName, GenericDeclarationLocation declaring) {
+        return of(UNKNOWN_MODULE, internalName, declaring);
     }
 
-    public static ClassLocation of(ClassLocation module, String internalName) {
+    public static ClassLocation of(ClassLocation module, String internalName, GenericDeclarationLocation declaring) {
         String[] parts = internalName.split("/");
         if (parts.length == 1) {
-            return new ClassLocation(Type.CLASS, module, parts[0]);
+            return new ClassLocation(Type.CLASS, module, declaring, parts[0]);
         } else {
-            ClassLocation result = new ClassLocation(Type.PACKAGE, module, parts[0]);
+            ClassLocation result = new ClassLocation(Type.PACKAGE, module, null, parts[0]);
             for (int i = 1; i < parts.length - 1; i++) {
-                result = new ClassLocation(Type.PACKAGE, result, parts[i]);
+                result = new ClassLocation(Type.PACKAGE, result, null, parts[i]);
             }
-            return new ClassLocation(Type.CLASS, result, parts[parts.length - 1]);
+            return new ClassLocation(Type.CLASS, result, declaring, parts[parts.length - 1]);
         }
     }
 
     public static ClassLocation of(Class<?> cls) {
-        if (cls == null) {
-            return null;
-        } else if (cls.isArray()) {
-            return new ClassLocation(Type.ARRAY, of(cls.getComponentType()), "[]");
+        if (cls == null) return null;
+
+        GenericDeclarationLocation containing = cls.getEnclosingMethod() != null ? MethodLocation.of(cls.getEnclosingMethod()) :
+                cls.getEnclosingConstructor() != null ? MethodLocation.of(cls.getEnclosingConstructor()) :
+                        cls.getEnclosingClass() != null ? ClassNamespace.of(cls.getEnclosingClass()) : null;
+
+
+        if (cls.isArray()) {
+            return new ClassLocation(Type.ARRAY, of(cls.getComponentType()), containing, "[]");
         } else if (cls.isPrimitive()) {
-            return new ClassLocation(Type.CLASS, DEFAULT_MODULE, cls.getName());
+            return new ClassLocation(Type.CLASS, DEFAULT_MODULE, containing, cls.getName());
         } else {
             String[] parts = cls.getName().split("\\.");
-            return new ClassLocation(Type.CLASS, of(cls.getPackage(), cls.getModule()), parts[parts.length - 1]);
+            return new ClassLocation(Type.CLASS, of(cls.getPackage(), cls.getModule()), containing, parts[parts.length - 1]);
         }
     }
 
@@ -40,13 +45,13 @@ public record ClassLocation(Type type, ClassLocation containing, String value) {
             return null;
         } else {
             ClassLocation curr = module.getName() == null ? DEFAULT_MODULE :
-                    new ClassLocation(Type.MODULE, null, module.getName());
+                    new ClassLocation(Type.MODULE, null, null, module.getName());
 
             if (pack != null) {
                 String[] parts = pack.getName().split("\\.");
 
                 for (String part : parts) {
-                    curr = new ClassLocation(Type.PACKAGE, curr, part);
+                    curr = new ClassLocation(Type.PACKAGE, curr, null, part);
                 }
             }
             return curr;
