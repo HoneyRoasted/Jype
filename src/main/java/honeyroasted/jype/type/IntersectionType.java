@@ -26,6 +26,10 @@ public interface IntersectionType extends Type, PossiblyUnmodifiable {
 
     Type simplify();
 
+    default Type flatten() {
+        return IntersectionType.of(children(), typeSystem());
+    }
+
     boolean isSimplified();
 
     void setChildren(Set<Type> children);

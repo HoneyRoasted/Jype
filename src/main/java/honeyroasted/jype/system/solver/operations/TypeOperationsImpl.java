@@ -33,7 +33,6 @@ import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
 import honeyroasted.jype.system.solver.constraints.inference.VerifyBounds;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceContains;
-import honeyroasted.jype.system.solver.constraints.reduction.ReduceDelayedExpressionCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.ReduceMethodInvocation;
@@ -99,7 +98,6 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceSimplyTypedExpression(),
             new ReduceInstantiation(),
             new ReduceMethodInvocation(),
-            new ReduceDelayedExpressionCompatible(),
             //TODO implement non-simply typed expressions
             new ReduceContains(),
             new ReduceEqual(),
@@ -128,7 +126,6 @@ public class TypeOperationsImpl implements TypeOperations {
             new ReduceSimplyTypedExpression(),
             new ReduceInstantiation(),
             new ReduceMethodInvocation(),
-            new ReduceDelayedExpressionCompatible(),
             //TODO implement non-simply typed expressions
             new ReduceContains(),
             new ReduceEqual(),

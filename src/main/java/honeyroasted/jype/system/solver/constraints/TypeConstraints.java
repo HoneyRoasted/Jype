@@ -8,6 +8,61 @@ import honeyroasted.jype.type.Type;
 import honeyroasted.jype.type.VarType;
 
 public interface TypeConstraints {
+    final class Equal extends Constraint.Binary<Type, Type> {
+        public Equal(Type left, Type right) {
+            super(left, right);
+        }
+
+        public static Equal createBound(Type left, Type right) {
+            if (left instanceof MetaVarType mvt) {
+                mvt.equalities().add(right);
+            }
+
+            if (right instanceof MetaVarType mvt) {
+                mvt.equalities().add(left);
+            }
+            return new Equal(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " EQUALS " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left().simpleName() + " = " + this.right().simpleName();
+        }
+    }
+
+    final class Subtype extends Constraint.Binary<Type, Type> {
+        public Subtype(Type left, Type right) {
+            super(left, right);
+        }
+
+        public static Subtype createBound(Type left, Type right) {
+            if (left instanceof MetaVarType mvt) {
+                mvt.upperBounds().add(right);
+            }
+
+            if (right instanceof MetaVarType mvt) {
+                mvt.lowerBounds().add(left);
+            }
+
+            return new Subtype(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " IS A SUBTYPE OF " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left().simpleName() + " <: " + this.right().simpleName();
+        }
+    }
+
     final class Infer extends Constraint.Binary<MetaVarType, VarType> {
         public Infer(MetaVarType left, VarType right) {
             super(left, right);
@@ -21,22 +76,6 @@ public interface TypeConstraints {
         @Override
         public String toString() {
             return this.left() + " = " + this.right() + " SHOULD BE INFERRED";
-        }
-    }
-
-    final class Equal extends Constraint.Binary<Type, Type> {
-        public Equal(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " EQUALS " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " = " + this.right().simpleName();
         }
     }
 
@@ -106,22 +145,6 @@ public interface TypeConstraints {
         @Override
         public String simpleName() {
             return this.left().simpleName() + " " + this.middle().symbol() + " " + this.right().simpleName();
-        }
-    }
-
-    final class DelayedExpressionCompatible extends Constraint.Binary<MetaVarType, ExpressionCompatible> {
-        public DelayedExpressionCompatible(MetaVarType left, ExpressionCompatible right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.right() + " WAITING FOR " + this.left();
-        }
-
-        @Override
-        public String simpleName() {
-            return "delayed(" + this.left().simpleName() + ", " + this.right().simpleName() + ")";
         }
     }
 
@@ -221,22 +244,6 @@ public interface TypeConstraints {
         @Override
         public String simpleName() {
             return this.left().simpleName() + " = capture(" + this.right().simpleName() + ")";
-        }
-    }
-
-    class Subtype extends Constraint.Binary<Type, Type> {
-        public Subtype(Type left, Type right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " IS A SUBTYPE OF " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " <: " + this.right().simpleName();
         }
     }
 }

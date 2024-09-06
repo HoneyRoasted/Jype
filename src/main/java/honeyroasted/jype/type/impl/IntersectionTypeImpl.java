@@ -50,9 +50,11 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
     @Override
     public Type simplify() {
         Set<Type> newChildren = new LinkedHashSet<>();
-        for (Type current : this.children()) {
+        Set<Type> currChildren = IntersectionType.flatten(this.children);
+
+        for (Type current : currChildren) {
             boolean foundSubtype = false;
-            for (Type other : this.children()) {
+            for (Type other : currChildren) {
                 if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
                     foundSubtype = true;
                     break;
@@ -64,8 +66,8 @@ public class IntersectionTypeImpl extends AbstractPossiblyUnmodifiableType imple
             }
         }
 
-        if (newChildren.isEmpty() && !this.children().isEmpty()) {
-            newChildren.add(this.children().iterator().next());
+        if (newChildren.isEmpty() && !currChildren.isEmpty()) {
+            newChildren.add(currChildren.iterator().next());
         }
 
         if (newChildren.size() == 1) {

@@ -3,6 +3,7 @@ package honeyroasted.jype.system.solver.constraints.reduction;
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
+import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.location.MethodLocation;
@@ -10,6 +11,7 @@ import honeyroasted.jype.system.TypeSystem;
 import honeyroasted.jype.system.expression.ExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.TypeConstraints;
 import honeyroasted.jype.system.solver.constraints.TypeContext;
+import honeyroasted.jype.system.solver.constraints.inference.ResolveBounds;
 import honeyroasted.jype.system.visitor.visitors.VarTypeResolveVisitor;
 import honeyroasted.jype.type.ArrayType;
 import honeyroasted.jype.type.ClassReference;
@@ -48,27 +50,51 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
         ClassReference declaring = invocation.declaring();
         List<ExpressionInformation> parameters = invocation.parameters();
 
-        Set<ClassType> checked = new LinkedHashSet<>();
         Map<MethodLocation, MethodReference> methods = new LinkedHashMap<>();
         boolean stat;
 
         if (invocation.source() instanceof ClassReference ref) { //Static method call
             system.expressionInspector().getAllMethods(ref).ifPresent(methods::putAll);
-            checked.add(ref);
             stat = true;
         } else if (invocation.source() instanceof ExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
                 Type type = expr.getSimpleType(system, mapper).get();
-                findClassTypes(type).forEach(ct -> {
-                    system.expressionInspector().getAllMethods(ct.classReference()).ifPresent(methods::putAll);
-                    checked.add(ct);
-                });
+                findClassTypes(type).forEach(ct -> system.expressionInspector().getAllMethods(ct.classReference()).ifPresent(methods::putAll));
                 stat = false;
             } else {
                 MetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
-                branch.drop(constraint)
-                        .add(new TypeConstraints.ExpressionCompatible(expr, TypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
-                        .add(new TypeConstraints.DelayedExpressionCompatible(mvt, constraint));
+                ConstraintTree solved = system.operations().inferenceSolver()
+                        .bind(new TypeConstraints.ExpressionCompatible(expr, TypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
+                        .solve();
+
+                List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
+                solved.branches().forEach(childBranch -> {
+                    if (childBranch.status().isTrue()) {
+                        Type inst = ResolveBounds.findInstantiation(mvt, childBranch);
+                        findClassTypes(inst).forEach(ct -> system.expressionInspector().getAllMethods(ct.classReference()).ifPresent(map -> map.forEach((loc, ref) -> {
+                            if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
+                                if (ref.parameters().size() == parameters.size()) {
+                                    newChildren.add(createInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
+                                    newChildren.add(createInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters));
+                                }
+
+                                if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
+                                        ref.parameters().get(ref.parameters().size() - 1) instanceof ArrayType vararg) {
+                                    newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg));
+                                    newChildren.add(createVarargInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg));
+                                }
+                            }
+                        })));
+                    } else {
+                        newChildren.add(childBranch.snapshot());
+                    }
+                });
+
+                if (!newChildren.isEmpty()) {
+                    branch.drop(constraint).divergeBranches(newChildren);
+                } else {
+                    branch.set(constraint, Constraint.Status.FALSE);
+                }
                 return;
             }
         } else {
@@ -81,7 +107,7 @@ public class ReduceMethodInvocation extends ConstraintMapper.Unary<TypeConstrain
             List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
 
             methods.forEach((loc, ref) -> {
-                if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access()) && (stat || !ref.hasModifier(AccessFlag.STATIC))) {
+                if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access()) && (!stat || ref.hasModifier(AccessFlag.STATIC))) {
                     if (ref.parameters().size() == parameters.size()) {
                         newChildren.add(createInvoke(TypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
                         newChildren.add(createInvoke(TypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters));

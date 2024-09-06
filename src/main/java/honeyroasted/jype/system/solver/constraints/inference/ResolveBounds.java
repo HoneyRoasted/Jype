@@ -249,7 +249,7 @@ public class ResolveBounds implements ConstraintMapper {
         return instantiations;
     }
 
-    private Type findInstantiation(MetaVarType mvt, ConstraintBranch bounds) {
+    public static Type findInstantiation(MetaVarType mvt, ConstraintBranch bounds) {
         Set<Type> types = new LinkedHashSet<>();
         bounds.constraints().forEach((bound, status) -> {
             if (status.isTrue()) {
