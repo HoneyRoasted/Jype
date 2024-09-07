@@ -1,8 +1,8 @@
 package honeyroasted.jype.location;
 
-public record JClassLocation(JType type, JClassLocation containing, String value) {
-    public static final JClassLocation DEFAULT_MODULE = new JClassLocation(JType.MODULE, null, null);
-    public static final JClassLocation UNKNOWN_MODULE = new JClassLocation(JType.MODULE, null, null);
+public record JClassLocation(Type type, JClassLocation containing, String value) {
+    public static final JClassLocation DEFAULT_MODULE = new JClassLocation(Type.MODULE, null, null);
+    public static final JClassLocation UNKNOWN_MODULE = new JClassLocation(Type.MODULE, null, null);
     public static final JClassLocation VOID = JClassLocation.of(void.class);
 
     public static JClassLocation of(String internalName) {
@@ -12,13 +12,13 @@ public record JClassLocation(JType type, JClassLocation containing, String value
     public static JClassLocation of(JClassLocation module, String internalName) {
         String[] parts = internalName.split("/");
         if (parts.length == 1) {
-            return new JClassLocation(JType.CLASS, module, parts[0]);
+            return new JClassLocation(Type.CLASS, module, parts[0]);
         } else {
-            JClassLocation result = new JClassLocation(JType.PACKAGE, module, parts[0]);
+            JClassLocation result = new JClassLocation(Type.PACKAGE, module, parts[0]);
             for (int i = 1; i < parts.length - 1; i++) {
-                result = new JClassLocation(JType.PACKAGE, result, parts[i]);
+                result = new JClassLocation(Type.PACKAGE, result, parts[i]);
             }
-            return new JClassLocation(JType.CLASS, result, parts[parts.length - 1]);
+            return new JClassLocation(Type.CLASS, result, parts[parts.length - 1]);
         }
     }
 
@@ -26,12 +26,12 @@ public record JClassLocation(JType type, JClassLocation containing, String value
         if (cls == null) return null;
 
         if (cls.isArray()) {
-            return new JClassLocation(JType.ARRAY, of(cls.getComponentType()), "[]");
+            return new JClassLocation(Type.ARRAY, of(cls.getComponentType()), "[]");
         } else if (cls.isPrimitive()) {
-            return new JClassLocation(JType.CLASS, DEFAULT_MODULE, cls.getName());
+            return new JClassLocation(Type.CLASS, DEFAULT_MODULE, cls.getName());
         } else {
             String[] parts = cls.getName().split("\\.");
-            return new JClassLocation(JType.CLASS, of(cls.getPackage(), cls.getModule()), parts[parts.length - 1]);
+            return new JClassLocation(Type.CLASS, of(cls.getPackage(), cls.getModule()), parts[parts.length - 1]);
         }
     }
 
@@ -40,13 +40,13 @@ public record JClassLocation(JType type, JClassLocation containing, String value
             return null;
         } else {
             JClassLocation curr = module.getName() == null ? DEFAULT_MODULE :
-                    new JClassLocation(JType.MODULE, null, module.getName());
+                    new JClassLocation(Type.MODULE, null, module.getName());
 
             if (pack != null) {
                 String[] parts = pack.getName().split("\\.");
 
                 for (String part : parts) {
-                    curr = new JClassLocation(JType.PACKAGE, curr, part);
+                    curr = new JClassLocation(Type.PACKAGE, curr, part);
                 }
             }
             return curr;
@@ -54,16 +54,16 @@ public record JClassLocation(JType type, JClassLocation containing, String value
     }
 
     public JClassLocation getPackage() {
-        return this.type == JType.PACKAGE || this.type == JType.MODULE ? this :
+        return this.type == Type.PACKAGE || this.type == Type.MODULE ? this :
                 this.containing.getPackage();
     }
 
     public boolean isArray() {
-        return this.type == JType.ARRAY;
+        return this.type == Type.ARRAY;
     }
 
     public boolean isDefaultPackage() {
-        return this.type == JType.PACKAGE && this.value.isEmpty();
+        return this.type == Type.PACKAGE && this.value.isEmpty();
     }
 
     public boolean isDefaultModule() {
@@ -83,7 +83,7 @@ public record JClassLocation(JType type, JClassLocation containing, String value
     }
 
     public String toName(String delim) {
-        if (this.containing != null && this.containing.type != JType.MODULE && !this.containing.isDefaultPackage()) {
+        if (this.containing != null && this.containing.type != Type.MODULE && !this.containing.isDefaultPackage()) {
             return this.containing.toName(delim) + delim + this.value;
         }
 
@@ -94,9 +94,9 @@ public record JClassLocation(JType type, JClassLocation containing, String value
         StringBuilder sb = new StringBuilder();
         if (this.containing != null && !this.containing.equals(DEFAULT_MODULE) && !this.containing.equals(UNKNOWN_MODULE) && !this.containing.isDefaultPackage()) {
             sb.append(this.containing);
-            if (this.containing.type == JType.MODULE) {
+            if (this.containing.type == Type.MODULE) {
                 sb.append(moduleDelim);
-            } else if (this.type != JType.ARRAY) {
+            } else if (this.type != Type.ARRAY) {
                 sb.append(delim);
             }
         }
@@ -112,7 +112,7 @@ public record JClassLocation(JType type, JClassLocation containing, String value
         return this.toString(".", "/");
     }
 
-    public enum JType {
+    public enum Type {
         ARRAY,
         MODULE,
         PACKAGE,

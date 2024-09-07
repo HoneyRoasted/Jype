@@ -3,6 +3,7 @@ honeyroasted.jype.system
 honeyroasted.jype.system.cache
 honeyroasted.jype.system.expression
 honeyroasted.jype.system.resolver
+honeyroasted.jype.system.resolver.binary
 honeyroasted.jype.system.resolver.reflection
 honeyroasted.jype.system.solver.constraints
 honeyroasted.jype.system.solver.constraints.compatibility

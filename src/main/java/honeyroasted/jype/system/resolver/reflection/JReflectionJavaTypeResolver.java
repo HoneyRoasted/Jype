@@ -15,6 +15,7 @@ import honeyroasted.jype.type.JWildType;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
@@ -23,11 +24,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class JReflectionJavaTypeResolver implements JTypeResolver<java.lang.reflect.Type, JType> {
+public class JReflectionJavaTypeResolver implements JTypeResolver<Type, JType> {
 
     @Override
-    public Optional<? extends JType> resolve(JTypeSystem system, java.lang.reflect.Type value) {
-        Optional<JType> cached = system.storage().cacheFor(java.lang.reflect.Type.class).get(value);
+    public Optional<? extends JType> resolve(JTypeSystem system, Type value) {
+        Optional<JType> cached = system.storage().cacheFor(Type.class).get(value);
         if (cached.isPresent()) {
             return cached;
         }
@@ -67,20 +68,20 @@ public class JReflectionJavaTypeResolver implements JTypeResolver<java.lang.refl
                 }
             }
         } else if (value instanceof GenericArrayType genArrType) {
-            return system.resolvers().resolverFor(java.lang.reflect.Type.class, JType.class).resolve(system, genArrType.getGenericComponentType())
+            return system.resolvers().resolverFor(Type.class, JType.class).resolve(system, genArrType.getGenericComponentType())
                     .map(t -> {
                         JArrayType result = t.typeSystem().typeFactory().newArrayType();
-                        result.metadata().attach(new JReflectionType.JType(genArrType));
+                        result.metadata().attach(new JReflectionType.Type(genArrType));
                         result.setComponent(t);
                         result.setUnmodifiable(true);
                         return result;
                     });
         } else if (value instanceof WildcardType wType) {
-            java.lang.reflect.Type[] bounds = wType.getLowerBounds().length == 0 ? wType.getUpperBounds() : wType.getLowerBounds();
+            Type[] bounds = wType.getLowerBounds().length == 0 ? wType.getUpperBounds() : wType.getLowerBounds();
             Set<JType> resolvedBounds = new LinkedHashSet<>();
 
-            for (java.lang.reflect.Type bound : bounds) {
-                Optional<? extends JType> resolved = system.resolvers().resolverFor(java.lang.reflect.Type.class, JType.class).resolve(system, bound);
+            for (Type bound : bounds) {
+                Optional<? extends JType> resolved = system.resolvers().resolverFor(Type.class, JType.class).resolve(system, bound);
                 if (resolved.isPresent()) {
                     resolvedBounds.add(resolved.get());
                 } else {
@@ -90,14 +91,14 @@ public class JReflectionJavaTypeResolver implements JTypeResolver<java.lang.refl
 
             if (wType.getLowerBounds().length == 0) { //? extends ...
                 JWildType.Upper upper = system.typeFactory().newUpperWildType();
-                upper.metadata().attach(new JReflectionType.JType(wType));
+                upper.metadata().attach(new JReflectionType.Type(wType));
                 upper.setIdentity(System.identityHashCode(wType));
                 upper.upperBounds().addAll(resolvedBounds);
                 upper.setUnmodifiable(true);
                 return Optional.of(upper);
             } else { //? super ...
                 JWildType.Lower lower = system.typeFactory().newLowerWildType();
-                lower.metadata().attach(new JReflectionType.JType(wType));
+                lower.metadata().attach(new JReflectionType.Type(wType));
                 lower.setIdentity(System.identityHashCode(wType));
                 lower.lowerBounds().addAll(resolvedBounds);
                 lower.setUnmodifiable(true);
@@ -105,21 +106,21 @@ public class JReflectionJavaTypeResolver implements JTypeResolver<java.lang.refl
             }
         } else if (value instanceof ParameterizedType pType) {
             if (pType.getRawType() instanceof Class<?> cls) {
-                Optional<? extends JType> clsRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, JType.class).resolve(system, cls);
+                Optional<? extends JType> clsRef = system.resolvers().resolverFor(Type.class, JType.class).resolve(system, cls);
                 if (clsRef.isPresent() && clsRef.get() instanceof JClassReference) {
                     JParameterizedClassType result = system.typeFactory().newParameterizedClassType();
-                    result.metadata().attach(new JReflectionType.JType(pType));
+                    result.metadata().attach(new JReflectionType.Type(pType));
 
-                    system.storage().cacheFor(java.lang.reflect.Type.class).put(value, result);
+                    system.storage().cacheFor(Type.class).put(value, result);
                     result.setClassReference((JClassReference) clsRef.get());
 
                     List<JArgumentType> typeArguments = new ArrayList<>();
-                    for (java.lang.reflect.Type arg : pType.getActualTypeArguments()) {
-                        Optional<? extends JType> argResolved = system.resolvers().resolverFor(java.lang.reflect.Type.class, JType.class).resolve(system, arg);
+                    for (Type arg : pType.getActualTypeArguments()) {
+                        Optional<? extends JType> argResolved = system.resolvers().resolverFor(Type.class, JType.class).resolve(system, arg);
                         if (argResolved.isPresent() && argResolved.get() instanceof JArgumentType at) {
                             typeArguments.add(at);
                         } else {
-                            system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                            system.storage().cacheFor(Type.class).remove(value);
                             return Optional.empty();
                         }
                     }
@@ -127,11 +128,11 @@ public class JReflectionJavaTypeResolver implements JTypeResolver<java.lang.refl
                     result.setTypeArguments(typeArguments);
 
                     if (pType.getOwnerType() != null) {
-                        Optional<? extends JType> owner = system.resolvers().resolverFor(java.lang.reflect.Type.class, JType.class).resolve(system, pType.getOwnerType());
+                        Optional<? extends JType> owner = system.resolvers().resolverFor(Type.class, JType.class).resolve(system, pType.getOwnerType());
                         if (owner.isPresent() && owner.get() instanceof JClassType ct) {
                             result.setOuterType(ct);
                         } else {
-                            system.storage().cacheFor(java.lang.reflect.Type.class).remove(value);
+                            system.storage().cacheFor(Type.class).remove(value);
                             return Optional.empty();
                         }
                     }

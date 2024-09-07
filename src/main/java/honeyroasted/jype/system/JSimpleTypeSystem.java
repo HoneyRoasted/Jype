@@ -2,8 +2,6 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.location.JClassLocation;
 import honeyroasted.jype.location.JClassNamespace;
-import honeyroasted.jype.location.JMethodLocation;
-import honeyroasted.jype.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JInMemoryTypeStorage;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
 import honeyroasted.jype.system.cache.JTypeStorage;
@@ -14,17 +12,14 @@ import honeyroasted.jype.system.resolver.JInMemoryTypeResolvers;
 import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
+import honeyroasted.jype.system.resolver.binary.JClassSourceNameResolver;
 import honeyroasted.jype.system.resolver.reflection.JReflectionTypeResolution;
-import honeyroasted.jype.system.resolver.reflection.JTypeToken;
 import honeyroasted.jype.system.solver.operations.JTypeOperations;
 import honeyroasted.jype.system.solver.operations.JTypeOperationsImpl;
 import honeyroasted.jype.type.JClassReference;
-import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
-import honeyroasted.jype.type.JVarType;
 
 import java.io.Serializable;
-import java.lang.reflect.Executable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +38,7 @@ public class JSimpleTypeSystem implements JTypeSystem {
     }
 
     public JSimpleTypeSystem(JTypeCacheFactory cacheFactory) {
-        this(cacheFactory, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
+        this(cacheFactory, JClassSourceNameResolver.INSTANCE, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
     }
 
     public JSimpleTypeSystem(JTypeResolver... initialResolvers) {
@@ -107,80 +102,6 @@ public class JSimpleTypeSystem implements JTypeSystem {
     @Override
     public <I, O extends JType> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key) {
         return this.resolvers().resolverFor(keyType, resultType).resolve(this, key);
-    }
-
-    @Override
-    public <T extends JType> Optional<T> resolve(JTypeToken<?> token) {
-        return (Optional<T>) this.resolve(JTypeToken.class, JType.class, token);
-    }
-
-    @Override
-    public <T extends JType> T tryResolve(JTypeToken<?> token) {
-        return this.<T>resolve(token).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + token + " to a type"));
-    }
-
-    @Override
-    public <T extends JType> Optional<T> resolve(java.lang.reflect.Type reflectionType) {
-        return (Optional<T>) this.resolve(java.lang.reflect.Type.class, JType.class, reflectionType);
-    }
-
-    @Override
-    public <T extends JType> T tryResolve(java.lang.reflect.Type reflectionType) {
-        return this.<T>resolve(reflectionType).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + reflectionType + " to a type"));
-    }
-
-    @Override
-    public <T extends JType> Optional<T> resolve(JClassLocation classLocation) {
-        return (Optional<T>) this.resolve(JClassLocation.class, JType.class, classLocation);
-    }
-
-    @Override
-    public <T extends JType> T tryResolve(JClassLocation classLocation) {
-        return this.<T>resolve(classLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + classLocation + " to a type"));
-    }
-
-    @Override
-    public <T extends JMethodReference> Optional<T> resolve(Executable executable) {
-        return (Optional<T>) this.resolve(Executable.class, JMethodReference.class, executable);
-    }
-
-    @Override
-    public <T extends JMethodReference> T tryResolve(Executable executable) {
-        return this.<T>resolve(executable).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + executable + " to a type"));
-    }
-
-    @Override
-    public <T extends JMethodReference> Optional<T> resolve(JMethodLocation methodLocation) {
-        return (Optional<T>) this.resolve(JMethodLocation.class, JMethodReference.class, methodLocation);
-    }
-
-    @Override
-    public <T extends JMethodReference> T tryResolve(JMethodLocation methodLocation) {
-        return this.<T>resolve(methodLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + methodLocation + " to a type"));
-    }
-
-    @Override
-    public <T extends JVarType> Optional<T> resolve(JTypeParameterLocation parameterLocation) {
-        return (Optional<T>) this.resolve(JTypeParameterLocation.class, JVarType.class, parameterLocation);
-    }
-
-    @Override
-    public <T extends JVarType> T tryResolve(JTypeParameterLocation parameterLocation) {
-        return this.<T>resolve(parameterLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + parameterLocation + " to a type"));
-    }
-
-    @Override
-    public void registerResolvers(JTypeResolver... resolvers) {
-        for (JTypeResolver resolver : resolvers) {
-            this.registerResolver(resolver);
-        }
-    }
-
-    @Override
-    public void registerResolvers(Collection<? extends JTypeResolver> resolvers) {
-        for (JTypeResolver resolver : resolvers) {
-            this.registerResolver(resolver);
-        }
     }
 
     @Override

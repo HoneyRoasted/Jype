@@ -6,14 +6,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record JClassName(JType type, SubType subType, JClassName containing, String value) {
+public record JClassName(Type type, SubType subType, JClassName containing, String value) {
 
-    public JClassName(JType type, SubType subType, String value) {
+    public JClassName(Type type, SubType subType, String value) {
         this(type, subType, null, value);
     }
 
     public String simpleName() {
-        if (this.containing != null && this.containing.type != JType.PACKAGE) {
+        if (this.containing != null && this.containing.type != Type.PACKAGE) {
             return this.containing.simpleName() + "." + this.value;
         } else {
             return this.value;
@@ -26,15 +26,15 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
         }
 
         if (clazz.isPrimitive()) {
-            return new JClassName(JType.CLASS, SubType.NONE, clazz.getName());
+            return new JClassName(Type.CLASS, SubType.NONE, clazz.getName());
         } else if (clazz.isArray()) {
-            return new JClassName(JType.CLASS, SubType.ARRAY, of(clazz.getComponentType()), "[]");
+            return new JClassName(Type.CLASS, SubType.ARRAY, of(clazz.getComponentType()), "[]");
         }
 
         JClassName containing;
 
         if (JClassName.isInInitializer(clazz)) {
-            containing = new JClassName(JType.METHOD, SubType.INITIALIZER, of(clazz.getEnclosingClass()), "<initializer$" + nestIndex(clazz) + ">");
+            containing = new JClassName(Type.METHOD, SubType.INITIALIZER, of(clazz.getEnclosingClass()), "<initializer$" + nestIndex(clazz) + ">");
         } else if (clazz.getEnclosingMethod() != null) {
             containing = of(clazz.getEnclosingMethod());
         } else if (clazz.getEnclosingConstructor() != null) {
@@ -46,9 +46,9 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
         }
 
         if (clazz.isAnonymousClass()) {
-            return new JClassName(JType.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous$" + nestIndex(clazz) + ">");
+            return new JClassName(Type.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous$" + nestIndex(clazz) + ">");
         } else {
-            return new JClassName(JType.CLASS, SubType.NONE, containing, clazz.getSimpleName());
+            return new JClassName(Type.CLASS, SubType.NONE, containing, clazz.getSimpleName());
         }
     }
 
@@ -59,7 +59,7 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
 
         String simpleName = method.getName() + "(" + Stream.of(method.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(".")) + ")" +
                 JClassName.of(method.getReturnType());
-        return new JClassName(JType.METHOD, SubType.NONE, of(method.getDeclaringClass()), simpleName);
+        return new JClassName(Type.METHOD, SubType.NONE, of(method.getDeclaringClass()), simpleName);
     }
 
     public static JClassName of(Constructor<?> constructor) {
@@ -68,7 +68,7 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
         }
 
         String simpleName = "<constructor>(" + Stream.of(constructor.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(".")) + ")";
-        return new JClassName(JType.METHOD, SubType.CONSTRUCTOR, of(constructor.getDeclaringClass()), simpleName);
+        return new JClassName(Type.METHOD, SubType.CONSTRUCTOR, of(constructor.getDeclaringClass()), simpleName);
     }
 
     public static JClassName of(Package pack) {
@@ -85,10 +85,10 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
         }
 
         String[] arr = name.split("\\.");
-        JClassName curr = new JClassName(JType.PACKAGE, SubType.NONE, arr[0]);
+        JClassName curr = new JClassName(Type.PACKAGE, SubType.NONE, arr[0]);
 
         for (int i = 1; i < arr.length; i++) {
-            curr = new JClassName(JType.PACKAGE, SubType.NONE, curr, arr[i]);
+            curr = new JClassName(Type.PACKAGE, SubType.NONE, curr, arr[i]);
         }
 
         return curr;
@@ -103,7 +103,8 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
          * Classes declared in a method or constructor report they do not have
          * a declaring class, but do report an enclosing class. A class declared
          * in a <clinit> initializer, or {} initializer block, behaves the same way,
-         * but it also reports it does not have an enclosing method or constructor.
+         * but they also report they don't have an enclosing method or constructor.
+         *
          * I haven't found any other way to check this.
          */
 
@@ -127,25 +128,25 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
     }
 
     public boolean isArray() {
-        return this.type == JType.CLASS && this.subType == SubType.ARRAY;
+        return this.type == Type.CLASS && this.subType == SubType.ARRAY;
     }
 
     public boolean isAnonymousClass() {
-        return this.type == JType.CLASS && this.subType == SubType.ANONYMOUS_CLASS;
+        return this.type == Type.CLASS && this.subType == SubType.ANONYMOUS_CLASS;
     }
 
     public boolean isConstructor() {
-        return this.type == JType.METHOD && this.subType == SubType.CONSTRUCTOR;
+        return this.type == Type.METHOD && this.subType == SubType.CONSTRUCTOR;
     }
 
     public boolean isReferenceable() {
         return !this.isAnonymousClass() &&
-                (this.type == JType.CLASS || this.type == JType.PACKAGE) &&
+                (this.type == Type.CLASS || this.type == Type.PACKAGE) &&
                 (this.containing == null || this.containing.isReferenceable());
     }
 
     public boolean isPackage() {
-        return this.type == JType.PACKAGE &&
+        return this.type == Type.PACKAGE &&
                 (this.containing == null || this.containing.isPackage());
     }
 
@@ -157,11 +158,15 @@ public record JClassName(JType type, SubType subType, JClassName containing, Str
         }
     }
 
+    public JClassSourceName toSourceName() {
+        return new JClassSourceName(this.toString());
+    }
+
     public String toString() {
         return this.toString(".");
     }
 
-    enum JType {
+    enum Type {
         PACKAGE,
         CLASS,
         METHOD

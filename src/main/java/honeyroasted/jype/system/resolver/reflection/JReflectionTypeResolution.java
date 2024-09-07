@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -153,13 +154,13 @@ public interface JReflectionTypeResolution {
         mRef.metadata().attach(new JReflectionType.Executable(executable));
         mRef.setLocation(location);
         mRef.setModifiers(executable.getModifiers());
-        Optional<? extends honeyroasted.jype.type.JType> outerClass = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class, executable.getDeclaringClass());
+        Optional<? extends JType> outerClass = system.resolve(Type.class, JType.class, executable.getDeclaringClass());
         if (outerClass.isPresent() && outerClass.get() instanceof JClassReference cr) {
             mRef.setOuterClass(cr);
         }
 
         if (executable instanceof Method method) {
-            Optional<? extends honeyroasted.jype.type.JType> returnType = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class, method.getGenericReturnType());
+            Optional<? extends JType> returnType = system.resolve(Type.class, JType.class, method.getGenericReturnType());
             if (returnType.isPresent()) {
                 mRef.setReturnType(returnType.get());
             } else {
@@ -169,9 +170,9 @@ public interface JReflectionTypeResolution {
             mRef.setReturnType(system.constants().voidType());
         }
 
-        List<honeyroasted.jype.type.JType> resolvedExceptions = new ArrayList<>();
-        for (java.lang.reflect.Type except : executable.getGenericExceptionTypes()) {
-            Optional<? extends honeyroasted.jype.type.JType> resolved = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class, except);
+        List<JType> resolvedExceptions = new ArrayList<>();
+        for (Type except : executable.getGenericExceptionTypes()) {
+            Optional<? extends JType> resolved = system.resolve(Type.class, JType.class, except);
             if (resolved.isPresent()) {
                 resolvedExceptions.add(resolved.get());
             } else {
@@ -179,9 +180,9 @@ public interface JReflectionTypeResolution {
             }
         }
 
-        List<honeyroasted.jype.type.JType> resolvedParams = new ArrayList<>();
-        for (java.lang.reflect.Type param : executable.getGenericParameterTypes()) {
-            Optional<? extends honeyroasted.jype.type.JType> resolved = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class, param);
+        List<JType> resolvedParams = new ArrayList<>();
+        for (Type param : executable.getGenericParameterTypes()) {
+            Optional<? extends JType> resolved = system.resolve(Type.class, JType.class, param);
             if (resolved.isPresent()) {
                 resolvedParams.add(resolved.get());
             } else {
@@ -191,7 +192,7 @@ public interface JReflectionTypeResolution {
 
         List<JVarType> resolvedTypeParams = new ArrayList<>();
         for (TypeVariable<?> tvar : executable.getTypeParameters()) {
-            Optional<? extends honeyroasted.jype.type.JType> resolved = system.resolve(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class, tvar);
+            Optional<? extends JType> resolved = system.resolve(Type.class, JType.class, tvar);
             if (resolved.isPresent() && resolved.get() instanceof JVarType res) {
                 resolvedTypeParams.add(res);
             } else {
@@ -215,25 +216,25 @@ public interface JReflectionTypeResolution {
                 JArrayType type = system.typeFactory().newArrayType();
                 type.setComponent(c);
                 type.setUnmodifiable(true);
-                type.metadata().attach(new JReflectionType.JType(cls));
+                type.metadata().attach(new JReflectionType.Type(cls));
                 return type;
             });
         }
 
         JClassReference reference = system.typeFactory().newClassReference();
 
-        reference.metadata().attach(new JReflectionType.JType(cls));
+        reference.metadata().attach(new JReflectionType.Type(cls));
         reference.setNamespace(JClassNamespace.of(cls));
         reference.setModifiers(cls.getModifiers());
-        system.storage().cacheFor(java.lang.reflect.Type.class).put(location, reference);
+        system.storage().cacheFor(Type.class).put(location, reference);
         system.storage().cacheFor(JClassLocation.class).put(reference.namespace().location(), reference);
 
         if (cls.getSuperclass() != null) {
-            Optional<? extends honeyroasted.jype.type.JType> superCls = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class)
+            Optional<? extends JType> superCls = system.resolvers().resolverFor(Type.class, JType.class)
                     .resolve(system, cls.getGenericSuperclass());
 
             if (superCls.isEmpty() || !(superCls.get() instanceof JClassType)) {
-                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(location);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -249,11 +250,11 @@ public interface JReflectionTypeResolution {
         }
 
         if (cls.getEnclosingClass() != null) {
-            Optional<? extends honeyroasted.jype.type.JType> enclosing = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class)
+            Optional<? extends JType> enclosing = system.resolvers().resolverFor(Type.class, JType.class)
                     .resolve(system, cls.getEnclosingClass());
 
             if (enclosing.isEmpty() || !(enclosing.get() instanceof JClassType)) {
-                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(location);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -264,11 +265,11 @@ public interface JReflectionTypeResolution {
         if (cls.getEnclosingMethod() != null || cls.getEnclosingConstructor() != null) {
             Executable enclsoingExecutable = cls.getEnclosingMethod() != null ? cls.getEnclosingMethod() : cls.getEnclosingConstructor();
 
-            Optional<? extends honeyroasted.jype.type.JType> enclosing = system.resolvers().resolverFor(Executable.class, honeyroasted.jype.type.JType.class)
+            Optional<? extends JType> enclosing = system.resolvers().resolverFor(Executable.class, JType.class)
                     .resolve(system, enclsoingExecutable);
 
             if (enclosing.isEmpty() || !(enclosing.get() instanceof JMethodType)) {
-                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(location);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -276,12 +277,12 @@ public interface JReflectionTypeResolution {
             }
         }
 
-        for (java.lang.reflect.Type inter : cls.getGenericInterfaces()) {
-            Optional<? extends honeyroasted.jype.type.JType> interRef = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class)
+        for (Type inter : cls.getGenericInterfaces()) {
+            Optional<? extends JType> interRef = system.resolvers().resolverFor(Type.class, JType.class)
                     .resolve(system, inter);
 
             if (interRef.isEmpty() || !(interRef.get() instanceof JClassType)) {
-                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(location);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -295,7 +296,7 @@ public interface JReflectionTypeResolution {
                     .resolve(system, loc);
 
             if (paramRef.isEmpty()) {
-                system.storage().cacheFor(java.lang.reflect.Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(location);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -309,12 +310,12 @@ public interface JReflectionTypeResolution {
 
     static Optional<JVarType> createVarType(JTypeSystem system, TypeVariable<?> var, JTypeParameterLocation location) {
         JVarType varType = system.typeFactory().newVarType();
-        varType.metadata().attach(new JReflectionType.JType(var));
+        varType.metadata().attach(new JReflectionType.Type(var));
         varType.setLocation(location);
         system.storage().cacheFor(JTypeParameterLocation.class).put(location, varType);
 
-        for (java.lang.reflect.Type bound : var.getBounds()) {
-            Optional<? extends honeyroasted.jype.type.JType> param = system.resolvers().resolverFor(java.lang.reflect.Type.class, honeyroasted.jype.type.JType.class).resolve(system, bound);
+        for (Type bound : var.getBounds()) {
+            Optional<? extends JType> param = system.resolvers().resolverFor(Type.class, JType.class).resolve(system, bound);
             if (param.isPresent()) {
                 varType.upperBounds().add(param.get());
             } else {
@@ -404,7 +405,7 @@ public interface JReflectionTypeResolution {
 
     }
 
-    private static java.lang.reflect.Type getReturnType(Executable exec) {
+    private static Type getReturnType(Executable exec) {
         return exec instanceof Method m ? m.getReturnType() :
                 exec instanceof Constructor<?> c ? c.getDeclaringClass() :
                         exec.getAnnotatedReturnType().getType();

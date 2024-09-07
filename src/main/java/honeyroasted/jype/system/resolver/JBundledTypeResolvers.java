@@ -12,7 +12,7 @@ public class JBundledTypeResolvers implements JTypeResolver<Object, JType> {
     private List<JTypeResolver<?, ?>> resolvers;
 
     public JBundledTypeResolvers(List<JTypeResolver<?, ?>> resolvers) {
-        this.resolvers = List.copyOf(resolvers);
+        this.resolvers = resolvers;
     }
 
     public JBundledTypeResolvers(JTypeResolver<?, ?>... resolvers) {
