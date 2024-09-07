@@ -1,10 +1,10 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.ParameterizedClassType;
-import honeyroasted.jype.type.Type;
-import honeyroasted.jype.type.WildType;
+import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JWildType;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,24 +20,24 @@ public class FindLeastUpperBoundTests {
 
     @Test
     public void testInfiniteLub() {
-        TypeSystem ts = TypeSystem.RUNTIME_REFLECTION;
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
 
         //Create test type to compare too
-        ClassReference foo = ts.tryResolve(Foo.class);
-        ParameterizedClassType pct = ts.typeFactory().newParameterizedClassType();
+        JClassReference foo = ts.tryResolve(Foo.class);
+        JParameterizedClassType pct = ts.typeFactory().newParameterizedClassType();
         pct.setClassReference(foo);
-        WildType.Upper wtu = ts.typeFactory().newUpperWildType();
+        JWildType.Upper wtu = ts.typeFactory().newUpperWildType();
         wtu.setUpperBounds(Set.of(pct));
         pct.setTypeArguments(List.of(wtu));
 
         //Create infinite lub
-        Type bar = ts.tryResolve(Bar.class);
-        Type baz = ts.tryResolve(Baz.class);
-        Type lub = ts.operations().findLeastUpperBound(Set.of(bar, baz));
+        JType bar = ts.tryResolve(Bar.class);
+        JType baz = ts.tryResolve(Baz.class);
+        JType lub = ts.operations().findLeastUpperBound(Set.of(bar, baz));
 
         //Set wild type identity to be the same, otherwise they will not be considered equal
-        if (lub instanceof ParameterizedClassType lubPct && !lubPct.typeArguments().isEmpty() &&
-                lubPct.typeArguments().get(0) instanceof WildType.Upper lubWtu) {
+        if (lub instanceof JParameterizedClassType lubPct && !lubPct.typeArguments().isEmpty() &&
+                lubPct.typeArguments().get(0) instanceof JWildType.Upper lubWtu) {
             wtu.setIdentity(lubWtu.identity());
         }
 

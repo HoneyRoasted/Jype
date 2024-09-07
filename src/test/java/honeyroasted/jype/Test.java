@@ -1,39 +1,39 @@
 package honeyroasted.jype;
 
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.jype.system.TypeSystem;
-import honeyroasted.jype.system.expression.ExpressionInformation;
-import honeyroasted.jype.system.solver.constraints.TypeConstraints;
-import honeyroasted.jype.type.ArgumentType;
-import honeyroasted.jype.type.ClassReference;
-import honeyroasted.jype.type.ClassType;
+import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.type.JArgumentType;
+import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JClassType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static honeyroasted.jype.system.solver.constraints.TypeConstraints.Compatible.Context.*;
+import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context.*;
 
 public class Test {
 
     public static void main(String[] args) {
-        TypeSystem system = TypeSystem.RUNTIME_REFLECTION;
+        JTypeSystem system = JTypeSystem.RUNTIME_REFLECTION;
 
-        ClassReference declaring = system.tryResolve(Test.class);
-        List<ArgumentType> explicitTypeArguments = List.of();
+        JClassReference declaring = system.tryResolve(Test.class);
+        List<JArgumentType> explicitTypeArguments = List.of();
 
-        ClassReference integer = system.constants().intBox();
-        List<ExpressionInformation> intParams = List.of(ExpressionInformation.of(system.constants().intType()));
+        JClassReference integer = system.constants().intBox();
+        List<JExpressionInformation> intParams = List.of(JExpressionInformation.of(system.constants().intType()));
 
-        ExpressionInformation.Instantiation subInst = new SimpleInst(declaring, integer, intParams, explicitTypeArguments);
+        JExpressionInformation.Instantiation subInst = new SimpleInst(declaring, integer, intParams, explicitTypeArguments);
 
-        ClassReference type = system.tryResolve(ArrayList.class);
-        List<ExpressionInformation> parameters = List.of(subInst);
+        JClassReference type = system.tryResolve(ArrayList.class);
+        List<JExpressionInformation> parameters = List.of(subInst);
 
-        ExpressionInformation.Instantiation instantiation = new SimpleInst(declaring, type, parameters, explicitTypeArguments);
-        ClassType targetType = system.<ClassReference>tryResolve(List.class).parameterized(system.<ArgumentType>tryResolve(String.class));
+        JExpressionInformation.Instantiation instantiation = new SimpleInst(declaring, type, parameters, explicitTypeArguments);
+        JClassType targetType = system.<JClassReference>tryResolve(List.class).parameterized(system.<JArgumentType>tryResolve(String.class));
 
-        TypeConstraints.ExpressionCompatible constraint = new TypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
 
         ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)
@@ -42,12 +42,12 @@ public class Test {
         System.out.println(solve.toString(false));
     }
 
-    record SimpleInst(ClassReference declaring, ClassReference type, List<ExpressionInformation> parameters, List<ArgumentType> explicitTypeArguments) implements ExpressionInformation.Instantiation {
+    record SimpleInst(JClassReference declaring, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements JExpressionInformation.Instantiation {
 
         @Override
         public String simpleName() {
-            return "new " + this.type.simpleName() + (this.explicitTypeArguments.isEmpty() ? "" : "<" + explicitTypeArguments.stream().map(ArgumentType::simpleName).collect(Collectors.joining(", ")) + ">") +
-                    "(" + this.parameters.stream().map(ExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+            return "new " + this.type.simpleName() + (this.explicitTypeArguments.isEmpty() ? "" : "<" + explicitTypeArguments.stream().map(JArgumentType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                    "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
         }
 
         @Override
