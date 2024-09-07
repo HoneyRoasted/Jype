@@ -1,6 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.location.ClassLocation;
+import honeyroasted.jype.location.ClassSourceName;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.cache.TypeStorage;
@@ -45,6 +46,10 @@ public interface TypeSystem {
     <T extends Type> Optional<T> resolve(ClassLocation classLocation);
 
     <T extends Type> T tryResolve(ClassLocation classLocation);
+
+    <T extends Type> Optional<T> resolve(ClassSourceName classSourceName);
+
+    <T extends Type> T tryResolve(ClassSourceName classSourceName);
 
     <T extends MethodReference> Optional<T> resolve(Executable executable);
 

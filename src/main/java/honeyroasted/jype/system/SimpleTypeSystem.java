@@ -2,6 +2,7 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.location.ClassLocation;
 import honeyroasted.jype.location.ClassNamespace;
+import honeyroasted.jype.location.ClassSourceName;
 import honeyroasted.jype.location.MethodLocation;
 import honeyroasted.jype.location.TypeParameterLocation;
 import honeyroasted.jype.system.cache.InMemoryTypeStorage;
@@ -10,6 +11,7 @@ import honeyroasted.jype.system.cache.TypeStorage;
 import honeyroasted.jype.system.expression.ExpressionInspector;
 import honeyroasted.jype.system.expression.ReflectionExpressionInspector;
 import honeyroasted.jype.system.resolver.BundledTypeResolvers;
+import honeyroasted.jype.system.resolver.ClassSourceNameResolver;
 import honeyroasted.jype.system.resolver.InMemoryTypeResolvers;
 import honeyroasted.jype.system.resolver.ResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.TypeResolver;
@@ -43,7 +45,7 @@ public class SimpleTypeSystem implements TypeSystem {
     }
 
     public SimpleTypeSystem(TypeCacheFactory cacheFactory) {
-        this(cacheFactory, ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
+        this(cacheFactory, ClassSourceNameResolver.INSTANCE, ReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
     }
 
     public SimpleTypeSystem(TypeResolver... initialResolvers) {
@@ -137,6 +139,16 @@ public class SimpleTypeSystem implements TypeSystem {
     @Override
     public <T extends Type> T tryResolve(ClassLocation classLocation) {
         return this.<T>resolve(classLocation).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + classLocation + " to a type"));
+    }
+
+    @Override
+    public <T extends Type> Optional<T> resolve(ClassSourceName classSourceName) {
+        return (Optional<T>) this.resolve(ClassSourceName.class, Type.class, classSourceName);
+    }
+
+    @Override
+    public <T extends Type> T tryResolve(ClassSourceName classSourceName) {
+        return this.<T>resolve(classSourceName).orElseThrow(() -> new ResolutionAttemptFailedException("Could not resolve " + classSourceName + " to a type"));
     }
 
     @Override
