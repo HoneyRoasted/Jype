@@ -219,7 +219,7 @@ public interface JReflectionTypeResolution {
         reference.metadata().attach(new JReflectionType.Type(cls));
         reference.setNamespace(JClassNamespace.of(cls));
         reference.setModifiers(cls.getModifiers());
-        system.storage().cacheFor(Type.class).put(location, reference);
+        system.storage().cacheFor(Type.class).put(cls, reference);
         system.storage().cacheFor(JClassLocation.class).put(reference.namespace().location(), reference);
 
         if (cls.getSuperclass() != null) {
@@ -227,7 +227,7 @@ public interface JReflectionTypeResolution {
                     .resolve(system, cls.getGenericSuperclass());
 
             if (superCls.isEmpty() || !(superCls.get() instanceof JClassType)) {
-                system.storage().cacheFor(Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(cls);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -247,7 +247,7 @@ public interface JReflectionTypeResolution {
                     .resolve(system, cls.getEnclosingClass());
 
             if (enclosing.isEmpty() || !(enclosing.get() instanceof JClassType)) {
-                system.storage().cacheFor(Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(cls);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -262,7 +262,7 @@ public interface JReflectionTypeResolution {
                     .resolve(system, enclsoingExecutable);
 
             if (enclosing.isEmpty() || !(enclosing.get() instanceof JMethodType)) {
-                system.storage().cacheFor(Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(cls);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -275,7 +275,7 @@ public interface JReflectionTypeResolution {
                     .resolve(system, inter);
 
             if (interRef.isEmpty() || !(interRef.get() instanceof JClassType)) {
-                system.storage().cacheFor(Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(cls);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {
@@ -285,11 +285,10 @@ public interface JReflectionTypeResolution {
 
         for (TypeVariable<?> param : cls.getTypeParameters()) {
             JTypeParameterLocation loc = new JTypeParameterLocation(reference.namespace(), param.getName());
-            Optional<? extends JVarType> paramRef = system.resolvers().resolverFor(JTypeParameterLocation.class, JVarType.class)
-                    .resolve(system, loc);
+            Optional<? extends JVarType> paramRef = createVarType(system, param, loc);
 
             if (paramRef.isEmpty()) {
-                system.storage().cacheFor(Type.class).remove(location);
+                system.storage().cacheFor(Type.class).remove(cls);
                 system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
                 return Optional.empty();
             } else {

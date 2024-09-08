@@ -12,7 +12,7 @@ import honeyroasted.jype.system.resolver.JInMemoryTypeResolvers;
 import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
-import honeyroasted.jype.system.resolver.binary.JClassSourceNameResolver;
+import honeyroasted.jype.system.resolver.general.JGeneralTypeResolution;
 import honeyroasted.jype.system.resolver.reflection.JReflectionTypeResolution;
 import honeyroasted.jype.system.solver.operations.JTypeOperations;
 import honeyroasted.jype.system.solver.operations.JTypeOperationsImpl;
@@ -38,7 +38,7 @@ public class JSimpleTypeSystem implements JTypeSystem {
     }
 
     public JSimpleTypeSystem(JTypeCacheFactory cacheFactory) {
-        this(cacheFactory, JClassSourceNameResolver.INSTANCE, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
+        this(cacheFactory, JGeneralTypeResolution.GENERAL_TYPE_RESOLVERS, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
     }
 
     public JSimpleTypeSystem(JTypeResolver... initialResolvers) {
