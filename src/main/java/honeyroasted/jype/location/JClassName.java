@@ -20,6 +20,17 @@ public record JClassName(Type type, SubType subType, JClassName containing, Stri
         }
     }
 
+    public static JClassName of(String[] pack, String className) {
+        if (pack.length == 0) return new JClassName(Type.CLASS, SubType.NONE, className);
+
+        JClassName containing = new JClassName(Type.PACKAGE, SubType.NONE, pack[0]);
+        for (int i = 1; i < pack.length; i++) {
+            containing = new JClassName(Type.PACKAGE, SubType.NONE, containing, pack[i]);
+        }
+
+        return new JClassName(Type.CLASS, SubType.NONE, containing, className);
+    }
+
     public static JClassName of(Class<?> clazz) {
         if (clazz == null) {
             return null;

@@ -1,9 +1,20 @@
 package honeyroasted.jype.location;
 
+import org.glavo.classfile.ClassModel;
+import org.glavo.classfile.constantpool.ClassEntry;
+
 public record JClassLocation(Type type, JClassLocation containing, String value) {
     public static final JClassLocation DEFAULT_MODULE = new JClassLocation(Type.MODULE, null, null);
     public static final JClassLocation UNKNOWN_MODULE = new JClassLocation(Type.MODULE, null, null);
     public static final JClassLocation VOID = JClassLocation.of(void.class);
+
+    public static JClassLocation of(ClassModel model) {
+        return of(model.thisClass().asInternalName());
+    }
+
+    public static JClassLocation of(ClassEntry entry) {
+        return of(entry.asInternalName());
+    }
 
     public static JClassLocation of(String internalName) {
         return of(UNKNOWN_MODULE, internalName);
@@ -14,8 +25,8 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         if (parts.length == 1) {
             return new JClassLocation(Type.CLASS, module, parts[0]);
         } else {
-            JClassLocation result = new JClassLocation(Type.PACKAGE, module, parts[0]);
-            for (int i = 1; i < parts.length - 1; i++) {
+            JClassLocation result = null;
+            for (int i = 0; i < parts.length - 1; i++) {
                 result = new JClassLocation(Type.PACKAGE, result, parts[i]);
             }
             return new JClassLocation(Type.CLASS, result, parts[parts.length - 1]);
@@ -51,6 +62,16 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
             }
             return curr;
         }
+    }
+
+    public JClassName toName() {
+        JClassName containing = this.containing == null ? null : this.containing.toName();
+        return switch (this.type) {
+            case ARRAY -> new JClassName(JClassName.Type.CLASS, JClassName.SubType.ARRAY, containing, this.value);
+            case PACKAGE -> new JClassName(JClassName.Type.PACKAGE, JClassName.SubType.NONE, containing, this.value);
+            case CLASS -> new JClassName(JClassName.Type.CLASS, JClassName.SubType.NONE, containing, this.value);
+            case MODULE -> null;
+        };
     }
 
     public JClassLocation getPackage() {

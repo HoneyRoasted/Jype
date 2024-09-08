@@ -88,6 +88,10 @@ public interface JBinaryClassFinder {
             this.root = root.toAbsolutePath();
         }
 
+        public final class Test {
+
+        }
+
         @Override
         public Optional<byte[]> locate(JClassLocation location) throws IOException {
             Path target = this.root.resolve(location.toInternalName() + ".class");
