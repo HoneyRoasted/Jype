@@ -6,13 +6,15 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.expression.JExpressionInspector;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
+import honeyroasted.jype.system.visitor.JTypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
+import honeyroasted.jype.type.JAccess;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
@@ -20,14 +22,18 @@ import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import org.glavo.classfile.AccessFlag;
+import org.glavo.classfile.AccessFlags;
 
-import java.lang.reflect.AccessFlag;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -50,16 +56,17 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         JClassReference declaring = invocation.declaring();
         List<JExpressionInformation> parameters = invocation.parameters();
 
-        Map<JMethodLocation, JMethodReference> methods = new LinkedHashMap<>();
+        Collection<JMethodReference> methods = new LinkedHashSet<>();
         boolean stat;
 
         if (invocation.source() instanceof JClassReference ref) { //Static method call
-            system.expressionInspector().getAllMethods(ref).ifPresent(methods::putAll);
+            system.expressionInspector().getDeclaredMethods(ref).ifPresent(map -> map.values().stream().filter(mref -> Modifier.isStatic(mref.modifiers()))
+                    .forEach(methods::add));
             stat = true;
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
                 JType type = expr.getSimpleType(system, mapper).get();
-                findClassTypes(type).forEach(ct -> system.expressionInspector().getAllMethods(ct.classReference()).ifPresent(methods::putAll));
+                findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference(), system.expressionInspector())));
                 stat = false;
             } else {
                 JMetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
@@ -71,7 +78,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 solved.branches().forEach(childBranch -> {
                     if (childBranch.status().isTrue()) {
                         JType inst = JResolveBounds.findInstantiation(mvt, childBranch);
-                        findClassTypes(inst).forEach(ct -> system.expressionInspector().getAllMethods(ct.classReference()).ifPresent(map -> map.forEach((loc, ref) -> {
+                        findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference(), system.expressionInspector()).forEach(ref -> {
                             if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                                 if (ref.parameters().size() == parameters.size()) {
                                     newChildren.add(createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
@@ -84,7 +91,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                                     newChildren.add(createVarargInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg));
                                 }
                             }
-                        })));
+                        }));
                     } else {
                         newChildren.add(childBranch.snapshot());
                     }
@@ -106,7 +113,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         } else {
             List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
 
-            methods.forEach((loc, ref) -> {
+            methods.forEach(ref -> {
                 if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access()) && (!stat || ref.hasModifier(AccessFlag.STATIC))) {
                     if (ref.parameters().size() == parameters.size()) {
                         newChildren.add(createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
@@ -155,7 +162,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
             invoke.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(ref.parameters().get(index))), Constraint.Status.UNKNOWN);
         }
 
-        for(; index < parameters.size(); index++) {
+        for (; index < parameters.size(); index++) {
             invoke.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, resolve.apply(vararg.component())), Constraint.Status.UNKNOWN);
         }
 
@@ -198,6 +205,116 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
             return attempt;
         }
+    }
+
+    private static Collection<JMethodReference> getAllMethods(JClassReference ref, JExpressionInspector inspector) {
+        List<JMethodReference> result = new ArrayList<>();
+
+        Set<JClassType> building = Set.of(ref);
+        Set<JClassType> next = new LinkedHashSet<>();
+
+        while (!building.isEmpty()) {
+            for (JClassType curr : building) {
+                inspector.getDeclaredMethods(curr.classReference())
+                        .ifPresent(map -> map.values().stream()
+                                .filter(mref -> result.stream().noneMatch(currRef -> isOverriddenBy(mref, currRef, inspector)))
+                                .forEach(result::add));
+
+                if (curr.superClass() != null) next.add(curr.superClass());
+                next.addAll(curr.interfaces());
+            }
+
+            building = next;
+            next = new LinkedHashSet<>();
+        }
+
+        return result;
+    }
+
+    private static boolean isOverriddenBy(JMethodReference left, JMethodReference right, JExpressionInspector inspector) {
+        left = (JMethodReference) JTypeVisitors.ERASURE.visit(left);
+        right = (JMethodReference) JTypeVisitors.ERASURE.visit(right);
+
+        JMethodReference bridge = findBridgeMethod(left, inspector);
+        if (bridge != null) {
+            return isOverriddenBy(bridge, right, inspector);
+        }
+
+        return left.location().name().equals(right.location().name()) &&
+                isOverridableIn(left, right.outerClass()) &&
+                !JAccess.fromFlags(right.modifiers()).isMoreRestrictiveThan(JAccess.fromFlags(left.modifiers())) &&
+                left.returnType().typeEquals(right.returnType()) &&
+                areParametersEqual(left, right);
+
+    }
+
+    private static JMethodReference findBridgeMethod(JMethodReference me, JExpressionInspector inspector) {
+        if (isBridge(me.modifiers())) return null;
+        return inspector.getDeclaredMethods(me.outerClass()).flatMap(methods ->
+                methods.values().stream().map(it -> (JMethodReference) JTypeVisitors.ERASURE.visit(it)).filter(it -> !it.equals(me) && isBridge(it.modifiers()) && it.location().name().equals(me.location().name()) &&
+                                areParametersCovariant(me, it) && it.returnType().isAssignableFrom(me.returnType()))
+                        .findFirst()
+        ).orElse(null);
+    }
+
+    private static boolean isOverridableIn(JMethodReference me, JClassType cls) {
+        if (!isOverridable(me.modifiers())) return false;
+        if (!isSubclassVisible(me.modifiers())) return false;
+        if (!me.outerClass().isAssignableFrom(cls)) return false;
+
+        if (Modifier.isPublic(me.modifiers())) return true;
+        if (isPackageVisible(me.modifiers()) && Objects.equals(cls.namespace().location().getPackage(), me.outerClass().namespace().location().getPackage()))
+            return true;
+
+        return false;
+    }
+
+    private static boolean areParametersCovariant(JMethodReference left, JMethodReference right) {
+        List<JType> leftParams = left.parameters();
+        List<JType> rightParams = right.parameters();
+
+        if (leftParams.size() != rightParams.size()) return false;
+
+        for (int i = 0; i < leftParams.size(); i++) {
+            if (!rightParams.get(i).isAssignableFrom(leftParams.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    private static boolean areParametersEqual(JMethodReference left, JMethodReference right) {
+        List<JType> leftParams = left.parameters();
+        List<JType> rightParams = right.parameters();
+
+        if (leftParams.size() != rightParams.size()) return false;
+
+        for (int i = 0; i < leftParams.size(); i++) {
+            if (!rightParams.get(i).typeEquals(leftParams.get(i))) return false;
+        }
+
+        return true;
+    }
+
+    private static boolean isAccessMoreRestrictive(int left, int right) {
+        return JAccess.fromFlags(left).compareTo(JAccess.fromFlags(right)) < 0;
+    }
+
+    private static boolean isOverridable(int mods) {
+        return !Modifier.isStatic(mods) &&
+                !Modifier.isFinal(mods) &&
+                !Modifier.isPrivate(mods);
+    }
+
+    private static boolean isBridge(int mods) {
+        return AccessFlags.ofMethod(mods).has(AccessFlag.BRIDGE);
+    }
+
+    private static boolean isPackageVisible(int mods) {
+        return !Modifier.isPrivate(mods);
+    }
+
+    private static boolean isSubclassVisible(int mods) {
+        return Modifier.isPublic(mods) || Modifier.isProtected(mods);
     }
 
 }

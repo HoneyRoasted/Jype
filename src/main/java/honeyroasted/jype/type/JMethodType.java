@@ -3,8 +3,8 @@ package honeyroasted.jype.type;
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
+import org.glavo.classfile.AccessFlag;
 
-import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Modifier;
 import java.util.List;
 

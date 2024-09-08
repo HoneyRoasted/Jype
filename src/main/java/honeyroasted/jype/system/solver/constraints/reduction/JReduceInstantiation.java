@@ -15,8 +15,8 @@ import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import org.glavo.classfile.AccessFlag;
 
-import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -56,7 +56,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
         parameters.addAll(inst.parameters());
 
-        Optional<Map<JMethodLocation, JMethodReference>> consOpt = system.expressionInspector().getAllConstructors(inst.type());
+        Optional<Map<JMethodLocation, JMethodReference>> consOpt = system.expressionInspector().getDeclaredConstructors(inst.type());
         if (!consOpt.isPresent()) {
             branch.set(constraint, Constraint.Status.FALSE);
         } else {

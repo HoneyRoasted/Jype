@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface JExpressionInspector {
 
-    Optional<Map<JMethodLocation, JMethodReference>> getAllMethods(JClassReference reference);
+    Optional<Map<JMethodLocation, JMethodReference>> getDeclaredMethods(JClassReference reference);
 
-    Optional<Map<JMethodLocation, JMethodReference>> getAllConstructors(JClassReference reference);
+    Optional<Map<JMethodLocation, JMethodReference>> getDeclaredConstructors(JClassReference reference);
 
     Optional<Boolean> isFunctionalInterface(JClassReference reference);
 

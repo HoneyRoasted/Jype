@@ -16,9 +16,9 @@ public class JMultiExpressionInspector implements JExpressionInspector {
     }
 
     @Override
-    public Optional<Map<JMethodLocation, JMethodReference>> getAllMethods(JClassReference reference) {
+    public Optional<Map<JMethodLocation, JMethodReference>> getDeclaredMethods(JClassReference reference) {
         for (JExpressionInspector inspector : this.delegates) {
-            Optional<Map<JMethodLocation, JMethodReference>> result = inspector.getAllMethods(reference);
+            Optional<Map<JMethodLocation, JMethodReference>> result = inspector.getDeclaredMethods(reference);
             if (result.isPresent()) {
                 return result;
             }
@@ -28,9 +28,9 @@ public class JMultiExpressionInspector implements JExpressionInspector {
     }
 
     @Override
-    public Optional<Map<JMethodLocation, JMethodReference>> getAllConstructors(JClassReference reference) {
+    public Optional<Map<JMethodLocation, JMethodReference>> getDeclaredConstructors(JClassReference reference) {
         for (JExpressionInspector inspector : this.delegates) {
-            Optional<Map<JMethodLocation, JMethodReference>> result = inspector.getAllMethods(reference);
+            Optional<Map<JMethodLocation, JMethodReference>> result = inspector.getDeclaredConstructors(reference);
             if (result.isPresent()) {
                 return result;
             }

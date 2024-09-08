@@ -202,7 +202,14 @@ P&gt;&nbsp;R</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hashCode(java.util.Set)" class="member-name-link">hashCode</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;seen)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isAssignableTo(honeyroasted.jype.type.JType)" class="member-name-link">isAssignableTo</a><wbr>(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isAssignableFrom(honeyroasted.jype.type.JType)" class="member-name-link">isAssignableFrom</a><wbr>(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isAssignableTo(honeyroasted.jype.type.JType)" class="member-name-link">isAssignableTo</a><wbr>(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCompatibleFrom(honeyroasted.jype.type.JType,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context)" class="member-name-link">isCompatibleFrom</a><wbr>(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other,
+ <a href="../system/solver/constraints/JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#isCompatibleTo(honeyroasted.jype.type.JType,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context)" class="member-name-link">isCompatibleTo</a><wbr>(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other,
@@ -314,9 +321,22 @@ P&gt;</span>&nbsp;<span class="return-type">R</span>&nbsp;<span class="element-n
 </section>
 </li>
 <li>
+<section class="detail" id="isCompatibleFrom(honeyroasted.jype.type.JType,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context)">
+<h3>isCompatibleFrom</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isCompatibleFrom</span><wbr><span class="parameters">(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other,
+ <a href="../system/solver/constraints/JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="isAssignableTo(honeyroasted.jype.type.JType)">
 <h3>isAssignableTo</h3>
 <div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAssignableTo</span><wbr><span class="parameters">(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="isAssignableFrom(honeyroasted.jype.type.JType)">
+<h3>isAssignableFrom</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isAssignableFrom</span><wbr><span class="parameters">(<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&nbsp;other)</span></div>
 </section>
 </li>
 <li>

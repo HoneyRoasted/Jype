@@ -21,14 +21,14 @@ public class JReflectionExpressionInspector implements JExpressionInspector {
     }
 
     @Override
-    public Optional<Map<JMethodLocation, JMethodReference>> getAllMethods(JClassReference reference) {
+    public Optional<Map<JMethodLocation, JMethodReference>> getDeclaredMethods(JClassReference reference) {
         Optional<Class<?>> clsOpt = JReflectionTypeResolution.getReflectionType(reference);
         if (clsOpt.isEmpty()) return Optional.empty();
 
         Map<JMethodLocation, JMethodReference> methods = new LinkedHashMap<>();
         Class<?> cls = clsOpt.get();
 
-        for (Method method : JReflectionTypeResolution.getAllMethods(cls)) {
+        for (Method method : cls.getDeclaredMethods()) {
             JMethodLocation loc = JMethodLocation.of(method);
             system.resolve(method).ifPresent(mr -> methods.put(loc, mr));
         }
@@ -37,14 +37,14 @@ public class JReflectionExpressionInspector implements JExpressionInspector {
     }
 
     @Override
-    public Optional<Map<JMethodLocation, JMethodReference>> getAllConstructors(JClassReference reference) {
+    public Optional<Map<JMethodLocation, JMethodReference>> getDeclaredConstructors(JClassReference reference) {
         Optional<Class<?>> clsOpt = JReflectionTypeResolution.getReflectionType(reference);
         if (clsOpt.isEmpty()) return Optional.empty();
 
         Map<JMethodLocation, JMethodReference> methods = new LinkedHashMap<>();
         Class<?> cls = clsOpt.get();
 
-        for (Constructor<?> constructor : JReflectionTypeResolution.getAllConstructors(cls)) {
+        for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
             JMethodLocation loc = JMethodLocation.of(constructor);
             system.resolve(constructor).ifPresent(mr -> methods.put(loc, mr));
         }
