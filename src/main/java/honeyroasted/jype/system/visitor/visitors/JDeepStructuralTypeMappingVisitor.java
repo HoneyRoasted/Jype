@@ -133,6 +133,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
                 newRef.setTypeParameters(ref.typeParameters());
             }
 
+            if (this.visitStructural()) {
+                newRef.setDeclaredMethods((List) this.visit(ref.declaredMethods(), context).stream().filter(t -> t instanceof JMethodReference).toList());
+            } else {
+                newRef.setDeclaredMethods(ref.declaredMethods());
+            }
+
             newRef.setUnmodifiable(true);
 
             return newRef;

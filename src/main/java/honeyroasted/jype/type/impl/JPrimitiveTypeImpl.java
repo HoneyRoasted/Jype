@@ -13,13 +13,13 @@ import java.util.Set;
 
 public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiveType {
     private JClassNamespace namespace;
-    private JClassReference box;
+    private JClassNamespace boxNamespace;
     private String descriptor;
 
-    public JPrimitiveTypeImpl(JTypeSystem typeSystem, JClassNamespace namespace, JClassReference box, String descriptor) {
+    public JPrimitiveTypeImpl(JTypeSystem typeSystem, JClassNamespace namespace, JClassNamespace box, String descriptor) {
         super(typeSystem);
         this.namespace = namespace;
-        this.box = box;
+        this.boxNamespace = box;
         this.descriptor = descriptor;
     }
 
@@ -29,7 +29,15 @@ public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiv
     }
 
     @Override
+    public JClassNamespace boxNamespace() {
+        return this.boxNamespace;
+    }
+
+    private JClassReference box;
+
+    @Override
     public JClassReference box() {
+        if (this.box == null) this.box = (JClassReference) this.typeSystem().resolve(this.boxNamespace.location()).orElse(null);
         return this.box;
     }
 
@@ -63,7 +71,7 @@ public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiv
 
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
-        JPrimitiveType copy = this.typeSystem().typeFactory().newPrimitiveType(this.namespace, this.box, this.descriptor);
+        JPrimitiveType copy = this.typeSystem().typeFactory().newPrimitiveType(this.namespace, this.boxNamespace, this.descriptor);
         cache.put(this, copy);
 
         copy.metadata().inheritFrom(this.metadata().copy(cache));

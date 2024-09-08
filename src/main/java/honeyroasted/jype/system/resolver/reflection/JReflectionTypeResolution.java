@@ -38,8 +38,9 @@ public interface JReflectionTypeResolution {
 
     static boolean locationMatchesMethod(JMethodLocation methodLocation, Executable method) {
         JClassLocation retType = method instanceof Method mth ? JClassLocation.of(mth.getReturnType()) : JClassLocation.of(void.class);
+        String name = method instanceof Constructor<?> ? "<init>" : method.getName();
 
-        if (methodLocation.name().equals(method.getName()) &&
+        if (methodLocation.name().equals(name) &&
                 methodLocation.containing().equals(JClassNamespace.of(method.getDeclaringClass())) &&
                 methodLocation.returnType().equals(retType) &&
                 methodLocation.parameters().size() == method.getParameterCount()) {
@@ -147,6 +148,9 @@ public interface JReflectionTypeResolution {
         mRef.metadata().attach(new JReflectionType.Executable(executable));
         mRef.setLocation(location);
         mRef.setModifiers(executable.getModifiers());
+
+        system.storage().cacheFor(JMethodLocation.class).put(location, mRef);
+
         Optional<? extends JType> outerClass = system.resolve(Type.class, JType.class, executable.getDeclaringClass());
         if (outerClass.isPresent() && outerClass.get() instanceof JClassReference cr) {
             mRef.setOuterClass(cr);
@@ -157,6 +161,7 @@ public interface JReflectionTypeResolution {
             if (returnType.isPresent()) {
                 mRef.setReturnType(returnType.get());
             } else {
+                system.storage().cacheFor(JMethodLocation.class).remove(location);
                 return Optional.empty();
             }
         } else {
@@ -169,6 +174,7 @@ public interface JReflectionTypeResolution {
             if (resolved.isPresent()) {
                 resolvedExceptions.add(resolved.get());
             } else {
+                system.storage().cacheFor(JMethodLocation.class).remove(location);
                 return Optional.empty();
             }
         }
@@ -179,6 +185,7 @@ public interface JReflectionTypeResolution {
             if (resolved.isPresent()) {
                 resolvedParams.add(resolved.get());
             } else {
+                system.storage().cacheFor(JMethodLocation.class).remove(location);
                 return Optional.empty();
             }
         }
@@ -189,6 +196,7 @@ public interface JReflectionTypeResolution {
             if (resolved.isPresent() && resolved.get() instanceof JVarType res) {
                 resolvedTypeParams.add(res);
             } else {
+                system.storage().cacheFor(JMethodLocation.class).remove(location);
                 return Optional.empty();
             }
         }
@@ -204,7 +212,13 @@ public interface JReflectionTypeResolution {
     }
 
     static Optional<JType> createClassReference(JTypeSystem system, Class<?> cls, JClassLocation location) {
-        if (cls.isArray()) {
+        if (cls.isPrimitive()) {
+            if (cls.equals(void.class)) {
+                return Optional.ofNullable(system.constants().voidType());
+            } else {
+                return (Optional) system.constants().allPrimitives().stream().filter(t -> t.namespace().location().equals(JClassLocation.of(cls))).findFirst();
+            }
+        } else if (cls.isArray()) {
             return createClassReference(system, cls.componentType(), location.containing()).map(c -> {
                 JArrayType type = system.typeFactory().newArrayType();
                 type.setComponent(c);
@@ -219,6 +233,7 @@ public interface JReflectionTypeResolution {
         reference.metadata().attach(new JReflectionType.Type(cls));
         reference.setNamespace(JClassNamespace.of(cls));
         reference.setModifiers(cls.getModifiers());
+
         system.storage().cacheFor(Type.class).put(cls, reference);
         system.storage().cacheFor(JClassLocation.class).put(reference.namespace().location(), reference);
 
@@ -293,6 +308,32 @@ public interface JReflectionTypeResolution {
                 return Optional.empty();
             } else {
                 reference.typeParameters().add(paramRef.get());
+            }
+        }
+
+        for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
+            JMethodLocation loc = JMethodLocation.of(constructor);
+            Optional<JMethodReference> conRef = system.resolve(loc);
+
+            if (conRef.isEmpty()) {
+                system.storage().cacheFor(Type.class).remove(cls);
+                system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
+                return Optional.empty();
+            } else {
+                reference.declaredMethods().add(conRef.get());
+            }
+        }
+
+        for (Method method : cls.getDeclaredMethods()) {
+            JMethodLocation loc = JMethodLocation.of(method);
+            Optional<JMethodReference> conRef = system.resolve(loc);
+
+            if (conRef.isEmpty()) {
+                system.storage().cacheFor(Type.class).remove(cls);
+                system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
+                return Optional.empty();
+            } else {
+                reference.declaredMethods().add(conRef.get());
             }
         }
 

@@ -4,7 +4,6 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
@@ -56,42 +55,37 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
         parameters.addAll(inst.parameters());
 
-        Optional<Map<JMethodLocation, JMethodReference>> consOpt = system.expressionInspector().getDeclaredConstructors(inst.type());
-        if (!consOpt.isPresent()) {
-            branch.set(constraint, Constraint.Status.FALSE);
+        Set<Constraint> typeParams = new LinkedHashSet<>();
+        if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
+            for (int i = 0; i < target.typeParameters().size(); i++) {
+                JVarType vt = target.typeParameters().get(i);
+                typeParams.add(new JTypeConstraints.Infer(vt.createMetaVar(), vt));
+            }
+        }
+
+        List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
+        JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
+                target.parameterizedWithMetaVars();
+
+        inst.type().declaredMethods().stream().filter(m -> m.location().isConstructor()).forEach(ref -> {
+            if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
+                if (ref.parameters().size() == parameters.size()) {
+                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
+                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
+                }
+
+                if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
+                        ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
+                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
+                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
+                }
+            }
+        });
+
+        if (!newChildren.isEmpty()) {
+            branch.drop(constraint).divergeBranches(newChildren);
         } else {
-            Set<Constraint> typeParams = new LinkedHashSet<>();
-            if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
-                for (int i = 0; i < target.typeParameters().size(); i++) {
-                    JVarType vt = target.typeParameters().get(i);
-                    typeParams.add(new JTypeConstraints.Infer(vt.createMetaVar(), vt));
-                }
-            }
-
-            List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
-            JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
-                    target.parameterizedWithMetaVars();
-
-            consOpt.get().forEach((loc, ref) -> {
-                if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
-                    if (ref.parameters().size() == parameters.size()) {
-                        newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
-                        newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
-                    }
-
-                    if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
-                            ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
-                        newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
-                        newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
-                    }
-                }
-            });
-
-            if (!newChildren.isEmpty()) {
-                branch.drop(constraint).divergeBranches(newChildren);
-            } else {
-                branch.set(constraint, Constraint.Status.FALSE);
-            }
+            branch.set(constraint, Constraint.Status.FALSE);
         }
     }
 

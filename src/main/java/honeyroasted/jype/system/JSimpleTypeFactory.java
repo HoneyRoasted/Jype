@@ -78,7 +78,7 @@ public class JSimpleTypeFactory implements JTypeFactory {
     }
 
     @Override
-    public JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassReference box, String descriptor) {
+    public JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, String descriptor) {
         return new JPrimitiveTypeImpl(this.system, namespace, box, descriptor);
     }
 

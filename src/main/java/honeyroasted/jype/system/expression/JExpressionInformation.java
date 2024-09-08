@@ -3,6 +3,7 @@ package honeyroasted.jype.system.expression;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JInstantiableType;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JType;
@@ -75,9 +76,11 @@ public interface JExpressionInformation {
                 return system.constants().nullType();
             } else {
                 JType type = system.tryResolve(value().getClass());
-                JType unboxed = system.constants().primitiveByBox().get(type);
-                if (unboxed != null) {
-                    return unboxed;
+                if (type instanceof JClassType ct) {
+                    JType unboxed = system.constants().primitiveByBox().get(ct.namespace());
+                    if (unboxed != null) {
+                        return unboxed;
+                    }
                 }
                 return type;
             }

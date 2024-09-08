@@ -5,7 +5,6 @@ import honeyroasted.jype.location.JClassSourceName;
 import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JTypeStorage;
-import honeyroasted.jype.system.expression.JExpressionInspector;
 import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
@@ -32,8 +31,6 @@ public interface JTypeSystem {
     JTypeOperations operations();
 
     JTypeFactory typeFactory();
-
-    JExpressionInspector expressionInspector();
 
     <I, O extends JType> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key);
 

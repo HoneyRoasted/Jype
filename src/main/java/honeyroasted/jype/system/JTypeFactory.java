@@ -32,7 +32,7 @@ public interface JTypeFactory {
 
     JParameterizedMethodType newParameterizedMethodType();
 
-    JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassReference box, String descriptor);
+    JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, String descriptor);
 
     JVarType newVarType();
 

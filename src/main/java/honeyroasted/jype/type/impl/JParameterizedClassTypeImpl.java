@@ -189,6 +189,16 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
     }
 
     @Override
+    public List<JMethodReference> declaredMethods() {
+        return classReference.declaredMethods();
+    }
+
+    @Override
+    public void setDeclaredMethods(List<JMethodReference> methods) {
+        classReference.setDeclaredMethods(methods);
+    }
+
+    @Override
     public JClassType superClass() {
         return classReference.superClass();
     }

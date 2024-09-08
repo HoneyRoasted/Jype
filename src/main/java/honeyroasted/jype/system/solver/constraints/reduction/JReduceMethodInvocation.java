@@ -8,7 +8,6 @@ import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
-import honeyroasted.jype.system.expression.JExpressionInspector;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -60,13 +59,12 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         boolean stat;
 
         if (invocation.source() instanceof JClassReference ref) { //Static method call
-            system.expressionInspector().getDeclaredMethods(ref).ifPresent(map -> map.values().stream().filter(mref -> Modifier.isStatic(mref.modifiers()))
-                    .forEach(methods::add));
+            ref.declaredMethods().stream().filter(mref -> Modifier.isStatic(mref.modifiers())).forEach(methods::add);
             stat = true;
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
                 JType type = expr.getSimpleType(system, mapper).get();
-                findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference(), system.expressionInspector())));
+                findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference())));
                 stat = false;
             } else {
                 JMetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
@@ -78,7 +76,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 solved.branches().forEach(childBranch -> {
                     if (childBranch.status().isTrue()) {
                         JType inst = JResolveBounds.findInstantiation(mvt, childBranch);
-                        findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference(), system.expressionInspector()).forEach(ref -> {
+                        findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
                             if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                                 if (ref.parameters().size() == parameters.size()) {
                                     newChildren.add(createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
@@ -207,7 +205,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         }
     }
 
-    private static Collection<JMethodReference> getAllMethods(JClassReference ref, JExpressionInspector inspector) {
+    private static Collection<JMethodReference> getAllMethods(JClassReference ref) {
         List<JMethodReference> result = new ArrayList<>();
 
         Set<JClassType> building = Set.of(ref);
@@ -215,10 +213,9 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
         while (!building.isEmpty()) {
             for (JClassType curr : building) {
-                inspector.getDeclaredMethods(curr.classReference())
-                        .ifPresent(map -> map.values().stream()
-                                .filter(mref -> result.stream().noneMatch(currRef -> isOverriddenBy(mref, currRef, inspector)))
-                                .forEach(result::add));
+                curr.classReference().declaredMethods()
+                        .stream().filter(mref -> result.stream().noneMatch(currRef -> isOverriddenBy(mref, currRef)))
+                        .forEach(result::add);
 
                 if (curr.superClass() != null) next.add(curr.superClass());
                 next.addAll(curr.interfaces());
@@ -231,13 +228,13 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         return result;
     }
 
-    private static boolean isOverriddenBy(JMethodReference left, JMethodReference right, JExpressionInspector inspector) {
+    private static boolean isOverriddenBy(JMethodReference left, JMethodReference right) {
         left = (JMethodReference) JTypeVisitors.ERASURE.visit(left);
         right = (JMethodReference) JTypeVisitors.ERASURE.visit(right);
 
-        JMethodReference bridge = findBridgeMethod(left, inspector);
+        JMethodReference bridge = findBridgeMethod(left);
         if (bridge != null) {
-            return isOverriddenBy(bridge, right, inspector);
+            return isOverriddenBy(bridge, right);
         }
 
         return left.location().name().equals(right.location().name()) &&
@@ -248,13 +245,12 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     }
 
-    private static JMethodReference findBridgeMethod(JMethodReference me, JExpressionInspector inspector) {
+    private static JMethodReference findBridgeMethod(JMethodReference me) {
         if (isBridge(me.modifiers())) return null;
-        return inspector.getDeclaredMethods(me.outerClass()).flatMap(methods ->
-                methods.values().stream().map(it -> (JMethodReference) JTypeVisitors.ERASURE.visit(it)).filter(it -> !it.equals(me) && isBridge(it.modifiers()) && it.location().name().equals(me.location().name()) &&
-                                areParametersCovariant(me, it) && it.returnType().isAssignableFrom(me.returnType()))
-                        .findFirst()
-        ).orElse(null);
+        return me.outerClass().declaredMethods().stream()
+                .map(it -> (JMethodReference) JTypeVisitors.ERASURE.visit(it))
+                .filter(it -> !it.equals(me) && isBridge(it.modifiers()) && it.location().name().equals(me.location().name()) && areParametersCovariant(me, it) && it.returnType().isAssignableFrom(me.returnType()))
+                .findFirst().orElse(null);
     }
 
     private static boolean isOverridableIn(JMethodReference me, JClassType cls) {

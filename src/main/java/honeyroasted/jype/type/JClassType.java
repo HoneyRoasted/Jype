@@ -42,6 +42,10 @@ public interface JClassType extends JInstantiableType, PossiblyUnmodifiable, JAr
 
     void setOuterMethod(JMethodReference outerMethod);
 
+    List<JMethodReference> declaredMethods();
+
+    void setDeclaredMethods(List<JMethodReference> methods);
+
     default boolean hasRelevantOuterType() {
         return !Modifier.isStatic(this.modifiers()) && this.outerType() != null
                 && (this.outerMethod() == null || !Modifier.isStatic(this.outerMethod().modifiers()));

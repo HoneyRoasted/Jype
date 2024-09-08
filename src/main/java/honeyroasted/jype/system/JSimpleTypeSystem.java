@@ -5,8 +5,6 @@ import honeyroasted.jype.location.JClassNamespace;
 import honeyroasted.jype.system.cache.JInMemoryTypeStorage;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
 import honeyroasted.jype.system.cache.JTypeStorage;
-import honeyroasted.jype.system.expression.JExpressionInspector;
-import honeyroasted.jype.system.expression.JReflectionExpressionInspector;
 import honeyroasted.jype.system.resolver.JBundledTypeResolvers;
 import honeyroasted.jype.system.resolver.JInMemoryTypeResolvers;
 import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
@@ -31,7 +29,6 @@ public class JSimpleTypeSystem implements JTypeSystem {
     private JTypeConstants constants;
     private JTypeOperations operations;
     private JTypeFactory typeFactory;
-    private JExpressionInspector expressionInspector;
 
     public JSimpleTypeSystem() {
         this(JTypeCacheFactory.IN_MEMORY_FACTORY);
@@ -46,30 +43,36 @@ public class JSimpleTypeSystem implements JTypeSystem {
     }
 
     public JSimpleTypeSystem(JTypeCacheFactory cacheFactory, JTypeResolver... initialResolvers) {
-        this(cacheFactory, List.of(initialResolvers), JSimpleTypeFactory::new, JReflectionExpressionInspector::new);
+        this(cacheFactory, List.of(initialResolvers), JSimpleTypeFactory::new);
     }
 
-    public JSimpleTypeSystem(JTypeCacheFactory cacheFactory, Collection<? extends JTypeResolver> initialResolvers, Function<JTypeSystem, JTypeFactory> typeFactory, Function<JTypeSystem, JExpressionInspector> expressionInspector) {
+    public JSimpleTypeSystem(JTypeCacheFactory cacheFactory, Collection<? extends JTypeResolver> initialResolvers, Function<JTypeSystem, JTypeFactory> typeFactory) {
         this.storage = new JInMemoryTypeStorage(cacheFactory);
         this.resolvers = new JInMemoryTypeResolvers();
         this.registerResolvers(initialResolvers);
         this.typeFactory = typeFactory.apply(this);
-        this.expressionInspector = expressionInspector.apply(this);
 
-        this.constants = new JInMemoryTypeConstants(
-                this.tryLocResolve(Object.class), this.tryLocResolve(Cloneable.class), this.tryLocResolve(Serializable.class),
-                this.tryLocResolve(RuntimeException.class),
-                this.typeFactory().newNoneType("void"), this.typeFactory().newNoneType("null"), this.typeFactory().newNoneType("none"),
-                this.tryLocResolve(Void.class),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(boolean.class), this.tryLocResolve(Boolean.class), "Z"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(byte.class), this.tryLocResolve(Byte.class), "B"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(short.class), this.tryLocResolve(Short.class), "S"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(char.class), this.tryLocResolve(Character.class), "C"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(int.class), this.tryLocResolve(Integer.class), "I"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(long.class), this.tryLocResolve(Long.class), "J"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(float.class), this.tryLocResolve(Float.class), "F"),
-                this.typeFactory().newPrimitiveType(JClassNamespace.of(double.class), this.tryLocResolve(Double.class), "D")
-        );
+        JInMemoryTypeConstants constants = new JInMemoryTypeConstants();
+        this.constants = constants;
+
+        constants.setVoidType(this.typeFactory.newNoneType("void"))
+                .setNullType(this.typeFactory.newNoneType("null"))
+                .setNoneType(this.typeFactory.newNoneType("none"));
+
+        constants.setBooleanType(this.typeFactory.newPrimitiveType(JClassNamespace.of(boolean.class), JClassNamespace.of(Boolean.class), "Z"))
+                .setByteType(this.typeFactory.newPrimitiveType(JClassNamespace.of(byte.class), JClassNamespace.of(Byte.class), "B"))
+                .setShortType(this.typeFactory.newPrimitiveType(JClassNamespace.of(short.class), JClassNamespace.of(Short.class), "S"))
+                .setCharType(this.typeFactory.newPrimitiveType(JClassNamespace.of(char.class), JClassNamespace.of(Character.class), "C"))
+                .setIntType(this.typeFactory.newPrimitiveType(JClassNamespace.of(int.class), JClassNamespace.of(Integer.class), "I"))
+                .setLongType(this.typeFactory.newPrimitiveType(JClassNamespace.of(long.class), JClassNamespace.of(Long.class), "J"))
+                .setFloatType(this.typeFactory.newPrimitiveType(JClassNamespace.of(float.class), JClassNamespace.of(Float.class), "F"))
+                .setDoubleType(this.typeFactory.newPrimitiveType(JClassNamespace.of(double.class), JClassNamespace.of(Double.class), "D"))
+                .initPrimitiveMaps();
+
+        constants.setObject(this.tryLocResolve(Object.class))
+                .setCloneable(this.tryLocResolve(Cloneable.class))
+                .setSerializable(this.tryLocResolve(Serializable.class))
+                .setRuntimeException(this.tryLocResolve(RuntimeException.class));
 
         this.operations = new JTypeOperationsImpl(this);
     }
@@ -117,11 +120,4 @@ public class JSimpleTypeSystem implements JTypeSystem {
     public JTypeFactory typeFactory() {
         return this.typeFactory;
     }
-
-    @Override
-    public JExpressionInspector expressionInspector() {
-        return this.expressionInspector;
-    }
-
-
 }

@@ -1,5 +1,6 @@
 package honeyroasted.jype.system;
 
+import honeyroasted.jype.location.JClassNamespace;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JPrimitiveType;
@@ -10,13 +11,11 @@ import java.util.Map;
 public interface JTypeConstants {
     List<JPrimitiveType> allPrimitives();
 
-    List<JClassReference> allBoxes();
-
     Map<String, JPrimitiveType> primitivesByName();
 
-    Map<JPrimitiveType, JClassReference> boxByPrimitive();
+    Map<JPrimitiveType, JClassNamespace> boxByPrimitive();
 
-    Map<JClassReference, JPrimitiveType> primitiveByBox();
+    Map<JClassNamespace, JPrimitiveType> primitiveByBox();
 
     JClassReference object();
 

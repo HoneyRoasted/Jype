@@ -1,5 +1,6 @@
 package honeyroasted.jype.system;
 
+import honeyroasted.jype.location.JClassNamespace;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JPrimitiveType;
@@ -11,53 +12,39 @@ import java.util.List;
 import java.util.Map;
 
 public final class JInMemoryTypeConstants implements JTypeConstants {
-    private final JClassReference object;
+    private JClassReference object;
     private JClassReference cloneable;
     private JClassReference serializable;
     private JClassReference runtimeException;
-    private final JNoneType voidType;
-    private final JNoneType nullType;
-    private final JNoneType noneType;
-    private final JClassReference voidBox;
-    private final JPrimitiveType booleanType;
-    private final JPrimitiveType byteType;
-    private final JPrimitiveType shortType;
-    private final JPrimitiveType charType;
-    private final JPrimitiveType intType;
-    private final JPrimitiveType longType;
-    private final JPrimitiveType floatType;
-    private final JPrimitiveType doubleType;
+    private JNoneType voidType;
+    private JNoneType nullType;
+    private JNoneType noneType;
+    private JClassReference voidBox;
+    private JPrimitiveType booleanType;
+    private JPrimitiveType byteType;
+    private JPrimitiveType shortType;
+    private JPrimitiveType charType;
+    private JPrimitiveType intType;
+    private JPrimitiveType longType;
+    private JPrimitiveType floatType;
+    private JPrimitiveType doubleType;
 
-    public JInMemoryTypeConstants(JClassReference object, JClassReference cloneable, JClassReference serializable,
-                                 JClassReference runtimeException,
-                                 JNoneType voidType, JNoneType nullType, JNoneType noneType, JClassReference voidBox,
-                                 JPrimitiveType booleanType, JPrimitiveType byteType, JPrimitiveType shortType,
-                                 JPrimitiveType charType, JPrimitiveType intType, JPrimitiveType longType,
-                                 JPrimitiveType floatType, JPrimitiveType doubleType) {
-        this.object = object;
-        this.cloneable = cloneable;
-        this.serializable = serializable;
-        this.runtimeException = runtimeException;
-        this.voidType = voidType;
-        this.nullType = nullType;
-        this.noneType = noneType;
-        this.voidBox = voidBox;
-        this.booleanType = booleanType;
-        this.byteType = byteType;
-        this.shortType = shortType;
-        this.charType = charType;
-        this.intType = intType;
-        this.longType = longType;
-        this.floatType = floatType;
-        this.doubleType = doubleType;
 
+    private List<JPrimitiveType> allPrimitives;
+    private List<JClassReference> allBoxes;
+
+    private Map<String, JPrimitiveType> primitivesByName = new LinkedHashMap<>();
+    private Map<JPrimitiveType, JClassNamespace> boxByPrimitive = new LinkedHashMap<>();
+    private Map<JClassNamespace, JPrimitiveType> primitiveByBox = new LinkedHashMap<>();
+
+    public JInMemoryTypeConstants initPrimitiveMaps() {
         this.allPrimitives = List.of(booleanType, byteType, shortType, charType, intType, longType, floatType, doubleType);
         List<JClassReference> allBoxes = new ArrayList<>();
 
         for (JPrimitiveType type : this.allPrimitives) {
             allBoxes.add(type.box());
-            boxByPrimitive.put(type, type.box());
-            primitiveByBox.put(type.box(), type);
+            boxByPrimitive.put(type, type.boxNamespace());
+            primitiveByBox.put(type.boxNamespace(), type);
             primitivesByName.put(type.name(), type);
         }
 
@@ -65,23 +52,92 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
         this.boxByPrimitive = Collections.unmodifiableMap(boxByPrimitive);
         this.primitivesByName = Collections.unmodifiableMap(primitivesByName);
         this.primitiveByBox = Collections.unmodifiableMap(primitiveByBox);
+        return this;
     }
 
-    private final List<JPrimitiveType> allPrimitives;
-    private final List<JClassReference> allBoxes;
+    public JInMemoryTypeConstants setObject(JClassReference object) {
+        this.object = object;
+        return this;
+    }
 
-    private Map<String, JPrimitiveType> primitivesByName = new LinkedHashMap<>();
-    private Map<JPrimitiveType, JClassReference> boxByPrimitive = new LinkedHashMap<>();
-    private Map<JClassReference, JPrimitiveType> primitiveByBox = new LinkedHashMap<>();
+    public JInMemoryTypeConstants setCloneable(JClassReference cloneable) {
+        this.cloneable = cloneable;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setSerializable(JClassReference serializable) {
+        this.serializable = serializable;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setRuntimeException(JClassReference runtimeException) {
+        this.runtimeException = runtimeException;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setVoidType(JNoneType voidType) {
+        this.voidType = voidType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setNullType(JNoneType nullType) {
+        this.nullType = nullType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setNoneType(JNoneType noneType) {
+        this.noneType = noneType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setVoidBox(JClassReference voidBox) {
+        this.voidBox = voidBox;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setBooleanType(JPrimitiveType booleanType) {
+        this.booleanType = booleanType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setByteType(JPrimitiveType byteType) {
+        this.byteType = byteType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setShortType(JPrimitiveType shortType) {
+        this.shortType = shortType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setCharType(JPrimitiveType charType) {
+        this.charType = charType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setIntType(JPrimitiveType intType) {
+        this.intType = intType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setLongType(JPrimitiveType longType) {
+        this.longType = longType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setFloatType(JPrimitiveType floatType) {
+        this.floatType = floatType;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setDoubleType(JPrimitiveType doubleType) {
+        this.doubleType = doubleType;
+        return this;
+    }
 
     @Override
     public List<JPrimitiveType> allPrimitives() {
         return allPrimitives;
-    }
-
-    @Override
-    public List<JClassReference> allBoxes() {
-        return allBoxes;
     }
 
     @Override
@@ -90,12 +146,12 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
     }
 
     @Override
-    public Map<JPrimitiveType, JClassReference> boxByPrimitive() {
+    public Map<JPrimitiveType, JClassNamespace> boxByPrimitive() {
         return this.boxByPrimitive;
     }
 
     @Override
-    public Map<JClassReference, JPrimitiveType> primitiveByBox() {
+    public Map<JClassNamespace, JPrimitiveType> primitiveByBox() {
         return this.primitiveByBox;
     }
 
@@ -218,4 +274,5 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
     public JClassReference doubleBox() {
         return doubleType.box();
     }
+
 }

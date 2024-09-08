@@ -123,10 +123,9 @@ implements <a href="JTypeSystem.html" title="interface in honeyroasted.jype.syst
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.cache.JTypeCacheFactory,honeyroasted.jype.system.resolver.JTypeResolver...)" class="member-name-link">JSimpleTypeSystem</a><wbr>(<a href="cache/JTypeCacheFactory.html" title="interface in honeyroasted.jype.system.cache">JTypeCacheFactory</a>&nbsp;cacheFactory,
  <a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>...&nbsp;initialResolvers)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.cache.JTypeCacheFactory,java.util.Collection,java.util.function.Function,java.util.function.Function)" class="member-name-link">JSimpleTypeSystem</a><wbr>(<a href="cache/JTypeCacheFactory.html" title="interface in honeyroasted.jype.system.cache">JTypeCacheFactory</a>&nbsp;cacheFactory,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.cache.JTypeCacheFactory,java.util.Collection,java.util.function.Function)" class="member-name-link">JSimpleTypeSystem</a><wbr>(<a href="cache/JTypeCacheFactory.html" title="interface in honeyroasted.jype.system.cache">JTypeCacheFactory</a>&nbsp;cacheFactory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&gt;&nbsp;initialResolvers,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a>&gt;&nbsp;typeFactory,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="expression/JExpressionInspector.html" title="interface in honeyroasted.jype.system.expression">JExpressionInspector</a>&gt;&nbsp;expressionInspector)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a>&gt;&nbsp;typeFactory)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.resolver.JTypeResolver...)" class="member-name-link">JSimpleTypeSystem</a><wbr>(<a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>...&nbsp;initialResolvers)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -147,30 +146,27 @@ implements <a href="JTypeSystem.html" title="interface in honeyroasted.jype.syst
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JTypeConstants.html" title="interface in honeyroasted.jype.system">JTypeConstants</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#constants()" class="member-name-link">constants</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="expression/JExpressionInspector.html" title="interface in honeyroasted.jype.system.expression">JExpressionInspector</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#expressionInspector()" class="member-name-link">expressionInspector</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="solver/operations/JTypeOperations.html" title="interface in honeyroasted.jype.system.solver.operations">JTypeOperations</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operations()" class="member-name-link">operations</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="solver/operations/JTypeOperations.html" title="interface in honeyroasted.jype.system.solver.operations">JTypeOperations</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operations()" class="member-name-link">operations</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerResolver(honeyroasted.jype.system.resolver.JTypeResolver)" class="member-name-link">registerResolver</a><wbr>(<a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&nbsp;resolver)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerResolver(honeyroasted.jype.system.resolver.JTypeResolver)" class="member-name-link">registerResolver</a><wbr>(<a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&nbsp;resolver)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;I,<wbr>
 O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;? extends O&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolve(java.lang.Class,java.lang.Class,I)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolve(java.lang.Class,java.lang.Class,I)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;O&gt;&nbsp;resultType,
  I&nbsp;key)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="resolver/JTypeResolvers.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolvers</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolvers()" class="member-name-link">resolvers</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="cache/JTypeStorage.html" title="interface in honeyroasted.jype.system.cache">JTypeStorage</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#storage()" class="member-name-link">storage</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="resolver/JTypeResolvers.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolvers</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolvers()" class="member-name-link">resolvers</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeFactory()" class="member-name-link">typeFactory</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="cache/JTypeStorage.html" title="interface in honeyroasted.jype.system.cache">JTypeStorage</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#storage()" class="member-name-link">storage</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeFactory()" class="member-name-link">typeFactory</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -217,12 +213,11 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 </section>
 </li>
 <li>
-<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.cache.JTypeCacheFactory,java.util.Collection,java.util.function.Function,java.util.function.Function)">
+<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.cache.JTypeCacheFactory,java.util.Collection,java.util.function.Function)">
 <h3>JSimpleTypeSystem</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JSimpleTypeSystem</span><wbr><span class="parameters">(<a href="cache/JTypeCacheFactory.html" title="interface in honeyroasted.jype.system.cache">JTypeCacheFactory</a>&nbsp;cacheFactory,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&gt;&nbsp;initialResolvers,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a>&gt;&nbsp;typeFactory,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="expression/JExpressionInspector.html" title="interface in honeyroasted.jype.system.expression">JExpressionInspector</a>&gt;&nbsp;expressionInspector)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;<a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>,<wbr><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a>&gt;&nbsp;typeFactory)</span></div>
 </section>
 </li>
 </ul>
@@ -303,16 +298,6 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="JTypeSystem.html#typeFactory()">typeFactory</a></code>&nbsp;in interface&nbsp;<code><a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="expressionInspector()">
-<h3>expressionInspector</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="expression/JExpressionInspector.html" title="interface in honeyroasted.jype.system.expression">JExpressionInspector</a></span>&nbsp;<span class="element-name">expressionInspector</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="JTypeSystem.html#expressionInspector()">expressionInspector</a></code>&nbsp;in interface&nbsp;<code><a href="JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a></code></dd>
 </dl>
 </section>
 </li>

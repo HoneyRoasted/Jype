@@ -33,6 +33,8 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     private List<JClassType> interfaces = new ArrayList<>();
     private List<JVarType> typeParameters = new ArrayList<>();
 
+    private List<JMethodReference> declaredMethods = new ArrayList<>();
+
     public JClassReferenceImpl(JTypeSystem typeSystem) {
         super(typeSystem);
     }
@@ -53,6 +55,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         copy.setSuperClass(this.superClass == null ? this.superClass : this.superClass.copy(cache));
         copy.setInterfaces(this.interfaces.stream().map(c -> (JClassType) c.copy(cache)).toList());
         copy.setTypeParameters(this.typeParameters.stream().map(v -> (JVarType) v.copy(cache)).toList());
+        copy.setDeclaredMethods(this.declaredMethods.stream().map(m -> (JMethodReference) m.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -108,18 +111,14 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     protected void makeUnmodifiable() {
         this.interfaces = List.copyOf(this.interfaces);
         this.typeParameters = List.copyOf(this.typeParameters);
+        this.declaredMethods = List.copyOf(this.declaredMethods);
     }
 
     @Override
     protected void makeModifiable() {
         this.interfaces = new ArrayList<>(this.interfaces);
         this.typeParameters = new ArrayList<>(this.typeParameters);
-    }
-
-    @Override
-    protected void checkUnmodifiable() {
-        this.interfaces = new ArrayList<>(this.interfaces);
-        this.typeParameters = new ArrayList<>(this.typeParameters);
+        this.declaredMethods = new ArrayList<>(this.declaredMethods);
     }
 
     public JClassNamespace namespace() {
@@ -162,6 +161,17 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     public void setOuterMethod(JMethodReference outerMethod) {
         this.checkUnmodifiable();
         this.outerMethod = outerMethod;
+    }
+
+    @Override
+    public List<JMethodReference> declaredMethods() {
+        return this.declaredMethods;
+    }
+
+    @Override
+    public void setDeclaredMethods(List<JMethodReference> methods) {
+        checkUnmodifiable();
+        this.declaredMethods = methods;
     }
 
     @Override
