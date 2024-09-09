@@ -100,7 +100,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
                         });
                     } else {
                         //Case where A_i is not a wildcard => alpha_i = A_i (18.3.2 Bullets #1)
-                        branch.add(new JTypeConstraints.Equal(alpha, a), Constraint.Status.ASSUMED);
+                        branch.add(JTypeConstraints.Equal.createBound(alpha, a), Constraint.Status.ASSUMED);
                     }
                 }
             }

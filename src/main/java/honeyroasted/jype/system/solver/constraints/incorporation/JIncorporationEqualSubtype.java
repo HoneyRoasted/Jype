@@ -37,11 +37,11 @@ public class JIncorporationEqualSubtype extends ConstraintMapper.Binary<JTypeCon
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
-                branch.add(new JTypeConstraints.Subtype(otherType, rr), Constraint.Status.ASSUMED);
+                branch.add(JTypeConstraints.Subtype.createBound(otherType, rr), Constraint.Status.ASSUMED);
             } else if (rr.typeEquals(mvt)) {
-                branch.add(new JTypeConstraints.Subtype(rl, otherType), Constraint.Status.ASSUMED);
+                branch.add(JTypeConstraints.Subtype.createBound(rl, otherType), Constraint.Status.ASSUMED);
             } else {
-                branch.add(new JTypeConstraints.Subtype(subResolver.visit(rl), subResolver.visit(rr)), Constraint.Status.ASSUMED);
+                branch.add(JTypeConstraints.Subtype.createBound(subResolver.visit(rl), subResolver.visit(rr)), Constraint.Status.ASSUMED);
             }
         }
     }

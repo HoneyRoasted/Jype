@@ -28,7 +28,7 @@ public class JBuildInitialBounds implements ConstraintMapper {
         metaVars.forEach((vt, mvt) -> {
             if (vt.upperBounds().isEmpty()) {
                 //Case where P_l has no upper bound, alpha_l <: Object
-                branch.add(new JTypeConstraints.Subtype(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
+                branch.add(JTypeConstraints.Subtype.createBound(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
             } else {
                 //Case where P_l has upper bounds
                 boolean foundProperUpper = false;
@@ -38,12 +38,12 @@ public class JBuildInitialBounds implements ConstraintMapper {
                         foundProperUpper = true;
                     }
                     //Upper bounds imply alpha_l <: T[P_1 = alpha_1... P_n = alpha_n], for each bound T
-                    branch.add(new JTypeConstraints.Subtype(mvt, resolved), Constraint.Status.ASSUMED);
+                    branch.add(JTypeConstraints.Subtype.createBound(mvt, resolved), Constraint.Status.ASSUMED);
                 }
 
                 if (!foundProperUpper) {
                     //If there is no proper upper bound, alpha_l <: Object
-                    branch.add(new JTypeConstraints.Subtype(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
+                    branch.add(JTypeConstraints.Subtype.createBound(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
                 }
             }
         });

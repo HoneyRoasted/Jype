@@ -22,7 +22,7 @@ public class InferenceTest {
         List<JArgumentType> explicitTypeArguments = List.of();
 
         JClassReference integer = system.constants().intBox();
-        List<JExpressionInformation> intParams = List.of(JExpressionInformation.of(system.constants().intType()));
+        List<JExpressionInformation> intParams = List.of(new JExpressionInformation.Constant.Simple(1));
 
         JExpressionInformation.Instantiation subInst = new JExpressionInformation.Instantiation.Simple(declaring, integer, intParams, explicitTypeArguments);
 
@@ -32,15 +32,13 @@ public class InferenceTest {
         JExpressionInformation.Instantiation instantiation = new JExpressionInformation.Instantiation.Simple(declaring, type, parameters, explicitTypeArguments);
         JClassType targetType = system.<JClassReference>tryResolve(List.class).parameterized(system.<JArgumentType>tryResolve(String.class));
 
-        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, LOOSE_INVOCATION, targetType);
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);
 
         ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)
                 .solve();
 
-        System.out.println(solve.toString(false));
+        System.out.println(solve.toString(true));
     }
-
-
 
 }

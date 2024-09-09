@@ -36,7 +36,7 @@ public class JIncorporationSubtypeSubtype extends ConstraintMapper.Binary<JTypeC
 
         if (ll instanceof JMetaVarType mvt && mvt.typeEquals(rr)) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
-            branch.add(new JTypeConstraints.Subtype(lr, rl), Constraint.Status.ASSUMED);
+            branch.add(JTypeConstraints.Subtype.createBound(lr, rl), Constraint.Status.ASSUMED);
         }
 
         if (ll instanceof JMetaVarType mvt && mvt.typeEquals(rl)) {
@@ -49,7 +49,7 @@ public class JIncorporationSubtypeSubtype extends ConstraintMapper.Binary<JTypeC
                         JType right = pair.right().typeArguments().get(i);
 
                         if (!(left instanceof JWildType) && !(right instanceof JWildType)) {
-                            branch.add(new JTypeConstraints.Equal(left, right), Constraint.Status.ASSUMED);
+                            branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.ASSUMED);
                         }
                     }
                 }

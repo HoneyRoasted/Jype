@@ -123,20 +123,20 @@ public class JResolveBounds extends ConstraintMapper.All {
 
                     if (!properLower.isEmpty()) {
                         JType lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        newBounds.put(new JTypeConstraints.Equal(mvt, lower), Constraint.Status.ASSUMED);
+                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, lower), Constraint.Status.ASSUMED);
                         y.lowerBounds().add(lower);
                     }
 
                     if (!properUpper.isEmpty()) {
                         JType upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                        newBounds.put(new JTypeConstraints.Equal(mvt, upper), Constraint.Status.ASSUMED);
+                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, upper), Constraint.Status.ASSUMED);
                         y.upperBounds().add(upper);
                     }
                 }
 
                 newBounds.entrySet().removeIf(entry -> entry.getKey() instanceof JTypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains));
 
-                freshVars.forEach((mv, fresh) -> newBounds.put(new JTypeConstraints.Equal(mv, fresh), Constraint.Status.ASSUMED));
+                freshVars.forEach((mv, fresh) -> newBounds.put(JTypeConstraints.Equal.createBound(mv, fresh), Constraint.Status.ASSUMED));
 
                 generatedBounds.clear();
                 generatedBounds.putAll(newBounds);

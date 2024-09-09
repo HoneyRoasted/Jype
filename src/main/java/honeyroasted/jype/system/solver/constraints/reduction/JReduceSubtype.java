@@ -83,9 +83,9 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
         } else if (right instanceof JArrayType at) {
             if (left instanceof JArrayType lat) {
                 if (at.component() instanceof JPrimitiveType && lat.component() instanceof JPrimitiveType) {
-                    branch.drop(constraint).add(new JTypeConstraints.Equal(lat.component(), at.component()), Constraint.Status.ASSUMED);
+                    branch.drop(constraint).add(JTypeConstraints.Equal.createBound(lat.component(), at.component()), Constraint.Status.ASSUMED);
                 } else {
-                    branch.drop(constraint).add(new JTypeConstraints.Subtype(lat.component(), at.component()), Constraint.Status.ASSUMED);
+                    branch.drop(constraint).add(JTypeConstraints.Subtype.createBound(lat.component(), at.component()), Constraint.Status.ASSUMED);
                 }
             } else {
                 Set<JType> arr = findMostSpecificArrayTypes(left);
