@@ -33,7 +33,7 @@ public class JInMemoryTypeResolvers implements JTypeResolvers {
                 }
             }
 
-            return JResolutionResult.inherit(value, building);
+            return building.size() == 1 ? building.get(0) : JResolutionResult.inherit(value, building);
         };
     }
 

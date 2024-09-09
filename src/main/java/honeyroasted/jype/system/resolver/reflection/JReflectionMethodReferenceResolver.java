@@ -19,7 +19,7 @@ public class JReflectionMethodReferenceResolver implements JTypeResolver<JMethod
         try {
             return JResolutionResult.inherit(value, JReflectionTypeResolution.createMethodReference(system, JReflectionTypeResolution.methodFromLocation(value), value));
         } catch (JResolutionFailedException | JReflectionLookupException e) {
-            return new JResolutionResult<>("Failed to lookup method from location", value, e);
+            return new JResolutionResult<>("Failed to lookup method from location via reflection", value, e);
         }
     }
 }

@@ -18,9 +18,8 @@ public class JReflectionClassReferenceResolver implements JTypeResolver<JClassLo
         try {
             return JResolutionResult.inherit(value, JReflectionTypeResolution.createClassReference(system, JReflectionTypeResolution.classFromLocation(value), value));
         } catch (JResolutionFailedException | JReflectionLookupException e) {
-            return new JResolutionResult<>("Failed to lookup class from location", value, e);
+            return new JResolutionResult<>("Failed to lookup class from location via reflection", value, e);
         }
     }
-
 
 }

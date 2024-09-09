@@ -18,7 +18,7 @@ public class JReflectionTypeParameterResolver implements JTypeResolver<JTypePara
         try {
             return JResolutionResult.inherit(value, JReflectionTypeResolution.createVarType(system, JReflectionTypeResolution.typeParameterFromLocation(value), value));
         } catch (JResolutionFailedException | JReflectionLookupException e) {
-            return new JResolutionResult<>("Failed to lookup type parameter from location", value, e);
+            return new JResolutionResult<>("Failed to lookup type parameter from location via reflection", value, e);
         }
     }
 

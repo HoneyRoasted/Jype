@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.ConstraintBranch;
-import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 

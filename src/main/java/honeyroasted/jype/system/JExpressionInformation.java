@@ -1,6 +1,5 @@
-package honeyroasted.jype.system.expression;
+package honeyroasted.jype.system;
 
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
@@ -13,11 +12,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public interface JExpressionInformation {
 
     static SimplyTyped of(JType type) {
-        return SimplyTyped.of(type);
+        return new SimplyTyped.Simple(type);
     }
 
     String simpleName();
@@ -31,20 +31,15 @@ public interface JExpressionInformation {
     }
 
     interface SimplyTyped extends JExpressionInformation {
-
-        static SimplyTyped of(JType type) {
-            return new Just(type);
-        }
-
-        record Just(JType type) implements SimplyTyped {
-            @Override
-            public String simpleName() {
-                return "expr(" + this.type.simpleName() + ")";
-            }
-
+        record Simple(JType type) implements SimplyTyped {
             @Override
             public JType type(JTypeSystem system) {
                 return this.type;
+            }
+
+            @Override
+            public String simpleName() {
+                return this.type.simpleName();
             }
 
             @Override
@@ -67,6 +62,17 @@ public interface JExpressionInformation {
     }
 
     interface Constant extends SimplyTyped {
+        record Simple(Object value) implements Constant {
+            @Override
+            public String simpleName() {
+                return String.valueOf(this.value);
+            }
+
+            @Override
+            public String toString() {
+                return "const(" + this.value + ")";
+            }
+        }
 
         Object value();
 
@@ -88,6 +94,18 @@ public interface JExpressionInformation {
     }
 
     interface Multi extends JExpressionInformation {
+        record Simple(List<? extends JExpressionInformation> children) implements Multi {
+            @Override
+            public String simpleName() {
+                return this.children().stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(" & "));
+            }
+
+            @Override
+            public String toString() {
+                return "multi(" + this.children.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ")";
+            }
+        }
+
         List<? extends JExpressionInformation> children();
 
         @Override
@@ -132,10 +150,43 @@ public interface JExpressionInformation {
     }
 
     interface Instantiation extends Invocation {
+        record Simple(JClassReference declaring, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements Instantiation {
+            @Override
+            public String simpleName() {
+                return "new " + this.type.simpleName() +
+                        (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                        "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+            }
+
+            @Override
+            public String toString() {
+                return "instantiation(" + this.type +
+                        (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::toString).collect(Collectors.joining(", ")) + ">") +
+                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + this.declaring + ")";
+            }
+        }
+
         JClassReference type();
     }
 
     interface MethodInvocation<T> extends Invocation {
+        record Simple<T>(JClassReference declaring, T source, String name, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements MethodInvocation<T> {
+            @Override
+            public String simpleName() {
+                return (this.source instanceof JExpressionInformation expr ? expr.simpleName() : this.source instanceof JType type ? type.simpleName() : this.source) +
+                        "." + name +
+                        (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                        "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+            }
+
+            @Override
+            public String toString() {
+                return "invocation(" + this.source + "." + name +
+                        (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::toString).collect(Collectors.joining(", ")) + ">") +
+                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + this.declaring + ")";
+            }
+        }
+
         T source();
 
         String name();

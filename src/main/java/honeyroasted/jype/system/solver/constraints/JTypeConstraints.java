@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;

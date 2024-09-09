@@ -5,7 +5,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
-import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JArrayType;
