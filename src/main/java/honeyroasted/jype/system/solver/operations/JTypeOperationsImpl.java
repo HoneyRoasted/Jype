@@ -1,29 +1,13 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.constraints.JTypeCompatibility;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleExplicitCast;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleLooseInvocation;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleStrictInvocation;
-import honeyroasted.jype.system.solver.constraints.compatibility.JEqualType;
-import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
-import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionSimplyTyped;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeArray;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeEquality;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeGenericClass;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeIntersection;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeNone;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypePrimitive;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeRawClass;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeUnchecked;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeVar;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeWild;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationCapture;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualEqual;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualSubtype;
@@ -36,8 +20,10 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceMultiExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSubtype;
+import honeyroasted.jype.system.solver.constraints.tracker.JConstraintTracker;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolver;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JClassReference;
@@ -54,31 +40,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class JTypeOperationsImpl implements JTypeOperations {
-    public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
-            new ConstraintMapper.True(),
-            new ConstraintMapper.False(),
-
-            new JEqualType(),
-
-            new JCompatibleExplicitCast(),
-            new JCompatibleLooseInvocation(),
-            new JCompatibleStrictInvocation(),
-
-            new JExpressionAssignmentConstant(),
-            new JExpressionSimplyTyped(),
-
-            new JSubtypeNone(),
-            new JSubtypePrimitive(),
-            new JSubtypeEquality(),
-            new JSubtypeUnchecked(),
-            new JSubtypeRawClass(),
-            new JSubtypeGenericClass(),
-            new JSubtypeArray(),
-            new JSubtypeVar(),
-            new JSubtypeWild(),
-            new JSubtypeIntersection()
-    ));
-
     public static final ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
@@ -96,6 +57,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceSubtype(),
             new JReduceCompatible(),
             new JReduceSimplyTypedExpression(),
+            new JReduceMultiExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
             //TODO implement non-simply typed expressions
@@ -124,6 +86,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceSubtype(),
             new JReduceCompatible(),
             new JReduceSimplyTypedExpression(),
+            new JReduceMultiExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
             //TODO implement non-simply typed expressions
@@ -182,18 +145,8 @@ public class JTypeOperationsImpl implements JTypeOperations {
     }
 
     @Override
-    public ConstraintMapperApplier compatibilityApplier() {
-        return COMPATIBILITY_APPLIER;
-    }
-
-    @Override
     public ConstraintMapperApplier initialBoundsApplier() {
         return BUILD_INITIAL_BOUNDS_APPLIER;
-    }
-
-    @Override
-    public ConstraintSolver compatibilitySolver() {
-        return new ConstraintSolver(List.of(COMPATIBILITY_APPLIER));
     }
 
     @Override
@@ -248,14 +201,6 @@ public class JTypeOperationsImpl implements JTypeOperations {
     }
 
     @Override
-    public Constraint.Status checkStatus(Constraint constraint, PropertySet context) {
-        return this.compatibilitySolver()
-                .bind(constraint)
-                .solve(context)
-                .status();
-    }
-
-    @Override
     public Set<JType> findAllKnownSupertypes(JType type) {
         return FIND_ALL_KNOWN_SUPERTYPES.apply(this.typeSystem, type);
     }
@@ -292,6 +237,16 @@ public class JTypeOperationsImpl implements JTypeOperations {
             return Optional.ofNullable(current);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void checkSubtype(JType left, JType right, JConstraintTracker tracker) {
+        JTypeCompatibility.checkSubtype(left, right, tracker);
+    }
+
+    @Override
+    public void checkCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context, JConstraintTracker tracker) {
+        JTypeCompatibility.checkCompatible(left, right, context, tracker);
     }
 
 

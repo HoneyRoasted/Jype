@@ -6,8 +6,8 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -69,6 +69,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
             } else {
                 JMetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
                 ConstraintTree solved = system.operations().inferenceSolver()
+                        .bind(JTypeConstraints.Subtype.createBound(mvt, system.constants().object()))
                         .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
                         .solve();
 

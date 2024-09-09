@@ -32,7 +32,9 @@ public class InferenceTest {
         JExpressionInformation.Instantiation instantiation = new JExpressionInformation.Instantiation.Simple(declaring, type, parameters, explicitTypeArguments);
         JClassType targetType = system.<JClassReference>tryResolve(List.class).parameterized(system.<JArgumentType>tryResolve(String.class));
 
-        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);
+        JExpressionInformation.MethodInvocation<JExpressionInformation> invoke = new JExpressionInformation.MethodInvocation.Simple<>(declaring, instantiation, "size", List.of(), List.of());
+
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(invoke, ASSIGNMENT, system.tryResolve(Integer.class));
 
         ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)

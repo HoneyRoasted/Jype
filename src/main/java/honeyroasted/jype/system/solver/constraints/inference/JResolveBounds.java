@@ -55,7 +55,7 @@ public class JResolveBounds extends ConstraintMapper.All {
             return;
         }
 
-        Set<JMetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
+        Set<JMetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations, branch);
         if (!subset.isEmpty()) {
             Map<Constraint, Constraint.Status> generatedBounds = new HashMap<>();
 
@@ -123,14 +123,12 @@ public class JResolveBounds extends ConstraintMapper.All {
 
                     if (!properLower.isEmpty()) {
                         JType lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, lower), Constraint.Status.ASSUMED);
-                        y.lowerBounds().add(lower);
+                        newBounds.put(JTypeConstraints.Subtype.createBound(lower, y), Constraint.Status.ASSUMED);
                     }
 
                     if (!properUpper.isEmpty()) {
                         JType upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, upper), Constraint.Status.ASSUMED);
-                        y.upperBounds().add(upper);
+                        newBounds.put(JTypeConstraints.Subtype.createBound(y, upper), Constraint.Status.ASSUMED);
                     }
                 }
 
@@ -148,14 +146,11 @@ public class JResolveBounds extends ConstraintMapper.All {
             generatedBounds.forEach(snap::add);
 
             system.operations().incorporationApplier().accept(temp);
-            system.operations().reductionApplier().accept(temp);
 
             if (temp.numBranches() == 1 && snap.status().isTrue()) {
                 //Diverging means it failed, I think
                 branch.metadata().inheritFrom(snap.metadata());
                 snap.constraints().forEach(branch::add);
-            } else {
-                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
             }
         } else {
             branch.add(Constraint.FALSE, Constraint.Status.FALSE);
@@ -186,46 +181,55 @@ public class JResolveBounds extends ConstraintMapper.All {
         return Pair.of(upperBounds, lowerBounds);
     }
 
-    private Set<JMetaVarType> findSubset(Set<JMetaVarType> currentMetaVars, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations) {
+    private Set<JMetaVarType> findSubset(Set<JMetaVarType> currentMetaVars, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations, ConstraintBranch branch) {
+        Set<JMetaVarType> max = Collections.emptySet();
+
         for (JMetaVarType mvt : currentMetaVars) {
-            Set<JMetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet());
-            if (!subset.isEmpty()) {
-                return subset;
+            Set<JMetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet(), branch);
+            if (subset.size() > max.size()) {
+                max = subset;
             }
         }
 
-        return Collections.emptySet();
+        return max;
     }
 
-    private Set<JMetaVarType> trySubsetWithBase(JMetaVarType base, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations, Set<JMetaVarType> building) {
+    private Set<JMetaVarType> trySubsetWithBase(JMetaVarType base, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations, Set<JMetaVarType> building, ConstraintBranch branch) {
         if (building.contains(base)) return building;
 
-        Set<JMetaVarType> res = new HashSet<>(building);
+        Set<JMetaVarType> res = new LinkedHashSet<>(building);
         res.add(base);
 
-        for (JMetaVarType dep : dependencies.get(base)) {
-            if (base != dep) {
-                if (instantiations.containsKey(dep)) {
-                    res.add(dep);
-                } else {
-                    boolean foundEquiv = true;
-                    for (JType eq : dep.equalities()) {
-                        if (eq instanceof JMetaVarType equiv) {
-                            Set<JMetaVarType> discover = trySubsetWithBase(equiv, dependencies, instantiations, res);
-                            if (!discover.isEmpty()) {
-                                res.addAll(discover);
-                                break;
-                            } else {
-                                foundEquiv = false;
+        try {
+            for (JMetaVarType dep : dependencies.get(base)) {
+                if (base != dep) {
+                    if (instantiations.containsKey(dep)) {
+                        res.add(dep);
+                    } else {
+                        boolean foundEquiv = true;
+                        for (JType eq : dep.equalities()) {
+                            if (eq instanceof JMetaVarType equiv) {
+                                Set<JMetaVarType> discover = trySubsetWithBase(equiv, dependencies, instantiations, res, branch);
+                                if (!discover.isEmpty()) {
+                                    res.addAll(discover);
+                                    break;
+                                } else {
+                                    foundEquiv = false;
+                                }
                             }
                         }
-                    }
 
-                    if (!foundEquiv) {
-                        return Collections.emptySet();
+                        if (!foundEquiv) {
+                            return Collections.emptySet();
+                        }
                     }
                 }
             }
+        } catch (NullPointerException npe) {
+            System.out.println(dependencies);
+            System.out.println(instantiations);
+            System.out.println(base);
+            throw npe;
         }
 
         return res;
@@ -235,9 +239,7 @@ public class JResolveBounds extends ConstraintMapper.All {
         Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
         for (JMetaVarType mvt : mvts) {
             JType instantiation = instantiations.getOrDefault(mvt, findInstantiation(mvt, bounds));
-            if (instantiation == null) {
-                return new LinkedHashMap<>();
-            } else {
+            if (instantiation != null) {
                 instantiations.put(mvt, instantiation);
             }
         }

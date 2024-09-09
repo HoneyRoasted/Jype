@@ -1,12 +1,12 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
-import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.system.solver.constraints.tracker.JConstraintTracker;
+import honeyroasted.jype.system.solver.constraints.tracker.JStatusConstraintTracker;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
@@ -33,11 +33,7 @@ public interface JTypeOperations {
 
     ConstraintMapperApplier incorporationApplier();
 
-    ConstraintMapperApplier compatibilityApplier();
-
     ConstraintMapperApplier initialBoundsApplier();
-
-    ConstraintSolver compatibilitySolver();
 
     ConstraintSolver inferenceSolver();
 
@@ -49,16 +45,6 @@ public interface JTypeOperations {
         ConstraintSolver solver = this.inferenceSolver();
         correspondence.forEach((vt, mvt) -> solver.bind(new JTypeConstraints.Infer(mvt, vt)));
         return solver;
-    }
-
-    Constraint.Status checkStatus(Constraint constraint, PropertySet context);
-
-    default boolean isCompatible(JType subtype, JType supertype, JTypeConstraints.Compatible.Context ctx) {
-        return checkStatus(new JTypeConstraints.Compatible(subtype, ctx, supertype), new PropertySet().attach(system())).isTrue();
-    }
-
-    default boolean isSubtype(JType subtype, JType supertype) {
-        return checkStatus(new JTypeConstraints.Subtype(subtype, supertype), new PropertySet().attach(system())).isTrue();
     }
 
     Set<JType> findAllKnownSupertypes(JType type);
@@ -73,4 +59,19 @@ public interface JTypeOperations {
 
     Optional<JClassType> outerTypeFromDeclaring(JClassReference instance, JClassReference declaring);
 
+    default boolean isSubtype(JType left, JType right) {
+        JConstraintTracker tracker = new JStatusConstraintTracker();
+        checkSubtype(left, right, tracker);
+        return tracker.status();
+    }
+
+    void checkSubtype(JType left, JType right, JConstraintTracker tracker);
+
+    default boolean isCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context) {
+        JConstraintTracker tracker = new JStatusConstraintTracker();
+        checkCompatible(left, right, context, tracker);
+        return tracker.status();
+    }
+
+    void checkCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context, JConstraintTracker tracker);
 }

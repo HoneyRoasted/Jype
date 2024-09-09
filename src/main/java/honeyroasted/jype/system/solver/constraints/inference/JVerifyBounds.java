@@ -21,7 +21,7 @@ public class JVerifyBounds implements ConstraintMapper {
 
             branch.constraints().forEach((con, status) -> {
                 if (status == Constraint.Status.ASSUMED) {
-                    Constraint.Status check = system.operations().checkStatus(con, context);
+                    Constraint.Status check = Constraint.Status.FALSE;
                     if (check.isKnown()) {
                         branch.set(con, check);
                     } else {

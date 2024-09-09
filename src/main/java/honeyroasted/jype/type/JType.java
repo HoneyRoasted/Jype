@@ -32,11 +32,11 @@ public interface JType extends Copyable<JType, JTypeCache<JType, JType>> {
     }
 
     default boolean isCompatibleTo(JType other, JTypeConstraints.Compatible.Context context) {
-        return this.typeSystem().operations().isCompatible(this, other, context);
+        return typeSystem().operations().isCompatible(this, other, context);
     }
 
     default boolean isCompatibleFrom(JType other, JTypeConstraints.Compatible.Context context) {
-        return this.typeSystem().operations().isCompatible(other, this, context);
+        return typeSystem().operations().isCompatible(other, this, context);
     }
 
     default boolean isAssignableTo(JType other) {
@@ -45,6 +45,14 @@ public interface JType extends Copyable<JType, JTypeCache<JType, JType>> {
 
     default boolean isAssignableFrom(JType other) {
         return this.isCompatibleFrom(other, JTypeConstraints.Compatible.Context.ASSIGNMENT);
+    }
+
+    default boolean isSubtypeOf(JType other) {
+        return typeSystem().operations().isSubtype(this, other);
+    }
+
+    default boolean isSupertypeOf(JType other) {
+        return typeSystem().operations().isSubtype(other, this);
     }
 
     static boolean baseCaseEquivalence(JType left, JType other, Set<Pair<JType, JType>> seen) {

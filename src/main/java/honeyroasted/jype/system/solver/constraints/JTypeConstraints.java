@@ -2,10 +2,16 @@ package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.Constraint;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public interface JTypeConstraints {
     final class Equal extends Constraint.Binary<JType, JType> {
@@ -244,6 +250,78 @@ public interface JTypeConstraints {
         @Override
         public String simpleName() {
             return this.left().simpleName() + " = capture(" + this.right().simpleName() + ")";
+        }
+    }
+
+    class OuterTypesMatch extends Constraint.Binary<JClassType, JClassType> {
+        public OuterTypesMatch(JClassType left, JClassType right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " OUTER TYPES MATCH " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left().simpleName() + " outers-match " + this.right().simpleName();
+        }
+    }
+
+    class TypeArgumentsMatch extends Constraint.Binary<JClassType, JClassType> {
+        public TypeArgumentsMatch(JClassType left, JClassType right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " TYPE ARGUMENTS MATCH " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left().simpleName() + " arguments-match " + this.right().simpleName();
+        }
+    }
+
+    class TypeArgumentMatch extends Constraint.Binary<JType, JType> {
+
+        public TypeArgumentMatch(JType left, JType right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " MATCHES " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.left().simpleName() + " ~= " + this.right().simpleName();
+        }
+    }
+
+    class Multi implements Constraint {
+        private List<Constraint> children;
+
+        public Multi(Collection<Constraint> children) {
+            this.children = List.copyOf(children);
+        }
+
+        @Override
+        public String simpleName() {
+            return this.children.stream().map(Constraint::simpleName).collect(Collectors.joining(" & "));
+        }
+
+        @Override
+        public String toString() {
+            return "MULTI(" + this.children.stream().map(Constraint::toString).collect(Collectors.joining(", ")) + ")";
+        }
+
+        @Override
+        public List<Object> parameters() {
+            return new ArrayList<>(this.children);
         }
     }
 }
