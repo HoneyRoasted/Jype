@@ -7,16 +7,16 @@ import java.util.Stack;
 import java.util.function.Consumer;
 
 public class JStatusConstraintTracker implements JConstraintTracker {
-    private Stack<Boolean> stack = new Stack<>();
+    private Stack<JConstraintResult.Status> stack = new Stack<>();
     private Stack<JConstraintResult.Operator> opStac = new Stack<>();
-    private boolean head;
+    private JConstraintResult.Status head;
     private JConstraintResult.Operator headOp = JConstraintResult.Operator.SET;
 
     public void or() {
         stack.push(head);
         opStac.push(headOp);
 
-        head = false;
+        head = JConstraintResult.Status.UNKNOWN;
         headOp = JConstraintResult.Operator.OR;
     }
 
@@ -24,7 +24,7 @@ public class JStatusConstraintTracker implements JConstraintTracker {
         stack.push(head);
         opStac.push(headOp);
 
-        head = true;
+        head = JConstraintResult.Status.ASSUMED;
         headOp = JConstraintResult.Operator.AND;
     }
 
@@ -34,18 +34,18 @@ public class JStatusConstraintTracker implements JConstraintTracker {
     }
 
     @Override
-    public JConstraintTracker with(boolean value) {
+    public JConstraintTracker with(JConstraintResult.Status value) {
         switch (this.headOp) {
             case SET -> this.head = value;
-            case AND -> this.head &= value;
-            case OR -> this.head |= value;
+            case AND -> this.head = this.head.and(value);
+            case OR -> this.head = this.head.or(value);
         }
         return this;
     }
 
     @Override
     public JConstraintTracker parent() {
-        boolean curr = this.head;
+        JConstraintResult.Status curr = this.head;
 
         this.head = stack.pop();
         this.headOp = opStac.pop();
@@ -81,16 +81,16 @@ public class JStatusConstraintTracker implements JConstraintTracker {
 
     @Override
     public boolean canChange() {
-        return headOp == JConstraintResult.Operator.SET || (headOp == JConstraintResult.Operator.OR && head == false) || (headOp == JConstraintResult.Operator.AND && head == true);
+        return headOp == JConstraintResult.Operator.SET || (headOp == JConstraintResult.Operator.OR && head == JConstraintResult.Status.FALSE) || (headOp == JConstraintResult.Operator.AND && head == JConstraintResult.Status.TRUE);
     }
 
     @Override
-    public boolean status() {
+    public JConstraintResult.Status status() {
         return head;
     }
 
     @Override
     public JConstraintResult result() {
-        return new JConstraintResult(this.head, this.head ? Constraint.TRUE : Constraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
+        return new JConstraintResult(this.head, this.head.isTrue() ? Constraint.TRUE : Constraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
     }
 }

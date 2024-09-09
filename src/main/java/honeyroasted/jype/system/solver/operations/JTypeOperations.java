@@ -62,7 +62,7 @@ public interface JTypeOperations {
     default boolean isSubtype(JType left, JType right) {
         JConstraintTracker tracker = new JStatusConstraintTracker();
         checkSubtype(left, right, tracker);
-        return tracker.status();
+        return tracker.status().isTrue();
     }
 
     void checkSubtype(JType left, JType right, JConstraintTracker tracker);
@@ -70,7 +70,7 @@ public interface JTypeOperations {
     default boolean isCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context) {
         JConstraintTracker tracker = new JStatusConstraintTracker();
         checkCompatible(left, right, context, tracker);
-        return tracker.status();
+        return tracker.status().isTrue();
     }
 
     void checkCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context, JConstraintTracker tracker);

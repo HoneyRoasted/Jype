@@ -34,7 +34,7 @@ public class JTreeConstraintTracker implements JConstraintTracker {
 
         head = new Entry();
         head.op = JConstraintResult.Operator.OR;
-        head.success = false;
+        head.success = JConstraintResult.Status.UNKNOWN;
 
         curr.children.add(head);
     }
@@ -45,7 +45,7 @@ public class JTreeConstraintTracker implements JConstraintTracker {
 
         head = new Entry();
         head.op = JConstraintResult.Operator.AND;
-        head.success = true;
+        head.success = JConstraintResult.Status.ASSUMED;
 
         curr.children.add(head);
     }
@@ -75,11 +75,11 @@ public class JTreeConstraintTracker implements JConstraintTracker {
     }
 
     @Override
-    public JConstraintTracker with(boolean value) {
+    public JConstraintTracker with(JConstraintResult.Status value) {
         switch (head.op) {
             case SET -> head.success = value;
-            case AND -> head.success &= value;
-            case OR -> head.success |= value;
+            case AND -> head.success = head.success.and(value);
+            case OR -> head.success = head.success.or(value);
         }
         return this;
     }
@@ -102,11 +102,11 @@ public class JTreeConstraintTracker implements JConstraintTracker {
 
     @Override
     public boolean canChange() {
-        return head.op == JConstraintResult.Operator.SET || (head.op == JConstraintResult.Operator.OR && head.success == false) || (head.op == JConstraintResult.Operator.AND && head.success == true);
+        return head.op == JConstraintResult.Operator.SET || (head.op == JConstraintResult.Operator.OR && head.success != JConstraintResult.Status.TRUE) || (head.op == JConstraintResult.Operator.AND && head.success != JConstraintResult.Status.FALSE);
     }
 
     @Override
-    public boolean status() {
+    public JConstraintResult.Status status() {
         return head.success;
     }
 
@@ -114,11 +114,11 @@ public class JTreeConstraintTracker implements JConstraintTracker {
     public JConstraintResult result() {
         JConstraintResult result = this.head.toResult();
         return result != null ? result :
-                new JConstraintResult(this.head.success, this.head.success ? Constraint.TRUE : Constraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
+                new JConstraintResult(this.head.success, this.head.success.isTrue() ? Constraint.TRUE : Constraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
     }
 
     private static class Entry {
-        public boolean success = false;
+        public JConstraintResult.Status success = JConstraintResult.Status.UNKNOWN;
         public JConstraintResult.Operator op = JConstraintResult.Operator.SET;
         public Set<Constraint> constraint = new LinkedHashSet<>();
         public List<Entry> children = new ArrayList<>();

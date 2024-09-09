@@ -12,19 +12,27 @@ public interface JConstraintTracker {
 
     JConstraintTracker then(Consumer<JConstraintTracker> cons);
 
+    default JConstraintTracker with(Constraint constraint, JConstraintResult.Status value) {
+        return with(constraint).with(value);
+    }
+
     default JConstraintTracker with(Constraint constraint, boolean value) {
         return with(constraint).with(value);
     }
 
+    default JConstraintTracker with(boolean value) {
+        return with(JConstraintResult.Status.known(value));
+    }
+
     JConstraintTracker with(Constraint constraint);
 
-    JConstraintTracker with(boolean value);
+    JConstraintTracker with(JConstraintResult.Status value);
 
     JConstraintTracker parent();
 
     boolean canChange();
 
-    boolean status();
+    JConstraintResult.Status status();
 
     JConstraintResult result();
 
