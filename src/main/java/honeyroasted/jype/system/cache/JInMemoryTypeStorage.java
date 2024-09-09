@@ -14,7 +14,7 @@ public class JInMemoryTypeStorage implements JTypeStorage {
     }
 
     @Override
-    public <K, T extends JType> JTypeCache<K, T> cacheFor(Class<?> keyType) {
+    public <K, T extends JType> JTypeCache<K, T> cacheFor(Class<K> keyType) {
         return this.caches.computeIfAbsent(keyType, this.factory::createCache);
     }
 }

@@ -2,22 +2,21 @@ package honeyroasted.jype.system.resolver.reflection;
 
 import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JMethodReference;
-import honeyroasted.jype.type.JType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 public class JReflectionJavaMethodResolver implements JTypeResolver<Executable, JMethodReference> {
 
     @Override
-    public Optional<? extends JMethodReference> resolve(JTypeSystem system, Executable value) {
-        Optional<JType> cached = system.storage().cacheFor(Executable.class).get(value);
-        if (cached.isPresent() && cached.get() instanceof JMethodReference mRef) {
-            return Optional.of(mRef);
+    public JResolutionResult<Executable, JMethodReference> resolve(JTypeSystem system, Executable value) {
+        JResolutionResult<Executable, JMethodReference> cached = system.storage().cacheFor(Executable.class).asResolution(value);
+        if (cached.success()) {
+            return cached;
         }
 
         JMethodLocation location;
@@ -27,17 +26,17 @@ public class JReflectionJavaMethodResolver implements JTypeResolver<Executable, 
         } else if (value instanceof Constructor<?> constructor) {
             location = JMethodLocation.of(constructor);
         } else {
-            return Optional.empty();
+            return new JResolutionResult<>("Unknown executable type", value);
         }
 
-        Optional<JType> locCached = system.storage().cacheFor(JMethodLocation.class).get(location);
-        if (locCached.isPresent() && locCached.get() instanceof JMethodReference mRef) {
-            return Optional.of(mRef);
+        JResolutionResult<JMethodLocation, JMethodReference> locCached = system.storage().cacheFor(JMethodLocation.class).asResolution(location);
+        if (locCached.success()) {
+            return JResolutionResult.inherit(value, locCached);
         }
 
-        Optional<? extends JMethodReference> attemptByLocation = system.resolve(location);
-        if (attemptByLocation.isPresent()) {
-            return attemptByLocation;
+        JResolutionResult<JMethodLocation, JMethodReference> attemptByLocation = system.resolve(location);
+        if (attemptByLocation.success()) {
+            return JResolutionResult.inherit(value, attemptByLocation);
         } else {
             return JReflectionTypeResolution.createMethodReference(system, value, location);
         }

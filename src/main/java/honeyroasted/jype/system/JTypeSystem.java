@@ -5,7 +5,7 @@ import honeyroasted.jype.location.JClassSourceName;
 import honeyroasted.jype.location.JMethodLocation;
 import honeyroasted.jype.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JTypeStorage;
-import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
+import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
 import honeyroasted.jype.system.resolver.reflection.JTypeToken;
@@ -17,7 +17,6 @@ import honeyroasted.jype.type.JVarType;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Optional;
 
 public interface JTypeSystem {
     JTypeSystem RUNTIME_REFLECTION = new JSimpleTypeSystem();
@@ -32,73 +31,75 @@ public interface JTypeSystem {
 
     JTypeFactory typeFactory();
 
-    <I, O extends JType> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key);
+    default <I, O extends JType> JResolutionResult<I, O> resolve(Class<I> keyType, Class<O> resultType, I key) {
+        return resolvers().resolverFor(keyType, resultType).resolve(this, key);
+    }
 
-    default <T extends JType> Optional<T> resolve(JClassSourceName sourceName) {
-        return (Optional<T>) this.resolve(JClassSourceName.class, JType.class, sourceName);
+    default <T extends JType> JResolutionResult<JClassSourceName, T> resolve(JClassSourceName sourceName) {
+        return (JResolutionResult) this.resolve(JClassSourceName.class, JType.class, sourceName);
     }
 
     default  <T extends JType> T tryResolve(JClassSourceName sourceName) {
-        return this.<T>resolve(sourceName).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + sourceName + " to a type"));
+        return this.<T>resolve(sourceName).getOrThrow();
     }
     
-    default <T extends JType> Optional<T> resolve(JTypeToken<?> token) {
-        return (Optional<T>) this.resolve(JTypeToken.class, JType.class, token);
+    default <T extends JType> JResolutionResult<JTypeToken<?>, T> resolve(JTypeToken<?> token) {
+        return (JResolutionResult) this.resolve(JTypeToken.class, JType.class, token);
     }
 
     
     default <T extends JType> T tryResolve(JTypeToken<?> token) {
-        return this.<T>resolve(token).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + token + " to a type"));
+        return this.<T>resolve(token).getOrThrow();
     }
 
     
-    default <T extends JType> Optional<T> resolve(Type reflectionType) {
-        return (Optional<T>) this.resolve(Type.class, JType.class, reflectionType);
+    default <T extends JType> JResolutionResult<Type, T> resolve(Type reflectionType) {
+        return (JResolutionResult) this.resolve(Type.class, JType.class, reflectionType);
     }
 
     
     default <T extends JType> T tryResolve(Type reflectionType) {
-        return this.<T>resolve(reflectionType).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + reflectionType + " to a type"));
+        return this.<T>resolve(reflectionType).getOrThrow();
     }
 
     
-    default <T extends JType> Optional<T> resolve(JClassLocation classLocation) {
-        return (Optional<T>) this.resolve(JClassLocation.class, JType.class, classLocation);
+    default <T extends JType> JResolutionResult<JClassLocation, T> resolve(JClassLocation classLocation) {
+        return (JResolutionResult) this.resolve(JClassLocation.class, JType.class, classLocation);
     }
 
     
     default <T extends JType> T tryResolve(JClassLocation classLocation) {
-        return this.<T>resolve(classLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + classLocation + " to a type"));
+        return this.<T>resolve(classLocation).getOrThrow();
     }
 
     
-    default <T extends JMethodReference> Optional<T> resolve(Executable executable) {
-        return (Optional<T>) this.resolve(Executable.class, JMethodReference.class, executable);
+    default <T extends JMethodReference> JResolutionResult<Executable, T> resolve(Executable executable) {
+        return (JResolutionResult) this.resolve(Executable.class, JMethodReference.class, executable);
     }
 
     
     default <T extends JMethodReference> T tryResolve(Executable executable) {
-        return this.<T>resolve(executable).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + executable + " to a type"));
+        return this.<T>resolve(executable).getOrThrow();
     }
 
     
-    default <T extends JMethodReference> Optional<T> resolve(JMethodLocation methodLocation) {
-        return (Optional<T>) this.resolve(JMethodLocation.class, JMethodReference.class, methodLocation);
+    default <T extends JMethodReference> JResolutionResult<JMethodLocation, T> resolve(JMethodLocation methodLocation) {
+        return (JResolutionResult) this.resolve(JMethodLocation.class, JMethodReference.class, methodLocation);
     }
 
     
     default <T extends JMethodReference> T tryResolve(JMethodLocation methodLocation) {
-        return this.<T>resolve(methodLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + methodLocation + " to a type"));
+        return this.<T>resolve(methodLocation).getOrThrow();
     }
 
     
-    default <T extends JVarType> Optional<T> resolve(JTypeParameterLocation parameterLocation) {
-        return (Optional<T>) this.resolve(JTypeParameterLocation.class, JVarType.class, parameterLocation);
+    default <T extends JVarType> JResolutionResult<JTypeParameterLocation, T> resolve(JTypeParameterLocation parameterLocation) {
+        return (JResolutionResult) this.resolve(JTypeParameterLocation.class, JVarType.class, parameterLocation);
     }
 
     
     default <T extends JVarType> T tryResolve(JTypeParameterLocation parameterLocation) {
-        return this.<T>resolve(parameterLocation).orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + parameterLocation + " to a type"));
+        return this.<T>resolve(parameterLocation).getOrThrow();
     }
 
     void registerResolver(JTypeResolver resolver);

@@ -3,6 +3,7 @@ package honeyroasted.jype.system.resolver.binary;
 import honeyroasted.jype.location.JClassBytecode;
 import honeyroasted.jype.location.JClassLocation;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JType;
 
@@ -17,11 +18,13 @@ public class JBinaryLocationClassReferenceResolver implements JTypeResolver<JCla
     }
 
     @Override
-    public Optional<? extends JType> resolve(JTypeSystem system, JClassLocation value) {
+    public JResolutionResult<JClassLocation, JType> resolve(JTypeSystem system, JClassLocation value) {
         try {
-            return this.finder.locate(value).flatMap(bytes -> system.resolve(JClassBytecode.class, JType.class, new JClassBytecode(bytes)));
+            Optional<byte[]> lookup = this.finder.locate(value);
+            return lookup.map(bytes -> JResolutionResult.inherit(value, system.resolve(JClassBytecode.class, JType.class, new JClassBytecode(bytes))))
+                    .orElseGet(() -> new JResolutionResult<>("Could not find class binary (file does not exist)", value));
         } catch (IOException e) {
-            return Optional.empty();
+            return new JResolutionResult<>("IO Error occurred while looking up class binary", value, e);
         }
     }
 }

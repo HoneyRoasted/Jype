@@ -6,7 +6,6 @@ import honeyroasted.jype.type.JType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public class JBundledTypeResolvers implements JTypeResolver<Object, JType> {
     private List<JTypeResolver<?, ?>> resolvers;
@@ -20,16 +19,20 @@ public class JBundledTypeResolvers implements JTypeResolver<Object, JType> {
     }
 
     @Override
-    public Optional<? extends JType> resolve(JTypeSystem system, Object value) {
+    public JResolutionResult<Object, JType> resolve(JTypeSystem system, Object value) {
+        List<JResolutionResult<?, JType>> building = new ArrayList<>();
+
         for (JTypeResolver resolver : this.resolvers) {
             if (resolver.keyType().isInstance(value)) {
-                Optional<? extends JType> attempt = resolver.resolve(system, value);
-                if (attempt.isPresent()) {
-                    return attempt;
+                JResolutionResult<?, JType> attempt = resolver.resolve(system, value);
+                building.add(attempt);
+                if (attempt.success()) {
+                    break;
                 }
             }
         }
-        return Optional.empty();
+
+        return JResolutionResult.inherit(value, building);
     }
 
     public List<JTypeResolver<?, ?>> resolvers() {

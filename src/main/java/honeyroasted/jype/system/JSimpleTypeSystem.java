@@ -7,7 +7,6 @@ import honeyroasted.jype.system.cache.JTypeCacheFactory;
 import honeyroasted.jype.system.cache.JTypeStorage;
 import honeyroasted.jype.system.resolver.JBundledTypeResolvers;
 import honeyroasted.jype.system.resolver.JInMemoryTypeResolvers;
-import honeyroasted.jype.system.resolver.JResolutionAttemptFailedException;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
 import honeyroasted.jype.system.resolver.general.JGeneralTypeResolution;
@@ -20,7 +19,6 @@ import honeyroasted.jype.type.JType;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 
 public class JSimpleTypeSystem implements JTypeSystem {
@@ -79,7 +77,7 @@ public class JSimpleTypeSystem implements JTypeSystem {
 
     private JClassReference tryLocResolve(Class<?> cls) {
         return (JClassReference) this.resolve(JClassLocation.class, JType.class, JClassLocation.of(cls))
-                .orElseThrow(() -> new JResolutionAttemptFailedException("Could not resolve " + cls.getName() + " type"));
+                .getOrThrow();
     }
 
     @Override
@@ -100,11 +98,6 @@ public class JSimpleTypeSystem implements JTypeSystem {
     @Override
     public JTypeOperations operations() {
         return this.operations;
-    }
-
-    @Override
-    public <I, O extends JType> Optional<? extends O> resolve(Class<I> keyType, Class<O> resultType, I key) {
-        return this.resolvers().resolverFor(keyType, resultType).resolve(this, key);
     }
 
     @Override

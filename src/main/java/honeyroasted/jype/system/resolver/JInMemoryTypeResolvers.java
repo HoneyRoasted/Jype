@@ -4,7 +4,6 @@ import honeyroasted.jype.type.JType;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class JInMemoryTypeResolvers implements JTypeResolvers {
     private List<JTypeResolver<?, ?>> resolvers = new ArrayList<>();
@@ -22,15 +21,19 @@ public class JInMemoryTypeResolvers implements JTypeResolvers {
     @Override
     public <I, O extends JType> JTypeResolver<I, O> resolverFor(Class<I> keyType, Class<O> outputType) {
         return (system, value) -> {
-            for (JTypeResolver<?, ?> resolver : this.resolvers) {
+            List<JResolutionResult<I, O>> building = new ArrayList<>();
+
+            for (JTypeResolver resolver : this.resolvers) {
                 if (resolver.keyType().isAssignableFrom(keyType) && outputType.isAssignableFrom(resolver.resultType())) {
-                    Optional<? extends O> attempt = ((JTypeResolver<? super I, ? extends O>) resolver).resolve(system, value);
-                    if (attempt.isPresent()) {
-                        return attempt;
+                    JResolutionResult<I, O> attempt = resolver.resolve(system, value);
+                    building.add(attempt);
+                    if (attempt.success()) {
+                        break;
                     }
                 }
             }
-            return Optional.empty();
+
+            return JResolutionResult.inherit(value, building);
         };
     }
 

@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.cache;
 
+import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.type.JType;
 
 import java.lang.reflect.ParameterizedType;
@@ -11,6 +12,10 @@ public interface JTypeCache<K, T extends JType> {
     boolean contains(K key);
 
     Optional<T> get(K key);
+
+    default <Z extends T> JResolutionResult<K, Z> asResolution(K key) {
+        return (JResolutionResult<K, Z>) JResolutionResult.inherit(key, get(key), "Cache lookup failed");
+    }
 
     void put(K key, T val);
 

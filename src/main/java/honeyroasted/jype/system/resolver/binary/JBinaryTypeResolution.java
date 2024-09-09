@@ -5,6 +5,7 @@ import honeyroasted.jype.system.resolver.JBundledTypeResolvers;
 public interface JBinaryTypeResolution {
 
     JBundledTypeResolvers BINARY_TYPE_RESOLVERS = new JBundledTypeResolvers(
+            new JDescClassReferenceResolver(),
             new JEntryClassReferenceResolver(),
             new JRawBinaryClassReferenceResolver(),
 

@@ -37,7 +37,7 @@ public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiv
 
     @Override
     public JClassReference box() {
-        if (this.box == null) this.box = (JClassReference) this.typeSystem().resolve(this.boxNamespace.location()).orElse(null);
+        if (this.box == null) this.box = (JClassReference) this.typeSystem().resolve(this.boxNamespace.location()).getOrThrow();
         return this.box;
     }
 

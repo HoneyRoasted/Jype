@@ -3,15 +3,17 @@ package honeyroasted.jype.system.resolver.general;
 import honeyroasted.jype.location.JClassLocation;
 import honeyroasted.jype.location.JClassSourceName;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.List;
 
 public class JClassSourceNameResolver implements JTypeResolver<JClassSourceName, JType> {
     @Override
-    public Optional<? extends JType> resolve(JTypeSystem system, JClassSourceName value) {
+    public JResolutionResult<JClassSourceName, JType> resolve(JTypeSystem system, JClassSourceName value) {
         String name = value.name();
         int depth = 0;
 
@@ -19,6 +21,8 @@ public class JClassSourceNameResolver implements JTypeResolver<JClassSourceName,
             depth += 1;
             name = name.substring(0, name.length() - 2);
         }
+
+        List<JResolutionResult<?, ?>> children = new ArrayList<>();
 
         String[] parts = value.name().split("\\.");
         for (int i = 0; i < parts.length; i++) {
@@ -30,11 +34,13 @@ public class JClassSourceNameResolver implements JTypeResolver<JClassSourceName,
                 curr = new JClassLocation(JClassLocation.Type.ARRAY, curr, "[]");
             }
 
-            Optional<? extends JType> attempt = system.resolve(curr);
-            if (attempt.isPresent()) {
-                return attempt;
+            JResolutionResult<JClassLocation, JType> attempt = system.resolve(curr);
+            children.add(attempt);
+            if (attempt.success()) {
+                break;
             }
         }
-        return Optional.empty();
+
+        return JResolutionResult.inherit(value, children);
     }
 }
