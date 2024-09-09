@@ -7,18 +7,32 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.stream.Stream;
 
 public interface JBinaryClassFinder {
 
     Optional<byte[]> locate(JClassLocation location) throws IOException;
 
     void index(BiConsumer<JClassLocation, byte[]> visitor) throws IOException;
+
+    static JBinaryClassFinder rootedIn(Path path) throws IOException {
+        List<JBinaryClassFinder> finders = new ArrayList<>();
+        finders.add(new Dir(path));
+
+        PathMatcher jar = FileSystems.getDefault().getPathMatcher("glob:**.jar");
+        try(Stream<Path> walk = Files.walk(path).filter(jar::matches)) {
+            walk.forEach(p -> finders.add(new Jar(p)));
+        }
+
+        return new Multi(finders);
+    }
 
     final class Multi implements JBinaryClassFinder {
         private List<JBinaryClassFinder> finders;
@@ -88,10 +102,6 @@ public interface JBinaryClassFinder {
             this.root = root.toAbsolutePath();
         }
 
-        public final class Test {
-
-        }
-
         @Override
         public Optional<byte[]> locate(JClassLocation location) throws IOException {
             Path target = this.root.resolve(location.toInternalName() + ".class");
@@ -104,11 +114,13 @@ public interface JBinaryClassFinder {
         @Override
         public void index(BiConsumer<JClassLocation, byte[]> visitor) throws IOException {
             PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**.class");
-            for (Path target : Files.walk(this.root).toList()) {
-                if (matcher.matches(target)) {
-                    JClassLocation location = JClassLocation.of(this.root.relativize(target.toAbsolutePath()).toString());
-                    byte[] read = Files.readAllBytes(target);
-                    visitor.accept(location, read);
+            try (Stream<Path> walk = Files.walk(this.root)) {
+                for (Path target : walk.toList()) {
+                    if (matcher.matches(target)) {
+                        JClassLocation location = JClassLocation.of(this.root.relativize(target.toAbsolutePath()).toString());
+                        byte[] read = Files.readAllBytes(target);
+                        visitor.accept(location, read);
+                    }
                 }
             }
         }
