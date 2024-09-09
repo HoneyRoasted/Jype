@@ -14,6 +14,7 @@ import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -313,28 +314,12 @@ public interface JReflectionTypeResolution {
 
         for (Constructor<?> constructor : cls.getDeclaredConstructors()) {
             JMethodLocation loc = JMethodLocation.of(constructor);
-            Optional<JMethodReference> conRef = system.resolve(loc);
-
-            if (conRef.isEmpty()) {
-                system.storage().cacheFor(Type.class).remove(cls);
-                system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
-                return Optional.empty();
-            } else {
-                reference.declaredMethods().add(conRef.get());
-            }
+            reference.declaredMethods().add(new JMethodReferenceDelegate(system, s -> s.tryResolve(loc)));
         }
 
         for (Method method : cls.getDeclaredMethods()) {
             JMethodLocation loc = JMethodLocation.of(method);
-            Optional<JMethodReference> conRef = system.resolve(loc);
-
-            if (conRef.isEmpty()) {
-                system.storage().cacheFor(Type.class).remove(cls);
-                system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
-                return Optional.empty();
-            } else {
-                reference.declaredMethods().add(conRef.get());
-            }
+            reference.declaredMethods().add(new JMethodReferenceDelegate(system, s -> s.tryResolve(loc)));
         }
 
         reference.setUnmodifiable(true);

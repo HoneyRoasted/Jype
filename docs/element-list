@@ -16,3 +16,4 @@ honeyroasted.jype.system.visitor
 honeyroasted.jype.system.visitor.visitors
 honeyroasted.jype.type
 honeyroasted.jype.type.impl
+honeyroasted.jype.type.impl.delegate
