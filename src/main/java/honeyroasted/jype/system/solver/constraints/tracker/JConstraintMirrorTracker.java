@@ -29,8 +29,8 @@ public class JConstraintMirrorTracker implements JConstraintTracker {
 
     @Override
     public JConstraintTracker pop(JConstraintResult.Operator op) {
-        this.primary.pop();
-        this.mirrors.forEach(tracker -> tracker.pop());
+        this.primary.pop(op);
+        this.mirrors.forEach(tracker -> tracker.pop(op));
         return this;
     }
 
