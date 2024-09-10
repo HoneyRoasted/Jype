@@ -2,9 +2,9 @@ package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.solver.constraints.tracker.JConstraintResult;
+import honeyroasted.jype.system.solver.constraints.tracker.JConstraintResultTracker;
+import honeyroasted.jype.system.solver.constraints.tracker.JConstraintStatusTracker;
 import honeyroasted.jype.system.solver.constraints.tracker.JConstraintTracker;
-import honeyroasted.jype.system.solver.constraints.tracker.JStatusConstraintTracker;
-import honeyroasted.jype.system.solver.constraints.tracker.JTreeConstraintTracker;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JIntersectionType;
@@ -22,13 +22,13 @@ import java.util.Set;
 public class JTypeCompatibility {
 
     public static boolean isSubtype(JType left, JType right) {
-        JConstraintTracker tracker = new JStatusConstraintTracker();
+        JConstraintTracker tracker = new JConstraintStatusTracker();
         checkSubtype(left, right, tracker);
         return tracker.status().isTrue();
     }
 
     public static JConstraintResult checkSubtype(JType left, JType right) {
-        JConstraintTracker tracker = new JTreeConstraintTracker(true);
+        JConstraintTracker tracker = new JConstraintResultTracker(true);
         checkSubtype(left, right, tracker);
         return tracker.result();
     }
@@ -38,7 +38,7 @@ public class JTypeCompatibility {
     }
 
     public static boolean isCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context) {
-        JConstraintTracker tracker = new JStatusConstraintTracker();
+        JConstraintTracker tracker = new JConstraintStatusTracker();
         checkCompatible(left, right, context, tracker);
         return tracker.status().isTrue();
     }
@@ -48,12 +48,10 @@ public class JTypeCompatibility {
     }
 
     private static void isCompatible(JTypeConstraints.Compatible constraint, JConstraintTracker tracker) {
-        tracker.with(constraint);
         switch (constraint.middle()) {
-            case STRICT_INVOCATION -> tracker.then(tr -> strictInvocation(constraint.left(), constraint.right(), tr));
-            case EXPLICIT_CAST -> tracker.then(tr -> explicitCast(constraint.left(), constraint.right(), tr));
-            case LOOSE_INVOCATION, ASSIGNMENT ->
-                    tracker.then(tr -> looseInvocation(constraint.left(), constraint.right(), tr));
+            case STRICT_INVOCATION -> tracker.then(tr -> strictInvocation(constraint, tr));
+            case EXPLICIT_CAST -> tracker.then(tr -> explicitCast(constraint, tr));
+            case LOOSE_INVOCATION, ASSIGNMENT -> tracker.then(tr -> looseInvocation(constraint, tr));
 
         }
     }
@@ -62,31 +60,38 @@ public class JTypeCompatibility {
         isCompatible(new JTypeConstraints.Compatible(left, context, right), tracker);
     }
 
-    private static void explicitCast(JType left, JType right, JConstraintTracker tracker) {
-        tracker.or(tr -> isCompatible(left, right, JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, tr),
-                tr -> isCompatible(right, left, JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, tr));
+    private static void explicitCast(JTypeConstraints.Compatible constraint, JConstraintTracker tracker) {
+        tracker.or(constraint,
+                tr -> isCompatible(constraint.left(), constraint.right(), JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, tr),
+                tr -> isCompatible(constraint.right(), constraint.left(), JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, tr));
     }
 
-    private static void strictInvocation(JType left, JType right, JConstraintTracker tracker) {
-        tracker.and(tr -> isSubtype(left, right, tr));
+    private static void strictInvocation(JTypeConstraints.Compatible constraint, JConstraintTracker tracker) {
+        tracker.and(constraint, tr -> isSubtype(constraint.left(), constraint.right(), tr));
     }
 
-    private static void looseInvocation(JType left, JType right, JConstraintTracker tracker) {
-        tracker.or(tr -> isSubtype(left, right, tr), tre -> {
-            if (left instanceof JPrimitiveType l && !(right instanceof JPrimitiveType)) {
-                tracker.then(tr -> isSubtype(l.box(), right, tr));
-            } else if (right instanceof JPrimitiveType r && !(left instanceof JPrimitiveType)) {
-                tracker.then(tr -> isSubtype(left, r.box(), tr));
-            }
-        });
+    private static void looseInvocation(JTypeConstraints.Compatible constraint, JConstraintTracker tracker) {
+        JType left = constraint.left();
+        JType right = constraint.right();
+        tracker.or(constraint, tr -> isSubtype(left, right, tr),
+                tr -> {
+                    if (left instanceof JPrimitiveType l && !(right instanceof JPrimitiveType)) {
+                        tr.then(tr2 -> isSubtype(l.box(), right, tr2));
+                    }
+                },
+                tr -> {
+                    if (right instanceof JPrimitiveType r && !(left instanceof JPrimitiveType)) {
+                        tr.then(tr2 -> isSubtype(left, r.box(), tr2));
+                    }
+                });
     }
 
     private static void equal(JType left, JType right, JConstraintTracker tracker) {
-        tracker.and(tr -> tr.with(new JTypeConstraints.Equal(left, right), left.typeEquals(right)));
+        tracker.with(new JTypeConstraints.Equal(left, right), left.typeEquals(right));
     }
 
     private static void isSubtype(JType left, JType right, JConstraintTracker tracker) {
-        tracker.and(tra -> tra.with(new JTypeConstraints.Subtype(left, right)).or(
+        tracker.or(new JTypeConstraints.Subtype(left, right),
                 tr -> equal(left, right, tr),
                 tr -> subtypePrimitive(left, right, tr),
                 tr -> subtypeArray(left, right, tr),
@@ -96,20 +101,20 @@ public class JTypeCompatibility {
                 tr -> subtypeVar(left, right, tr),
                 tr -> subtypeUnchecked(left, right, tr),
                 tr -> subtypeRaw(left, right, tr),
-                tr -> subtypeGenericClass(left, right, tr)));
+                tr -> subtypeGenericClass(left, right, tr));
     }
 
     private static void subtypeArray(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JArrayType l) {
             if (right instanceof JArrayType supertype) {
                 if (supertype.component() instanceof JPrimitiveType || l.component() instanceof JPrimitiveType) {
-                    tracker.and(tr -> equal(l.component(), supertype.component(), tracker));
+                    tracker.then(tr -> equal(l.component(), supertype.component(), tracker));
                 } else {
-                    tracker.and(tr -> isSubtype(l.component(), supertype.component(), tr));
+                    tracker.then(tr -> isSubtype(l.component(), supertype.component(), tr));
                 }
             } else {
                 JTypeConstants c = left.typeSystem().constants();
-                tracker.or(
+                tracker.then(
                         tr -> isSubtype(c.object(), right, tr),
                         tr -> isSubtype(c.cloneable(), right, tr),
                         tr -> isSubtype(c.serializable(), right, tr));
@@ -119,17 +124,17 @@ public class JTypeCompatibility {
 
     private static void subtypeIntersection(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JIntersectionType l) {
-            tracker.or(tra -> l.children().forEach(t -> tra.then(tr -> isSubtype(t, right, tr))));
+           l.children().forEach(t -> tracker.then(tr -> isSubtype(t, right, tr)));
         } else if (right instanceof JIntersectionType r) {
-            tracker.and(tra -> r.children().forEach(t -> tra.then(tr -> isSubtype(left, t, tr))));
+            tracker.inheritAnd(tra -> r.children().forEach(t -> tra.then(tr -> isSubtype(left, t, tr))));
         }
     }
 
     private static void subtypeNone(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JNoneType) {
-            tracker.with(right.typeEquals(left));
+            tracker.set(false);
         } else if (right instanceof JNoneType) {
-            tracker.with(left.isNullType() && !(right instanceof JPrimitiveType));
+            tracker.set(left.isNullType() && !(right instanceof JPrimitiveType));
         }
     }
 
@@ -148,36 +153,36 @@ public class JTypeCompatibility {
 
     private static void subtypePrimitive(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JPrimitiveType l && right instanceof JPrimitiveType r) {
-            tracker.with(PRIM_SUPERS.get(l.name()).contains(r.name()));
+            tracker.set(PRIM_SUPERS.get(l.name()).contains(r.name()));
         } else if (left instanceof JPrimitiveType || right instanceof JPrimitiveType) {
-            tracker.with(false);
+            tracker.set(false);
         }
     }
 
     private static void subtypeWild(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JWildType.Upper l) {
-            tracker.or(tra -> l.upperBounds().forEach(b -> tra.then(tr -> isSubtype(b, right, tr))));
+            l.upperBounds().forEach(b -> tracker.then(tr -> isSubtype(b, right, tr)));
         } else if (right instanceof JWildType.Lower r) {
-            tracker.and(tra -> r.lowerBounds().forEach(b -> tra.then(tr -> isSubtype(left, b, tr))));
+            tracker.inheritAnd(tra -> r.lowerBounds().forEach(b -> tra.then(tr -> isSubtype(left, b, tr))));
         }
     }
 
     private static void subtypeVar(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JVarType l) {
-            tracker.and(tra -> l.upperBounds().forEach(b -> tra.then(tr -> isSubtype(b, right, tr))));
+            tracker.inheritAnd(tra -> l.upperBounds().forEach(b -> tra.then(tr -> isSubtype(b, right, tr))));
         }
     }
 
     private static void subtypeUnchecked(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JClassType l && right instanceof JClassType r &&
                 ((l.hasAnyTypeArguments() && !r.hasAnyTypeArguments()) || (!l.hasAnyTypeArguments() && r.hasAnyTypeArguments()))) {
-            tracker.and(tr -> isSubtype(l.classReference(), r.classReference(), tracker));
+            tracker.then(tr -> isSubtype(l.classReference(), r.classReference(), tracker));
         }
     }
 
     private static void subtypeRaw(JType left, JType right, JConstraintTracker tracker) {
         if (left instanceof JClassType l && right instanceof JClassType r && !l.hasAnyTypeArguments() && !r.hasAnyTypeArguments()) {
-            tracker.and(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), l.classReference().hasSupertype(r.classReference())));
+            tracker.then(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), l.classReference().hasSupertype(r.classReference())));
         }
     }
 
@@ -188,26 +193,26 @@ public class JTypeCompatibility {
             if (superTypeOpt.isPresent()) {
                 JClassType relative = superTypeOpt.get();
 
-                tracker.and(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), true),
+                tracker.inheritAnd(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), true),
                         tr -> typeArgumentsMatch(relative, r, tr),
                         tr -> outerTypesMatch(relative, r, tr));
             } else {
-                tracker.and(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), false));
+                tracker.then(tr -> tr.with(new JTypeConstraints.Subtype(l.classReference(), r.classReference()), false));
             }
         }
     }
 
     private static void outerTypesMatch(JClassType left, JClassType right, JConstraintTracker tracker) {
         if (left.hasRelevantOuterType() && right.hasRelevantOuterType()) {
-            tracker.with(new JTypeConstraints.OuterTypesMatch(left, right))
-                    .and(tr -> isSubtype(left.outerType(), right.outerType(), tracker));
+            tracker.and(new JTypeConstraints.OuterTypesMatch(left, right),
+                    tr -> isSubtype(left.outerType(), right.outerType(), tracker));
         }
     }
 
     private static void typeArgumentsMatch(JClassType left, JClassType right, JConstraintTracker tracker) {
-        tracker.with(new JTypeConstraints.TypeArgumentsMatch(left, right)).and(tr1 -> {
+        tracker.and(new JTypeConstraints.TypeArgumentsMatch(left, right), tr1 -> {
             if (left.typeArguments().isEmpty() && right.typeArguments().isEmpty()) {
-                tracker.with(true);
+                tracker.set(true);
             } else {
                 if (right instanceof JParameterizedClassType pcr && left.typeArguments().size() == right.typeArguments().size()) {
                     for (int i = 0; i < left.typeArguments().size(); i++) {
@@ -215,24 +220,24 @@ public class JTypeCompatibility {
                         JType si = right.typeArguments().get(i);
 
                         int finalI = i;
-                        tracker.with(new JTypeConstraints.TypeArgumentMatch(ti, si)).and(tre -> {
+                        tracker.and(new JTypeConstraints.TypeArgumentMatch(ti, si), tre -> {
                             if (si instanceof JWildType.Upper siwtu) {
                                 pcr.typeParameters().get(finalI).upperBounds().stream().map(pcr.varTypeResolver())
-                                        .forEach(argBound -> tracker.and(tr -> isSubtype(ti, argBound, tr)));
+                                        .forEach(argBound -> tracker.then(tr -> isSubtype(ti, argBound, tr)));
                                 siwtu.upperBounds()
-                                        .forEach(wildBound -> tracker.and(tr -> isSubtype(ti, wildBound, tr)));
+                                        .forEach(wildBound -> tracker.then(tr -> isSubtype(ti, wildBound, tr)));
                             } else if (si instanceof JWildType.Lower siwtl) {
                                 pcr.typeParameters().get(finalI).upperBounds().stream().map(pcr.varTypeResolver())
-                                        .forEach(argBound -> tracker.and(tr -> isSubtype(ti, argBound, tr)));
+                                        .forEach(argBound -> tracker.then(tr -> isSubtype(ti, argBound, tr)));
                                 siwtl.lowerBounds()
-                                        .forEach(wildBound -> tracker.and(tr -> isSubtype(wildBound, ti, tr)));
+                                        .forEach(wildBound -> tracker.then(tr -> isSubtype(wildBound, ti, tr)));
                             } else {
-                                tracker.and(tr -> equal(ti, si, tr));
+                                tracker.then(tr -> equal(ti, si, tr));
                             }
                         });
                     }
                 } else {
-                    tracker.with(false);
+                    tracker.set(false);
                 }
             }
         });

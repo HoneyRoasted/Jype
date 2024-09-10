@@ -1,6 +1,5 @@
 package honeyroasted.jype.system.solver.constraints;
 
-import honeyroasted.almonds.Constraint;
 import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public interface JTypeConstraints {
-    final class Equal extends Constraint.Binary<JType, JType> {
+    final class Equal extends JTypeConstraint.Binary<JType, JType> {
         public Equal(JType left, JType right) {
             super(left, right);
         }
@@ -41,7 +40,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Subtype extends Constraint.Binary<JType, JType> {
+    final class Subtype extends JTypeConstraint.Binary<JType, JType> {
         public Subtype(JType left, JType right) {
             super(left, right);
         }
@@ -69,7 +68,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Infer extends Constraint.Binary<JMetaVarType, JVarType> {
+    final class Infer extends JTypeConstraint.Binary<JMetaVarType, JVarType> {
         public Infer(JMetaVarType left, JVarType right) {
             super(left, right);
         }
@@ -85,7 +84,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Instantiation extends Constraint.Binary<JMetaVarType, JType> {
+    final class Instantiation extends JTypeConstraint.Binary<JMetaVarType, JType> {
 
         public Instantiation(JMetaVarType left, JType right) {
             super(left, right);
@@ -102,7 +101,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Compatible extends Constraint.Trinary<JType, Compatible.Context, JType> {
+    final class Compatible extends JTypeConstraint.Trinary<JType, Compatible.Context, JType> {
 
         public enum Context {
             ASSIGNMENT("~<:"),
@@ -137,7 +136,7 @@ public interface JTypeConstraints {
 
     }
 
-    final class ExpressionCompatible extends Constraint.Trinary<JExpressionInformation, Compatible.Context, JType> {
+    final class ExpressionCompatible extends JTypeConstraint.Trinary<JExpressionInformation, Compatible.Context, JType> {
 
         public ExpressionCompatible(JExpressionInformation left, Compatible.Context middle, JType right) {
             super(left, middle, right);
@@ -154,7 +153,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Contains extends Constraint.Binary<JType, JType> {
+    final class Contains extends JTypeConstraint.Binary<JType, JType> {
         public Contains(JType left, JType right) {
             super(left, right);
         }
@@ -170,7 +169,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class LambdaThrows extends Constraint.Binary<JExpressionInformation.Lambda, JType> {
+    final class LambdaThrows extends JTypeConstraint.Binary<JExpressionInformation.Lambda, JType> {
 
         public LambdaThrows(JExpressionInformation.Lambda left, JType right) {
             super(left, right);
@@ -187,7 +186,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class InvocationReferenceThrows extends Constraint.Binary<JExpressionInformation.InvocationReference, JType> {
+    final class InvocationReferenceThrows extends JTypeConstraint.Binary<JExpressionInformation.InvocationReference, JType> {
 
         public InvocationReferenceThrows(JExpressionInformation.InvocationReference left, JType right) {
             super(left, right);
@@ -204,7 +203,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class InstantiationReferenceThrows extends Constraint.Binary<JExpressionInformation.InstantiationReference, JType> {
+    final class InstantiationReferenceThrows extends JTypeConstraint.Binary<JExpressionInformation.InstantiationReference, JType> {
 
         public InstantiationReferenceThrows(JExpressionInformation.InstantiationReference left, JType right) {
             super(left, right);
@@ -221,7 +220,7 @@ public interface JTypeConstraints {
         }
     }
 
-    final class Throws extends Constraint.Unary<JMetaVarType> {
+    final class Throws extends JTypeConstraint.Unary<JMetaVarType> {
         public Throws(JMetaVarType type) {
             super(type);
         }
@@ -237,7 +236,7 @@ public interface JTypeConstraints {
         }
     }
 
-    class Capture extends Constraint.Binary<JParameterizedClassType, JParameterizedClassType> {
+    class Capture extends JTypeConstraint.Binary<JParameterizedClassType, JParameterizedClassType> {
         public Capture(JParameterizedClassType left, JParameterizedClassType right) {
             super(left, right);
         }
@@ -253,7 +252,7 @@ public interface JTypeConstraints {
         }
     }
 
-    class OuterTypesMatch extends Constraint.Binary<JClassType, JClassType> {
+    class OuterTypesMatch extends JTypeConstraint.Binary<JClassType, JClassType> {
         public OuterTypesMatch(JClassType left, JClassType right) {
             super(left, right);
         }
@@ -269,7 +268,7 @@ public interface JTypeConstraints {
         }
     }
 
-    class TypeArgumentsMatch extends Constraint.Binary<JClassType, JClassType> {
+    class TypeArgumentsMatch extends JTypeConstraint.Binary<JClassType, JClassType> {
         public TypeArgumentsMatch(JClassType left, JClassType right) {
             super(left, right);
         }
@@ -285,7 +284,7 @@ public interface JTypeConstraints {
         }
     }
 
-    class TypeArgumentMatch extends Constraint.Binary<JType, JType> {
+    class TypeArgumentMatch extends JTypeConstraint.Binary<JType, JType> {
 
         public TypeArgumentMatch(JType left, JType right) {
             super(left, right);
@@ -302,21 +301,21 @@ public interface JTypeConstraints {
         }
     }
 
-    class Multi implements Constraint {
-        private List<Constraint> children;
+    class Multi implements JTypeConstraint {
+        private List<JTypeConstraint> children;
 
-        public Multi(Collection<Constraint> children) {
+        public Multi(Collection<JTypeConstraint> children) {
             this.children = List.copyOf(children);
         }
 
         @Override
         public String simpleName() {
-            return this.children.stream().map(Constraint::simpleName).collect(Collectors.joining(" & "));
+            return this.children.stream().map(JTypeConstraint::simpleName).collect(Collectors.joining(" & "));
         }
 
         @Override
         public String toString() {
-            return "MULTI(" + this.children.stream().map(Constraint::toString).collect(Collectors.joining(", ")) + ")";
+            return "MULTI(" + this.children.stream().map(JTypeConstraint::toString).collect(Collectors.joining(", ")) + ")";
         }
 
         @Override

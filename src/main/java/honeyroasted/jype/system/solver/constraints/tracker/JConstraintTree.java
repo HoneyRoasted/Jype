@@ -1,17 +1,19 @@
 package honeyroasted.jype.system.solver.constraints.tracker;
 
-import honeyroasted.almonds.Constraint;
+import honeyroasted.jype.system.solver.constraints.JTypeConstraint;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,8 +23,8 @@ public class JConstraintTree {
     private JConstraintTree parent;
 
     private Set<Object> metadata = Collections.newSetFromMap(new IdentityHashMap<>());
-    private Map<Constraint, JConstraintResult.Status> constraints = new LinkedHashMap<>();
-    private Set<JConstraintTree> children = new LinkedHashSet<>();
+    private Map<JTypeConstraint, JConstraintResult.Status> constraints = new LinkedHashMap<>();
+    private Map<JConstraintTree, JConstraintTree> children = new LinkedHashMap<>();
 
     public JConstraintTree(JConstraintTree parent) {
         this.parent = parent;
@@ -32,28 +34,71 @@ public class JConstraintTree {
         this(null);
     }
 
-    private void propagateMetadata(Object data) {
-        if (this.children.stream().allMatch(child -> child.metadata.contains(data))) {
-            this.metadata.add(data);
-            this.children.forEach(child -> child.metadata.remove(data));
+    public JConstraintTree root() {
+        return this.parent == null ? this : this.parent.root();
+    }
+
+    public List<JConstraintResult> toResults() {
+        return List.of();
+    }
+
+    private boolean doChange(BooleanSupplier supplier) {
+        if (this.parent != null) this.parent.trackChange(this, supplier);
+        return supplier.getAsBoolean();
+    }
+
+    private boolean trackChange(JConstraintTree child, BooleanSupplier supplier) {
+        JConstraintTree val = this.children.get(child);
+        if (val == null) {
+            supplier.getAsBoolean();
+            return false;
+        } else {
+            this.children.remove(child);
+            if (supplier.getAsBoolean()) {
+                JConstraintTree curr = this.children.get(child);
+                if (curr == null) {
+                    this.children.put(child, child);
+                } else {
+                    curr.merge(child);
+                }
+                this.invalidateStatus();
+                return true;
+            } else {
+                this.children.put(child, child);
+                return false;
+            }
         }
     }
 
-    private boolean propagate(Constraint constraint, JConstraintResult.Status status) {
-        if (this.children.stream().allMatch(child -> child.constraints.get(constraint) == status)) {
+    private void merge(JConstraintTree other) {
+        this.metadata.addAll(other.metadata);
+    }
+
+    private void propagateMetadata(Object data) {
+        if (this.children.keySet().stream().allMatch(child -> child.metadata.contains(data))) {
+            this.metadata.add(data);
+            this.children.forEach((child, v) -> child.metadata.remove(data));
+        }
+    }
+
+    private boolean propagate(JTypeConstraint constraint, JConstraintResult.Status status) {
+        if (this.children.keySet().stream().allMatch(child -> child.constraints.get(constraint) == status)) {
             //Constraint is present in all children and should be lifted to this
 
-            //Manually call put so the status is not recalculated (lifting should not corrupt the and result)
-            this.constraints.put(constraint, status);
+            this.doChange(() -> {
+                this.constraints.put(constraint, status);
 
-            Iterator<JConstraintTree> iter = this.children.iterator();
-            while (iter.hasNext()) {
-                JConstraintTree child = iter.next();
-                child.remove(constraint);
-                if (child.constraints.isEmpty()) iter.remove();
-            }
-
-            this.invalidateStatus();
+                Iterator<JConstraintTree> iter = this.children.keySet().iterator();
+                while (iter.hasNext()) {
+                    JConstraintTree child = iter.next();
+                    child.doRemove(constraint);
+                    if (child.constraints.isEmpty()) {
+                        this.merge(child);
+                        iter.remove();
+                    }
+                }
+                return true;
+            });
             if (this.parent != null) this.parent.propagate(constraint, status);
             return true;
         }
@@ -65,7 +110,7 @@ public class JConstraintTree {
     private void calculateStatus() {
         //And all the constraints in this, then && that with all the children which were || together
         this.status = this.constraints.values().stream().reduce(JConstraintResult.Status.ASSUMED, JConstraintResult.Status::and)
-                .and(this.children.stream().map(JConstraintTree::status).reduce(JConstraintResult.Status.UNKNOWN, JConstraintResult.Status::or));
+                .and(this.children.keySet().stream().map(JConstraintTree::status).reduce(JConstraintResult.Status.UNKNOWN, JConstraintResult.Status::or));
     }
 
     private void invalidateStatus() {
@@ -81,7 +126,11 @@ public class JConstraintTree {
         return this.status;
     }
 
-    public boolean remove(Constraint constraint) {
+    public boolean remove(JTypeConstraint constraint) {
+        return this.doChange(() -> doRemove(constraint));
+    }
+
+    private boolean doRemove(JTypeConstraint constraint) {
         JConstraintResult.Status prev = this.constraints.remove(constraint);
         if (prev != null && prev.isFalse()) {
             //If a false status was removed, the current and result becomes corrupted
@@ -90,7 +139,11 @@ public class JConstraintTree {
         return prev != null;
     }
 
-    public boolean put(Constraint constraint, JConstraintResult.Status status) {
+    public boolean put(JTypeConstraint constraint, JConstraintResult.Status status) {
+        return this.doChange(() -> doPut(constraint, status));
+    }
+
+    private boolean doPut(JTypeConstraint constraint, JConstraintResult.Status status) {
         JConstraintResult.Status prev = this.constraints.put(constraint, status);
         if (prev == null || prev.isTrue()) {
             //Either there was no previous status, or the previous status was true and would not affect the current and result
@@ -107,19 +160,21 @@ public class JConstraintTree {
         return prev != status;
     }
 
-    private Map<Constraint, JConstraintResult.Status> queue = new LinkedHashMap<>();
+    private Map<JTypeConstraint, JConstraintResult.Status> queue = new LinkedHashMap<>();
 
-    public void queue(Constraint constraint, JConstraintResult.Status status) {
+    public void queue(JTypeConstraint constraint, JConstraintResult.Status status) {
         this.queue.put(constraint, status);
     }
 
     public boolean integrateQueue() {
-        boolean mod = false;
-        for (Map.Entry<Constraint, JConstraintResult.Status> entry : this.queue.entrySet()) {
-            mod |= put(entry.getKey(), entry.getValue());
-        }
-        this.queue.clear();
-        return mod;
+        return this.doChange(() -> {
+            boolean mod = false;
+            for (Map.Entry<JTypeConstraint, JConstraintResult.Status> entry : this.queue.entrySet()) {
+                mod |= doPut(entry.getKey(), entry.getValue());
+            }
+            this.queue.clear();
+            return mod;
+        });
     }
 
     public JConstraintTree or(Consumer<JConstraintTree>... actions) {
@@ -129,12 +184,12 @@ public class JConstraintTree {
             } else {
                 for (Consumer<JConstraintTree> action : actions) {
                     JConstraintTree child = new JConstraintTree(this);
-                    this.children.add(child);
+                    this.children.put(child, child);
                     action.accept(child);
                 }
             }
         } else {
-            this.children.forEach(tree -> tree.or(actions));
+            this.children.forEach((tree, val) -> tree.or(actions));
         }
         return this;
     }
@@ -168,16 +223,29 @@ public class JConstraintTree {
         return StreamSupport.stream(metadataSpliterator(), false);
     }
 
-    public Iterator<Map.Entry<Constraint, JConstraintResult.Status>> andIterator() {
+    public Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> andIterator() {
         return new AndIterator(this);
     }
 
-    public Spliterator<Map.Entry<Constraint, JConstraintResult.Status>> andSpliterator() {
+    public Spliterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> andSpliterator() {
         return Spliterators.spliteratorUnknownSize(andIterator(), Spliterator.NONNULL);
     }
 
-    public Stream<Map.Entry<Constraint, JConstraintResult.Status>> andStream() {
+    public Stream<Map.Entry<JTypeConstraint, JConstraintResult.Status>> andStream() {
         return StreamSupport.stream(andSpliterator(), false);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        JConstraintTree that = (JConstraintTree) object;
+        return Objects.equals(constraints, that.constraints) && Objects.equals(children, that.children);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(constraints, children);
     }
 
     private static class MetadataIterator implements Iterator<Object> {
@@ -212,9 +280,9 @@ public class JConstraintTree {
         }
     }
 
-    private static class AndIterator implements Iterator<Map.Entry<Constraint, JConstraintResult.Status>> {
+    private static class AndIterator implements Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> {
         private JConstraintTree current;
-        private Iterator<Map.Entry<Constraint, JConstraintResult.Status>> currIter;
+        private Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> currIter;
 
         public AndIterator(JConstraintTree current) {
             this.current = current;
@@ -237,8 +305,8 @@ public class JConstraintTree {
         }
 
         @Override
-        public Map.Entry<Constraint, JConstraintResult.Status> next() {
-            Map.Entry<Constraint, JConstraintResult.Status> next = this.currIter.next();
+        public Map.Entry<JTypeConstraint, JConstraintResult.Status> next() {
+            Map.Entry<JTypeConstraint, JConstraintResult.Status> next = this.currIter.next();
             if (!this.currIter.hasNext()) nextIterator();
             return next;
         }

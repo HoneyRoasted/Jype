@@ -1,22 +1,44 @@
 package honeyroasted.jype.system.solver.constraints.tracker;
 
-import honeyroasted.almonds.Constraint;
+import honeyroasted.jype.system.solver.constraints.JTypeConstraint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 public class JConstraintResult {
     private Status status;
-    private Constraint constraint;
+    private JTypeConstraint constraint;
     private Operator operator;
     private List<JConstraintResult> children;
 
-    public JConstraintResult(Status status, Constraint constraint, Operator operator, List<JConstraintResult> children) {
+    public JConstraintResult(Status status, JTypeConstraint constraint, Operator operator, List<JConstraintResult> children) {
         this.status = status;
         this.constraint = constraint;
         this.operator = operator;
         this.children = children;
+    }
+
+    public JConstraintResult simplify() {
+        JConstraintResult simplified = doSimplify();
+        return simplified != null ? simplified : new JConstraintResult(status, constraint, operator, Collections.emptyList());
+    }
+
+    private JConstraintResult doSimplify() {
+        if (this.children.size() == 1 && this.constraint.isMetadata()) return this.children.getFirst();
+        if (this.children.isEmpty() && this.constraint.isMetadata()) return null;
+
+        return new JConstraintResult(status, constraint, children.size() == 1 ? children.getFirst().operator() : operator,
+                children.stream()
+                        .flatMap(child -> child.constraint.isMetadata() && !child.children.isEmpty() &&
+                                (child.operator == operator() || children.size() == 1) ?
+                                child.children.stream() : Stream.of(child))
+                        .map(JConstraintResult::doSimplify)
+                        .filter(Objects::nonNull)
+                        .toList());
     }
 
     public Status status() {
@@ -27,7 +49,7 @@ public class JConstraintResult {
         return this.status.isTrue();
     }
 
-    public Constraint constraint() {
+    public JTypeConstraint constraint() {
         return this.constraint;
     }
 
@@ -55,8 +77,12 @@ public class JConstraintResult {
         building.add("Status: " + this.status);
 
         if (!this.children.isEmpty()) {
-            building.add("Operation: " + this.operator);
-            building.add("Children: " + this.children.size());
+            if (this.children.size() > 1) {
+                building.add("Operation: " + this.operator);
+                building.add("Children: " + this.children.size());
+            } else {
+                building.add("Inherits:");
+            }
 
             List<String> children = new ArrayList<>();
             Iterator<JConstraintResult> iterator = this.children().iterator();
@@ -79,7 +105,17 @@ public class JConstraintResult {
     }
 
     public enum Operator {
-        SET, AND, OR
+        SET(Status.TRUE), AND(Status.TRUE), OR(Status.FALSE);
+
+        private Status identity;
+
+        Operator(Status identity) {
+            this.identity = identity;
+        }
+
+        public Status identity() {
+            return this.identity;
+        }
     }
 
     public static enum Status {
