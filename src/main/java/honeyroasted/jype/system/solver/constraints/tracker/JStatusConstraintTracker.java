@@ -16,7 +16,7 @@ public class JStatusConstraintTracker implements JConstraintTracker {
         stack.push(head);
         opStac.push(headOp);
 
-        head = JConstraintResult.Status.UNKNOWN;
+        head = JConstraintResult.Status.FALSE;
         headOp = JConstraintResult.Operator.OR;
     }
 
@@ -24,7 +24,7 @@ public class JStatusConstraintTracker implements JConstraintTracker {
         stack.push(head);
         opStac.push(headOp);
 
-        head = JConstraintResult.Status.ASSUMED;
+        head = JConstraintResult.Status.TRUE;
         headOp = JConstraintResult.Operator.AND;
     }
 

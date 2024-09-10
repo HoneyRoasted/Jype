@@ -34,7 +34,7 @@ public class JTreeConstraintTracker implements JConstraintTracker {
 
         head = new Entry();
         head.op = JConstraintResult.Operator.OR;
-        head.success = JConstraintResult.Status.UNKNOWN;
+        head.success = JConstraintResult.Status.FALSE;
 
         curr.children.add(head);
     }
@@ -45,7 +45,7 @@ public class JTreeConstraintTracker implements JConstraintTracker {
 
         head = new Entry();
         head.op = JConstraintResult.Operator.AND;
-        head.success = JConstraintResult.Status.ASSUMED;
+        head.success = JConstraintResult.Status.TRUE;
 
         curr.children.add(head);
     }
