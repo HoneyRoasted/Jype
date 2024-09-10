@@ -41,7 +41,7 @@ public class JConstraintResultTracker implements JConstraintTracker {
     }
 
     @Override
-    public JConstraintTracker pop() {
+    public JConstraintTracker pop(JConstraintResult.Operator op) {
         Entry curr = head;
         head = entryStack.pop();
         set(curr.success);
@@ -104,23 +104,7 @@ public class JConstraintResultTracker implements JConstraintTracker {
 
     @Override
     public Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> branchIterator() {
-        return new BranchIterator(this.head);
-    }
-
-    private static class BranchIterator implements Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> {
-        public BranchIterator(Entry entry) {
-
-        }
-
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Map.Entry<JTypeConstraint, JConstraintResult.Status> next() {
-            return null;
-        }
+        throw new UnsupportedOperationException();
     }
 
     private static class Entry implements Map.Entry<JTypeConstraint, JConstraintResult.Status> {

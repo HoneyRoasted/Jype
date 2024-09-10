@@ -4,19 +4,32 @@ import honeyroasted.jype.system.solver.constraints.JTypeConstraint;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 public class JConstraintTreeTracker implements JConstraintTracker {
+    private Stack<JConstraintTree> treeStack;
     private JConstraintTree head;
 
-    @Override
-    public JConstraintTracker push(JTypeConstraint constraint, JConstraintResult.Operator op) {
-        return null;
+    private boolean processIrrelevantBranches;
+
+    public JConstraintTreeTracker(boolean processIrrelevantBranches) {
+        this.processIrrelevantBranches = processIrrelevantBranches;
+        this.treeStack = new Stack<>();
+    }
+
+    public JConstraintTreeTracker() {
+        this(false);
     }
 
     @Override
-    public JConstraintTracker pop() {
-        return null;
+    public JConstraintTracker push(JTypeConstraint constraint, JConstraintResult.Operator op) {
+        return this;
+    }
+
+    @Override
+    public JConstraintTracker pop(JConstraintResult.Operator op) {
+        return this;
     }
 
     @Override
@@ -26,17 +39,18 @@ public class JConstraintTreeTracker implements JConstraintTracker {
 
     @Override
     public JConstraintTracker with(JTypeConstraint constraint, JConstraintResult.Status value) {
-        return null;
+        this.head.put(constraint, value);
+        return this;
     }
 
     @Override
     public JConstraintTracker set(JConstraintResult.Status value) {
-        return null;
+        return this;
     }
 
     @Override
     public JConstraintTracker then(Consumer<JConstraintTracker> cons) {
-        return null;
+        return this;
     }
 
     @Override

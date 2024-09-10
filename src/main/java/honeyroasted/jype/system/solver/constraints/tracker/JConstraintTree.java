@@ -38,8 +38,12 @@ public class JConstraintTree {
         return this.parent == null ? this : this.parent.root();
     }
 
-    public List<JConstraintResult> toResults() {
-        return List.of();
+    public JConstraintResult toResult() {
+        List<JConstraintResult> building = this.children.keySet().stream().map(JConstraintTree::toResult).collect(Collectors.toList());
+        building.add(new JConstraintResult(children.keySet().stream().map(JConstraintTree::status).reduce(JConstraintResult.Status.FALSE, JConstraintResult.Status::or),
+                JTypeConstraint.or(), JConstraintResult.Operator.OR, this.children.keySet().stream().map(JConstraintTree::toResult).toList()));
+
+        return new JConstraintResult(status(), JTypeConstraint.and(), JConstraintResult.Operator.AND, building);
     }
 
     private boolean doChange(BooleanSupplier supplier) {

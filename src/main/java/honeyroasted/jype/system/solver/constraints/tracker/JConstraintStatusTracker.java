@@ -40,7 +40,7 @@ public class JConstraintStatusTracker implements JConstraintTracker {
     }
 
     @Override
-    public JConstraintTracker pop() {
+    public JConstraintTracker pop(JConstraintResult.Operator op) {
         JConstraintResult.Status curr = this.head;
 
         this.head = stack.pop();

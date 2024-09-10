@@ -14,7 +14,7 @@ public interface JConstraintTracker {
 
     JConstraintTracker push(JTypeConstraint constraint, JConstraintResult.Operator op);
 
-    JConstraintTracker pop();
+    JConstraintTracker pop(JConstraintResult.Operator op);
 
     JTypeConstraint peek();
 
@@ -43,7 +43,7 @@ public interface JConstraintTracker {
     default JConstraintTracker or(JTypeConstraint constraint, Consumer<JConstraintTracker>... actions) {
         push(constraint, JConstraintResult.Operator.OR);
         then(actions);
-        pop();
+        pop(JConstraintResult.Operator.OR);
         return this;
     }
 
@@ -54,7 +54,7 @@ public interface JConstraintTracker {
     default JConstraintTracker and(JTypeConstraint constraint, Consumer<JConstraintTracker>... actions) {
         push(constraint, JConstraintResult.Operator.AND);
         then(actions);
-        pop();
+        pop(JConstraintResult.Operator.AND);
         return this;
     }
 
