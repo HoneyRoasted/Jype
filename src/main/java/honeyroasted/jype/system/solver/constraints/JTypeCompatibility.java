@@ -24,7 +24,7 @@ public class JTypeCompatibility {
     public static boolean isSubtype(JType left, JType right) {
         JConstraintTracker tracker = new JConstraintStatusTracker();
         checkSubtype(left, right, tracker);
-        return tracker.status().isTrue();
+        return tracker.status().isTruthy();
     }
 
     public static JConstraintResult checkSubtype(JType left, JType right) {
@@ -40,7 +40,7 @@ public class JTypeCompatibility {
     public static boolean isCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context) {
         JConstraintTracker tracker = new JConstraintStatusTracker();
         checkCompatible(left, right, context, tracker);
-        return tracker.status().isTrue();
+        return tracker.status().isTruthy();
     }
 
     public static void checkCompatible(JType left, JType right, JTypeConstraints.Compatible.Context context, JConstraintTracker tracker) {

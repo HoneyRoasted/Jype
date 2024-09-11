@@ -51,7 +51,7 @@ public class JConstraintStatusTracker implements JConstraintTracker {
 
     @Override
     public JTypeConstraint peek() {
-        return this.head.isTrue() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE;
+        return this.head.isTruthy() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE;
     }
 
     @Override
@@ -74,11 +74,11 @@ public class JConstraintStatusTracker implements JConstraintTracker {
 
     @Override
     public JConstraintResult result() {
-        return new JConstraintResult(this.head, this.head.isTrue() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
+        return new JConstraintResult(this.head, this.head.isTruthy() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
     }
 
     @Override
     public Iterator<Map.Entry<JTypeConstraint, JConstraintResult.Status>> branchIterator() {
-        return Map.of(this.head.isTrue() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, this.head).entrySet().iterator();
+        return Map.of(this.head.isTruthy() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, this.head).entrySet().iterator();
     }
 }

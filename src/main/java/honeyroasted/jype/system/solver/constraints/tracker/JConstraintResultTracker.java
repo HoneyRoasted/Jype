@@ -99,7 +99,7 @@ public class JConstraintResultTracker implements JConstraintTracker {
     public JConstraintResult result() {
         JConstraintResult result = this.head.toResult();
         return result != null ? result :
-                new JConstraintResult(this.head.success, this.head.success.isTrue() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
+                new JConstraintResult(this.head.success, this.head.success.isTruthy() ? JTypeConstraint.TRUE : JTypeConstraint.FALSE, JConstraintResult.Operator.SET, Collections.emptyList());
     }
 
     @Override

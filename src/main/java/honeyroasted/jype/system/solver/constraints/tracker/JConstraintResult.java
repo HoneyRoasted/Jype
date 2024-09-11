@@ -46,7 +46,7 @@ public class JConstraintResult {
     }
 
     public boolean success() {
-        return this.status.isTrue();
+        return this.status.isTruthy();
     }
 
     public JTypeConstraint constraint() {
@@ -120,7 +120,7 @@ public class JConstraintResult {
 
     public static enum Status {
         TRUE {
-            public boolean isTrue() {
+            public boolean isTruthy() {
                 return true;
             }
 
@@ -135,9 +135,13 @@ public class JConstraintResult {
             public Status or(Status other) {
                 return this;
             }
+
+            public Status not() {
+                return FALSE;
+            }
         },
         ASSUMED {
-            public boolean isTrue() {
+            public boolean isTruthy() {
                 return true;
             }
 
@@ -152,9 +156,13 @@ public class JConstraintResult {
             public Status or(Status other) {
                 return other == TRUE ? other : this;
             }
+
+            public Status not() {
+                return UNKNOWN;
+            }
         },
         FALSE {
-            public boolean isTrue() {
+            public boolean isTruthy() {
                 return false;
             }
 
@@ -169,9 +177,13 @@ public class JConstraintResult {
             public Status or(Status other) {
                 return other;
             }
+
+            public Status not() {
+                return TRUE;
+            }
         },
         UNKNOWN {
-            public boolean isTrue() {
+            public boolean isTruthy() {
                 return false;
             }
 
@@ -184,7 +196,11 @@ public class JConstraintResult {
             }
 
             public Status or(Status other) {
-                return other != TRUE && other != ASSUMED ? this : other;
+                return other.isTruthy() ? other : this;
+            }
+
+            public Status not() {
+                return ASSUMED;
             }
         };
 
@@ -196,10 +212,10 @@ public class JConstraintResult {
             return value ? ASSUMED : UNKNOWN;
         }
 
-        public abstract boolean isTrue();
+        public abstract boolean isTruthy();
 
-        public boolean isFalse() {
-            return !this.isTrue();
+        public boolean isFalsey() {
+            return !this.isTruthy();
         }
 
         public abstract boolean isKnown();
@@ -211,5 +227,7 @@ public class JConstraintResult {
         public abstract Status and(Status other);
 
         public abstract Status or(Status other);
+
+        public abstract Status not();
     }
 }
