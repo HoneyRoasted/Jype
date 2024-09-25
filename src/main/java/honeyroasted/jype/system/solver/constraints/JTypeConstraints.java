@@ -246,4 +246,21 @@ public interface JTypeConstraints {
             return this.left().simpleName() + " = capture(" + this.right().simpleName() + ")";
         }
     }
+
+    class Contradiction extends Constraint.Binary<Constraint, Constraint> {
+
+        public Contradiction(Constraint left, Constraint right) {
+            super(left, right);
+        }
+
+        @Override
+        public String simpleName() {
+            return "(" + this.left().simpleName() + " & " + this.right().simpleName() + ") -> false";
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " AND " + this.right() + " IS A CONTRADICTION";
+        }
+    }
 }

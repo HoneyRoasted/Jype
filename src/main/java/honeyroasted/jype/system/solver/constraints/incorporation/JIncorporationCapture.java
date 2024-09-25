@@ -63,8 +63,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
                                 if (other instanceof JTypeConstraints.Equal eq && ((eq.left().typeEquals(alpha) && !(eq.right() instanceof JMetaVarType))
                                         || (eq.right().typeEquals(alpha) && !(eq.left() instanceof JMetaVarType)))) {
                                     //Case where Ai is a wildcard and alpha_i = R => false (18.3.2 Bullets #2.1, 3.1, 4.1)
-                                    branch.set(constraint, Constraint.Status.FALSE);
-                                    branch.set(other, Constraint.Status.FALSE);
+                                    branch.add(new JTypeConstraints.Contradiction(constraint, other), Constraint.Status.FALSE);
                                 } else if (other instanceof JTypeConstraints.Subtype st) {
                                     if (st.left().typeEquals(alpha) && !(st.right() instanceof JMetaVarType)) {
                                         //alpha <: R
@@ -88,8 +87,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
                                         JType r = st.left();
                                         if (a instanceof JWildType.Upper wtu) {
                                             //Case where A_i is a wildcard of form ? or ? extends T and R <: alpha_i => false (18.3.2 Bullets #2.3, 3.4)
-                                            branch.set(constraint, Constraint.Status.FALSE);
-                                            branch.set(other, Constraint.Status.FALSE);
+                                            branch.add(new JTypeConstraints.Contradiction(constraint, other), Constraint.Status.FALSE);
                                         } else if (a instanceof JWildType.Lower wtl) { //? super
                                             //Case where A_I is a wildcard of form ? super T and R <: alpha_i => R <: T (18.3.2 Bullet #4.3)
                                             wtl.lowerBounds().forEach(ti -> branch.add(new JTypeConstraints.Subtype(r, ti)));
@@ -100,10 +98,23 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
                         });
                     } else {
                         //Case where A_i is not a wildcard => alpha_i = A_i (18.3.2 Bullets #1)
-                        branch.add(JTypeConstraints.Equal.createBound(alpha, a), Constraint.Status.ASSUMED);
+                        addEqualBound(branch, alpha, a);
                     }
                 }
             }
+        }
+    }
+
+    private static void addEqualBound(ConstraintBranch branch, JType left, JType right) {
+        if (left.isProperType() && right.isProperType()) {
+            boolean equal = left.typeEquals(right);
+            if (equal) {
+                branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.TRUE);
+            } else {
+                branch.add(new JTypeConstraints.Equal(left, right), Constraint.Status.FALSE);
+            }
+        } else {
+            branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.ASSUMED);
         }
     }
 }

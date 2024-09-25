@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 public class JIncorporationEqualEqual extends ConstraintMapper.Binary<JTypeConstraints.Equal, JTypeConstraints.Equal> {
-
     @Override
     protected boolean filterLeft(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal constraint, Constraint.Status status) {
         return status.isTrue();
@@ -38,12 +37,32 @@ public class JIncorporationEqualEqual extends ConstraintMapper.Binary<JTypeConst
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
+                addEqualBound(branch, leftConstraint, otherType, rightConstraint, rr);
+
                 branch.add(JTypeConstraints.Equal.createBound(otherType, rr), Constraint.Status.ASSUMED);
             } else if (rr.typeEquals(mvt)) {
-                branch.add(JTypeConstraints.Equal.createBound(otherType, rl), Constraint.Status.ASSUMED);
+                addEqualBound(branch, leftConstraint, otherType, rightConstraint, rl);
             } else {
-                branch.add(JTypeConstraints.Equal.createBound(subResolver.visit(rl), subResolver.visit(rr)), Constraint.Status.ASSUMED);
+                JType rlRes = subResolver.visit(rl);
+                JType rrRes = subResolver.visit(rr);
+                if (!rlRes.structuralEquals(rl) || !rrRes.structuralEquals(rr)) {
+                    addEqualBound(branch, leftConstraint, rlRes, rightConstraint, rlRes);
+                }
             }
+        }
+    }
+
+    private static void addEqualBound(ConstraintBranch branch, Constraint leftCons, JType left, Constraint rightCons, JType right) {
+        if (left.isProperType() && right.isProperType()) {
+            boolean equal = left.typeEquals(right);
+            if (equal) {
+                branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.TRUE);
+            } else {
+                branch.add(new JTypeConstraints.Equal(left, right), Constraint.Status.FALSE);
+                branch.add(new JTypeConstraints.Contradiction(leftCons, rightCons), Constraint.Status.FALSE);
+            }
+        } else {
+            branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.ASSUMED);
         }
     }
 }

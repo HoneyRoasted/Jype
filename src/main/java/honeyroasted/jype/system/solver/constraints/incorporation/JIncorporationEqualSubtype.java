@@ -37,12 +37,30 @@ public class JIncorporationEqualSubtype extends ConstraintMapper.Binary<JTypeCon
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
-                branch.add(JTypeConstraints.Subtype.createBound(otherType, rr), Constraint.Status.ASSUMED);
+                addSubtypeBound(branch, leftConstraint, otherType, rightConstraint, rr);
             } else if (rr.typeEquals(mvt)) {
-                branch.add(JTypeConstraints.Subtype.createBound(rl, otherType), Constraint.Status.ASSUMED);
+                addSubtypeBound(branch, rightConstraint, rl, leftConstraint, otherType);
             } else {
-                branch.add(JTypeConstraints.Subtype.createBound(subResolver.visit(rl), subResolver.visit(rr)), Constraint.Status.ASSUMED);
+                JType rlRes = subResolver.visit(rl);
+                JType rrRes = subResolver.visit(rr);
+                if (!rlRes.structuralEquals(rl) || !rrRes.structuralEquals(rr)) {
+                    addSubtypeBound(branch, leftConstraint, rlRes, rightConstraint, rlRes);
+                }
             }
+        }
+    }
+
+    private static void addSubtypeBound(ConstraintBranch branch, Constraint leftCons, JType left, Constraint rightCons, JType right) {
+        if (left.isProperType() && right.isProperType()) {
+            boolean subtype = left.isAssignableTo(right);
+            if (subtype) {
+                branch.add(JTypeConstraints.Subtype.createBound(left, right), Constraint.Status.TRUE);
+            } else {
+                branch.add(new JTypeConstraints.Subtype(left, right), Constraint.Status.FALSE);
+                branch.add(new JTypeConstraints.Contradiction(leftCons, rightCons), Constraint.Status.FALSE);
+            }
+        } else {
+            branch.add(JTypeConstraints.Subtype.createBound(left, right), Constraint.Status.ASSUMED);
         }
     }
 }
