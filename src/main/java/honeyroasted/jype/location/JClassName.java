@@ -57,7 +57,7 @@ public record JClassName(Type type, SubType subType, JClassName containing, Stri
         }
 
         if (clazz.isAnonymousClass()) {
-            return new JClassName(Type.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous$" + nestIndex(clazz) + ">");
+            return new JClassName(Type.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous>");
         } else {
             return new JClassName(Type.CLASS, SubType.NONE, containing, clazz.getSimpleName());
         }
@@ -177,13 +177,13 @@ public record JClassName(Type type, SubType subType, JClassName containing, Stri
         return this.toString(".");
     }
 
-    enum Type {
+    public enum Type {
         PACKAGE,
         CLASS,
         METHOD
     }
 
-    enum SubType {
+    public enum SubType {
         INITIALIZER,
         CONSTRUCTOR,
         ANONYMOUS_CLASS,

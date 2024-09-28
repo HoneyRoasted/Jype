@@ -68,7 +68,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 stat = false;
             } else {
                 //TODO not convinced this works
-                JMetaVarType mvt = system.typeFactory().newMetaVarType("RET_" + invocation.name());
+                JMetaVarType mvt = system.typeFactory().newMetaVarType("M_TARGET");
                 ConstraintTree solved = system.operations().inferenceSolver()
                         .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
                         .solve();
@@ -112,7 +112,6 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         } else {
             List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
 
-            int[] c = {0};
             methods.forEach(ref -> {
                 if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access()) && (!stat || ref.hasModifier(AccessFlag.STATIC))) {
                     if (ref.parameters().size() == parameters.size()) {

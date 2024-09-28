@@ -52,7 +52,7 @@ public class JAbstractDelegateType<T extends JType> implements JType {
 
     @Override
     public int hashCode(Set<JType> seen) {
-        return delegate.hashCode(seen);
+        return delegate().hashCode(seen);
     }
 
     @Override

@@ -22,7 +22,9 @@ public record JClassNamespace(JClassLocation location, JClassName name) implemen
     }
 
     @Override
-    public JClassNamespace containingClass() {
-        return this;
+    public JClassLocation containingClass() {
+        return this.location;
     }
+
+
 }

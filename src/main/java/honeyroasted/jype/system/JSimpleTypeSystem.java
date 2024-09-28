@@ -22,29 +22,32 @@ import java.util.List;
 import java.util.function.Function;
 
 public class JSimpleTypeSystem implements JTypeSystem {
+    private String name;
+
     private JTypeStorage storage;
     private JTypeResolvers resolvers;
     private JTypeConstants constants;
     private JTypeOperations operations;
     private JTypeFactory typeFactory;
 
-    public JSimpleTypeSystem() {
-        this(JTypeCacheFactory.IN_MEMORY_FACTORY);
+    public JSimpleTypeSystem(String name) {
+        this(name, JTypeCacheFactory.IN_MEMORY_FACTORY);
     }
 
-    public JSimpleTypeSystem(JTypeCacheFactory cacheFactory) {
-        this(cacheFactory, JGeneralTypeResolution.GENERAL_TYPE_RESOLVERS, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS);
+    public JSimpleTypeSystem(String name, JTypeCacheFactory cacheFactory) {
+        this(name, cacheFactory, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS, JGeneralTypeResolution.GENERAL_TYPE_RESOLVERS);
     }
 
-    public JSimpleTypeSystem(JTypeResolver... initialResolvers) {
-        this(JTypeCacheFactory.IN_MEMORY_FACTORY, initialResolvers);
+    public JSimpleTypeSystem(String name, JTypeResolver... initialResolvers) {
+        this(name, JTypeCacheFactory.IN_MEMORY_FACTORY, initialResolvers);
     }
 
-    public JSimpleTypeSystem(JTypeCacheFactory cacheFactory, JTypeResolver... initialResolvers) {
-        this(cacheFactory, List.of(initialResolvers), JSimpleTypeFactory::new);
+    public JSimpleTypeSystem(String name, JTypeCacheFactory cacheFactory, JTypeResolver... initialResolvers) {
+        this(name, cacheFactory, List.of(initialResolvers), JSimpleTypeFactory::new);
     }
 
-    public JSimpleTypeSystem(JTypeCacheFactory cacheFactory, Collection<? extends JTypeResolver> initialResolvers, Function<JTypeSystem, JTypeFactory> typeFactory) {
+    public JSimpleTypeSystem(String name, JTypeCacheFactory cacheFactory, Collection<? extends JTypeResolver> initialResolvers, Function<JTypeSystem, JTypeFactory> typeFactory) {
+        this.name = name;
         this.storage = new JInMemoryTypeStorage(cacheFactory);
         this.resolvers = new JInMemoryTypeResolvers();
         this.registerResolvers(initialResolvers);
@@ -112,5 +115,10 @@ public class JSimpleTypeSystem implements JTypeSystem {
     @Override
     public JTypeFactory typeFactory() {
         return this.typeFactory;
+    }
+
+    @Override
+    public String toString() {
+        return "JSimpleTypeSystem[" + this.name + "]";
     }
 }

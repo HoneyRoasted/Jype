@@ -114,7 +114,7 @@ public interface JReflectionTypeResolution {
     static Executable methodFromLocation(JMethodLocation location) throws JResolutionFailedException {
         Class<?> targetCls;
         try {
-            targetCls = classFromLocation(location.containing().location());
+            targetCls = classFromLocation(location.containing());
         } catch (JResolutionFailedException | JReflectionLookupException ex) {
             throw new JReflectionLookupException("Could not resolve method (containing class not found): " + location, ex);
         }

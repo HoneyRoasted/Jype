@@ -136,7 +136,7 @@ public class JVerboseToStringVisitor implements JToStringVisitor {
 
     @Override
     public String arrayToString(JArrayType type, Set<JType> context) {
-        return "[" + visit(type.component(), context) + "]";
+        return visit(type.component(), context) + "[]";
     }
 
     @Override

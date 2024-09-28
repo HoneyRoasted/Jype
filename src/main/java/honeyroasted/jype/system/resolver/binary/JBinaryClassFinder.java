@@ -64,7 +64,7 @@ public interface JBinaryClassFinder {
         private Path path;
 
         public Jar(Path path) {
-            this.path = path;
+            this.path = path.toAbsolutePath();
         }
 
         @Override

@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 public interface JTypeSystem {
-    JTypeSystem RUNTIME_REFLECTION = new JSimpleTypeSystem();
+    JTypeSystem RUNTIME_REFLECTION = new JSimpleTypeSystem("RUNTIME_REFLECTION");
 
     JTypeConstants constants();
 

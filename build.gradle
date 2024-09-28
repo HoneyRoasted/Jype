@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     implementation("com.github.HoneyRoasted:Collect:0.0.10",
-            "com.github.HoneyRoasted:Almonds:11484cf4fd",
+            "com.github.HoneyRoasted:Almonds:0c0ac45d5b",
             "org.glavo:classfile:0.5.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")

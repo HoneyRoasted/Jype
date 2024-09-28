@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
+import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;

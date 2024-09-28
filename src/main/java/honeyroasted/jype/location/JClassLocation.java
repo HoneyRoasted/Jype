@@ -3,9 +3,10 @@ package honeyroasted.jype.location;
 import org.glavo.classfile.ClassModel;
 import org.glavo.classfile.constantpool.ClassEntry;
 
+import java.lang.constant.ClassDesc;
+
 public record JClassLocation(Type type, JClassLocation containing, String value) {
-    public static final JClassLocation DEFAULT_MODULE = new JClassLocation(Type.MODULE, null, null);
-    public static final JClassLocation UNKNOWN_MODULE = new JClassLocation(Type.MODULE, null, null);
+    public static final JClassLocation DEFAULT_PACKAGE = new JClassLocation(Type.PACKAGE, null, "");
     public static final JClassLocation VOID = JClassLocation.of(void.class);
 
     public static JClassLocation of(ClassModel model) {
@@ -16,14 +17,50 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         return of(entry.asInternalName());
     }
 
-    public static JClassLocation of(String internalName) {
-        return of(UNKNOWN_MODULE, internalName);
+    public static JClassLocation of(ClassDesc desc) {
+        return ofDescriptor(desc.descriptorString());
     }
 
-    public static JClassLocation of(JClassLocation module, String internalName) {
+    public static JClassLocation ofDescriptor(String desc) {
+        if (desc.startsWith("[")) {
+            int depth = 0;
+            while (desc.startsWith("[")) {
+                depth++;
+                desc = desc.substring(1);
+            }
+
+            JClassLocation curr = ofDescriptor(desc);
+            for (int i = 0; i < depth; i++) {
+                curr = new JClassLocation(Type.ARRAY, curr, "[]");
+            }
+
+            return curr;
+        } else if (desc.isEmpty()) {
+            return DEFAULT_PACKAGE;
+        } else if (desc.length() == 1) {
+            return switch (desc) {
+                case "Z" -> of(boolean.class);
+                case "B" -> of(byte.class);
+                case "S" -> of(short.class);
+                case "C" -> of(char.class);
+                case "I" -> of(int.class);
+                case "J" -> of(long.class);
+                case "F" -> of(float.class);
+                case "D" -> of(double.class);
+                case "V" -> VOID;
+                default -> DEFAULT_PACKAGE;
+            };
+        } else {
+            //cut out L and ;
+            desc = desc.substring(1, desc.length() - 1);
+            return of(desc);
+        }
+    }
+
+    public static JClassLocation of(String internalName) {
         String[] parts = internalName.split("/");
         if (parts.length == 1) {
-            return new JClassLocation(Type.CLASS, module, parts[0]);
+            return new JClassLocation(Type.CLASS, DEFAULT_PACKAGE, parts[0]);
         } else {
             JClassLocation result = null;
             for (int i = 0; i < parts.length - 1; i++) {
@@ -39,29 +76,25 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         if (cls.isArray()) {
             return new JClassLocation(Type.ARRAY, of(cls.getComponentType()), "[]");
         } else if (cls.isPrimitive()) {
-            return new JClassLocation(Type.CLASS, DEFAULT_MODULE, cls.getName());
+            return new JClassLocation(Type.CLASS, null, cls.getName());
         } else {
             String[] parts = cls.getName().split("\\.");
-            return new JClassLocation(Type.CLASS, of(cls.getPackage(), cls.getModule()), parts[parts.length - 1]);
+            return new JClassLocation(Type.CLASS, of(cls.getPackage()), parts[parts.length - 1]);
         }
     }
 
-    public static JClassLocation of(Package pack, Module module) {
-        if (pack == null && module == null) {
-            return null;
-        } else {
-            JClassLocation curr = module.getName() == null ? DEFAULT_MODULE :
-                    new JClassLocation(Type.MODULE, null, module.getName());
-
+    public static JClassLocation of(Package pack) {
             if (pack != null) {
+                JClassLocation curr = null;
                 String[] parts = pack.getName().split("\\.");
 
                 for (String part : parts) {
                     curr = new JClassLocation(Type.PACKAGE, curr, part);
                 }
+                return curr;
+            } else {
+                return DEFAULT_PACKAGE;
             }
-            return curr;
-        }
     }
 
     public JClassName toName() {
@@ -70,12 +103,12 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
             case ARRAY -> new JClassName(JClassName.Type.CLASS, JClassName.SubType.ARRAY, containing, this.value);
             case PACKAGE -> new JClassName(JClassName.Type.PACKAGE, JClassName.SubType.NONE, containing, this.value);
             case CLASS -> new JClassName(JClassName.Type.CLASS, JClassName.SubType.NONE, containing, this.value);
-            case MODULE -> null;
         };
     }
 
     public JClassLocation getPackage() {
-        return this.type == Type.PACKAGE || this.type == Type.MODULE ? this :
+        return this.type == Type.PACKAGE ? this :
+                this.containing == null ? DEFAULT_PACKAGE :
                 this.containing.getPackage();
     }
 
@@ -87,14 +120,6 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         return this.type == Type.PACKAGE && this.value.isEmpty();
     }
 
-    public boolean isDefaultModule() {
-        return !this.equals(DEFAULT_MODULE);
-    }
-
-    public boolean isUnknownModule() {
-        return !this.equals(UNKNOWN_MODULE);
-    }
-
     public String toInternalName() {
         return this.toName("/");
     }
@@ -104,20 +129,19 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
     }
 
     public String toName(String delim) {
-        if (this.containing != null && this.containing.type != Type.MODULE && !this.containing.isDefaultPackage()) {
+        if (this.containing != null && !this.containing.isDefaultPackage()) {
             return this.containing.toName(delim) + delim + this.value;
         }
 
         return this.value;
     }
 
-    public String toString(String delim, String moduleDelim) {
+    public String toString(String delim) {
         StringBuilder sb = new StringBuilder();
-        if (this.containing != null && !this.containing.equals(DEFAULT_MODULE) && !this.containing.equals(UNKNOWN_MODULE) && !this.containing.isDefaultPackage()) {
+        if (this.containing != null && !this.containing.isDefaultPackage()) {
             sb.append(this.containing);
-            if (this.containing.type == Type.MODULE) {
-                sb.append(moduleDelim);
-            } else if (this.type != Type.ARRAY) {
+
+            if (!this.isArray()) {
                 sb.append(delim);
             }
         }
@@ -130,12 +154,11 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
     }
 
     public String toString() {
-        return this.toString(".", "/");
+        return this.toString(".");
     }
 
     public enum Type {
         ARRAY,
-        MODULE,
         PACKAGE,
         CLASS
     }

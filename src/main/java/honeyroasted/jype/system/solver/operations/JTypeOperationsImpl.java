@@ -2,8 +2,8 @@ package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintMapper;
-import honeyroasted.almonds.ConstraintMapperApplier;
 import honeyroasted.almonds.ConstraintSolver;
+import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
@@ -54,7 +54,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class JTypeOperationsImpl implements JTypeOperations {
-    public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = ConstraintMapperApplier.of(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -77,9 +77,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JSubtypeVar(),
             new JSubtypeWild(),
             new JSubtypeIntersection()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier INCORPORATION_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier INCORPORATION_APPLIER = ConstraintMapperApplier.of(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -87,9 +87,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier REDUCTION_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier REDUCTION_APPLIER = ConstraintMapperApplier.of(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -106,11 +106,13 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = new ConstraintMapperApplier(List.of(new JBuildInitialBounds()));
+    public static final ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = ConstraintMapperApplier.of(List.of(
+            new JBuildInitialBounds())
+            , ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier INFERENCE_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier INFERENCE_APPLIER = ConstraintMapperApplier.of(List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -134,15 +136,15 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier RESOLVE_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier RESOLVE_APPLIER = ConstraintMapperApplier.of(List.of(
             new JResolveBounds()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
-    public static final ConstraintMapperApplier VERIFY_APPLIER = new ConstraintMapperApplier(List.of(
+    public static final ConstraintMapperApplier VERIFY_APPLIER = ConstraintMapperApplier.of(List.of(
             new JVerifyBounds()
-    ));
+    ), ConstraintMapperApplier.Type.ORDERED);
 
     public static final JTypeOperation<JType, Set<JType>> FIND_ALL_KNOWN_SUPERTYPES = new JFindAllKnownSupertypes();
     public static final JTypeOperation<Set<JType>, JType> FIND_GREATEST_LOWER_BOUND = new JFindGreatestLowerBound();
