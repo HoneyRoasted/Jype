@@ -6,8 +6,9 @@ public interface JGeneralTypeResolution {
 
     JBundledTypeResolvers GENERAL_TYPE_RESOLVERS = new JBundledTypeResolvers(
             new JClassSourceNameResolver(),
+            new JLocationPrimitiveResolver(),
             new JTypeParameterLocationResolver(),
-            new JLocationPrimitiveResolver()
+            new JTypeMethodLocationResolver()
     );
 
 }

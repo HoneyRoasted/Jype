@@ -34,6 +34,19 @@ public class InferenceTest {
 
         JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);
 
+
+        double sum = 0;
+        int times = 10;
+        for (int i = 0; i < times; i++) {
+            long curr = System.currentTimeMillis();
+            system.operations().inferenceSolver()
+                    .bind(constraint)
+                    .solve();
+            sum += (System.currentTimeMillis() - curr);
+        }
+
+        System.out.println("AVERAGE MS: " + (sum / times));
+
         ConstraintTree solve = system.operations().inferenceSolver()
                 .bind(constraint)
                 .solve();

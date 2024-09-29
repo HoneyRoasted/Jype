@@ -13,6 +13,11 @@ public class JTypeParameterLocationResolver implements JTypeResolver<JTypeParame
 
     @Override
     public JResolutionResult<JTypeParameterLocation, JVarType> resolve(JTypeSystem system, JTypeParameterLocation value) {
+        JResolutionResult<JTypeParameterLocation, JVarType> cached = system.storage().cacheFor(JTypeParameterLocation.class).asResolution(value);
+        if (cached.success()) {
+            return cached;
+        }
+
         if (value.containing() instanceof JMethodLocation mloc) {
             return system.resolve(mloc).flatMap(value,
                     ref -> ref.typeParameters().stream().filter(j -> j.location().equals(value)).findFirst(),

@@ -43,7 +43,7 @@ public interface JReflectionTypeResolution {
         String name = method instanceof Constructor<?> ? "<init>" : method.getName();
 
         if (methodLocation.name().equals(name) &&
-                methodLocation.containing().equals(JClassNamespace.of(method.getDeclaringClass())) &&
+                methodLocation.containing().equals(JClassLocation.of(method.getDeclaringClass())) &&
                 methodLocation.returnType().equals(retType) &&
                 methodLocation.parameters().size() == method.getParameterCount()) {
             Class[] parameters = method.getParameterTypes();
