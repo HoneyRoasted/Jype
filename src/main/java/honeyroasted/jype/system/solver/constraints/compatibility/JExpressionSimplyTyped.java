@@ -9,8 +9,6 @@ import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JType;
 
-import java.util.function.Function;
-
 import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context.*;
 
 public class JExpressionSimplyTyped extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
@@ -21,10 +19,8 @@ public class JExpressionSimplyTyped extends ConstraintMapper.Unary<JTypeConstrai
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-
-        JType supertype = mapper.apply(constraint.right());
+        JType supertype = constraint.right();
         branch.drop(constraint)
-                .add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), mapper).get(), constraint.middle(), supertype));
+                .add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get(), constraint.middle(), supertype));
     }
 }

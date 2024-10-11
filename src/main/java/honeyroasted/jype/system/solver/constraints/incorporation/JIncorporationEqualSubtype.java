@@ -5,13 +5,11 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
-import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolver;
+import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JType;
 
 import java.util.Map;
-import java.util.function.Function;
 
 public class JIncorporationEqualSubtype extends ConstraintMapper.Binary<JTypeConstraints.Equal, JTypeConstraints.Subtype> {
     @Override
@@ -26,14 +24,13 @@ public class JIncorporationEqualSubtype extends ConstraintMapper.Binary<JTypeCon
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal leftConstraint, Constraint.Status leftStatus, JTypeConstraints.Subtype rightConstraint, Constraint.Status rightStatus) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
-                rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
+        JType ll = leftConstraint.left(), lr = leftConstraint.right(),
+                rl = rightConstraint.left(), rr = rightConstraint.right();
 
         if (ll instanceof JMetaVarType || lr instanceof JMetaVarType) {
             JMetaVarType mvt = (JMetaVarType) (ll instanceof JMetaVarType ? ll : lr);
             JType otherType = ll instanceof JMetaVarType ? lr : ll;
-            JMetaVarTypeResolver subResolver = new JMetaVarTypeResolver(Map.of(mvt, otherType));
+            JMetaVarTypeResolveVisitor subResolver = new JMetaVarTypeResolveVisitor(Map.of(mvt, otherType));
 
             if (rl.typeEquals(mvt)) {
                 //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)

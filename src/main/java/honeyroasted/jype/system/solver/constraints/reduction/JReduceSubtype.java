@@ -5,7 +5,6 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
@@ -18,7 +17,6 @@ import honeyroasted.jype.type.JVarType;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subtype> {
@@ -29,9 +27,8 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Subtype constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType left = mapper.apply(constraint.left());
-        JType right = mapper.apply(constraint.right());
+        JType left = constraint.left();
+        JType right = constraint.right();
 
         if (left.isProperType() && right.isProperType()) {
             branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
@@ -44,14 +41,6 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
         } else if (right instanceof JVarType vt) {
             if (left instanceof JIntersectionType it && it.typeContains(vt)) {
                 branch.set(constraint, Constraint.Status.TRUE);
-            } else {
-                branch.set(constraint, Constraint.Status.FALSE);
-            }
-        } else if (right instanceof JMetaVarType mvt) {
-            if (left instanceof JIntersectionType it && it.typeContains(mvt)) {
-                branch.set(constraint, Constraint.Status.TRUE);
-            } else if (!mvt.lowerBounds().isEmpty()) {
-                branch.drop(constraint).add(new JTypeConstraints.Subtype(left, mvt.lowerBound()));
             } else {
                 branch.set(constraint, Constraint.Status.FALSE);
             }

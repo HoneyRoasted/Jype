@@ -6,7 +6,6 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
@@ -15,7 +14,6 @@ import honeyroasted.jype.type.JWildType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
 public class JIncorporationSubtypeSubtype extends ConstraintMapper.Binary<JTypeConstraints.Subtype, JTypeConstraints.Subtype> {
     @Override
@@ -30,9 +28,8 @@ public class JIncorporationSubtypeSubtype extends ConstraintMapper.Binary<JTypeC
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Subtype leftConstraint, Constraint.Status leftStatus, JTypeConstraints.Subtype rightConstraint, Constraint.Status rightStatus) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType ll = mapper.apply(leftConstraint.left()), lr = mapper.apply(leftConstraint.right()),
-                rl = mapper.apply(rightConstraint.left()), rr = mapper.apply(rightConstraint.right());
+        JType ll = leftConstraint.left(), lr = leftConstraint.right(),
+                rl = rightConstraint.left(), rr = rightConstraint.right();
 
         if (ll instanceof JMetaVarType mvt && mvt.typeEquals(rr)) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)

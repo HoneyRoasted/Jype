@@ -4,13 +4,14 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
@@ -23,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
 
@@ -34,9 +34,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-
-        JType left = mapper.apply(constraint.right());
+        JType left = constraint.right();
         JExpressionInformation.Instantiation inst = (JExpressionInformation.Instantiation) constraint.left();
         JTypeSystem system = left.typeSystem();
 
@@ -55,13 +53,19 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
         parameters.addAll(inst.parameters());
 
-        Set<Constraint> typeParams = new LinkedHashSet<>();
+        Set<JTypeConstraints.Infer> typeParams = new LinkedHashSet<>();
+        Map<JVarType, JMetaVarType> metaVars = new HashMap<>();
         if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
             for (int i = 0; i < target.typeParameters().size(); i++) {
                 JVarType vt = target.typeParameters().get(i);
-                typeParams.add(new JTypeConstraints.Infer(vt.createMetaVar(), vt));
+                JMetaVarType mvt = vt.createMetaVar();
+                typeParams.add(new JTypeConstraints.Infer(mvt, vt));
+                metaVars.put(vt, mvt);
             }
         }
+
+        branchContext.first(JTypeContext.JTypeMetavarMap.class).ifPresent(mp -> metaVars.putAll(mp.metaVars()));
+        Map<JMetaVarType, JType> instantiations = branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty()).instantiations();
 
         List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
         JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
@@ -70,14 +74,14 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         inst.type().declaredMethods().stream().filter(m -> m.location().isConstructor()).forEach(ref -> {
             if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                 if (ref.parameters().size() == parameters.size()) {
-                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
-                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters));
+                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters));
+                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters));
                 }
 
                 if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
                         ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
-                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
-                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, typeParams, inst, constraint, ref, result, parameters, vararg));
+                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters, vararg));
+                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters, vararg));
                 }
             }
         });
@@ -89,30 +93,42 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
     }
 
-    private static ConstraintBranch.Snapshot createConstruct(JTypeConstraints.Compatible.Context context, Set<Constraint> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters) {
+    private static ConstraintBranch.Snapshot createConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters) {
+        JTypeContext.JTypeMetavarMap map = new JTypeContext.JTypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
+
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
-        branch.put(new JTypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
+        branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
         for (int i = 0; i < parameters.size(); i++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(i), context, ref.parameters().get(i)), Constraint.Status.UNKNOWN);
+            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(i), context, map.apply(ref.parameters().get(i))), Constraint.Status.UNKNOWN);
         }
 
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new JTypeContext.ChosenMethod(inst, ref, context, false)), branch);
+        PropertySet metadata = new PropertySet();
+        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, false));
+        metadata.attach(map);
+
+        return new ConstraintBranch.Snapshot(metadata, branch);
     }
 
-    private static ConstraintBranch.Snapshot createVarargConstruct(JTypeConstraints.Compatible.Context context, Set<Constraint> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters, JArrayType vararg) {
+    private static ConstraintBranch.Snapshot createVarargConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters, JArrayType vararg) {
+        JTypeContext.JTypeMetavarMap map = new JTypeContext.JTypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
+
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
-        branch.put(new JTypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
+        branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
         int index;
         for (index = 0; index < ref.parameters().size() - 1; index++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, ref.parameters().get(index)), Constraint.Status.UNKNOWN);
+            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, map.apply(ref.parameters().get(index))), Constraint.Status.UNKNOWN);
         }
 
         for (; index < parameters.size(); index++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, vararg.component()), Constraint.Status.UNKNOWN);
+            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, map.apply(vararg.component())), Constraint.Status.UNKNOWN);
         }
 
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new JTypeContext.ChosenMethod(inst, ref, context, true)), branch);
+        PropertySet metadata = new PropertySet();
+        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, false));
+        metadata.attach(map);
+
+        return new ConstraintBranch.Snapshot(metadata, branch);
     }
 }

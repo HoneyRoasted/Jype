@@ -6,8 +6,8 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
@@ -46,10 +45,8 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-
         JExpressionInformation.MethodInvocation<?> invocation = (JExpressionInformation.MethodInvocation<?>) constraint.left();
-        JType target = mapper.apply(constraint.right());
+        JType target = constraint.right();
         JTypeSystem system = target.typeSystem();
 
         JClassReference declaring = invocation.declaring();
@@ -63,7 +60,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
             stat = true;
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
-                JType type = expr.getSimpleType(system, mapper).get();
+                JType type = expr.getSimpleType(system, branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get();
                 findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference())));
                 stat = false;
             } else {

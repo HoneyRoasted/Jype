@@ -6,9 +6,6 @@ import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
-import honeyroasted.jype.type.JType;
-
-import java.util.function.Function;
 
 public class JReduceSimplyTypedExpression extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
@@ -18,7 +15,6 @@ public class JReduceSimplyTypedExpression extends ConstraintMapper.Unary<JTypeCo
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        branch.drop(constraint).add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), mapper).get(), constraint.middle(), constraint.right()));
+        branch.drop(constraint).add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get(), constraint.middle(), constraint.right()));
     }
 }

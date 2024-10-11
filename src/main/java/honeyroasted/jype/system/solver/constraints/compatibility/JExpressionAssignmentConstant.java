@@ -4,13 +4,11 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JType;
-
-import java.util.function.Function;
 
 import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context.*;
 
@@ -18,19 +16,18 @@ import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compa
 public class JExpressionAssignmentConstant extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType right = mapper.apply(constraint.right());
+        
+        JType right = constraint.right();
 
         return status.isUnknown() && constraint.middle() == ASSIGNMENT && constraint.left() instanceof JExpressionInformation.Constant && right.isProperType();
     }
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType right = mapper.apply(constraint.right());
+        JType right = constraint.right();
 
         JExpressionInformation.Constant constantExpression = (JExpressionInformation.Constant) constraint.left();
-        JType subtype = constantExpression.getSimpleType(right.typeSystem(), mapper).get();
+        JType subtype = constantExpression.getSimpleType(right.typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get();
 
         JTypeConstants c = subtype.typeSystem().constants();
 

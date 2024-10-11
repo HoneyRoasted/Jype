@@ -1,8 +1,8 @@
 package honeyroasted.jype;
 
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
@@ -33,7 +33,6 @@ public class InferenceTest {
         JClassType targetType = system.<JClassReference>tryResolve(List.class).parameterized(system.<JArgumentType>tryResolve(String.class));
 
         JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);
-
 
         double sum = 0;
         int times = 10;

@@ -1,13 +1,13 @@
 package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleExplicitCast;
 import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleLooseInvocation;
 import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleStrictInvocation;
@@ -38,8 +38,6 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiatio
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSubtype;
-import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolver;
-import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
@@ -51,7 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 
 public class JTypeOperationsImpl implements JTypeOperations {
     public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = ConstraintMapperApplier.of(List.of(
@@ -109,7 +106,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
     ), ConstraintMapperApplier.Type.ORDERED);
 
     public static final ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = ConstraintMapperApplier.of(List.of(
-            new JBuildInitialBounds())
+                    new JBuildInitialBounds())
             , ConstraintMapperApplier.Type.ORDERED);
 
     public static final ConstraintMapperApplier INFERENCE_APPLIER = ConstraintMapperApplier.of(List.of(
@@ -205,48 +202,33 @@ public class JTypeOperationsImpl implements JTypeOperations {
                 RESOLVE_APPLIER,
                 VERIFY_APPLIER
         )).withContext(new PropertySet()
-                .attach(this.typeSystem)
-                .attach(varTypeMapper()));
+                .attach(this.typeSystem));
     }
 
     @Override
-    public JTypeContext.JTypeMapper varTypeMapper() {
-        return new JTypeContext.JTypeMapper(bounds -> {
-            Map<JVarType, JMetaVarType> metaVars = new LinkedHashMap<>();
+    public Map<JVarType, JMetaVarType> varTypeMap(ConstraintBranch branch) {
+        Map<JVarType, JMetaVarType> metaVars = new LinkedHashMap<>();
 
-            bounds.constraints().forEach((con, status) -> {
-                if (con instanceof JTypeConstraints.Infer inf) {
-                    metaVars.put(inf.right(), inf.left());
-                }
-            });
-
-            if (metaVars.isEmpty()) {
-                return Function.identity();
-            } else {
-                JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(metaVars);
-                return resolver::visit;
+        branch.constraints().forEach((con, status) -> {
+            if (con instanceof JTypeConstraints.Infer inf) {
+                metaVars.put(inf.right(), inf.left());
             }
         });
+
+        return metaVars;
     }
 
     @Override
-    public JTypeContext.JTypeMapper metaVarTypeMapper() {
-        return new JTypeContext.JTypeMapper(bounds -> {
-            Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
+    public Map<JMetaVarType, JType> metaVarTypeMap(ConstraintBranch branch) {
+        Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
 
-            bounds.constraints().forEach((con, status) -> {
-                if (con instanceof JTypeConstraints.Instantiation inst && status.isTrue()) {
-                    instantiations.put(inst.left(), inst.right());
-                }
-            });
-
-            if (instantiations.isEmpty()) {
-                return Function.identity();
-            } else {
-                JMetaVarTypeResolver resolver = new JMetaVarTypeResolver(instantiations);
-                return resolver::visit;
+        branch.constraints().forEach((con, status) -> {
+            if (con instanceof JTypeConstraints.Instantiation inst && status.isTrue()) {
+                instantiations.put(inst.left(), inst.right());
             }
         });
+
+        return instantiations;
     }
 
     @Override

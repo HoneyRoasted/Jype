@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class JMetaVarTypeResolver implements JDeepStructuralTypeMappingVisitor {
+public class JMetaVarTypeResolveVisitor implements JDeepStructuralTypeMappingVisitor {
     private Predicate<JMetaVarType> resolves;
     private Function<JMetaVarType, JType> resolver;
 
-    public JMetaVarTypeResolver(Predicate<JMetaVarType> resolves, Function<JMetaVarType, JType> resolver) {
+    public JMetaVarTypeResolveVisitor(Predicate<JMetaVarType> resolves, Function<JMetaVarType, JType> resolver) {
         this.resolves = resolves;
         this.resolver = resolver;
     }
 
-    public JMetaVarTypeResolver(Map<JMetaVarType, ? extends JType> varMap) {
+    public JMetaVarTypeResolveVisitor(Map<JMetaVarType, ? extends JType> varMap) {
         this(varMap::containsKey, varMap::get);
     }
 

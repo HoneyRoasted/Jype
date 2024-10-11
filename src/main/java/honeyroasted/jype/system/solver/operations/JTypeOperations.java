@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.almonds.Constraint;
+import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintSolver;
 import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
@@ -14,6 +15,7 @@ import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -41,14 +43,15 @@ public interface JTypeOperations {
 
     ConstraintSolver inferenceSolver();
 
-    JTypeContext.JTypeMapper varTypeMapper();
+    Map<JVarType, JMetaVarType> varTypeMap(ConstraintBranch branch);
 
-    JTypeContext.JTypeMapper metaVarTypeMapper();
+    Map<JMetaVarType, JType> metaVarTypeMap(ConstraintBranch branch);
 
     default ConstraintSolver inferenceSolver(Map<JVarType, JMetaVarType> correspondence) {
         ConstraintSolver solver = this.inferenceSolver();
+        JTypeContext.JTypeMetavarMap metavarMap = new JTypeContext.JTypeMetavarMap(new HashMap<>(), new HashMap<>(correspondence));
         correspondence.forEach((vt, mvt) -> solver.bind(new JTypeConstraints.Infer(mvt, vt)));
-        return solver;
+        return solver.withContext(new PropertySet().attach(metavarMap));
     }
 
     Constraint.Status checkStatus(Constraint constraint, PropertySet context);

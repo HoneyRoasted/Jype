@@ -15,7 +15,6 @@ import honeyroasted.jype.type.JWildType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstraints.Capture> {
     @Override
@@ -25,9 +24,8 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Capture constraint, Constraint.Status status) {
-        Function<JType, JType> mapper = allContext.firstOr(JTypeContext.JTypeMapper.class, JTypeContext.JTypeMapper.NO_OP).mapper().apply(branch);
-        JType leftMapped = mapper.apply(constraint.left());
-        JType rightMapped = mapper.apply(constraint.right());
+        JType leftMapped = constraint.left();
+        JType rightMapped = constraint.right();
 
         //Bounds Involving Capture Conversion, 18.3.2
         JParameterizedClassType left = (JParameterizedClassType) leftMapped; //G<alpha_1...alpha_n>
@@ -41,7 +39,11 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
             for (int i = 0; i < left.typeParameters().size() && i < left.typeArguments().size(); i++) {
                 JType arg = left.typeArguments().get(i);
                 if (arg instanceof JMetaVarType mvt) { //Sanity check, should be true by convention
-                    varMap.add(new JTypeConstraints.Infer(mvt, left.typeParameters().get(i)));
+                    JVarType varType = left.typeParameters().get(i);
+                    varMap.add(new JTypeConstraints.Infer(mvt, varType));
+
+                    branchContext.firstOrAttach(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.createEmpty())
+                            .metaVars().put(varType, mvt);
                 }
             }
 

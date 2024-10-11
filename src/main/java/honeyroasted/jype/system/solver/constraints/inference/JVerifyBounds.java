@@ -12,12 +12,13 @@ public class JVerifyBounds implements ConstraintMapper {
     public void accept(ConstraintBranch branch) {
         if (branch.status().isTrue()) {
             JTypeSystem system = branch.parent().metadata().firstOr(JTypeSystem.class, JTypeSystem.RUNTIME_REFLECTION);
-            JTypeContext.JTypeMapper mapper = new JTypeContext.JTypeMapper(brnch -> system.operations().varTypeMapper().mapper().apply(brnch)
-                    .andThen(system.operations().metaVarTypeMapper().mapper().apply(brnch)));
 
             PropertySet context = new PropertySet()
                     .attach(system)
-                    .attach(mapper);
+                    .attach(new JTypeContext.JTypeMetavarMap(
+                            system.operations().metaVarTypeMap(branch),
+                            system.operations().varTypeMap(branch)
+                    ));
 
             branch.constraints().forEach((con, status) -> {
                 if (status == Constraint.Status.ASSUMED) {
