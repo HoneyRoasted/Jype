@@ -22,6 +22,11 @@ public class JMetaVarTypeResolveVisitor implements JDeepStructuralTypeMappingVis
     }
 
     @Override
+    public boolean visitStructural() {
+        return false;
+    }
+
+    @Override
     public boolean overridesMetaVarType(JMetaVarType type) {
         return this.resolves.test(type);
     }

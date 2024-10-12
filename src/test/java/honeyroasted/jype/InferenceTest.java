@@ -35,7 +35,7 @@ public class InferenceTest {
         JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);
 
         double sum = 0;
-        int times = 10;
+        int times = 100;
         for (int i = 0; i < times; i++) {
             long curr = System.currentTimeMillis();
             system.operations().inferenceSolver()
