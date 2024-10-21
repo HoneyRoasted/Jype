@@ -21,6 +21,6 @@ public class JExpressionSimplyTyped extends ConstraintMapper.Unary<JTypeConstrai
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
         JType supertype = constraint.right();
         branch.drop(constraint)
-                .add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get(), constraint.middle(), supertype));
+                .add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(supertype.typeSystem(), branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get(), constraint.middle(), supertype));
     }
 }

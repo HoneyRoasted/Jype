@@ -27,7 +27,7 @@ public class JExpressionAssignmentConstant extends ConstraintMapper.Unary<JTypeC
         JType right = constraint.right();
 
         JExpressionInformation.Constant constantExpression = (JExpressionInformation.Constant) constraint.left();
-        JType subtype = constantExpression.getSimpleType(right.typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get();
+        JType subtype = constantExpression.getSimpleType(right.typeSystem(), branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get();
 
         JTypeConstants c = subtype.typeSystem().constants();
 

@@ -15,6 +15,6 @@ public class JReduceSimplyTypedExpression extends ConstraintMapper.Unary<JTypeCo
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        branch.drop(constraint).add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get(), constraint.middle(), constraint.right()));
+        branch.drop(constraint).add(new JTypeConstraints.Compatible(constraint.left().getSimpleType(constraint.right().typeSystem(), branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get(), constraint.middle(), constraint.right()));
     }
 }

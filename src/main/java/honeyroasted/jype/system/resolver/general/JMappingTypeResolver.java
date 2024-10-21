@@ -21,7 +21,7 @@ public class JMappingTypeResolver<I, O extends JType, M extends JType> implement
     @Override
     public JResolutionResult<I, M> resolve(JTypeSystem system, I value) {
         return this.backing.resolve(system, value)
-                .map(value, t -> this.mapper.apply(system, t), "Failed execute mapper: " + this.mapper);
+                .map(value, t -> this.mapper.apply(system, t), "Failed to execute mapper: " + this.mapper);
     }
 
     @Override

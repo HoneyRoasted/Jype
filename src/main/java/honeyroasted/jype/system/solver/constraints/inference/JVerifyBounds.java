@@ -15,7 +15,7 @@ public class JVerifyBounds implements ConstraintMapper {
 
             PropertySet context = new PropertySet()
                     .attach(system)
-                    .attach(new JTypeContext.JTypeMetavarMap(
+                    .attach(new JTypeContext.TypeMetavarMap(
                             system.operations().metaVarTypeMap(branch),
                             system.operations().varTypeMap(branch)
                     ));

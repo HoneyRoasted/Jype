@@ -60,7 +60,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
             stat = true;
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
-                JType type = expr.getSimpleType(system, branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty())).get();
+                JType type = expr.getSimpleType(system, branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get();
                 findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference())));
                 stat = false;
             } else {

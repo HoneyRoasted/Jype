@@ -42,7 +42,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
                     JVarType varType = left.typeParameters().get(i);
                     varMap.add(new JTypeConstraints.Infer(mvt, varType));
 
-                    branchContext.firstOrAttach(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.createEmpty())
+                    branchContext.firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
                             .metaVars().put(varType, mvt);
                 }
             }

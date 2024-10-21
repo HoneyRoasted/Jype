@@ -64,8 +64,8 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
             }
         }
 
-        branchContext.first(JTypeContext.JTypeMetavarMap.class).ifPresent(mp -> metaVars.putAll(mp.metaVars()));
-        Map<JMetaVarType, JType> instantiations = branchContext.firstOr(JTypeContext.JTypeMetavarMap.class, JTypeContext.JTypeMetavarMap.empty()).instantiations();
+        branchContext.first(JTypeContext.TypeMetavarMap.class).ifPresent(mp -> metaVars.putAll(mp.metaVars()));
+        Map<JMetaVarType, JType> instantiations = branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty()).instantiations();
 
         List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
         JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
@@ -94,7 +94,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
     }
 
     private static ConstraintBranch.Snapshot createConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters) {
-        JTypeContext.JTypeMetavarMap map = new JTypeContext.JTypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
+        JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
 
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
@@ -111,7 +111,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
     }
 
     private static ConstraintBranch.Snapshot createVarargConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters, JArrayType vararg) {
-        JTypeContext.JTypeMetavarMap map = new JTypeContext.JTypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
+        JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
 
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));

@@ -49,7 +49,7 @@ public interface JTypeOperations {
 
     default ConstraintSolver inferenceSolver(Map<JVarType, JMetaVarType> correspondence) {
         ConstraintSolver solver = this.inferenceSolver();
-        JTypeContext.JTypeMetavarMap metavarMap = new JTypeContext.JTypeMetavarMap(new HashMap<>(), new HashMap<>(correspondence));
+        JTypeContext.TypeMetavarMap metavarMap = new JTypeContext.TypeMetavarMap(new HashMap<>(), new HashMap<>(correspondence));
         correspondence.forEach((vt, mvt) -> solver.bind(new JTypeConstraints.Infer(mvt, vt)));
         return solver.withContext(new PropertySet().attach(metavarMap));
     }

@@ -21,14 +21,14 @@ public interface JTypeContext {
 
     }
 
-    final class JTypeMetavarMap implements Function<JType, JType> {
+    final class TypeMetavarMap implements Function<JType, JType> {
         private final Map<JMetaVarType, JType> instantiations;
         private final Map<JVarType, JMetaVarType> metaVars;
 
         private JVarTypeResolveVisitor varTypeResolveVisitor;
         private JMetaVarTypeResolveVisitor metaVarTypeResolveVisitor;
 
-        public JTypeMetavarMap(Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars) {
+        public TypeMetavarMap(Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars) {
             this.instantiations = instantiations;
             this.metaVars = metaVars;
 
@@ -36,12 +36,12 @@ public interface JTypeContext {
             this.metaVarTypeResolveVisitor = new JMetaVarTypeResolveVisitor(this.instantiations);
         }
 
-        public static JTypeMetavarMap createEmpty() {
-            return new JTypeMetavarMap(new HashMap<>(), new HashMap<>());
+        public static TypeMetavarMap createEmpty() {
+            return new TypeMetavarMap(new HashMap<>(), new HashMap<>());
         }
 
-        private static final JTypeMetavarMap empty = new JTypeMetavarMap(Collections.emptyMap(), Collections.emptyMap());
-        public static JTypeMetavarMap empty() {
+        private static final TypeMetavarMap empty = new TypeMetavarMap(Collections.emptyMap(), Collections.emptyMap());
+        public static TypeMetavarMap empty() {
             return empty;
         }
 
