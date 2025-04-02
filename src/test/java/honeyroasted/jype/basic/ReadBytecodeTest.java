@@ -1,4 +1,4 @@
-package honeyroasted.jype;
+package honeyroasted.jype.basic;
 
 import honeyroasted.jype.location.JClassBytecode;
 import honeyroasted.jype.location.JClassLocation;
@@ -15,7 +15,7 @@ import honeyroasted.jype.type.JClassReference;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class Test {
+public class ReadBytecodeTest {
 
     public static void main(String[] args) throws IOException {
         JTypeSystem system = new JSimpleTypeSystem("BINARY_TEST", JTypeCacheFactory.IN_MEMORY_FACTORY,

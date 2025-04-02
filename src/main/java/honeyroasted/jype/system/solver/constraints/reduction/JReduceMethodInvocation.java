@@ -65,7 +65,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 stat = false;
             } else {
                 //TODO not convinced this works
-                JMetaVarType mvt = system.typeFactory().newMetaVarType("M_TARGET");
+                JMetaVarType mvt = system.typeFactory().newMetaVarType("MT*");
                 ConstraintTree solved = system.operations().inferenceSolver()
                         .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
                         .solve();
@@ -77,14 +77,14 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                         findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
                             if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                                 if (ref.parameters().size() == parameters.size()) {
-                                    newChildren.add(createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters));
-                                    newChildren.add(createInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters));
+                                    newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters)));
+                                    newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters)));
                                 }
 
                                 if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
                                         ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
-                                    newChildren.add(createVarargInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg));
-                                    newChildren.add(createVarargInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg));
+                                    newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg)));
+                                    newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg)));
                                 }
                             }
                         }));
@@ -132,13 +132,19 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         }
     }
 
+    private static ConstraintBranch.Snapshot combine(ConstraintBranch a, ConstraintBranch.Snapshot b) {
+        a.constraints().forEach(b.constraints()::putIfAbsent);
+        b.metadata().inheritFrom(a.metadata());
+        return b;
+    }
+
     private static ConstraintBranch.Snapshot createInvoke(JTypeConstraints.Compatible.Context context, JTypeConstraints.ExpressionCompatible constraint, JExpressionInformation.MethodInvocation<?> invocation, JMethodReference ref, List<JExpressionInformation> parameters) {
         Map<Constraint, Constraint.Status> invoke = new HashMap<>();
         Pair<Set<Constraint>, JVarTypeResolveVisitor> typeParams = createTypeParams(ref, invocation);
         JVarTypeResolveVisitor resolve = typeParams.right();
 
         typeParams.left().forEach(c -> invoke.put(c, Constraint.Status.UNKNOWN));
-        invoke.put(new JTypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
+        invoke.put(new JTypeConstraints.Compatible(resolve.apply(resolve.apply(ref.returnType())), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
         for (int i = 0; i < parameters.size(); i++) {
             invoke.put(new JTypeConstraints.ExpressionCompatible(parameters.get(i), context, resolve.apply(ref.parameters().get(i))), Constraint.Status.UNKNOWN);
         }
@@ -151,7 +157,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         JVarTypeResolveVisitor resolve = typeParams.right();
 
         typeParams.left().forEach(c -> invoke.put(c, Constraint.Status.UNKNOWN));
-        invoke.put(new JTypeConstraints.Compatible(resolve.apply(ref.returnType()), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
+        invoke.put(new JTypeConstraints.Compatible(resolve.apply(resolve.apply(ref.returnType())), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
 
         int index;
         for (index = 0; index < ref.parameters().size() - 1; index++) {
@@ -175,6 +181,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 JMetaVarType mvt = vt.createMetaVar();
 
                 newConstraints.add(new JTypeConstraints.Infer(mvt, vt));
+                resolution.put(vt, mvt);
             }
         } else {
             for (int i = 0; i < ref.typeParameters().size(); i++) {

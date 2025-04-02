@@ -194,7 +194,7 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
 
         JArrayType newArray = type.typeSystem().typeFactory().newArrayType();
         context.put(type, newArray);
-        newArray.setComponent(this.visit(newArray.component(), context));
+        newArray.setComponent(this.visit(type.component(), context));
         newArray.setUnmodifiable(true);
         return newArray;
     }

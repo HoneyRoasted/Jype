@@ -11,7 +11,6 @@ import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
-import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JType;
 
@@ -58,7 +57,7 @@ public class JResolveBounds extends ConstraintMapper.All {
 
             //Bound set does not contain any bound of the form G<..., a_i, ...> = capture(G<...>)
             boolean hasCapture = branch.constraints().entrySet().stream().anyMatch(node -> node.getValue().isTrue() && node.getKey() instanceof JTypeConstraints.Capture cpt &&
-                    ((JClassType) cpt.left()).typeArguments().stream().anyMatch(subset::contains));
+                    cpt.left().typeArguments().stream().anyMatch(subset::contains));
 
             if (!hasCapture) {
                 Map<JMetaVarType, Pair<JType, Constraint>> candidates = new LinkedHashMap<>();
@@ -185,9 +184,11 @@ public class JResolveBounds extends ConstraintMapper.All {
 
     private Set<JMetaVarType> findSubset(Set<JMetaVarType> currentMetaVars, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations) {
         for (JMetaVarType mvt : currentMetaVars) {
-            Set<JMetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet());
-            if (!subset.isEmpty()) {
-                return subset;
+            if (!instantiations.containsKey(mvt)) {
+                Set<JMetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet());
+                if (!subset.isEmpty()) {
+                    return subset;
+                }
             }
         }
 
@@ -232,9 +233,7 @@ public class JResolveBounds extends ConstraintMapper.All {
         Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
         for (JMetaVarType mvt : mvts) {
             JType instantiation = instantiations.getOrDefault(mvt, findInstantiation(mvt, bounds));
-            if (instantiation == null) {
-                return new LinkedHashMap<>();
-            } else {
+            if (instantiation != null) {
                 instantiations.put(mvt, instantiation);
             }
         }

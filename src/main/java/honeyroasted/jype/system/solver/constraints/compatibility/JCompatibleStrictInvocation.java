@@ -20,7 +20,6 @@ public class JCompatibleStrictInvocation extends ConstraintMapper.Unary<JTypeCon
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Compatible constraint, Constraint.Status status) {
-        
         JType left = constraint.left();
         JType right = constraint.right();
 

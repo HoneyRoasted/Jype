@@ -33,7 +33,7 @@ public class JIncorporationSubtypeSubtype extends ConstraintMapper.Binary<JTypeC
 
         if (ll instanceof JMetaVarType mvt && mvt.typeEquals(rr)) {
             //Case where S <: alpha and alpha <: T => S <: T (18.3.1, Bullet #4)
-            addSubtypeBound(branch, leftConstraint, lr, rightConstraint, rl);
+            addSubtypeBound(branch, rightConstraint, rl, leftConstraint, lr);
         }
 
         if (ll instanceof JMetaVarType mvt && mvt.typeEquals(rl)) {

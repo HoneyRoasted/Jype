@@ -40,7 +40,7 @@ public record JMethodLocation(JClassLocation containing, String name, JClassLoca
                 Stream.of(method.getParameterTypes()).map(JClassLocation::of).toList());
     }
 
-    public static JMethodLocation of(Constructor cons) {
+    public static JMethodLocation of(Constructor<?> cons) {
         return new JMethodLocation(
                 JClassLocation.of(cons.getDeclaringClass()),
                 CONSTRUCTOR_NAME,
@@ -60,7 +60,7 @@ public record JMethodLocation(JClassLocation containing, String name, JClassLoca
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(this.containing).append("::").append(this.name).append("->").append(this.returnType).append("(");
+        sb.append(this.containing).append("::").append(this.name).append("{(");
 
         for (int i = 0; i < this.parameters.size(); i++) {
             sb.append(this.parameters.get(i));
@@ -69,7 +69,7 @@ public record JMethodLocation(JClassLocation containing, String name, JClassLoca
             }
         }
 
-        sb.append(")");
+        sb.append(")->").append(this.returnType).append("}");
         return sb.toString();
     }
 }

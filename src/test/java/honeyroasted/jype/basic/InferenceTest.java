@@ -1,4 +1,4 @@
-package honeyroasted.jype;
+package honeyroasted.jype.basic;
 
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JExpressionInformation;
