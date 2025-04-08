@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.resolver.reflection;
 
-import honeyroasted.jype.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JResolutionFailedException;
 import honeyroasted.jype.system.resolver.JResolutionResult;

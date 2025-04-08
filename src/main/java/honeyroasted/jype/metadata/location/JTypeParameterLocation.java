@@ -1,4 +1,4 @@
-package honeyroasted.jype.location;
+package honeyroasted.jype.metadata.location;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.GenericDeclaration;

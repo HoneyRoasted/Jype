@@ -1,4 +1,4 @@
-package honeyroasted.jype.location;
+package honeyroasted.jype.metadata.location;
 
 public record JClassNamespace(JClassLocation location, JClassName name) implements JGenericDeclarationLocation {
 

@@ -1,7 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import org.glavo.classfile.AccessFlag;
 

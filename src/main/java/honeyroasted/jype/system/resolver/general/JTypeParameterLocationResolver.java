@@ -1,8 +1,8 @@
 package honeyroasted.jype.system.resolver.general;
 
-import honeyroasted.jype.location.JClassNamespace;
-import honeyroasted.jype.location.JMethodLocation;
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;

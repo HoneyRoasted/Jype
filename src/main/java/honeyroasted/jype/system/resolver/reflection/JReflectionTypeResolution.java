@@ -1,9 +1,9 @@
 package honeyroasted.jype.system.resolver.reflection;
 
-import honeyroasted.jype.location.JClassLocation;
-import honeyroasted.jype.location.JClassNamespace;
-import honeyroasted.jype.location.JMethodLocation;
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.location.JClassLocation;
+import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JBundledTypeResolvers;
 import honeyroasted.jype.system.resolver.JResolutionFailedException;

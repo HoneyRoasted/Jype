@@ -1,7 +1,7 @@
 package honeyroasted.jype.basic;
 
-import honeyroasted.jype.location.JClassBytecode;
-import honeyroasted.jype.location.JClassLocation;
+import honeyroasted.jype.metadata.JClassBytecode;
+import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.system.JSimpleTypeSystem;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;

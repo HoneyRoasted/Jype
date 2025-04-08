@@ -1,4 +1,6 @@
-package honeyroasted.jype.location;
+package honeyroasted.jype.metadata.location;
+
+import honeyroasted.jype.metadata.JClassSourceName;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

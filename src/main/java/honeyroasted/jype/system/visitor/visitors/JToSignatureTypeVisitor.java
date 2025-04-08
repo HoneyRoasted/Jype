@@ -9,7 +9,7 @@ import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JPrimitiveType;
-import honeyroasted.jype.type.JSignature;
+import honeyroasted.jype.metadata.JSignature;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;

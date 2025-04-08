@@ -1,7 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 import java.util.HashSet;

@@ -1,6 +1,6 @@
 package honeyroasted.jype.type.impl.delegate;
 
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;

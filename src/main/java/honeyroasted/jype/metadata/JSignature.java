@@ -1,4 +1,4 @@
-package honeyroasted.jype.type;
+package honeyroasted.jype.metadata;
 
 public interface JSignature {
 

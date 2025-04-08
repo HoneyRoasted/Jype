@@ -1,9 +1,10 @@
 package honeyroasted.jype.system;
 
-import honeyroasted.jype.location.JClassLocation;
-import honeyroasted.jype.location.JClassSourceName;
-import honeyroasted.jype.location.JMethodLocation;
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.almonds.SimpleName;
+import honeyroasted.jype.metadata.location.JClassLocation;
+import honeyroasted.jype.metadata.JClassSourceName;
+import honeyroasted.jype.metadata.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JTypeStorage;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
@@ -18,7 +19,7 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-public interface JTypeSystem {
+public interface JTypeSystem extends SimpleName {
     JTypeSystem RUNTIME_REFLECTION = new JSimpleTypeSystem("RUNTIME_REFLECTION");
 
     JTypeConstants constants();

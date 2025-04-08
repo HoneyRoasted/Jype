@@ -1,4 +1,4 @@
-package honeyroasted.jype.location;
+package honeyroasted.jype.metadata;
 
 public record JClassSourceName(String name) {
 

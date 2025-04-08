@@ -65,7 +65,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 stat = false;
             } else {
                 //TODO not convinced this works
-                JMetaVarType mvt = system.typeFactory().newMetaVarType("MT*");
+                JMetaVarType mvt = system.typeFactory().newMetaVarType("CALL_TARGET");
                 ConstraintTree solved = system.operations().inferenceSolver()
                         .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
                         .solve();

@@ -1,7 +1,7 @@
 package honeyroasted.jype.system;
 
-import honeyroasted.jype.location.JClassLocation;
-import honeyroasted.jype.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JClassLocation;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.cache.JInMemoryTypeStorage;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
 import honeyroasted.jype.system.cache.JTypeStorage;
@@ -120,5 +120,10 @@ public class JSimpleTypeSystem implements JTypeSystem {
     @Override
     public String toString() {
         return "JSimpleTypeSystem[" + this.name + "]";
+    }
+
+    @Override
+    public String simpleName() {
+        return "Type System: " + this.name;
     }
 }

@@ -1,4 +1,4 @@
-package honeyroasted.jype.location;
+package honeyroasted.jype.metadata.location;
 
 import org.glavo.classfile.ClassModel;
 import org.glavo.classfile.constantpool.ClassEntry;

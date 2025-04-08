@@ -1,6 +1,6 @@
 package honeyroasted.jype.type;
 
-import honeyroasted.jype.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 public interface JPrimitiveType extends JType {

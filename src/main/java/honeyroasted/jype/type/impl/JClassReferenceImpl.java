@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
-import honeyroasted.jype.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JInMemoryTypeCache;
 import honeyroasted.jype.system.cache.JTypeCache;

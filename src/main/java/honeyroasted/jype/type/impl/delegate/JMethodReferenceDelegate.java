@@ -1,6 +1,6 @@
 package honeyroasted.jype.type.impl.delegate;
 
-import honeyroasted.jype.location.JMethodLocation;
+import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;

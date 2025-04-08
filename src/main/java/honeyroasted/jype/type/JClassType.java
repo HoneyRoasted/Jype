@@ -1,7 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
-import honeyroasted.jype.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 import java.lang.reflect.AccessFlag;

@@ -1,6 +1,6 @@
 package honeyroasted.jype.system.resolver.binary;
 
-import honeyroasted.jype.location.JClassLocation;
+import honeyroasted.jype.metadata.location.JClassLocation;
 
 import java.io.IOException;
 import java.nio.file.FileSystems;

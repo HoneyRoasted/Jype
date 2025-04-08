@@ -1,7 +1,7 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
-import honeyroasted.jype.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JType;

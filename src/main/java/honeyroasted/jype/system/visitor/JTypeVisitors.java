@@ -11,7 +11,7 @@ import honeyroasted.jype.system.visitor.visitors.JTypeMappingVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarWildcardingVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVerboseToStringVisitor;
 import honeyroasted.jype.type.JMetaVarType;
-import honeyroasted.jype.type.JSignature;
+import honeyroasted.jype.metadata.JSignature;
 import honeyroasted.jype.type.JType;
 
 import java.util.HashMap;

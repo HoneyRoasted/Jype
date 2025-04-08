@@ -1,6 +1,6 @@
 package honeyroasted.jype.system;
 
-import honeyroasted.jype.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JIntersectionType;
