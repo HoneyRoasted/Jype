@@ -120,6 +120,18 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         return this.type == Type.PACKAGE && this.value.isEmpty();
     }
 
+    public String simpleName() {
+        if (this.type == Type.PACKAGE) {
+            return this.toRuntimeName();
+        }
+
+        if (this.containing != null && this.containing.type != Type.PACKAGE) {
+            return this.containing.simpleName() + "." + this.value;
+        }
+
+        return this.value;
+    }
+
     public String toInternalName() {
         return this.toName("/");
     }

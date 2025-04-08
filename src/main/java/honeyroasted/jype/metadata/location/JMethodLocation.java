@@ -29,7 +29,7 @@ public record JMethodLocation(JClassLocation containing, String name, JClassLoca
     }
 
     public String simpleName() {
-        return this.containing + "." + this.name;
+        return this.containing.simpleName() + "." + this.name;
     }
 
     public static JMethodLocation of(Method method) {
