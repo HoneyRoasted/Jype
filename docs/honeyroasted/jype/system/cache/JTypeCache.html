@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -108,25 +108,28 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>,<wbr><a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#asMap()" class="member-name-link">asMap</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#contains(K)" class="member-name-link">contains</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(K)" class="member-name-link">get</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#keyType()" class="member-name-link">keyType</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;Z extends <a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;<br><a href="../resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>,<wbr>Z&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#asResolution(K)" class="member-name-link">asResolution</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#put(K,T)" class="member-name-link">put</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key,
- <a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&nbsp;val)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#contains(K)" class="member-name-link">contains</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#remove(K)" class="member-name-link">remove</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#get(K)" class="member-name-link">get</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#valueType()" class="member-name-link">valueType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#keyType()" class="member-name-link">keyType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#put(K,T)" class="member-name-link">put</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key,
+ <a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&nbsp;val)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#remove(K)" class="member-name-link">remove</a><wbr>(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a><wbr>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#valueType()" class="member-name-link">valueType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -151,6 +154,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="get(K)">
 <h3 id="get(java.lang.Object)">get</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</span>&nbsp;<span class="element-name">get</span><wbr><span class="parameters">(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</span></div>
+</section>
+</li>
+<li>
+<section class="detail" id="asResolution(K)">
+<h3 id="asResolution(java.lang.Object)">asResolution</h3>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;Z extends <a href="JTypeCache.html" title="type parameter in JTypeCache">T</a>&gt;</span>&nbsp;<span class="return-type"><a href="../resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>,<wbr>Z&gt;</span>&nbsp;<span class="element-name">asResolution</span><wbr><span class="parameters">(<a href="JTypeCache.html" title="type parameter in JTypeCache">K</a>&nbsp;key)</span></div>
 </section>
 </li>
 <li>

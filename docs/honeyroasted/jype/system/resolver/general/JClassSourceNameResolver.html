@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../../../script.js"></script>
-<script type="text/javascript" src="../../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -90,12 +90,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></dd>
+<dd><code><a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JClassSourceNameResolver</span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span></div>
+implements <a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -123,9 +123,9 @@ implements <a href="../JTypeResolver.html" title="interface in honeyroasted.jype
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;? extends <a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolve(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.location.JClassSourceName)" class="member-name-link">resolve</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
- <a href="../../../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;value)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#resolve(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.metadata.JClassSourceName)" class="member-name-link">resolve</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+ <a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
@@ -162,13 +162,13 @@ implements <a href="../JTypeResolver.html" title="interface in honeyroasted.jype
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="resolve(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.location.JClassSourceName)">
+<section class="detail" id="resolve(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.metadata.JClassSourceName)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends <a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
- <a href="../../../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;value)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+ <a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;value)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../JTypeResolver.html#resolve(honeyroasted.jype.system.JTypeSystem,I)">resolve</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></dd>
+<dd><code><a href="../JTypeResolver.html#resolve(honeyroasted.jype.system.JTypeSystem,I)">resolve</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&lt;<a href="../../../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr><a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</code></dd>
 </dl>
 </section>
 </li>

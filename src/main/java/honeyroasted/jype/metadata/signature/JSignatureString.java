@@ -1,31 +1,31 @@
-package honeyroasted.jype.metadata;
+package honeyroasted.jype.metadata.signature;
 
-public interface JSignature {
+public sealed interface JSignatureString {
 
     String value();
 
-    record JType(String value) implements JSignature {
+    record Type(String value) implements JSignatureString {
         @Override
         public String toString() {
             return this.value;
         }
     }
 
-    record MethodDeclaration(String value) implements JSignature {
+    record ClassDeclaration(String value) implements JSignatureString {
         @Override
         public String toString() {
             return this.value;
         }
     }
 
-    record JMethodReference(String value) implements JSignature {
+    record MethodDeclaration(String value) implements JSignatureString {
         @Override
         public String toString() {
             return this.value;
         }
     }
 
-    record ClassDeclaration(String value) implements JSignature {
+    record JMethodReference(String value) implements JSignatureString {
         @Override
         public String toString() {
             return this.value;

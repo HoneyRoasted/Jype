@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../../script.js"></script>
-<script type="text/javascript" src="../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -118,9 +118,9 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.location.JClassNamespace,honeyroasted.jype.location.JClassNamespace,java.lang.String)" class="member-name-link">JPrimitiveTypeImpl</a><wbr>(<a href="../../system/JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;typeSystem,
- <a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a>&nbsp;namespace,
- <a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a>&nbsp;box,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.location.JClassNamespace,java.lang.String)" class="member-name-link">JPrimitiveTypeImpl</a><wbr>(<a href="../../system/JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;typeSystem,
+ <a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace,
+ <a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;box,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;descriptor)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
@@ -140,7 +140,7 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#box()" class="member-name-link">box</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#boxNamespace()" class="member-name-link">boxNamespace</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>&lt;T extends <a href="../JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br>T</code></div>
@@ -160,7 +160,7 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#name()" class="member-name-link">name</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#namespace()" class="member-name-link">namespace</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
@@ -190,11 +190,11 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.location.JClassNamespace,honeyroasted.jype.location.JClassNamespace,java.lang.String)">
+<section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.JTypeSystem,honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.location.JClassNamespace,java.lang.String)">
 <h3>JPrimitiveTypeImpl</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JPrimitiveTypeImpl</span><wbr><span class="parameters">(<a href="../../system/JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;typeSystem,
- <a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a>&nbsp;namespace,
- <a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a>&nbsp;box,
+ <a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace,
+ <a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;box,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;descriptor)</span></div>
 </section>
 </li>
@@ -209,7 +209,7 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <li>
 <section class="detail" id="namespace()">
 <h3>namespace</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a></span>&nbsp;<span class="element-name">namespace</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></span>&nbsp;<span class="element-name">namespace</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../JPrimitiveType.html#namespace()">namespace</a></code>&nbsp;in interface&nbsp;<code><a href="../JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a></code></dd>
@@ -219,7 +219,7 @@ implements <a href="../JPrimitiveType.html" title="interface in honeyroasted.jyp
 <li>
 <section class="detail" id="boxNamespace()">
 <h3>boxNamespace</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../location/JClassNamespace.html" title="class in honeyroasted.jype.location">JClassNamespace</a></span>&nbsp;<span class="element-name">boxNamespace</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></span>&nbsp;<span class="element-name">boxNamespace</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../JPrimitiveType.html#boxNamespace()">boxNamespace</a></code>&nbsp;in interface&nbsp;<code><a href="../JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a></code></dd>

@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../script.js"></script>
-<script type="text/javascript" src="../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -86,11 +86,16 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>All Superinterfaces:</dt>
+<dd><code>honeyroasted.almonds.SimpleName</code></dd>
+</dl>
+<dl class="notes">
 <dt>All Known Implementing Classes:</dt>
 <dd><code><a href="JSimpleTypeSystem.html" title="class in honeyroasted.jype.system">JSimpleTypeSystem</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">JTypeSystem</span></div>
+<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">JTypeSystem</span><span class="extends-implements">
+extends honeyroasted.almonds.SimpleName</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -135,31 +140,31 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#registerResolvers(java.util.Collection)" class="member-name-link">registerResolvers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;? extends <a href="resolver/JTypeResolver.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolver</a>&gt;&nbsp;resolvers)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.location.JClassLocation)" class="member-name-link">resolve</a><wbr>(<a href="../location/JClassLocation.html" title="class in honeyroasted.jype.location">JClassLocation</a>&nbsp;classLocation)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr>T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.metadata.JClassSourceName)" class="member-name-link">resolve</a><wbr>(<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;sourceName)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.location.JClassSourceName)" class="member-name-link">resolve</a><wbr>(<a href="../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;sourceName)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>,<wbr>T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.metadata.location.JClassLocation)" class="member-name-link">resolve</a><wbr>(<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>&nbsp;classLocation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.location.JMethodLocation)" class="member-name-link">resolve</a><wbr>(<a href="../location/JMethodLocation.html" title="class in honeyroasted.jype.location">JMethodLocation</a>&nbsp;methodLocation)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>,<wbr>T&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.metadata.location.JMethodLocation)" class="member-name-link">resolve</a><wbr>(<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>&nbsp;methodLocation)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.location.JTypeParameterLocation)" class="member-name-link">resolve</a><wbr>(<a href="../location/JTypeParameterLocation.html" title="class in honeyroasted.jype.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>,<wbr>T&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.metadata.location.JTypeParameterLocation)" class="member-name-link">resolve</a><wbr>(<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;,<wbr>T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(honeyroasted.jype.system.resolver.reflection.JTypeToken)" class="member-name-link">resolve</a><wbr>(<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;&nbsp;token)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>&lt;I,<wbr>
-O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;? extends O&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#resolve(java.lang.Class,java.lang.Class,I)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;I,<wbr>
+O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;I,<wbr>O&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(java.lang.Class,java.lang.Class,I)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;O&gt;&nbsp;resultType,
  I&nbsp;key)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>,<wbr>T&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(java.lang.reflect.Executable)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>&nbsp;executable)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;T&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>,<wbr>T&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#resolve(java.lang.reflect.Type)" class="member-name-link">resolve</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflectionType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="resolver/JTypeResolvers.html" title="interface in honeyroasted.jype.system.resolver">JTypeResolvers</a></code></div>
@@ -169,16 +174,16 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#storage()" class="member-name-link">storage</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.location.JClassLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../location/JClassLocation.html" title="class in honeyroasted.jype.location">JClassLocation</a>&nbsp;classLocation)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.metadata.JClassSourceName)" class="member-name-link">tryResolve</a><wbr>(<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;sourceName)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br>T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.location.JClassSourceName)" class="member-name-link">tryResolve</a><wbr>(<a href="../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;sourceName)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.metadata.location.JClassLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>&nbsp;classLocation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;<br>T</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.location.JMethodLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../location/JMethodLocation.html" title="class in honeyroasted.jype.location">JMethodLocation</a>&nbsp;methodLocation)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.metadata.location.JMethodLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>&nbsp;methodLocation)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;<br>T</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.location.JTypeParameterLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../location/JTypeParameterLocation.html" title="class in honeyroasted.jype.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.metadata.location.JTypeParameterLocation)" class="member-name-link">tryResolve</a><wbr>(<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default &lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;<br>T</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#tryResolve(honeyroasted.jype.system.resolver.reflection.JTypeToken)" class="member-name-link">tryResolve</a><wbr>(<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;&nbsp;token)</code></div>
@@ -195,6 +200,9 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 </div>
 </div>
 </div>
+<div class="inherited-list">
+<h3 id="methods-inherited-from-class-honeyroasted.almonds.SimpleName">Methods inherited from interface&nbsp;honeyroasted.almonds.SimpleName</h3>
+<code>simpleName</code></div>
 </section>
 </li>
 </ul>
@@ -253,28 +261,30 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 <li>
 <section class="detail" id="resolve(java.lang.Class,java.lang.Class,I)">
 <h3 id="resolve(java.lang.Class,java.lang.Class,java.lang.Object)">resolve</h3>
-<div class="member-signature"><span class="type-parameters">&lt;I,<wbr>
-O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;? extends O&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;I,<wbr>
+O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;I,<wbr>O&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;I&gt;&nbsp;keyType,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;O&gt;&nbsp;resultType,
  I&nbsp;key)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="resolve(honeyroasted.jype.location.JClassSourceName)">
+<section class="detail" id="resolve(honeyroasted.jype.metadata.JClassSourceName)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;sourceName)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;sourceName)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="tryResolve(honeyroasted.jype.location.JClassSourceName)">
+<section class="detail" id="tryResolve(honeyroasted.jype.metadata.JClassSourceName)">
 <h3>tryResolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../location/JClassSourceName.html" title="class in honeyroasted.jype.location">JClassSourceName</a>&nbsp;sourceName)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../metadata/JClassSourceName.html" title="class in honeyroasted.jype.metadata">JClassSourceName</a>&nbsp;sourceName)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="resolve(honeyroasted.jype.system.resolver.reflection.JTypeToken)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;&nbsp;token)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="resolver/reflection/JTypeToken.html" title="class in honeyroasted.jype.system.resolver.reflection">JTypeToken</a>&lt;?&gt;&nbsp;token)</span></div>
 </section>
 </li>
 <li>
@@ -286,7 +296,7 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 <li>
 <section class="detail" id="resolve(java.lang.reflect.Type)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflectionType)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Type.html" title="class or interface in java.lang.reflect" class="external-link">Type</a>&nbsp;reflectionType)</span></div>
 </section>
 </li>
 <li>
@@ -296,21 +306,23 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 </section>
 </li>
 <li>
-<section class="detail" id="resolve(honeyroasted.jype.location.JClassLocation)">
+<section class="detail" id="resolve(honeyroasted.jype.metadata.location.JClassLocation)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../location/JClassLocation.html" title="class in honeyroasted.jype.location">JClassLocation</a>&nbsp;classLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>&nbsp;classLocation)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="tryResolve(honeyroasted.jype.location.JClassLocation)">
+<section class="detail" id="tryResolve(honeyroasted.jype.metadata.location.JClassLocation)">
 <h3>tryResolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../location/JClassLocation.html" title="class in honeyroasted.jype.location">JClassLocation</a>&nbsp;classLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>&nbsp;classLocation)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="resolve(java.lang.reflect.Executable)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>&nbsp;executable)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>&nbsp;executable)</span></div>
 </section>
 </li>
 <li>
@@ -320,27 +332,29 @@ O extends <a href="../type/JType.html" title="interface in honeyroasted.jype.typ
 </section>
 </li>
 <li>
-<section class="detail" id="resolve(honeyroasted.jype.location.JMethodLocation)">
+<section class="detail" id="resolve(honeyroasted.jype.metadata.location.JMethodLocation)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../location/JMethodLocation.html" title="class in honeyroasted.jype.location">JMethodLocation</a>&nbsp;methodLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>&nbsp;methodLocation)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="tryResolve(honeyroasted.jype.location.JMethodLocation)">
+<section class="detail" id="tryResolve(honeyroasted.jype.metadata.location.JMethodLocation)">
 <h3>tryResolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../location/JMethodLocation.html" title="class in honeyroasted.jype.location">JMethodLocation</a>&nbsp;methodLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>&nbsp;methodLocation)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="resolve(honeyroasted.jype.location.JTypeParameterLocation)">
+<section class="detail" id="resolve(honeyroasted.jype.metadata.location.JTypeParameterLocation)">
 <h3>resolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../location/JTypeParameterLocation.html" title="class in honeyroasted.jype.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</span>
+<span class="return-type"><a href="resolver/JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>,<wbr>T&gt;</span>&nbsp;<span class="element-name">resolve</span><wbr><span class="parameters">(<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</span></div>
 </section>
 </li>
 <li>
-<section class="detail" id="tryResolve(honeyroasted.jype.location.JTypeParameterLocation)">
+<section class="detail" id="tryResolve(honeyroasted.jype.metadata.location.JTypeParameterLocation)">
 <h3>tryResolve</h3>
-<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../location/JTypeParameterLocation.html" title="class in honeyroasted.jype.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</span></div>
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="type-parameters">&lt;T extends <a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">tryResolve</span><wbr><span class="parameters">(<a href="../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>&nbsp;parameterLocation)</span></div>
 </section>
 </li>
 <li>

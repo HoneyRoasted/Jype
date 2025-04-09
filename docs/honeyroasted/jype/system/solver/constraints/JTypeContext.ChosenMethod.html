@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 <link rel="stylesheet" type="text/css" href="../../../../../script-dir/jquery-ui.min.css" title="Style">
 <script type="text/javascript" src="../../../../../script.js"></script>
-<script type="text/javascript" src="../../../../../script-dir/jquery-3.6.1.min.js"></script>
+<script type="text/javascript" src="../../../../../script-dir/jquery-3.7.1.min.js"></script>
 <script type="text/javascript" src="../../../../../script-dir/jquery-ui.min.js"></script>
 </head>
 <body class="class-declaration-page">
@@ -91,12 +91,17 @@ loadScripts(document, 'script');</script>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
+<dt>All Implemented Interfaces:</dt>
+<dd><code>honeyroasted.almonds.SimpleName</code></dd>
+</dl>
+<dl class="notes">
 <dt>Enclosing interface:</dt>
 <dd><code><a href="JTypeContext.html" title="interface in honeyroasted.jype.system.solver.constraints">JTypeContext</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">JTypeContext.ChosenMethod</span>(<a href="../../expression/JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">JExpressionInformation.Invocation</a>&nbsp;expression, <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;chosen, <a href="JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context, boolean&nbsp;vararg)
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a></span></div>
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">JTypeContext.ChosenMethod</span>(<a href="../../JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system">JExpressionInformation.Invocation</a>&nbsp;expression, <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;chosen, <a href="JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context, boolean&nbsp;vararg)
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
+implements honeyroasted.almonds.SimpleName</span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -108,7 +113,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.JExpressionInformation.Invocation,honeyroasted.jype.type.JMethodReference,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context,boolean)" class="member-name-link">ChosenMethod</a><wbr>(<a href="../../expression/JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">JExpressionInformation.Invocation</a>&nbsp;expression,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(honeyroasted.jype.system.JExpressionInformation.Invocation,honeyroasted.jype.type.JMethodReference,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context,boolean)" class="member-name-link">ChosenMethod</a><wbr>(<a href="../../JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system">JExpressionInformation.Invocation</a>&nbsp;expression,
  <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;chosen,
  <a href="JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context,
  boolean&nbsp;vararg)</code></div>
@@ -144,7 +149,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Indicates whether some other object is "equal to" this one.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../expression/JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">JExpressionInformation.Invocation</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system">JExpressionInformation.Invocation</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#expression()" class="member-name-link">expression</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <code>expression</code> record component.</div>
@@ -154,14 +159,17 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a hash code value for this object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#simpleName()" class="member-name-link">simpleName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vararg()" class="member-name-link">vararg</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vararg()" class="member-name-link">vararg</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <code>vararg</code> record component.</div>
 </div>
 </div>
@@ -184,7 +192,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(honeyroasted.jype.system.JExpressionInformation.Invocation,honeyroasted.jype.type.JMethodReference,honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context,boolean)">
 <h3>ChosenMethod</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ChosenMethod</span><wbr><span class="parameters">(<a href="../../expression/JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">JExpressionInformation.Invocation</a>&nbsp;expression,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ChosenMethod</span><wbr><span class="parameters">(<a href="../../JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system">JExpressionInformation.Invocation</a>&nbsp;expression,
  <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;chosen,
  <a href="JTypeConstraints.Compatible.Context.html" title="enum class in honeyroasted.jype.system.solver.constraints">JTypeConstraints.Compatible.Context</a>&nbsp;context,
  boolean&nbsp;vararg)</span></div>
@@ -206,6 +214,16 @@ loadScripts(document, 'script');</script>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="simpleName()">
+<h3>simpleName</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">simpleName</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code>simpleName</code>&nbsp;in interface&nbsp;<code>honeyroasted.almonds.SimpleName</code></dd>
+</dl>
+</section>
+</li>
 <li>
 <section class="detail" id="toString()">
 <h3>toString</h3>
@@ -250,7 +268,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="expression()">
 <h3>expression</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../expression/JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system.expression">JExpressionInformation.Invocation</a></span>&nbsp;<span class="element-name">expression</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JExpressionInformation.Invocation.html" title="interface in honeyroasted.jype.system">JExpressionInformation.Invocation</a></span>&nbsp;<span class="element-name">expression</span>()</div>
 <div class="block">Returns the value of the <code>expression</code> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>

@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.visitor.visitors;
 
+import honeyroasted.jype.metadata.signature.JSignatureString;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
@@ -9,7 +10,6 @@ import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JPrimitiveType;
-import honeyroasted.jype.metadata.JSignature;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
@@ -17,15 +17,15 @@ import honeyroasted.jype.type.JWildType;
 import java.lang.reflect.Modifier;
 import java.util.stream.Collectors;
 
-public class JToSignatureTypeVisitor implements JTypeVisitor<JSignature, JToSignatureTypeVisitor.Mode> {
+public class JToSignatureTypeVisitor implements JTypeVisitor<JSignatureString, JToSignatureTypeVisitor.Mode> {
 
     @Override
-    public JSignature visit(JType type) {
+    public JSignatureString visit(JType type) {
         return this.visit(type, Mode.USAGE);
     }
 
     @Override
-    public JSignature visitClassType(JClassType type, Mode context) {
+    public JSignatureString visitClassType(JClassType type, Mode context) {
         StringBuilder sb = new StringBuilder();
         if (context.useDelims()) sb.append("L");
 
@@ -43,7 +43,7 @@ public class JToSignatureTypeVisitor implements JTypeVisitor<JSignature, JToSign
             type.interfaces().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
             if (context.useDelims()) sb.append(";");
 
-            return new JSignature.ClassDeclaration(sb.toString());
+            return new JSignatureString.ClassDeclaration(sb.toString());
         } else {
             JClassType outerType = type instanceof JParameterizedClassType pct ? pct.outerType() : type.outerClass();
             if (outerType != null && !Modifier.isStatic(type.modifiers()) && outerType.hasTypeArguments()) {
@@ -60,12 +60,12 @@ public class JToSignatureTypeVisitor implements JTypeVisitor<JSignature, JToSign
             }
             if (context.useDelims()) sb.append(";");
 
-            return new JSignature.JType(sb.toString());
+            return new JSignatureString.Type(sb.toString());
         }
     }
 
     @Override
-    public JSignature visitMethodType(JMethodType type, Mode context) {
+    public JSignatureString visitMethodType(JMethodType type, Mode context) {
         StringBuilder sb = new StringBuilder();
         if (context.isDeclaration()) {
             if (type.hasTypeParameters()) {
@@ -79,64 +79,64 @@ public class JToSignatureTypeVisitor implements JTypeVisitor<JSignature, JToSign
             sb.append(this.visit(type.returnType(), Mode.USAGE));
             type.exceptionTypes().forEach(t -> sb.append("^").append(this.visit(t, Mode.USAGE)));
 
-            return new JSignature.MethodDeclaration(sb.toString());
+            return new JSignatureString.MethodDeclaration(sb.toString());
         } else {
             sb.append("(");
             type.parameters().forEach(t -> sb.append(this.visit(t, Mode.USAGE)));
             sb.append(")");
             sb.append(this.visit(type.returnType(), Mode.USAGE));
 
-            return new JSignature.JMethodReference(sb.toString());
+            return new JSignatureString.JMethodReference(sb.toString());
         }
     }
 
     @Override
-    public JSignature visitWildcardType(JWildType type, Mode context) {
+    public JSignatureString visitWildcardType(JWildType type, Mode context) {
         if (type instanceof JWildType.Upper wtu) {
             if ((wtu.upperBounds().size() == 1 && type.typeSystem().constants().object().equals(wtu.upperBounds().iterator().next())) ||
                     wtu.upperBounds().isEmpty()) {
-                return new JSignature.JType("*");
+                return new JSignatureString.Type("*");
             }
-            return new JSignature.JType("+" + this.visit(wtu.upperBounds().iterator().next(), Mode.USAGE));
+            return new JSignatureString.Type("+" + this.visit(wtu.upperBounds().iterator().next(), Mode.USAGE));
         } else if (type instanceof JWildType.Lower wtl) {
-            return new JSignature.JType("-" + this.visit(wtl.lowerBounds().iterator().next(), Mode.USAGE));
+            return new JSignatureString.Type("-" + this.visit(wtl.lowerBounds().iterator().next(), Mode.USAGE));
         }
-        return new JSignature.JType("*");
+        return new JSignatureString.Type("*");
     }
 
     @Override
-    public JSignature visitVarType(JVarType type, Mode context) {
+    public JSignatureString visitVarType(JVarType type, Mode context) {
         if (context.isDeclaration()) {
-            return new JSignature.JType(type.name() + ":" + (type.upperBounds().size() > 1 ? ":" : "") +
+            return new JSignatureString.Type(type.name() + ":" + (type.upperBounds().size() > 1 ? ":" : "") +
                     type.upperBounds().stream().map(t -> visit(t, Mode.USAGE).value()).collect(Collectors.joining(":")));
         } else {
-            return new JSignature.JType("T" + type.name() + ";");
+            return new JSignatureString.Type("T" + type.name() + ";");
         }
     }
 
     @Override
-    public JSignature visitMetaVarType(JMetaVarType type, Mode context) {
-        return new JSignature.JType("T" + type.name() + ";");
+    public JSignatureString visitMetaVarType(JMetaVarType type, Mode context) {
+        return new JSignatureString.Type("T" + type.name() + ";");
     }
 
     @Override
-    public JSignature visitArrayType(JArrayType type, Mode context) {
-        return new JSignature.JType("[" + visit(type.component(), context));
+    public JSignatureString visitArrayType(JArrayType type, Mode context) {
+        return new JSignatureString.Type("[" + visit(type.component(), context));
     }
 
     @Override
-    public JSignature visitIntersectionType(JIntersectionType type, Mode context) {
-        return new JSignature.JType(type.children().stream().map(t -> this.visit(t, context).value()).collect(Collectors.joining(":")));
+    public JSignatureString visitIntersectionType(JIntersectionType type, Mode context) {
+        return new JSignatureString.Type(type.children().stream().map(t -> this.visit(t, context).value()).collect(Collectors.joining(":")));
     }
 
     @Override
-    public JSignature visitPrimitiveType(JPrimitiveType type, Mode context) {
-        return new JSignature.JType(type.descriptor());
+    public JSignatureString visitPrimitiveType(JPrimitiveType type, Mode context) {
+        return new JSignatureString.Type(type.descriptor());
     }
 
     @Override
-    public JSignature visitNoneType(JNoneType type, Mode context) {
-        return new JSignature.JType("V");
+    public JSignatureString visitNoneType(JNoneType type, Mode context) {
+        return new JSignatureString.Type("V");
     }
 
     public enum Mode {

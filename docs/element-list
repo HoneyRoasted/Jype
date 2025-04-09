@@ -1,7 +1,8 @@
-honeyroasted.jype.location
+honeyroasted.jype.metadata
+honeyroasted.jype.metadata.location
+honeyroasted.jype.metadata.signature
 honeyroasted.jype.system
 honeyroasted.jype.system.cache
-honeyroasted.jype.system.expression
 honeyroasted.jype.system.resolver
 honeyroasted.jype.system.resolver.binary
 honeyroasted.jype.system.resolver.general
