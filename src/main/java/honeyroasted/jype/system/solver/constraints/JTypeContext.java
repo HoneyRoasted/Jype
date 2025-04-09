@@ -104,7 +104,7 @@ public interface JTypeContext {
             } else if (!metaVars.isEmpty()) {
                 return "{" + mvs + "}";
             } else if (!instantiations.isEmpty()) {
-                return "{" + instantiations + "}";
+                return "{" + insts + "}";
             } else {
                 return "{}";
             }

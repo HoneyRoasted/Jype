@@ -9,6 +9,7 @@ import honeyroasted.jype.type.JType;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -65,13 +66,45 @@ public interface JExpressionInformation {
         record Simple(Object value) implements Constant {
             @Override
             public String simpleName() {
-                return String.valueOf(this.value);
+                return this.value instanceof String str ? "\"" + escape(str) + "\"" :
+                        String.valueOf(this.value);
             }
 
             @Override
             public String toString() {
                 return "const(" + this.value + ")";
             }
+
+            private static char esc = '\\';
+            private static Map<Character, String> escapes = Map.of(
+                    '0', "\0",
+                    'b', "\b",
+                    't', "\t",
+                    'n', "\n",
+                    'f', "\f",
+                    'r', "\r",
+                    '"', "\"",
+                    '\'', "'",
+                    '\\', "\\");
+            private static String escape(String string) {
+                if (string == null) {
+                    return "";
+                }
+
+                if(escapes.entrySet().stream().anyMatch(c -> c.getKey() == esc && c.getValue().equals(String.valueOf(esc)))) {
+                    string = string.replace(String.valueOf(esc), esc + "" + esc);
+                }
+
+                for (Map.Entry<Character, String> entry : escapes.entrySet()) {
+                    if (entry.getKey() != esc || !entry.getValue().equals(String.valueOf(esc))) {
+                        String re = esc + "" + entry.getKey();
+                        string = string.replace(entry.getValue(), re);
+                    }
+                }
+
+                return string;
+            }
+
         }
 
         Object value();

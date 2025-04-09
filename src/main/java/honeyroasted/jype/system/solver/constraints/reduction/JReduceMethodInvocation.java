@@ -65,15 +65,16 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 stat = false;
             } else {
                 //TODO not convinced this works
-                JMetaVarType mvt = system.typeFactory().newMetaVarType("CALL_TARGET");
+                JMetaVarType callTarget = system.typeFactory().newMetaVarType("CALL_TARGET");
                 ConstraintTree solved = system.operations().inferenceSolver()
-                        .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, mvt))
+                        .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, callTarget))
                         .solve();
 
                 List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
                 solved.branches().forEach(childBranch -> {
                     if (childBranch.status().isTrue()) {
-                        JType inst = JResolveBounds.findInstantiation(mvt, childBranch);
+                        JType inst = JResolveBounds.findInstantiation(callTarget, childBranch);
+                        childBranch.metadata().first(JTypeContext.TypeMetavarMap.class).ifPresent(mvp -> mvp.instantiations().remove(callTarget)); //Drop variable since it is no longer needed
                         findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
                             if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                                 if (ref.parameters().size() == parameters.size()) {
@@ -134,6 +135,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     private static ConstraintBranch.Snapshot combine(ConstraintBranch a, ConstraintBranch.Snapshot b) {
         a.constraints().forEach(b.constraints()::putIfAbsent);
+        a.metadata().remove(JTypeContext.TypeMetavarMap.class);
         b.metadata().inheritFrom(a.metadata());
         return b;
     }

@@ -8,6 +8,7 @@ import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
@@ -47,7 +48,13 @@ public class JResolveBounds extends ConstraintMapper.All {
         boolean foundAllInstantiations = instantiations.size() == varsAndDeps.size();
 
         if (foundAllInstantiations) {
-            instantiations.forEach((mvt, t) -> branch.add(new JTypeConstraints.Instantiation(mvt, t), Constraint.Status.TRUE));
+            instantiations.forEach((mvt, t) -> {
+                branch.add(new JTypeConstraints.Instantiation(mvt, t), Constraint.Status.TRUE);
+
+                branch.metadata().firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
+                        .instantiations().put(mvt, t);
+            });
+
             return;
         }
 
