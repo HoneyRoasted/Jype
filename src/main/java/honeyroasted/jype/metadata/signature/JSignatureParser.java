@@ -3,16 +3,11 @@ package honeyroasted.jype.metadata.signature;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.IntPredicate;
 
-public class JSignatureParser {
-    private int index = 0;
-    private int[] codepoints;
-    private String sig;
+public class JSignatureParser extends JStringParser {
 
-    public JSignatureParser(String sig) {
-        this.codepoints = sig.codePoints().toArray();
-        this.sig = sig;
+    public JSignatureParser(String str) {
+        super(str);
     }
 
     public JSignature.Declaration parseDeclaration() {
@@ -29,57 +24,6 @@ public class JSignatureParser {
 
     public JSignature.InformalType parseInformalType() {
         return expectEnd(readInformal());
-    }
-
-    private int peek() {
-        return this.codepoints[this.index];
-    }
-
-    private int next() {
-        if (!hasNext()) fail("Reached EOF unexpectedly");
-        return this.codepoints[this.index++];
-    }
-
-    private void skip(IntPredicate c) {
-        if (hasNext() && c.test(peek())) {
-            this.index++;
-        }
-    }
-
-    private void skip() {
-        skip(c -> true);
-    }
-
-    private void skip(char c) {
-        skip(n -> c == n);
-    }
-
-    private boolean hasNext() {
-        return index < codepoints.length;
-    }
-
-    private void readUntil(IntPredicate c, StringBuilder sb) {
-        while (hasNext() && !c.test(peek())) {
-            sb.appendCodePoint(next());
-        }
-    }
-
-    private String readUntil(IntPredicate c) {
-        StringBuilder sb = new StringBuilder();
-        readUntil(c, sb);
-        return sb.toString();
-    }
-
-    private void readWhile(IntPredicate c, StringBuilder sb) {
-        while (hasNext() && c.test(peek())) {
-            sb.appendCodePoint(next());
-        }
-    }
-
-    private String readWhile(IntPredicate c) {
-        StringBuilder sb = new StringBuilder();
-        readWhile(c, sb);
-        return sb.toString();
     }
 
     private JSignature.Declaration readAmbiguousDeclaration() {
@@ -210,15 +154,12 @@ public class JSignatureParser {
         return switch (typeInd) {
             case 'L' -> {
                 StringBuilder sb = new StringBuilder();
-                sb.append("L");
                 readUntil(c -> c == '<' || c == ';', sb);
-                sb.append(";");
-
                 skip(';');
 
-                yield new JSignature.Type(sb.toString());
+                yield new JSignature.Type(new JDescriptor.Class(sb.toString()));
             }
-            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> new JSignature.Type(Character.toString(typeInd));
+            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> new JSignature.Type(JDescriptor.Primitive.of(Character.toString(typeInd)));
             default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got " + Character.toString(typeInd));
         };
     }
@@ -307,13 +248,4 @@ public class JSignatureParser {
         skip('>');
         return result;
     }
-
-    private <T> T expectEnd(T value) {
-        return hasNext() ? fail("Expected EOF but got " + Character.toString(peek())) : value;
-    }
-
-    private <T> T fail(String message) {
-        throw new JSignatureParseException(message, this.index, this.sig);
-    }
-
 }

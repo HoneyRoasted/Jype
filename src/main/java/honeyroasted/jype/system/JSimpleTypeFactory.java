@@ -1,6 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JIntersectionType;
@@ -78,7 +79,7 @@ public class JSimpleTypeFactory implements JTypeFactory {
     }
 
     @Override
-    public JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, String descriptor) {
+    public JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, JDescriptor.Primitive descriptor) {
         return new JPrimitiveTypeImpl(this.system, namespace, box, descriptor);
     }
 

@@ -1,6 +1,8 @@
 package honeyroasted.jype.metadata.signature;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public sealed interface JSignature {
 
@@ -19,14 +21,18 @@ public sealed interface JSignature {
         }
     }
 
-    record Type(String descriptor) implements InformalType {
+    record Type(JDescriptor descriptor) implements InformalType {
         @Override
         public String toString() {
-            return this.descriptor;
+            return this.descriptor.toString();
         }
 
         public boolean isPrimitive() {
-            return descriptor.length() == 1;
+            return descriptor instanceof JDescriptor.Primitive;
+        }
+
+        public Parameterized asParameterized() {
+            return new Parameterized(this, Collections.emptyList());
         }
     }
 
@@ -44,7 +50,7 @@ public sealed interface JSignature {
                 sb.append(cutEnd(this.outer)).append(".");
             }
 
-            sb.append(cutEnd(type));
+            sb.append(cutStart(cutEnd(type)));
 
             if (!this.parameters.isEmpty()) {
                 sb.append("<");
@@ -73,6 +79,13 @@ public sealed interface JSignature {
             } else {
                 return "*";
             }
+        }
+    }
+
+    record IntersectionType(List<InformalType> types) implements InformalType {
+        @Override
+        public String toString() {
+            return types.stream().map(Object::toString).collect(Collectors.joining(":"));
         }
     }
 
@@ -131,10 +144,23 @@ public sealed interface JSignature {
     }
 
     private static String cutEnd(JSignature sig) {
-        String str = String.valueOf(sig);
+        return cutEnd(String.valueOf(sig));
+    }
 
+    private static String cutEnd(String str) {
         if (str.endsWith(";")) {
             return str.substring(0, str.length() - 1);
+        }
+        return str;
+    }
+
+    private static String cutStart(JSignature sig) {
+        return cutStart(String.valueOf(sig));
+    }
+
+    private static String cutStart(String str) {
+        if (str.startsWith("L")) {
+            return str.substring(1);
         }
         return str;
     }

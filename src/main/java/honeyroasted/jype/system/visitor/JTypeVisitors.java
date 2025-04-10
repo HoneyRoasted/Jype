@@ -1,12 +1,14 @@
 package honeyroasted.jype.system.visitor;
 
-import honeyroasted.jype.metadata.signature.JSignatureString;
+import honeyroasted.jype.metadata.signature.JDescriptor;
+import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.system.cache.JInMemoryTypeCache;
 import honeyroasted.jype.system.visitor.visitors.JErasureTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JSimpleToStringVisitor;
 import honeyroasted.jype.system.visitor.visitors.JStripExceptionsTypeVisitor;
-import honeyroasted.jype.system.visitor.visitors.JToSignatureTypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.JToDescriptorVisitor;
+import honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor;
 import honeyroasted.jype.system.visitor.visitors.JToSourceTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JTypeMappingVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarWildcardingVisitor;
@@ -26,9 +28,9 @@ public interface JTypeVisitors {
     JTypeVisitor<Boolean, Void> IS_PROPER_TYPE = new JRecursiveTypeVisitor<Boolean, Void>((JTypeVisitor.Default) (type, context) -> !(type instanceof JMetaVarType), null, false)
             .mapResult(ls -> ls.stream().allMatch(b -> b != null && b)).withContext(HashMap::new);
 
-    JTypeVisitor<JSignatureString, JToSignatureTypeVisitor.Mode> TO_SIGNATURE = new JToSignatureTypeVisitor();
+    JTypeVisitor<JSignature, JToSignatureVisitor.Mode> TO_SIGNATURE = new JToSignatureVisitor();
 
-    JTypeVisitor<JSignatureString, JToSignatureTypeVisitor.Mode> TO_DESCRIPTOR = ERASE_EXCEPTIONS.andThen(ERASURE.andThen(TO_SIGNATURE, true));
+    JTypeVisitor<JDescriptor, Void> TO_DESCRIPTOR = ERASURE.andThen(new JToDescriptorVisitor(), true);
 
     JTypeVisitor<String, JToSourceTypeVisitor.Mode> TO_SOURCE = new JToSourceTypeVisitor();
 

@@ -2,6 +2,7 @@ package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JClassReference;
@@ -14,9 +15,9 @@ import java.util.Set;
 public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiveType {
     private JClassNamespace namespace;
     private JClassNamespace boxNamespace;
-    private String descriptor;
+    private JDescriptor.Primitive descriptor;
 
-    public JPrimitiveTypeImpl(JTypeSystem typeSystem, JClassNamespace namespace, JClassNamespace box, String descriptor) {
+    public JPrimitiveTypeImpl(JTypeSystem typeSystem, JClassNamespace namespace, JClassNamespace box, JDescriptor.Primitive descriptor) {
         super(typeSystem);
         this.namespace = namespace;
         this.boxNamespace = box;
@@ -42,7 +43,7 @@ public final class JPrimitiveTypeImpl extends JAbstractType implements JPrimitiv
     }
 
     @Override
-    public String descriptor() {
+    public JDescriptor.Primitive descriptor() {
         return this.descriptor;
     }
 

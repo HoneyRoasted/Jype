@@ -1,6 +1,7 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JIntersectionType;
@@ -32,7 +33,7 @@ public interface JTypeFactory {
 
     JParameterizedMethodType newParameterizedMethodType();
 
-    JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, String descriptor);
+    JPrimitiveType newPrimitiveType(JClassNamespace namespace, JClassNamespace box, JDescriptor.Primitive descriptor);
 
     JVarType newVarType();
 

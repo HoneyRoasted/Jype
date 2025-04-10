@@ -2,6 +2,7 @@ package honeyroasted.jype.system;
 
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.system.cache.JInMemoryTypeStorage;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
 import honeyroasted.jype.system.cache.JTypeStorage;
@@ -60,14 +61,14 @@ public class JSimpleTypeSystem implements JTypeSystem {
                 .setNullType(this.typeFactory.newNoneType("null"))
                 .setNoneType(this.typeFactory.newNoneType("none"));
 
-        constants.setBooleanType(this.typeFactory.newPrimitiveType(JClassNamespace.of(boolean.class), JClassNamespace.of(Boolean.class), "Z"))
-                .setByteType(this.typeFactory.newPrimitiveType(JClassNamespace.of(byte.class), JClassNamespace.of(Byte.class), "B"))
-                .setShortType(this.typeFactory.newPrimitiveType(JClassNamespace.of(short.class), JClassNamespace.of(Short.class), "S"))
-                .setCharType(this.typeFactory.newPrimitiveType(JClassNamespace.of(char.class), JClassNamespace.of(Character.class), "C"))
-                .setIntType(this.typeFactory.newPrimitiveType(JClassNamespace.of(int.class), JClassNamespace.of(Integer.class), "I"))
-                .setLongType(this.typeFactory.newPrimitiveType(JClassNamespace.of(long.class), JClassNamespace.of(Long.class), "J"))
-                .setFloatType(this.typeFactory.newPrimitiveType(JClassNamespace.of(float.class), JClassNamespace.of(Float.class), "F"))
-                .setDoubleType(this.typeFactory.newPrimitiveType(JClassNamespace.of(double.class), JClassNamespace.of(Double.class), "D"))
+        constants.setBooleanType(this.typeFactory.newPrimitiveType(JClassNamespace.of(boolean.class), JClassNamespace.of(Boolean.class), JDescriptor.Primitive.BOOLEAN))
+                .setByteType(this.typeFactory.newPrimitiveType(JClassNamespace.of(byte.class), JClassNamespace.of(Byte.class), JDescriptor.Primitive.BYTE))
+                .setShortType(this.typeFactory.newPrimitiveType(JClassNamespace.of(short.class), JClassNamespace.of(Short.class), JDescriptor.Primitive.SHORT))
+                .setCharType(this.typeFactory.newPrimitiveType(JClassNamespace.of(char.class), JClassNamespace.of(Character.class), JDescriptor.Primitive.CHAR))
+                .setIntType(this.typeFactory.newPrimitiveType(JClassNamespace.of(int.class), JClassNamespace.of(Integer.class), JDescriptor.Primitive.INT))
+                .setLongType(this.typeFactory.newPrimitiveType(JClassNamespace.of(long.class), JClassNamespace.of(Long.class), JDescriptor.Primitive.LONG))
+                .setFloatType(this.typeFactory.newPrimitiveType(JClassNamespace.of(float.class), JClassNamespace.of(Float.class), JDescriptor.Primitive.FLOAT))
+                .setDoubleType(this.typeFactory.newPrimitiveType(JClassNamespace.of(double.class), JClassNamespace.of(Double.class), JDescriptor.Primitive.DOUBLE))
                 .initPrimitiveMaps();
 
         constants.setObject(this.tryLocResolve(Object.class))
