@@ -1,5 +1,10 @@
 package honeyroasted.jype.metadata.signature;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.IntPredicate;
+
 public class JSignatureParser {
     private int index = 0;
     private int[] codepoints;
@@ -10,20 +15,195 @@ public class JSignatureParser {
         this.sig = sig;
     }
 
+    public JSignature.Declaration parseDeclaration() {
+        return expectEnd(readAmbiguousDeclaration());
+    }
+
+    public JSignature.MethodDeclaration parseMethodDeclaration() {
+        return expectEnd(readMethodDeclaration());
+    }
+
+    public JSignature.ClassDeclaration parseClassDeclaration() {
+        return expectEnd(readClassDeclaration());
+    }
+
+    public JSignature.InformalType parseInformalType() {
+        return expectEnd(readInformal());
+    }
+
     private int peek() {
         return this.codepoints[this.index];
     }
 
     private int next() {
+        if (!hasNext()) fail("Reached EOF unexpectedly");
         return this.codepoints[this.index++];
+    }
+
+    private void skip(IntPredicate c) {
+        if (hasNext() && c.test(peek())) {
+            this.index++;
+        }
+    }
+
+    private void skip() {
+        skip(c -> true);
+    }
+
+    private void skip(char c) {
+        skip(n -> c == n);
     }
 
     private boolean hasNext() {
         return index < codepoints.length;
     }
 
+    private void readUntil(IntPredicate c, StringBuilder sb) {
+        while (hasNext() && !c.test(peek())) {
+            sb.appendCodePoint(next());
+        }
+    }
+
+    private String readUntil(IntPredicate c) {
+        StringBuilder sb = new StringBuilder();
+        readUntil(c, sb);
+        return sb.toString();
+    }
+
+    private void readWhile(IntPredicate c, StringBuilder sb) {
+        while (hasNext() && c.test(peek())) {
+            sb.appendCodePoint(next());
+        }
+    }
+
+    private String readWhile(IntPredicate c) {
+        StringBuilder sb = new StringBuilder();
+        readWhile(c, sb);
+        return sb.toString();
+    }
+
+    private JSignature.Declaration readAmbiguousDeclaration() {
+        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        if (hasNext() && next() == '(') {
+            List<JSignature.InformalType> parameters = new ArrayList<>();
+            skip('(');
+            while (hasNext() && peek() != ')') {
+                parameters.add(readInformal());
+            }
+            skip(')');
+
+            JSignature.InformalType ret = readInformal();
+            List<JSignature.InformalType> exceptions = new ArrayList<>();
+            while (hasNext() && peek() == '^') {
+                skip('^');
+                exceptions.add(readInformal());
+            }
+            return new JSignature.MethodDeclaration(declarations, parameters, ret, exceptions);
+        } else {
+            JSignature.InformalType superclass = readClassType();
+            List<JSignature.InformalType> interfaces = new ArrayList<>();
+            while (hasNext()) {
+                interfaces.add(readClassType());
+            }
+
+            return new JSignature.ClassDeclaration(declarations, superclass, interfaces);
+        }
+    }
+
+    private JSignature.MethodDeclaration readMethodDeclaration() {
+        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        List<JSignature.InformalType> parameters = new ArrayList<>();
+        skip('(');
+        while (hasNext() && peek() != ')') {
+            parameters.add(readInformal());
+        }
+        skip(')');
+
+        JSignature.InformalType ret = readInformal();
+        List<JSignature.InformalType> exceptions = new ArrayList<>();
+        while (hasNext() && peek() == '^') {
+            skip('^');
+            exceptions.add(readInformal());
+        }
+        return new JSignature.MethodDeclaration(declarations, parameters, ret, exceptions);
+    }
+
+    private JSignature.ClassDeclaration readClassDeclaration() {
+        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        JSignature.InformalType superclass = readClassType();
+        List<JSignature.InformalType> interfaces = new ArrayList<>();
+        while (hasNext()) {
+            interfaces.add(readClassType());
+        }
+
+        return new JSignature.ClassDeclaration(declarations, superclass, interfaces);
+    }
+
+    private JSignature.InformalType readInformal() {
+        if (isArrayNext()) {
+            return readArray();
+        } else if (isVarRefNext()) {
+            return readVarRef();
+        } else if (isWildNext()) {
+            return readWild();
+        } else {
+            return readClassType();
+        }
+    }
+
+    private JSignature.InformalType readClassType() {
+        return readClassType(null);
+    }
+
+    private JSignature.InformalType readClassType(JSignature.Parameterized outer) {
+        JSignature.Type descriptor = readDescriptor();
+        if (!descriptor.isPrimitive()) {
+            if (!isParametersNext() && (!hasNext() || peek() != '.') && outer == null) {
+                return descriptor;
+            } else {
+                List<JSignature.InformalType> parameters;
+                if (isParametersNext()) {
+                    parameters = readParameters();
+                } else {
+                    parameters = new ArrayList<>();
+                }
+
+                JSignature.Parameterized parameterized = new JSignature.Parameterized(outer, descriptor, parameters);
+                if (hasNext() && next() == '.') {
+                    skip('.');
+                    return readClassType(parameterized);
+                } else {
+                    return parameterized;
+                }
+            }
+        } else if (outer == null) {
+            return descriptor;
+        } else {
+            return fail("Inner type cannot be a primitive");
+        }
+    }
+
+    private boolean isArrayNext() {
+        if (!hasNext()) return false;
+        return peek() == '[';
+    }
+
+    private JSignature.Array readArray() {
+        if (!this.hasNext()) fail("Expected array start ( [ ), got EOF");
+        if (peek() != '[') fail("Expected array start ( [ ), got " + Character.toString(peek()));
+
+        skip('[');
+        return new JSignature.Array(readInformal());
+    }
+
+    private boolean isDescriptorNext() {
+        if (!hasNext()) return false;
+        int c = peek();
+        return c == 'L' || c == 'B' || c == 'C' || c == 'D' || c == 'F' || c == 'I' || c == 'J' || c == 'S' || c == 'Z';
+    }
+
     private JSignature.Type readDescriptor() {
-        if (!this.hasNext()) fail("Expected descriptor, got EOF");
+        if (!this.hasNext()) fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got EOF");
 
         int typeInd = this.next();
 
@@ -31,17 +211,105 @@ public class JSignatureParser {
             case 'L' -> {
                 StringBuilder sb = new StringBuilder();
                 sb.append("L");
-                while ((Character.isAlphabetic(peek()) || peek() == '/') && hasNext()) {
-                    sb.appendCodePoint(next());
-                }
+                readUntil(c -> c == '<' || c == ';', sb);
+                sb.append(";");
 
-                if (peek() == ';') next();
+                skip(';');
 
                 yield new JSignature.Type(sb.toString());
             }
             case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> new JSignature.Type(Character.toString(typeInd));
-            default -> fail("Unknown type indicator '" + Character.toString(typeInd) + "' expected one of [L, B, C, D, F, I, J, S, Z]");
+            default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got " + Character.toString(typeInd));
         };
+    }
+
+    private boolean isVarRefNext() {
+        if (!hasNext()) return false;
+        return peek() == 'T';
+    }
+
+    public JSignature.TypeVar readVarRef() {
+        if (!this.hasNext()) fail("Expected type variable reference start (T), got EOF");
+        if (peek() != 'T') fail("Expected type variable reference start (T), got " + Character.toString(peek()));
+
+        skip('T');
+        StringBuilder sb = new StringBuilder();
+        readUntil(c -> c == ';', sb);
+        skip(';');
+
+        return new JSignature.TypeVar(sb.toString());
+    }
+
+    private boolean isWildNext() {
+        if (!hasNext()) return false;
+        return peek() == '+' || peek() == '-' || peek() == '*';
+    }
+
+    public JSignature.WildType readWild() {
+        if (!this.hasNext()) fail("Expected wild type start (+, -, *) start, got EOF");
+        if (peek() != '-' || peek() != '+' || peek() != '*') fail("Expected wild type start (+, -, *), got " + Character.toString(peek()));
+
+        int wildInd = next();
+        if (wildInd == '-') {
+            return new JSignature.WildType(null, readInformal());
+        } else if (wildInd == '+') {
+            return new JSignature.WildType(readInformal(), null);
+        } else {
+            return new JSignature.WildType(null, null);
+        }
+    }
+
+    private boolean isParametersNext() {
+        if (!hasNext()) return false;
+        return peek() == '<';
+    }
+
+    private List<JSignature.InformalType> readParameters() {
+        if (!this.hasNext()) fail("Expected type parameters start ( < ), got EOF");
+        if (peek() != '<') fail("Expected type parameters start ( < ), got " + Character.toString(peek()));
+
+        skip('<');
+
+        List<JSignature.InformalType> result = new ArrayList<>();
+        while (hasNext() && peek() != '>') {
+            result.add(readInformal());
+        }
+        skip('>');
+        return result;
+    }
+
+    private List<JSignature.TypeVarDeclaration> readVarDeclarations() {
+        if (!this.hasNext()) fail("Expected type parameters declaration start ( < ), got EOF");
+        if (peek() != '<') fail("Expected type parameters declaration start ( < ), got " + Character.toString(peek()));
+
+        skip('<');
+
+        List<JSignature.TypeVarDeclaration> result = new ArrayList<>();
+        while (hasNext() && peek() != '>') {
+            String name = readUntil(c -> c == ':');
+            skip(':');
+            JSignature.InformalType classBound;
+            if (hasNext() && peek() == ':') {
+                classBound = null;
+            } else {
+                classBound = readInformal();
+            }
+
+            List<JSignature.InformalType> interBounds = new ArrayList<>();
+            while (hasNext() && peek() == ':') {
+                skip(':');
+                interBounds.add(readInformal());
+            }
+
+            result.add(new JSignature.TypeVarDeclaration(name, classBound, interBounds));
+            skip(':');
+        }
+        skip('>');
+        return result;
+    }
+
+    private <T> T expectEnd(T value) {
+        return hasNext() ? fail("Expected EOF but got " + Character.toString(peek())) : value;
     }
 
     private <T> T fail(String message) {

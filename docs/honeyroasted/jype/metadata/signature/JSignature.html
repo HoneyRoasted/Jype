@@ -87,14 +87,15 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
-<dd><code><a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a></code></dd>
+<dd><code><a href="JSignature.Declaration.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a></code>, <code><a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
-<dd><code><a href="JSignature.Array.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Array</a></code>, <code><a href="JSignature.ClassDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.ClassDeclaration</a></code>, <code><a href="JSignature.MethodDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a></code>, <code><a href="JSignature.Parameterized.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a></code>, <code><a href="JSignature.Type.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a></code>, <code><a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a></code>, <code><a href="JSignature.TypeVarReference.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarReference</a></code>, <code><a href="JSignature.WildType.html" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></dd>
+<dd><code><a href="JSignature.Array.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Array</a></code>, <code><a href="JSignature.ClassDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.ClassDeclaration</a></code>, <code><a href="JSignature.MethodDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a></code>, <code><a href="JSignature.Parameterized.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a></code>, <code><a href="JSignature.Type.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a></code>, <code><a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a></code>, <code><a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a></code>, <code><a href="JSignature.WildType.html" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">JSignature</span></div>
+<div class="type-signature"><span class="modifiers">public sealed interface </span><span class="element-name type-name-label">JSignature</span>
+<span class="permits">permits <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>, <a href="JSignature.Declaration.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -114,26 +115,29 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><code><a href="JSignature.ClassDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.ClassDeclaration</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="JSignature.InformalType.html" class="type-name-link" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a></code></div>
+<div class="col-second even-row-color"><code><a href="JSignature.Declaration.html" class="type-name-link" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="JSignature.MethodDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a></code></div>
+<div class="col-first odd-row-color"><code>static interface&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="JSignature.InformalType.html" class="type-name-link" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="JSignature.Parameterized.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a></code></div>
+<div class="col-second even-row-color"><code><a href="JSignature.MethodDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="JSignature.Type.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a></code></div>
+<div class="col-second odd-row-color"><code><a href="JSignature.Parameterized.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="JSignature.TypeVar.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a></code></div>
+<div class="col-second even-row-color"><code><a href="JSignature.Type.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="JSignature.TypeVarReference.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarReference</a></code></div>
+<div class="col-second odd-row-color"><code><a href="JSignature.TypeVar.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final record&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="JSignature.WildType.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></div>
+<div class="col-second even-row-color"><code><a href="JSignature.TypeVarDeclaration.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final record&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="JSignature.WildType.html" class="type-name-link" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

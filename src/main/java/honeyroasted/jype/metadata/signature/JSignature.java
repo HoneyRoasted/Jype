@@ -2,9 +2,13 @@ package honeyroasted.jype.metadata.signature;
 
 import java.util.List;
 
-public interface JSignature {
+public sealed interface JSignature {
 
-    interface InformalType extends JSignature {
+    sealed interface InformalType extends JSignature {
+
+    }
+
+    sealed interface Declaration extends JSignature {
 
     }
 
@@ -52,19 +56,7 @@ public interface JSignature {
         }
     }
 
-    record TypeVar(String name, InformalType bound, List<InformalType> bounds) implements JSignature {
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.name).append(":").append(this.bound);
-            if (!this.bounds.isEmpty()) {
-                this.bounds.forEach(it -> sb.append(":").append(it));
-            }
-            return sb.toString();
-        }
-    }
-
-    record TypeVarReference(String name) implements InformalType {
+    record TypeVar(String name) implements InformalType {
         @Override
         public String toString() {
             return "T" + this.name + ";";
@@ -84,7 +76,24 @@ public interface JSignature {
         }
     }
 
-    record ClassDeclaration(List<TypeVar> vars, InformalType superclass, List<InformalType> interfaces) implements JSignature {
+    record TypeVarDeclaration(String name, InformalType bound, List<InformalType> bounds) implements Declaration {
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append(this.name).append(":");
+
+            if (this.bound != null){
+                sb.append(this.bound);
+            }
+
+            if (!this.bounds.isEmpty()) {
+                this.bounds.forEach(it -> sb.append(":").append(it));
+            }
+            return sb.toString();
+        }
+    }
+
+    record ClassDeclaration(List<TypeVarDeclaration> vars, InformalType superclass, List<InformalType> interfaces) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -101,7 +110,7 @@ public interface JSignature {
         }
     }
 
-    record MethodDeclaration(List<TypeVar> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements JSignature {
+    record MethodDeclaration(List<TypeVarDeclaration> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

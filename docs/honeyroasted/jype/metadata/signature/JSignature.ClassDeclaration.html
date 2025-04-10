@@ -92,16 +92,16 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></dd>
+<dd><code><a href="JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code>, <code><a href="JSignature.Declaration.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>Enclosing interface:</dt>
 <dd><code><a href="JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">JSignature.ClassDeclaration</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>&gt;&nbsp;vars, <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&nbsp;superclass, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&gt;&nbsp;interfaces)
+<div class="type-signature"><span class="modifiers">public static record </span><span class="element-name type-name-label">JSignature.ClassDeclaration</span>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>&gt;&nbsp;vars, <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&nbsp;superclass, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&gt;&nbsp;interfaces)
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Record.html" title="class or interface in java.lang" class="external-link">Record</a>
-implements <a href="JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></span></div>
+implements <a href="JSignature.Declaration.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a></span></div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -111,7 +111,7 @@ implements <a href="JSignature.html" title="interface in honeyroasted.jype.metad
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-honeyroasted.jype.metadata.signature.JSignature">Nested classes/interfaces inherited from interface&nbsp;honeyroasted.jype.metadata.signature.<a href="JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></h2>
-<code><a href="JSignature.Array.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Array</a>, <a href="JSignature.ClassDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.ClassDeclaration</a>, <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>, <a href="JSignature.MethodDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a>, <a href="JSignature.Parameterized.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a>, <a href="JSignature.Type.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a>, <a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>, <a href="JSignature.TypeVarReference.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarReference</a>, <a href="JSignature.WildType.html" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></div>
+<code><a href="JSignature.Array.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Array</a>, <a href="JSignature.ClassDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.ClassDeclaration</a>, <a href="JSignature.Declaration.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.Declaration</a>, <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>, <a href="JSignature.MethodDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.MethodDeclaration</a>, <a href="JSignature.Parameterized.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Parameterized</a>, <a href="JSignature.Type.html" title="class in honeyroasted.jype.metadata.signature">JSignature.Type</a>, <a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>, <a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>, <a href="JSignature.WildType.html" title="class in honeyroasted.jype.metadata.signature">JSignature.WildType</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -122,7 +122,7 @@ implements <a href="JSignature.html" title="interface in honeyroasted.jype.metad
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,honeyroasted.jype.metadata.signature.JSignature.InformalType,java.util.List)" class="member-name-link">ClassDeclaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>&gt;&nbsp;vars,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,honeyroasted.jype.metadata.signature.JSignature.InformalType,java.util.List)" class="member-name-link">ClassDeclaration</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>&gt;&nbsp;vars,
  <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&nbsp;superclass,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&gt;&nbsp;interfaces)</code></div>
 <div class="col-last even-row-color">
@@ -167,7 +167,7 @@ implements <a href="JSignature.html" title="interface in honeyroasted.jype.metad
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a string representation of this record class.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#vars()" class="member-name-link">vars</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the value of the <code>vars</code> record component.</div>
@@ -192,7 +192,7 @@ implements <a href="JSignature.html" title="interface in honeyroasted.jype.metad
 <li>
 <section class="detail" id="&lt;init&gt;(java.util.List,honeyroasted.jype.metadata.signature.JSignature.InformalType,java.util.List)">
 <h3>ClassDeclaration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ClassDeclaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>&gt;&nbsp;vars,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ClassDeclaration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>&gt;&nbsp;vars,
  <a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&nbsp;superclass,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.InformalType.html" title="interface in honeyroasted.jype.metadata.signature">JSignature.InformalType</a>&gt;&nbsp;interfaces)</span></div>
 <div class="block">Creates an instance of a <code>ClassDeclaration</code> record class.</div>
@@ -256,7 +256,7 @@ implements <a href="JSignature.html" title="interface in honeyroasted.jype.metad
 <li>
 <section class="detail" id="vars()">
 <h3>vars</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVar.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVar</a>&gt;</span>&nbsp;<span class="element-name">vars</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="JSignature.TypeVarDeclaration.html" title="class in honeyroasted.jype.metadata.signature">JSignature.TypeVarDeclaration</a>&gt;</span>&nbsp;<span class="element-name">vars</span>()</div>
 <div class="block">Returns the value of the <code>vars</code> record component.</div>
 <dl class="notes">
 <dt>Returns:</dt>
