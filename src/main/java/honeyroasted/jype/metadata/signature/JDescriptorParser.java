@@ -44,11 +44,21 @@ public class JDescriptorParser extends JStringParser {
 
         return switch (typeInd) {
             case 'L' -> {
-                StringBuilder sb = new StringBuilder();
-                readUntil(c -> c == '<' || c == ';', sb);
+                List<String> packageName = new ArrayList<>();
+                String className = null;
+                while (hasNext() && peek() != ';') {
+                    String name = readUntil(c -> c == '/' || c == ';');
+                    if (peek() == ';') {
+                        className = name;
+                    } else {
+                        packageName.add(name);
+                        skip('/');
+                    }
+                }
                 skip(';');
 
-                yield new JDescriptor.Class(sb.toString());
+                yield new JDescriptor.Class(packageName.isEmpty() ? JDescriptor.Class.DEFAULT_PACKAGE : packageName.toArray(String[]::new),
+                        className);
             }
             case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> JDescriptor.Primitive.of(Character.toString(typeInd));
             default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got " + Character.toString(typeInd));

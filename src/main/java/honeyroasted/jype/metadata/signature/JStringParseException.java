@@ -39,6 +39,6 @@ public class JStringParseException extends RuntimeException {
     }
 
     private static String buildMessage(String message, String sig, int index) {
-        return "\n" + message + ":\n" + sig + "\n" + "-".repeat(index) + "^";
+        return "\n" + message + "\n" + sig + "\n" + (index >= 0 ? "-".repeat(index - 1) : "") + "^";
     }
 }

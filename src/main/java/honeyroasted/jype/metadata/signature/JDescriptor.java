@@ -41,10 +41,18 @@ public interface JDescriptor {
         }
     }
 
-    record Class(String name) implements Type {
+    record Class(String[] packageName, String name) implements Type {
+        public static final String[] DEFAULT_PACKAGE = new String[0];
+
+        public Class(String name) {
+            this(DEFAULT_PACKAGE, name);
+        }
+
         @Override
         public String toString() {
-            return "L" + this.name + ";";
+            return "L" + String.join("/", this.packageName)
+                    + (this.packageName.length != 0 ? "/" : "")
+                    + this.name + ";";
         }
     }
 

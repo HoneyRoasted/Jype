@@ -28,7 +28,8 @@ public class SignatureTest {
         System.out.println(sig);
 
         JTypeSystem system = JTypeSystem.RUNTIME_REFLECTION;
-        System.out.println(JTypeVisitors.TO_SIGNATURE.visit(system.tryResolve(new JTypeToken<Foo<String>.Bar.Baz<Integer>>() {})));
+        JSignature signature = JTypeVisitors.TO_SIGNATURE.visit(system.tryResolve(new JTypeToken<Foo<String>.Bar.Baz<Integer>>() {}));
+        System.out.println(signature);
     }
 
 }

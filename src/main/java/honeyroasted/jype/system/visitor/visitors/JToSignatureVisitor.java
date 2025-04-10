@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.visitor.visitors;
 
+import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
@@ -103,7 +104,9 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
                     type.interfaces().stream().map(jt -> (JSignature.InformalType) visit(jt, Mode.USAGE)).toList()
             );
         } else {
-            JSignature.Type typeSig = new JSignature.Type(new JDescriptor.Class(type.namespace().location().toInternalName()));
+            JClassLocation loc = type.namespace().location();
+
+            JSignature.Type typeSig = new JSignature.Type(new JDescriptor.Class(loc.getPackage().toArray(), loc.value()));
             boolean needsOuter =  (type.hasRelevantOuterType() && type.outerType().hasAnyTypeArguments());
             if (type.hasTypeArguments() || needsOuter) {
                 if (needsOuter) {
@@ -111,7 +114,7 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
 
                     return new JSignature.Parameterized(
                             outer instanceof JSignature.Type jst ? jst.asParameterized() : (JSignature.Parameterized) outer,
-                            new JSignature.Type(new JDescriptor.Class(type.namespace().name().value())),
+                            new JSignature.Type(new JDescriptor.Class(loc.getPackage().toArray(), type.namespace().name().value())),
                             type.typeArguments().stream().map(jt -> (JSignature.InformalType) visit(jt, Mode.USAGE)).toList()
                     );
                 } else {

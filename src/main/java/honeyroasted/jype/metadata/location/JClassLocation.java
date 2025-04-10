@@ -4,6 +4,8 @@ import org.glavo.classfile.ClassModel;
 import org.glavo.classfile.constantpool.ClassEntry;
 
 import java.lang.constant.ClassDesc;
+import java.util.ArrayList;
+import java.util.List;
 
 public record JClassLocation(Type type, JClassLocation containing, String value) {
     public static final JClassLocation DEFAULT_PACKAGE = new JClassLocation(Type.PACKAGE, null, "");
@@ -167,6 +169,20 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
 
     public String toString() {
         return this.toString(".");
+    }
+
+    public String[] toArray() {
+        List<String> result = new ArrayList<>();
+        toArray(result);
+        return result.toArray(String[]::new);
+    }
+
+    private void toArray(List<String> str) {
+        if (this.containing != null && !this.containing.isDefaultPackage()) {
+            this.containing.toArray(str);
+        }
+
+        str.add(this.value);
     }
 
     public enum Type {

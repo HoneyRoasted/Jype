@@ -1,8 +1,8 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.almonds.SimpleName;
-import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.JClassSourceName;
+import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JTypeStorage;

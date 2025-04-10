@@ -48,9 +48,12 @@ public sealed interface JSignature {
 
             if (this.outer != null) {
                 sb.append(cutEnd(this.outer)).append(".");
+                sb.append(this.type.descriptor() instanceof JDescriptor.Class jdc ? jdc.name() : this.type);
+            } else {
+                sb.append(cutEnd(type));
             }
 
-            sb.append(cutStart(cutEnd(type)));
+
 
             if (!this.parameters.isEmpty()) {
                 sb.append("<");

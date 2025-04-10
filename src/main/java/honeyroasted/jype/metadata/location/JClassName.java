@@ -4,11 +4,13 @@ import honeyroasted.jype.metadata.JClassSourceName;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public record JClassName(Type type, SubType subType, JClassName containing, String value) {
+public record  JClassName(Type type, SubType subType, JClassName containing, String value) {
 
     public JClassName(Type type, SubType subType, String value) {
         this(type, subType, null, value);
@@ -169,6 +171,20 @@ public record JClassName(Type type, SubType subType, JClassName containing, Stri
         } else {
             return this.containing == null ? this.value : this.containing.toString(delim) + delim + this.value;
         }
+    }
+
+    public String[] toArray() {
+        List<String> result = new ArrayList<>();
+        toArray(result);
+        return result.toArray(String[]::new);
+    }
+
+    private void toArray(List<String> str) {
+        if (this.containing != null) {
+            this.containing.toArray(str);
+        }
+
+        str.add(this.value);
     }
 
     public JClassSourceName toSourceName() {
