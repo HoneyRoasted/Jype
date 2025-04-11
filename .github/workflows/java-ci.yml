@@ -13,8 +13,8 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: |
-            21
             24
+            21
           distribution: 'adopt'
           cache: gradle
 
@@ -22,10 +22,10 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test
-        run: ./gradlew clean test "-Dorg.gradle.java.home=$JAVA_HOME" "-DcompileJava.options.fork=true" "-DcompileJava.options.forkOptions.executable=$JAVA_HOME_21/bin/javac"
+        run: ./gradlew clean test
 
       - name: Build
-        run: ./gradlew clean build "-Dorg.gradle.java.home=$JAVA_HOME" "-DcompileJava.options.fork=true" "-DcompileJava.options.forkOptions.executable=$JAVA_HOME_21/bin/javac"
+        run: ./gradlew clean build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
