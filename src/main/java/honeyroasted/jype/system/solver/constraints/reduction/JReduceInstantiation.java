@@ -15,7 +15,7 @@ import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
-import org.glavo.classfile.AccessFlag;
+import java.lang.reflect.AccessFlag;
 
 import java.util.ArrayList;
 import java.util.HashMap;

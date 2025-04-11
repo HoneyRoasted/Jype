@@ -13,14 +13,14 @@ import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
-import org.glavo.classfile.Attributes;
-import org.glavo.classfile.ClassModel;
-import org.glavo.classfile.MethodModel;
-import org.glavo.classfile.attribute.EnclosingMethodAttribute;
-import org.glavo.classfile.attribute.ExceptionsAttribute;
-import org.glavo.classfile.attribute.InnerClassesAttribute;
-import org.glavo.classfile.attribute.SignatureAttribute;
-import org.glavo.classfile.constantpool.ClassEntry;
+import java.lang.classfile.Attributes;
+import java.lang.classfile.ClassModel;
+import java.lang.classfile.MethodModel;
+import java.lang.classfile.attribute.EnclosingMethodAttribute;
+import java.lang.classfile.attribute.ExceptionsAttribute;
+import java.lang.classfile.attribute.InnerClassesAttribute;
+import java.lang.classfile.attribute.SignatureAttribute;
+import java.lang.classfile.constantpool.ClassEntry;
 
 import java.lang.constant.MethodTypeDesc;
 import java.util.Optional;
@@ -41,8 +41,8 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
 
         JClassName name = null;
 
-        Optional<InnerClassesAttribute> innerClsAttr = value.findAttribute(Attributes.INNER_CLASSES);
-        Optional<EnclosingMethodAttribute> enclMethAttr = value.findAttribute(Attributes.ENCLOSING_METHOD);
+        Optional<InnerClassesAttribute> innerClsAttr = value.findAttribute(Attributes.innerClasses());
+        Optional<EnclosingMethodAttribute> enclMethAttr = value.findAttribute(Attributes.enclosingMethod());
 
         JClassLocation outerClsLoc = null;
         JMethodLocation outerMethLoc = null;
@@ -65,7 +65,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             ref.setOuterMethod(new JMethodReferenceDelegate(system, s -> s.tryResolve(outerMethLoc)));
         }
 
-        Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.SIGNATURE);
+        Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.signature());
         if (sigAttr.isPresent()) {
             //TODO Explore signature
         } else {
@@ -81,7 +81,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
         }
 
         for (MethodModel model : value.methods()) {
-            Optional<SignatureAttribute> methSigAttr = model.findAttribute(Attributes.SIGNATURE);
+            Optional<SignatureAttribute> methSigAttr = model.findAttribute(Attributes.signature());
             if (methSigAttr.isPresent()) {
                 //TODO Explore signature
             } else {
@@ -100,7 +100,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
                 mRef.setReturnType(delayed(system, ret));
                 mloc.parameters().forEach(prm -> mRef.parameters().add(delayed(system, prm)));
 
-                Optional<ExceptionsAttribute> exAttr = model.findAttribute(Attributes.EXCEPTIONS);
+                Optional<ExceptionsAttribute> exAttr = model.findAttribute(Attributes.exceptions());
                 if (exAttr.isPresent()) {
                     for (ClassEntry ce : exAttr.get().exceptions()) {
                         JClassLocation exLoc = JClassLocation.of(ce);

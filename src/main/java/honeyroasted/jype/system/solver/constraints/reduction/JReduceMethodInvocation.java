@@ -21,9 +21,8 @@ import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
-import org.glavo.classfile.AccessFlag;
-import org.glavo.classfile.AccessFlags;
 
+import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -309,7 +308,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
     }
 
     private static boolean isBridge(int mods) {
-        return AccessFlags.ofMethod(mods).has(AccessFlag.BRIDGE);
+        return (mods & AccessFlag.BRIDGE.mask()) == 0;
     }
 
     private static boolean isPackageVisible(int mods) {

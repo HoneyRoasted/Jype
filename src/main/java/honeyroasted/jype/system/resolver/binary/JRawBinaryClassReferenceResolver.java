@@ -5,8 +5,8 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JType;
-import org.glavo.classfile.ClassFile;
-import org.glavo.classfile.ClassModel;
+import java.lang.classfile.ClassFile;
+import java.lang.classfile.ClassModel;
 
 public class JRawBinaryClassReferenceResolver implements JTypeResolver<JClassBytecode, JType> {
 

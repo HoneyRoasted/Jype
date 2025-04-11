@@ -65,7 +65,7 @@ public sealed interface JSignature {
         }
     }
 
-    record TypeVar(String name) implements InformalType {
+    record VarType(String name) implements InformalType {
         @Override
         public String toString() {
             return "T" + this.name + ";";
@@ -92,7 +92,7 @@ public sealed interface JSignature {
         }
     }
 
-    record TypeVarDeclaration(String name, InformalType bound, List<InformalType> bounds) implements Declaration {
+    record VarTypeDeclaration(String name, InformalType bound, List<InformalType> bounds) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -109,7 +109,7 @@ public sealed interface JSignature {
         }
     }
 
-    record ClassDeclaration(List<TypeVarDeclaration> vars, InformalType superclass, List<InformalType> interfaces) implements Declaration {
+    record ClassDeclaration(List<VarTypeDeclaration> vars, InformalType superclass, List<InformalType> interfaces) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -126,7 +126,7 @@ public sealed interface JSignature {
         }
     }
 
-    record MethodDeclaration(List<TypeVarDeclaration> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements Declaration {
+    record MethodDeclaration(List<VarTypeDeclaration> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

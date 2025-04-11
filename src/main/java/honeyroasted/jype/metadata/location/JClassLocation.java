@@ -1,7 +1,7 @@
 package honeyroasted.jype.metadata.location;
 
-import org.glavo.classfile.ClassModel;
-import org.glavo.classfile.constantpool.ClassEntry;
+import java.lang.classfile.ClassModel;
+import java.lang.classfile.constantpool.ClassEntry;
 
 import java.lang.constant.ClassDesc;
 import java.util.ArrayList;

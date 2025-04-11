@@ -36,7 +36,7 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
 
     @Override
     public JSignature visitMetaVarType(JMetaVarType type, Mode context) {
-        return new JSignature.TypeVar(type.name());
+        return new JSignature.VarType(type.name());
     }
 
     @Override
@@ -53,19 +53,19 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
     public JSignature visitVarType(JVarType type, Mode context) {
         if (context.isDeclaration()) {
             if (type.upperBounds().isEmpty()) {
-                return new JSignature.TypeVarDeclaration(type.name(), null, Collections.emptyList());
+                return new JSignature.VarTypeDeclaration(type.name(), null, Collections.emptyList());
             } else {
                 JType first = type.upperBounds().iterator().next();
                 if (first instanceof JClassType jct && jct.hasModifier(AccessFlag.INTERFACE)) {
-                    return new JSignature.TypeVarDeclaration(type.name(), null,
+                    return new JSignature.VarTypeDeclaration(type.name(), null,
                             type.upperBounds().stream().map(j -> (JSignature.InformalType) visit(j, Mode.USAGE)).toList());
                 } else {
-                    return new JSignature.TypeVarDeclaration(type.name(), (JSignature.InformalType) visit(first, Mode.USAGE),
+                    return new JSignature.VarTypeDeclaration(type.name(), (JSignature.InformalType) visit(first, Mode.USAGE),
                             type.upperBounds().stream().skip(1).map(j -> (JSignature.InformalType) visit(j, Mode.USAGE)).toList());
                 }
             }
         } else {
-            return new JSignature.TypeVar(type.name());
+            return new JSignature.VarType(type.name());
         }
     }
 
@@ -88,7 +88,7 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
     @Override
     public JSignature visitMethodType(JMethodType type, Mode context) {
         return new JSignature.MethodDeclaration(
-                type.typeParameters().stream().map(jt -> (JSignature.TypeVarDeclaration) visit(jt, Mode.DECLARATION)).toList(),
+                type.typeParameters().stream().map(jt -> (JSignature.VarTypeDeclaration) visit(jt, Mode.DECLARATION)).toList(),
                 type.parameters().stream().map(jt -> (JSignature.InformalType) visit(jt, Mode.USAGE)).toList(),
                 (JSignature.InformalType) visit(type.returnType(), Mode.USAGE),
                 type.exceptionTypes().stream().map(jt -> (JSignature.InformalType) visit(jt, Mode.USAGE)).toList()
@@ -99,7 +99,7 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
     public JSignature visitClassType(JClassType type, Mode context) {
         if (context.isDeclaration()) {
             return new JSignature.ClassDeclaration(
-                    type.typeParameters().stream().map(jt -> (JSignature.TypeVarDeclaration) visit(jt, Mode.DECLARATION)).toList(),
+                    type.typeParameters().stream().map(jt -> (JSignature.VarTypeDeclaration) visit(jt, Mode.DECLARATION)).toList(),
                     (JSignature.InformalType) visit(type, Mode.USAGE),
                     type.interfaces().stream().map(jt -> (JSignature.InformalType) visit(jt, Mode.USAGE)).toList()
             );

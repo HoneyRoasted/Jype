@@ -27,7 +27,7 @@ public class JSignatureParser extends JStringParser {
     }
 
     private JSignature.Declaration readAmbiguousDeclaration() {
-        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        List<JSignature.VarTypeDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
         if (hasNext() && next() == '(') {
             List<JSignature.InformalType> parameters = new ArrayList<>();
             skip('(');
@@ -55,7 +55,7 @@ public class JSignatureParser extends JStringParser {
     }
 
     private JSignature.MethodDeclaration readMethodDeclaration() {
-        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        List<JSignature.VarTypeDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
         List<JSignature.InformalType> parameters = new ArrayList<>();
         skip('(');
         while (hasNext() && peek() != ')') {
@@ -73,7 +73,7 @@ public class JSignatureParser extends JStringParser {
     }
 
     private JSignature.ClassDeclaration readClassDeclaration() {
-        List<JSignature.TypeVarDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
+        List<JSignature.VarTypeDeclaration> declarations = isParametersNext() ? readVarDeclarations() : Collections.emptyList();
         JSignature.InformalType superclass = readClassType();
         List<JSignature.InformalType> interfaces = new ArrayList<>();
         while (hasNext()) {
@@ -179,7 +179,7 @@ public class JSignatureParser extends JStringParser {
         return peek() == 'T';
     }
 
-    public JSignature.TypeVar readVarRef() {
+    public JSignature.VarType readVarRef() {
         if (!this.hasNext()) fail("Expected type variable reference start (T), got EOF");
         if (peek() != 'T') fail("Expected type variable reference start (T), got " + Character.toString(peek()));
 
@@ -188,7 +188,7 @@ public class JSignatureParser extends JStringParser {
         readUntil(c -> c == ';', sb);
         skip(';');
 
-        return new JSignature.TypeVar(sb.toString());
+        return new JSignature.VarType(sb.toString());
     }
 
     private boolean isWildNext() {
@@ -229,13 +229,13 @@ public class JSignatureParser extends JStringParser {
         return result;
     }
 
-    private List<JSignature.TypeVarDeclaration> readVarDeclarations() {
+    private List<JSignature.VarTypeDeclaration> readVarDeclarations() {
         if (!this.hasNext()) fail("Expected type parameters declaration start ( < ), got EOF");
         if (peek() != '<') fail("Expected type parameters declaration start ( < ), got " + Character.toString(peek()));
 
         skip('<');
 
-        List<JSignature.TypeVarDeclaration> result = new ArrayList<>();
+        List<JSignature.VarTypeDeclaration> result = new ArrayList<>();
         while (hasNext() && peek() != '>') {
             String name = readUntil(c -> c == ':');
             skip(':');
@@ -252,7 +252,7 @@ public class JSignatureParser extends JStringParser {
                 interBounds.add(readInformal());
             }
 
-            result.add(new JSignature.TypeVarDeclaration(name, classBound, interBounds));
+            result.add(new JSignature.VarTypeDeclaration(name, classBound, interBounds));
             skip(':');
         }
         skip('>');
