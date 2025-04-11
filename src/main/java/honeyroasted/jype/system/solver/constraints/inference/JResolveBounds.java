@@ -62,7 +62,7 @@ public class JResolveBounds extends ConstraintMapper.All {
         if (!subset.isEmpty()) {
             Map<Constraint, Constraint.Status> generatedBounds = new HashMap<>();
 
-            //Bound set does not contain any bound of the form G<..., a_i, ...> = capture(G<...>)
+            //Bound set does not contain any classBound of the form G<..., a_i, ...> = capture(G<...>)
             boolean hasCapture = branch.constraints().entrySet().stream().anyMatch(node -> node.getValue().isTrue() && node.getKey() instanceof JTypeConstraints.Capture cpt &&
                     cpt.left().typeArguments().stream().anyMatch(subset::contains));
 

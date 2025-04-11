@@ -1,5 +1,6 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.copy.Copyable;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
@@ -17,11 +18,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public interface JType extends Copyable<JType, JTypeCache<JType, JType>> {
+public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JType>> {
 
     JTypeSystem typeSystem();
-
-    String simpleName();
 
     <R, P> R accept(JTypeVisitor<R, P> visitor, P context);
 

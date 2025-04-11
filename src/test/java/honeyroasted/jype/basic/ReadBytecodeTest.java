@@ -1,10 +1,11 @@
 package honeyroasted.jype.basic;
 
-import honeyroasted.jype.metadata.JClassBytecode;
+import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.system.JSimpleTypeSystem;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
+import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.binary.JBinaryClassFinder;
 import honeyroasted.jype.system.resolver.binary.JBinaryLocationClassReferenceResolver;
 import honeyroasted.jype.system.resolver.binary.JBinaryTypeResolution;
@@ -22,10 +23,15 @@ public class ReadBytecodeTest {
                 new JBinaryLocationClassReferenceResolver(JBinaryClassFinder.rootedIn(Paths.get("build/classes/java/main"))),
                 JBinaryTypeResolution.BINARY_TYPE_RESOLVERS, JReflectionTypeResolution.REFLECTION_TYPE_RESOLVERS, JGeneralTypeResolution.GENERAL_TYPE_RESOLVERS);
 
-        JClassReference ref = system.tryResolve(JClassLocation.of(JClassBytecode.class));
+        JClassReference ref = system.tryResolve(JClassLocation.of(JTypeResolver.class));
 
-        ref.declaredMethods().forEach(System.out::println);
-        ref.declaredFields().forEach(System.out::println);
+        JClassReference fromReflection = JTypeSystem.RUNTIME_REFLECTION.tryResolve(JClassLocation.of(JTypeResolver.class));
+
+        System.out.println(ref.equals(fromReflection));
+        System.out.println();
+        ref.declaredMethods().stream().map(SimpleName::simpleName).forEach(System.out::println);
+        System.out.println();
+        ref.declaredFields().stream().map(SimpleName::simpleName).forEach(System.out::println);
     }
 
 }

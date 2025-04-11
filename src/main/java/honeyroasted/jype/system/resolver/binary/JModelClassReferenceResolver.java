@@ -5,7 +5,11 @@ import honeyroasted.jype.metadata.location.JClassName;
 import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
+import honeyroasted.jype.metadata.signature.JSignature;
+import honeyroasted.jype.metadata.signature.JSignatureParser;
+import honeyroasted.jype.metadata.signature.JStringParseException;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.resolver.JResolutionFailedException;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JArrayType;
@@ -69,9 +73,19 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
         }
 
         Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.signature());
-        if (sigAttr.isPresent() && false) {
-            //TODO Explore signature
-        } else {
+        boolean fallback = true;
+        if (sigAttr.isPresent()) {
+            JSignatureParser parser = new JSignatureParser(sigAttr.get().signature().stringValue());
+            try {
+                JSignature.ClassDeclaration decl = parser.parseClassDeclaration();
+                JSignatureTypeResolution.applyClassSignature(system, ref, decl);
+                fallback = false;
+            } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
+                fallback = true;
+            }
+        }
+
+        if (fallback) {
             if (value.superclass().isPresent()) {
                 JClassLocation sloc = JClassLocation.of(value.superclass().get());
                 ref.setSuperClass(new JClassReferenceDelegate(system, s -> s.tryResolve(sloc)));
@@ -84,40 +98,57 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
         }
 
         for (FieldModel model : value.fields()) {
+            JFieldLocation floc = new JFieldLocation(model.fieldName().stringValue(), loc);
+            JFieldReference fRef = system.typeFactory().newFieldReference();
+            ref.declaredFields().add(fRef);
+
+            fRef.setLocation(floc);
+            fRef.setModifiers(model.flags().flagsMask());
+            fRef.setOuterClass(ref);
+
             Optional<SignatureAttribute> fieldSigAttr = model.findAttribute(Attributes.signature());
-            if (fieldSigAttr.isPresent() && false) {
-
-            } else {
-                JFieldReference fRef = system.typeFactory().newFieldReference();
-                ref.declaredFields().add(fRef);
-
-                JFieldLocation floc = new JFieldLocation(model.fieldName().stringValue(), loc);
-
-                fRef.setLocation(floc);
-                fRef.setModifiers(model.flags().flagsMask());
-                fRef.setOuterClass(ref);
-
-                fRef.setType(delayed(system, JClassLocation.of(model.fieldTypeSymbol())));
-
-                fRef.setUnmodifiable(true);
+            boolean fieldFallback = true;
+            if (fieldSigAttr.isPresent()) {
+                try {
+                    fRef.setType(JSignatureTypeResolution.resolveTypeSig(system, ref,
+                            new JSignatureParser(fieldSigAttr.get().signature().stringValue()).parseInformalType()));
+                    fieldFallback = false;
+                } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
+                    fieldFallback = true;
+                }
             }
+
+            if (fieldFallback) {
+                fRef.setType(delayed(system, JClassLocation.of(model.fieldTypeSymbol())));
+            }
+
+            fRef.setUnmodifiable(true);
         }
 
         for (MethodModel model : value.methods()) {
+            JMethodReference mRef = system.typeFactory().newMethodReference();
+            ref.declaredMethods().add(mRef);
+
+            MethodTypeDesc desc = model.methodTypeSymbol();
+            JMethodLocation mloc = JMethodLocation.of(model.methodName().stringValue(), loc, desc);
+
+            mRef.setLocation(mloc);
+            mRef.setModifiers(model.flags().flagsMask());
+            mRef.setOuterClass(ref);
+
             Optional<SignatureAttribute> methSigAttr = model.findAttribute(Attributes.signature());
-            if (methSigAttr.isPresent() && false) {
-                //TODO Explore signature
-            } else {
-                JMethodReference mRef = system.typeFactory().newMethodReference();
-                ref.declaredMethods().add(mRef);
+            boolean methodFallback = true;
+            if (methSigAttr.isPresent()) {
+                try {
+                    JSignatureTypeResolution.applyMethodSignature(system, mRef,
+                            new JSignatureParser(methSigAttr.get().signature().stringValue()).parseMethodDeclaration());
+                    methodFallback = false;
+                } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
+                    methodFallback = true;
+                }
+            }
 
-                MethodTypeDesc desc = model.methodTypeSymbol();
-                JMethodLocation mloc = JMethodLocation.of(model.methodName().stringValue(), loc, desc);
-
-                mRef.setLocation(mloc);
-                mRef.setModifiers(model.flags().flagsMask());
-                mRef.setOuterClass(ref);
-
+            if (methodFallback) {
                 JClassLocation ret = mloc.returnType();
 
                 mRef.setReturnType(delayed(system, ret));
@@ -130,9 +161,9 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
                         mRef.exceptionTypes().add(delayed(system, exLoc));
                     }
                 }
-
-                mRef.setUnmodifiable(true);
             }
+
+            mRef.setUnmodifiable(true);
         }
 
         ref.setUnmodifiable(true);

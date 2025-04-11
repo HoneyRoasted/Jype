@@ -1,4 +1,4 @@
-package honeyroasted.jype.system.resolver.reflection;
+package honeyroasted.jype.metadata;
 
 public interface JReflectionType<T> {
     T type();

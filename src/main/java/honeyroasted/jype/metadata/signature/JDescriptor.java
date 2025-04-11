@@ -1,11 +1,15 @@
 package honeyroasted.jype.metadata.signature;
 
+import honeyroasted.jype.metadata.location.JClassLocation;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
 public interface JDescriptor {
 
     interface Type extends JDescriptor {
+
+        JClassLocation toLocation();
 
     }
 
@@ -39,6 +43,11 @@ public interface JDescriptor {
             }
             throw new IllegalArgumentException("Unknown primitive descriptor: " + descriptor);
         }
+
+        @Override
+        public JClassLocation toLocation() {
+            return JClassLocation.ofDescriptor(this.descriptor);
+        }
     }
 
     record Class(String[] packageName, String name) implements Type {
@@ -54,12 +63,22 @@ public interface JDescriptor {
                     + (this.packageName.length != 0 ? "/" : "")
                     + this.name + ";";
         }
+
+        @Override
+        public JClassLocation toLocation() {
+            return JClassLocation.of(packageName, name);
+        }
     }
 
     record Array(Type component) implements Type {
         @Override
         public String toString() {
             return "[" + this.component;
+        }
+
+        @Override
+        public JClassLocation toLocation() {
+            return new JClassLocation(JClassLocation.Type.ARRAY, this.component.toLocation(), "[]");
         }
     }
 

@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.resolver.reflection;
 
+import honeyroasted.jype.metadata.JReflectionType;
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.metadata.location.JFieldLocation;

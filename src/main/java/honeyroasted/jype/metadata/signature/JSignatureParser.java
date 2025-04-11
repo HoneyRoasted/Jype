@@ -179,7 +179,7 @@ public class JSignatureParser extends JStringParser {
         return peek() == 'T';
     }
 
-    public JSignature.VarType readVarRef() {
+    private JSignature.VarType readVarRef() {
         if (!this.hasNext()) fail("Expected type variable reference start (T), got EOF");
         if (peek() != 'T') fail("Expected type variable reference start (T), got " + Character.toString(peek()));
 
@@ -196,7 +196,7 @@ public class JSignatureParser extends JStringParser {
         return peek() == '+' || peek() == '-' || peek() == '*';
     }
 
-    public JSignature.WildType readWild() {
+    private JSignature.WildType readWild() {
         if (!this.hasNext()) fail("Expected wild type start (+, -, *) start, got EOF");
         if (peek() != '-' || peek() != '+' || peek() != '*') fail("Expected wild type start (+, -, *), got " + Character.toString(peek()));
 

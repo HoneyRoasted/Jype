@@ -31,7 +31,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
         JParameterizedClassType left = (JParameterizedClassType) leftMapped; //G<alpha_1...alpha_n>
         JParameterizedClassType right = (JParameterizedClassType) rightMapped; //G<A_1...A_n>
         //P_l = parameter l of G
-        //B_l = bound of P_l
+        //B_l = classBound of P_l
 
         if (left.classReference().typeEquals(right.classReference()) &&
                 left.typeArguments().size() == right.typeArguments().size()) { //Sanity check, should be true by convention
@@ -49,7 +49,7 @@ public class JIncorporationCapture extends ConstraintMapper.Unary<JTypeConstrain
 
             JVarTypeResolveVisitor theta = left.varTypeResolver(); //theta = [P_1 = alpha_1...P_n = alpha_n]
 
-            //Initial bounds generated from G<P_1...P_n> per 18.1.3
+            //Initial interfaceBounds generated from G<P_1...P_n> per 18.1.3
             varMap.forEach(con -> branch.add(con, Constraint.Status.ASSUMED));
 
             for (int i = 0; i < left.typeArguments().size() && i < right.typeArguments().size(); i++) {

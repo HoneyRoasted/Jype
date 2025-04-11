@@ -14,14 +14,18 @@ public sealed interface JSignature {
 
     }
 
-    record Array(InformalType element) implements InformalType {
+    sealed interface GenericDeclaration extends Declaration {
+        List<VarTypeDeclaration> vars();
+    }
+
+    record Array(InformalType component) implements InformalType {
         @Override
         public String toString() {
-            return "[" + this.element;
+            return "[" + this.component;
         }
     }
 
-    record Type(JDescriptor descriptor) implements InformalType {
+    record Type(JDescriptor.Type descriptor) implements InformalType {
         @Override
         public String toString() {
             return this.descriptor.toString();
@@ -92,24 +96,24 @@ public sealed interface JSignature {
         }
     }
 
-    record VarTypeDeclaration(String name, InformalType bound, List<InformalType> bounds) implements Declaration {
+    record VarTypeDeclaration(String name, InformalType classBound, List<InformalType> interfaceBounds) implements Declaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append(this.name).append(":");
 
-            if (this.bound != null){
-                sb.append(this.bound);
+            if (this.classBound != null){
+                sb.append(this.classBound);
             }
 
-            if (!this.bounds.isEmpty()) {
-                this.bounds.forEach(it -> sb.append(":").append(it));
+            if (!this.interfaceBounds.isEmpty()) {
+                this.interfaceBounds.forEach(it -> sb.append(":").append(it));
             }
             return sb.toString();
         }
     }
 
-    record ClassDeclaration(List<VarTypeDeclaration> vars, InformalType superclass, List<InformalType> interfaces) implements Declaration {
+    record ClassDeclaration(List<VarTypeDeclaration> vars, InformalType superclass, List<InformalType> interfaces) implements GenericDeclaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
@@ -126,7 +130,7 @@ public sealed interface JSignature {
         }
     }
 
-    record MethodDeclaration(List<VarTypeDeclaration> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements Declaration {
+    record MethodDeclaration(List<VarTypeDeclaration> vars, List<InformalType> parameters, InformalType returnType, List<InformalType> exceptions) implements GenericDeclaration {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();

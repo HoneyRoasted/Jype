@@ -1,7 +1,9 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.metadata.JAccess;
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JGenericDeclarationLocation;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 import java.lang.reflect.AccessFlag;
@@ -12,11 +14,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface JClassType extends JInstantiableType, PossiblyUnmodifiable, JArgumentType {
+public interface JClassType extends JGenericDeclaration, JInstantiableType, PossiblyUnmodifiable, JArgumentType {
 
     JClassNamespace namespace();
 
     void setNamespace(JClassNamespace namespace);
+
+    @Override
+    default JGenericDeclarationLocation genericDeclarationLocation() {
+        return namespace();
+    }
 
     int modifiers();
 
@@ -53,6 +60,20 @@ public interface JClassType extends JInstantiableType, PossiblyUnmodifiable, JAr
     default boolean hasRelevantOuterType() {
         return !Modifier.isStatic(this.modifiers()) && this.outerType() != null
                 && (this.outerMethod() == null || !Modifier.isStatic(this.outerMethod().modifiers()));
+    }
+
+    @Override
+    default Optional<JVarType> resolveVarType(String name) {
+        Optional<JVarType> check = this.typeParameters().stream().filter(j -> j.name().equals(name)).findFirst();
+        if (check.isPresent()) {
+            return check;
+        } else if (!Modifier.isStatic(this.modifiers()) && this.outerMethod() != null) {
+            return this.outerMethod().resolveVarType(name);
+        } else if (!Modifier.isStatic(this.modifiers()) && this.outerType() != null) {
+            return this.outerType().resolveVarType(name);
+        } else {
+            return Optional.empty();
+        }
     }
 
     default boolean hasOuterType() {

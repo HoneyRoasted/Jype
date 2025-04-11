@@ -71,6 +71,14 @@ public record JClassLocation(Type type, JClassLocation containing, String value)
         }
     }
 
+    public static JClassLocation of(String[] packageName, String name) {
+        JClassLocation result = null;
+        for (int i = 0; i < packageName.length; i++) {
+            result = new JClassLocation(Type.PACKAGE, result, packageName[i]);
+        }
+        return new JClassLocation(Type.CLASS, result, name);
+    }
+
     public static JClassLocation of(Class<?> cls) {
         if (cls == null) return null;
 

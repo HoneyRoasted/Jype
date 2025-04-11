@@ -27,22 +27,22 @@ public class JBuildInitialBounds implements ConstraintMapper {
         JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(metaVars);
         metaVars.forEach((vt, mvt) -> {
             if (vt.upperBounds().isEmpty()) {
-                //Case where P_l has no upper bound, alpha_l <: Object
+                //Case where P_l has no upper classBound, alpha_l <: Object
                 branch.add(JTypeConstraints.Subtype.createBound(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
             } else {
-                //Case where P_l has upper bounds
+                //Case where P_l has upper interfaceBounds
                 boolean foundProperUpper = false;
                 for (JType bound : vt.upperBounds()) {
                     JType resolved = resolver.visit(bound);
                     if (resolved.isProperType()) {
                         foundProperUpper = true;
                     }
-                    //Upper bounds imply alpha_l <: T[P_1 = alpha_1... P_n = alpha_n], for each bound T
+                    //Upper interfaceBounds imply alpha_l <: T[P_1 = alpha_1... P_n = alpha_n], for each classBound T
                     branch.add(JTypeConstraints.Subtype.createBound(mvt, resolved), Constraint.Status.ASSUMED);
                 }
 
                 if (!foundProperUpper) {
-                    //If there is no proper upper bound, alpha_l <: Object
+                    //If there is no proper upper classBound, alpha_l <: Object
                     branch.add(JTypeConstraints.Subtype.createBound(mvt, vt.typeSystem().constants().object()), Constraint.Status.ASSUMED);
                 }
             }

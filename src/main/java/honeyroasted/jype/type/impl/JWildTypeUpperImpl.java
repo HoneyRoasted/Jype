@@ -47,7 +47,7 @@ public class JWildTypeUpperImpl extends JAbstractPossiblyUnmodifiableType implem
 
     @Override
     public void setLowerBounds(Set<JType> lowerBounds) {
-        throw new UnsupportedOperationException("Cannot set lower bounds on JWildType.Upper implementation");
+        throw new UnsupportedOperationException("Cannot set lower interfaceBounds on JWildType.Upper implementation");
     }
 
     @Override

@@ -4,11 +4,7 @@ import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 
 import java.util.List;
 
-public interface JParameterizedType extends JType {
-
-    List<JVarType> typeParameters();
-
-    void setTypeParameters(List<JVarType> typeParameters);
+public interface JParameterizedType extends JGenericDeclaration, JType {
 
     List<JArgumentType> typeArguments();
 

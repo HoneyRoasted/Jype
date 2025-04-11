@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.resolver.reflection;
 
+import honeyroasted.jype.metadata.JReflectionType;
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
@@ -89,7 +90,7 @@ public class JReflectionJavaTypeResolver implements JTypeResolver<Type, JType> {
                 if (resolved.success()) {
                     resolvedBounds.add(resolved.value());
                 } else {
-                    return new JResolutionResult<>("Failed to resolve bound", value, children);
+                    return new JResolutionResult<>("Failed to resolve classBound", value, children);
                 }
             }
 

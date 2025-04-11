@@ -25,7 +25,7 @@ import java.util.Set;
 public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifiableType implements JParameterizedClassType {
     private JClassReference classReference;
     private JClassType outerType;
-    private List<JArgumentType> typeArguments;
+    private List<JArgumentType> typeArguments = new ArrayList<>();
 
     private final transient Map<JClassType, JClassType> superTypes = new HashMap<>();
 

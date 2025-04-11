@@ -1,4 +1,4 @@
-package honeyroasted.jype.type;
+package honeyroasted.jype.metadata;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

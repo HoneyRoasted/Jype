@@ -1,6 +1,7 @@
 package honeyroasted.jype.type;
 
 import honeyroasted.collect.modify.PossiblyUnmodifiable;
+import honeyroasted.jype.metadata.JAccess;
 import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
