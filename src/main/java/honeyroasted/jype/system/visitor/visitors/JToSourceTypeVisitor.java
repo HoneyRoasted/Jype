@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -154,6 +155,11 @@ public class JToSourceTypeVisitor implements JTypeVisitor<String, JToSourceTypeV
     @Override
     public String visitNoneType(JNoneType type, Mode context) {
         return "@" + type.name();
+    }
+
+    @Override
+    public String visitFieldType(JFieldReference type, Mode context) {
+        return visit(type.type(), context.toUsage()) + " " + type.location().name();
     }
 
     public record Mode(boolean usage, boolean qualifiedNames, boolean insertParameterNames) {

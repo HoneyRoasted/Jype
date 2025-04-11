@@ -73,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#visitVarType(honeyroasted.jype.type.JVarType,P)" tabindex="0">visitVarType(JVarType, P)</a></li>
 <li><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,P)" tabindex="0">visitMetaVarType(JMetaVarType, P)</a></li>
 <li><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,P)" tabindex="0">visitNoneType(JNoneType, P)</a></li>
+<li><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,P)" tabindex="0">visitFieldType(JFieldReference, P)</a></li>
 </ol>
 </li>
 </ol>
@@ -132,33 +133,37 @@ extends <a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.sys
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitIntersectionType(honeyroasted.jype.type.JIntersectionType,P)" class="member-name-link">visitIntersectionType</a><wbr>(<a href="../../../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,P)" class="member-name-link">visitFieldType</a><wbr>(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,P)" class="member-name-link">visitMetaVarType</a><wbr>(<a href="../../../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitIntersectionType(honeyroasted.jype.type.JIntersectionType,P)" class="member-name-link">visitIntersectionType</a><wbr>(<a href="../../../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitMethodType(honeyroasted.jype.type.JMethodType,P)" class="member-name-link">visitMethodType</a><wbr>(<a href="../../../type/JMethodType.html" title="interface in honeyroasted.jype.type">JMethodType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,P)" class="member-name-link">visitMetaVarType</a><wbr>(<a href="../../../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,P)" class="member-name-link">visitNoneType</a><wbr>(<a href="../../../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitMethodType(honeyroasted.jype.type.JMethodType,P)" class="member-name-link">visitMethodType</a><wbr>(<a href="../../../type/JMethodType.html" title="interface in honeyroasted.jype.type">JMethodType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitPrimitiveType(honeyroasted.jype.type.JPrimitiveType,P)" class="member-name-link">visitPrimitiveType</a><wbr>(<a href="../../../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,P)" class="member-name-link">visitNoneType</a><wbr>(<a href="../../../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitVarType(honeyroasted.jype.type.JVarType,P)" class="member-name-link">visitVarType</a><wbr>(<a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitPrimitiveType(honeyroasted.jype.type.JPrimitiveType,P)" class="member-name-link">visitPrimitiveType</a><wbr>(<a href="../../../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitWildcardType(honeyroasted.jype.type.JWildType,P)" class="member-name-link">visitWildcardType</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitVarType(honeyroasted.jype.type.JVarType,P)" class="member-name-link">visitVarType</a><wbr>(<a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&nbsp;type,
  <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#visitWildcardType(honeyroasted.jype.type.JWildType,P)" class="member-name-link">visitWildcardType</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+ <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -289,6 +294,19 @@ extends <a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.sys
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../JTypeVisitor.html#visitNoneType(honeyroasted.jype.type.JNoneType,P)">visitNoneType</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.system.visitor">JTypeVisitor</a>&lt;<a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a>,<wbr><a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&gt;</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="visitFieldType(honeyroasted.jype.type.JFieldReference,P)">
+<h3 id="visitFieldType(honeyroasted.jype.type.JFieldReference,java.lang.Object)">visitFieldType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a></span>&nbsp;<span class="element-name">visitFieldType</span><wbr><span class="parameters">(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
+ <a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&nbsp;context)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../JTypeVisitor.html#visitFieldType(honeyroasted.jype.type.JFieldReference,P)">visitFieldType</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.system.visitor">JTypeVisitor</a>&lt;<a href="#type-param-R" title="type parameter in JSimpleTypeVisitor">R</a>,<wbr><a href="#type-param-P" title="type parameter in JSimpleTypeVisitor">P</a>&gt;</code></dd>
 </dl>
 </div>
 </section>

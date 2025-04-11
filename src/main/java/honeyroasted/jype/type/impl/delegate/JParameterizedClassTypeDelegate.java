@@ -5,6 +5,7 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JVarType;
@@ -72,6 +73,16 @@ public class JParameterizedClassTypeDelegate extends JAbstractPossiblyUnmodifiab
     @Override
     public void setDeclaredMethods(List<JMethodReference> methods) {
         delegate().setDeclaredMethods(methods);
+    }
+
+    @Override
+    public List<JFieldReference> declaredFields() {
+        return delegate().declaredFields();
+    }
+
+    @Override
+    public void setDeclaredFields(List<JFieldReference> fields) {
+        delegate().setDeclaredFields(fields);
     }
 
     @Override

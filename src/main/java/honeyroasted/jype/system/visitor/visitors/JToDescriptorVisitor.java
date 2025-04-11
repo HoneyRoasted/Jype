@@ -4,6 +4,7 @@ import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -28,6 +29,11 @@ public class JToDescriptorVisitor implements JTypeVisitor<JDescriptor, Void> {
     @Override
     public JDescriptor visitNoneType(JNoneType type, Void context) {
         return JDescriptor.Primitive.VOID;
+    }
+
+    @Override
+    public JDescriptor visitFieldType(JFieldReference type, Void context) {
+        return visit(type.type());
     }
 
     @Override

@@ -75,8 +75,10 @@ loadScripts(document, 'script');</script>
 <li><a href="#getReflectionType(honeyroasted.jype.type.JMethodReference)" tabindex="0">getReflectionType(JMethodReference)</a></li>
 <li><a href="#getReflectionType(honeyroasted.jype.type.JVarType)" tabindex="0">getReflectionType(JVarType)</a></li>
 <li><a href="#classFromLocation(honeyroasted.jype.metadata.location.JClassLocation)" tabindex="0">classFromLocation(JClassLocation)</a></li>
+<li><a href="#fieldFromLocation(honeyroasted.jype.metadata.location.JFieldLocation)" tabindex="0">fieldFromLocation(JFieldLocation)</a></li>
 <li><a href="#methodFromLocation(honeyroasted.jype.metadata.location.JMethodLocation)" tabindex="0">methodFromLocation(JMethodLocation)</a></li>
 <li><a href="#typeParameterFromLocation(honeyroasted.jype.metadata.location.JTypeParameterLocation)" tabindex="0">typeParameterFromLocation(JTypeParameterLocation)</a></li>
+<li><a href="#createFieldReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Field,honeyroasted.jype.metadata.location.JFieldLocation)" tabindex="0">createFieldReference(JTypeSystem, Field, JFieldLocation)</a></li>
 <li><a href="#createMethodReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Executable,honeyroasted.jype.metadata.location.JMethodLocation)" tabindex="0">createMethodReference(JTypeSystem, Executable, JMethodLocation)</a></li>
 <li><a href="#createClassReference(honeyroasted.jype.system.JTypeSystem,java.lang.Class,honeyroasted.jype.metadata.location.JClassLocation)" tabindex="0">createClassReference(JTypeSystem, Class, JClassLocation)</a></li>
 <li><a href="#createVarType(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.TypeVariable,honeyroasted.jype.metadata.location.JTypeParameterLocation)" tabindex="0">createVarType(JTypeSystem, TypeVariable, JTypeParameterLocation)</a></li>
@@ -130,15 +132,23 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&nbsp;cls,
  <a href="../../../metadata/location/JClassLocation.html" title="class in honeyroasted.jype.metadata.location">JClassLocation</a>&nbsp;location)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>, <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#createMethodReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Executable,honeyroasted.jype.metadata.location.JMethodLocation)" class="member-name-link">createMethodReference</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a>, <a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#createFieldReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Field,honeyroasted.jype.metadata.location.JFieldLocation)" class="member-name-link">createFieldReference</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a>&nbsp;field,
+ <a href="../../../metadata/location/JFieldLocation.html" title="class in honeyroasted.jype.metadata.location">JFieldLocation</a>&nbsp;location)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>, <a href="../../../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#createMethodReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Executable,honeyroasted.jype.metadata.location.JMethodLocation)" class="member-name-link">createMethodReference</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Executable.html" title="class or interface in java.lang.reflect" class="external-link">Executable</a>&nbsp;executable,
  <a href="../../../metadata/location/JMethodLocation.html" title="class in honeyroasted.jype.metadata.location">JMethodLocation</a>&nbsp;location)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/TypeVariable.html" title="class or interface in java.lang.reflect" class="external-link">TypeVariable</a>&lt;?&gt;, <a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#createVarType(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.TypeVariable,honeyroasted.jype.metadata.location.JTypeParameterLocation)" class="member-name-link">createVarType</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/TypeVariable.html" title="class or interface in java.lang.reflect" class="external-link">TypeVariable</a>&lt;?&gt;, <a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#createVarType(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.TypeVariable,honeyroasted.jype.metadata.location.JTypeParameterLocation)" class="member-name-link">createVarType</a><wbr>(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/TypeVariable.html" title="class or interface in java.lang.reflect" class="external-link">TypeVariable</a>&lt;?&gt;&nbsp;var,
  <a href="../../../metadata/location/JTypeParameterLocation.html" title="class in honeyroasted.jype.metadata.location">JTypeParameterLocation</a>&nbsp;location)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1"><code><a href="#fieldFromLocation(honeyroasted.jype.metadata.location.JFieldLocation)" class="member-name-link">fieldFromLocation</a><wbr>(<a href="../../../metadata/location/JFieldLocation.html" title="class in honeyroasted.jype.metadata.location">JFieldLocation</a>&nbsp;location)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html" title="class or interface in java.lang" class="external-link">Class</a>&lt;?&gt;&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#getReflectionType(honeyroasted.jype.type.JClassReference)" class="member-name-link">getReflectionType</a><wbr>(<a href="../../../type/JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;reference)</code></div>
@@ -246,6 +256,19 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="fieldFromLocation(honeyroasted.jype.metadata.location.JFieldLocation)">
+<h3>fieldFromLocation</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a></span>&nbsp;<span class="element-name">fieldFromLocation</span><wbr><span class="parameters">(<a href="../../../metadata/location/JFieldLocation.html" title="class in honeyroasted.jype.metadata.location">JFieldLocation</a>&nbsp;location)</span>
+                        throws <span class="exceptions"><a href="../JResolutionFailedException.html" title="class in honeyroasted.jype.system.resolver">JResolutionFailedException</a></span></div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="../JResolutionFailedException.html" title="class in honeyroasted.jype.system.resolver">JResolutionFailedException</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="methodFromLocation(honeyroasted.jype.metadata.location.JMethodLocation)">
 <h3>methodFromLocation</h3>
 <div class="horizontal-scroll">
@@ -268,6 +291,16 @@ loadScripts(document, 'script');</script>
 <dt>Throws:</dt>
 <dd><code><a href="../JResolutionFailedException.html" title="class in honeyroasted.jype.system.resolver">JResolutionFailedException</a></code></dd>
 </dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="createFieldReference(honeyroasted.jype.system.JTypeSystem,java.lang.reflect.Field,honeyroasted.jype.metadata.location.JFieldLocation)">
+<h3>createFieldReference</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="../JResolutionResult.html" title="class in honeyroasted.jype.system.resolver">JResolutionResult</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a>, <a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;</span>&nbsp;<span class="element-name">createFieldReference</span><wbr><span class="parameters">(<a href="../../JTypeSystem.html" title="interface in honeyroasted.jype.system">JTypeSystem</a>&nbsp;system,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Field.html" title="class or interface in java.lang.reflect" class="external-link">Field</a>&nbsp;field,
+ <a href="../../../metadata/location/JFieldLocation.html" title="class in honeyroasted.jype.metadata.location">JFieldLocation</a>&nbsp;location)</span></div>
 </div>
 </section>
 </li>

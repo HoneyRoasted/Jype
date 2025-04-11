@@ -3,6 +3,7 @@ package honeyroasted.jype.system;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.metadata.JClassSourceName;
 import honeyroasted.jype.metadata.location.JClassLocation;
+import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.cache.JTypeStorage;
@@ -11,6 +12,7 @@ import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.JTypeResolvers;
 import honeyroasted.jype.system.resolver.reflection.JTypeToken;
 import honeyroasted.jype.system.solver.operations.JTypeOperations;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
@@ -91,6 +93,15 @@ public interface JTypeSystem extends SimpleName {
     
     default <T extends JMethodReference> T tryResolve(JMethodLocation methodLocation) {
         return this.<T>resolve(methodLocation).getOrThrow();
+    }
+
+    default <T extends JFieldReference> JResolutionResult<JFieldLocation, T> resolve(JFieldLocation fieldLocation) {
+        return (JResolutionResult) this.resolve(JFieldLocation.class, JFieldReference.class, fieldLocation);
+    }
+
+
+    default <T extends JFieldReference> T tryResolve(JFieldLocation fieldLocation) {
+        return this.<T>resolve(fieldLocation).getOrThrow();
     }
 
     

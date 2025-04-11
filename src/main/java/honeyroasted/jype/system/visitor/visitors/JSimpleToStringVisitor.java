@@ -2,6 +2,7 @@ package honeyroasted.jype.system.visitor.visitors;
 
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -107,5 +108,10 @@ public class JSimpleToStringVisitor implements JToStringVisitor {
     @Override
     public String noneToString(JNoneType type, Set<JType> context) {
         return "@" + type.name();
+    }
+
+    @Override
+    public String visitFieldType(JFieldReference type, Set<JType> context) {
+        return type.location().simpleName() + ": " + visit(type.type(), context);
     }
 }

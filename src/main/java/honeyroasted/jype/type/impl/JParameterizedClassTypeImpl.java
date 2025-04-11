@@ -8,6 +8,7 @@ import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
@@ -196,6 +197,16 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
     @Override
     public void setDeclaredMethods(List<JMethodReference> methods) {
         classReference.setDeclaredMethods(methods);
+    }
+
+    @Override
+    public List<JFieldReference> declaredFields() {
+        return classReference.declaredFields();
+    }
+
+    @Override
+    public void setDeclaredFields(List<JFieldReference> fields) {
+        classReference.setDeclaredFields(fields);
     }
 
     @Override

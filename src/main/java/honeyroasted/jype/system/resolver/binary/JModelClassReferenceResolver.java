@@ -3,25 +3,28 @@ package honeyroasted.jype.system.resolver.binary;
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JClassName;
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
+
 import java.lang.classfile.Attributes;
 import java.lang.classfile.ClassModel;
+import java.lang.classfile.FieldModel;
 import java.lang.classfile.MethodModel;
 import java.lang.classfile.attribute.EnclosingMethodAttribute;
 import java.lang.classfile.attribute.ExceptionsAttribute;
 import java.lang.classfile.attribute.InnerClassesAttribute;
 import java.lang.classfile.attribute.SignatureAttribute;
 import java.lang.classfile.constantpool.ClassEntry;
-
 import java.lang.constant.MethodTypeDesc;
 import java.util.Optional;
 
@@ -66,7 +69,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
         }
 
         Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.signature());
-        if (sigAttr.isPresent()) {
+        if (sigAttr.isPresent() && false) {
             //TODO Explore signature
         } else {
             if (value.superclass().isPresent()) {
@@ -80,9 +83,29 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             }
         }
 
+        for (FieldModel model : value.fields()) {
+            Optional<SignatureAttribute> fieldSigAttr = model.findAttribute(Attributes.signature());
+            if (fieldSigAttr.isPresent() && false) {
+
+            } else {
+                JFieldReference fRef = system.typeFactory().newFieldReference();
+                ref.declaredFields().add(fRef);
+
+                JFieldLocation floc = new JFieldLocation(model.fieldName().stringValue(), loc);
+
+                fRef.setLocation(floc);
+                fRef.setModifiers(model.flags().flagsMask());
+                fRef.setOuterClass(ref);
+
+                fRef.setType(delayed(system, JClassLocation.of(model.fieldTypeSymbol())));
+
+                fRef.setUnmodifiable(true);
+            }
+        }
+
         for (MethodModel model : value.methods()) {
             Optional<SignatureAttribute> methSigAttr = model.findAttribute(Attributes.signature());
-            if (methSigAttr.isPresent()) {
+            if (methSigAttr.isPresent() && false) {
                 //TODO Explore signature
             } else {
                 JMethodReference mRef = system.typeFactory().newMethodReference();
@@ -107,9 +130,12 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
                         mRef.exceptionTypes().add(delayed(system, exLoc));
                     }
                 }
+
+                mRef.setUnmodifiable(true);
             }
         }
 
+        ref.setUnmodifiable(true);
         return new JResolutionResult<>(ref, value);
     }
 

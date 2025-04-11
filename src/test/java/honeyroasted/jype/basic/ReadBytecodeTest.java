@@ -25,6 +25,7 @@ public class ReadBytecodeTest {
         JClassReference ref = system.tryResolve(JClassLocation.of(JClassBytecode.class));
 
         ref.declaredMethods().forEach(System.out::println);
+        ref.declaredFields().forEach(System.out::println);
     }
 
 }

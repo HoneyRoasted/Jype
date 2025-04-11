@@ -82,6 +82,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#newVarType()" tabindex="0">newVarType()</a></li>
 <li><a href="#newLowerWildType()" tabindex="0">newLowerWildType()</a></li>
 <li><a href="#newUpperWildType()" tabindex="0">newUpperWildType()</a></li>
+<li><a href="#newFieldReference()" tabindex="0">newFieldReference()</a></li>
 </ol>
 </li>
 </ol>
@@ -138,42 +139,45 @@ implements <a href="JTypeFactory.html" title="interface in honeyroasted.jype.sys
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newClassReference()" class="member-name-link">newClassReference</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newIntersectionType()" class="member-name-link">newIntersectionType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newFieldReference()" class="member-name-link">newFieldReference</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JWildType.Lower.html" title="interface in honeyroasted.jype.type">JWildType.Lower</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newLowerWildType()" class="member-name-link">newLowerWildType</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newIntersectionType()" class="member-name-link">newIntersectionType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMetaVarType(int,java.lang.String)" class="member-name-link">newMetaVarType</a><wbr>(int&nbsp;identity,
- <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JWildType.Lower.html" title="interface in honeyroasted.jype.type">JWildType.Lower</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newLowerWildType()" class="member-name-link">newLowerWildType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMetaVarType(java.lang.String)" class="member-name-link">newMetaVarType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMetaVarType(int,java.lang.String)" class="member-name-link">newMetaVarType</a><wbr>(int&nbsp;identity,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMethodReference()" class="member-name-link">newMethodReference</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMetaVarType(java.lang.String)" class="member-name-link">newMetaVarType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newNoneType(java.lang.String)" class="member-name-link">newNoneType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newMethodReference()" class="member-name-link">newMethodReference</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newParameterizedClassType()" class="member-name-link">newParameterizedClassType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newNoneType(java.lang.String)" class="member-name-link">newNoneType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JParameterizedMethodType.html" title="interface in honeyroasted.jype.type">JParameterizedMethodType</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newParameterizedMethodType()" class="member-name-link">newParameterizedMethodType</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newParameterizedClassType()" class="member-name-link">newParameterizedClassType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newPrimitiveType(honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.signature.JDescriptor.Primitive)" class="member-name-link">newPrimitiveType</a><wbr>(<a href="../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JParameterizedMethodType.html" title="interface in honeyroasted.jype.type">JParameterizedMethodType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newParameterizedMethodType()" class="member-name-link">newParameterizedMethodType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newPrimitiveType(honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.location.JClassNamespace,honeyroasted.jype.metadata.signature.JDescriptor.Primitive)" class="member-name-link">newPrimitiveType</a><wbr>(<a href="../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace,
  <a href="../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;box,
  <a href="../metadata/signature/JDescriptor.Primitive.html" title="enum class in honeyroasted.jype.metadata.signature">JDescriptor.Primitive</a>&nbsp;descriptor)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JWildType.Upper.html" title="interface in honeyroasted.jype.type">JWildType.Upper</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newUpperWildType()" class="member-name-link">newUpperWildType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newVarType()" class="member-name-link">newVarType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JWildType.Upper.html" title="interface in honeyroasted.jype.type">JWildType.Upper</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newUpperWildType()" class="member-name-link">newUpperWildType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#newVarType()" class="member-name-link">newVarType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -362,6 +366,18 @@ implements <a href="JTypeFactory.html" title="interface in honeyroasted.jype.sys
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="JTypeFactory.html#newUpperWildType()">newUpperWildType</a></code>&nbsp;in interface&nbsp;<code><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="newFieldReference()">
+<h3>newFieldReference</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a></span>&nbsp;<span class="element-name">newFieldReference</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="JTypeFactory.html#newFieldReference()">newFieldReference</a></code>&nbsp;in interface&nbsp;<code><a href="JTypeFactory.html" title="interface in honeyroasted.jype.system">JTypeFactory</a></code></dd>
 </dl>
 </div>
 </section>

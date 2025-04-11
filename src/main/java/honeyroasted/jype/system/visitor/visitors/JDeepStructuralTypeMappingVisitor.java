@@ -5,6 +5,7 @@ import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
@@ -129,14 +130,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
 
             if (this.visitStructural()) {
                 newRef.setTypeParameters((List) this.visit(ref.typeParameters(), context).stream().filter(t -> t instanceof JVarType).toList());
+                newRef.setDeclaredMethods((List) this.visit(ref.declaredMethods(), context).stream().filter(t -> t instanceof JMethodReference).toList());
+                newRef.setDeclaredFields((List) this.visit(ref.declaredFields(), context).stream().filter(t -> t instanceof JFieldReference).toList());
             } else {
                 newRef.setTypeParameters(ref.typeParameters());
-            }
-
-            if (this.visitStructural()) {
-                newRef.setDeclaredMethods((List) this.visit(ref.declaredMethods(), context).stream().filter(t -> t instanceof JMethodReference).toList());
-            } else {
                 newRef.setDeclaredMethods(ref.declaredMethods());
+                newRef.setDeclaredFields(ref.declaredFields());
             }
 
             newRef.setUnmodifiable(true);

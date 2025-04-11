@@ -25,7 +25,8 @@ public final class JArrayTypeImpl extends JAbstractPossiblyUnmodifiableType impl
         cache.put(this, copy);
 
         copy.metadata().inheritFrom(this.metadata().copy(cache));
-        copy.setComponent(this.component.copy());
+        copy.setComponent(this.component.copy(cache));
+        copy.setUnmodifiable(true);
         return (T) copy;
     }
 

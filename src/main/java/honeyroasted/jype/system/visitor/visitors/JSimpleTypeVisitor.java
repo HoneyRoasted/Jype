@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -55,6 +56,11 @@ public interface JSimpleTypeVisitor<R, P> extends JTypeVisitor<R, P> {
 
     @Override
     default R visitNoneType(JNoneType type, P context) {
+        return visitType(type, context);
+    }
+
+    @Override
+    default R visitFieldType(JFieldReference type, P context) {
         return visitType(type, context);
     }
 }

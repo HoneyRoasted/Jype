@@ -6,6 +6,7 @@ import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -32,6 +33,11 @@ public class JToSignatureVisitor implements JTypeVisitor<JSignature, JToSignatur
     @Override
     public JSignature visitNoneType(JNoneType type, Mode context) {
         return new JSignature.Type(JDescriptor.Primitive.VOID);
+    }
+
+    @Override
+    public JSignature visitFieldType(JFieldReference type, Mode context) {
+        return visit(type.type(), Mode.USAGE);
     }
 
     @Override

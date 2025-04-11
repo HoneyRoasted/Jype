@@ -79,6 +79,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#primToString(honeyroasted.jype.type.JPrimitiveType,java.util.Set)" tabindex="0">primToString(JPrimitiveType, Set)</a></li>
 <li><a href="#metaVarToString(honeyroasted.jype.type.JMetaVarType,java.util.Set)" tabindex="0">metaVarToString(JMetaVarType, Set)</a></li>
 <li><a href="#noneToString(honeyroasted.jype.type.JNoneType,java.util.Set)" tabindex="0">noneToString(JNoneType, Set)</a></li>
+<li><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,java.util.Set)" tabindex="0">visitFieldType(JFieldReference, Set)</a></li>
 </ol>
 </li>
 </ol>
@@ -171,9 +172,13 @@ implements <a href="JToStringVisitor.html" title="interface in honeyroasted.jype
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wildcardToString(honeyroasted.jype.type.JWildType,java.util.Set)" class="member-name-link">wildcardToString</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,java.util.Set)" class="member-name-link">visitFieldType</a><wbr>(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
  <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#wildcardToString(honeyroasted.jype.type.JWildType,java.util.Set)" class="member-name-link">wildcardToString</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;context)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -326,6 +331,19 @@ implements <a href="JToStringVisitor.html" title="interface in honeyroasted.jype
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="JToStringVisitor.html#noneToString(honeyroasted.jype.type.JNoneType,java.util.Set)">noneToString</a></code>&nbsp;in interface&nbsp;<code><a href="JToStringVisitor.html" title="interface in honeyroasted.jype.system.visitor.visitors">JToStringVisitor</a></code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="visitFieldType(honeyroasted.jype.type.JFieldReference,java.util.Set)">
+<h3>visitFieldType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">visitFieldType</span><wbr><span class="parameters">(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
+ <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;context)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../JTypeVisitor.html#visitFieldType(honeyroasted.jype.type.JFieldReference,P)">visitFieldType</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.system.visitor">JTypeVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>, <a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="../../../type/JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&gt;</code></dd>
 </dl>
 </div>
 </section>

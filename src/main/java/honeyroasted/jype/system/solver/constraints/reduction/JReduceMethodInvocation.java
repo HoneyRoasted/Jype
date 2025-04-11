@@ -308,7 +308,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
     }
 
     private static boolean isBridge(int mods) {
-        return (mods & AccessFlag.BRIDGE.mask()) == 0;
+        return (mods & AccessFlag.BRIDGE.mask()) != 0;
     }
 
     private static boolean isPackageVisible(int mods) {

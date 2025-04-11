@@ -2,6 +2,7 @@ package honeyroasted.jype.system.resolver.reflection;
 
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JClassNamespace;
+import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.metadata.location.JTypeParameterLocation;
 import honeyroasted.jype.system.JTypeSystem;
@@ -11,15 +12,18 @@ import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.impl.delegate.JFieldReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -35,6 +39,7 @@ public interface JReflectionTypeResolution {
             new JReflectionJavaMethodResolver(),
             new JReflectionClassReferenceResolver(),
             new JReflectionMethodReferenceResolver(),
+            new JReflectionFieldReferenceResolver(),
             new JReflectionTypeParameterResolver()
     );
 
@@ -111,12 +116,36 @@ public interface JReflectionTypeResolution {
         }
     }
 
-    static Executable methodFromLocation(JMethodLocation location) throws JResolutionFailedException {
+    static Field fieldFromLocation(JFieldLocation location) throws JResolutionFailedException {
         Class<?> targetCls;
         try {
             targetCls = classFromLocation(location.containing());
         } catch (JResolutionFailedException | JReflectionLookupException ex) {
             throw new JReflectionLookupException("Could not resolve method (containing class not found): " + location, ex);
+        }
+        Field targetField = null;
+
+        Field[] fields = targetCls.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getName().equals(location.name())) {
+                targetField = field;
+                break;
+            }
+        }
+
+        if (targetField == null) {
+            throw new JReflectionLookupException("Could not resolve field (matching field not found): " + location);
+        }
+
+        return targetField;
+    }
+
+    static Executable methodFromLocation(JMethodLocation location) throws JResolutionFailedException {
+        Class<?> targetCls;
+        try {
+            targetCls = classFromLocation(location.containing());
+        } catch (JResolutionFailedException | JReflectionLookupException ex) {
+            throw new JReflectionLookupException("Could not resolve field (containing class not found): " + location, ex);
         }
         Executable targetMethod = null;
 
@@ -179,6 +208,40 @@ public interface JReflectionTypeResolution {
         } else {
             throw new JReflectionLookupException("Could not resolve type parameter (no matching name found): " + location);
         }
+    }
+
+    static JResolutionResult<Field, JFieldReference> createFieldReference(JTypeSystem system, Field field, JFieldLocation location) {
+        List<JResolutionResult<?, ?>> children = new ArrayList<>();
+
+        JFieldReference fRef = system.typeFactory().newFieldReference();
+        fRef.metadata().attach(new JReflectionType.Field(field));
+        fRef.setLocation(location);
+        fRef.setModifiers(field.getModifiers());
+
+        system.storage().cacheFor(JFieldLocation.class).put(location, fRef);
+
+        JResolutionResult<Type, JType> outerClass = system.resolve(Type.class, JType.class, field.getDeclaringClass());
+        children.add(outerClass);
+        if (outerClass.success() && outerClass.value() instanceof JClassReference cr) {
+            fRef.setOuterClass(cr);
+        } else {
+            system.storage().cacheFor(JFieldLocation.class).remove(location);
+            return new JResolutionResult<>("Failed to resolve declaring class", field, children);
+        }
+
+        JResolutionResult<Type, JType> fieldType = system.resolve(Type.class, JType.class, field.getGenericType());
+        children.add(fieldType);
+        if (fieldType.success()) {
+            fRef.setType(fieldType.value());
+        } else {
+            system.storage().cacheFor(JFieldLocation.class).remove(location);
+            return new JResolutionResult<>("Failed to resolve field type", field, children);
+        }
+
+        system.storage().cacheFor(JFieldLocation.class).put(fRef.location(), fRef);
+        system.storage().cacheFor(Field.class).put(field, fRef);
+
+        return new JResolutionResult<>(fRef, field, List.of(outerClass));
     }
 
     static JResolutionResult<Executable, JMethodReference> createMethodReference(JTypeSystem system, Executable executable, JMethodLocation location) {
@@ -378,6 +441,11 @@ public interface JReflectionTypeResolution {
         for (Method method : cls.getDeclaredMethods()) {
             JMethodLocation loc = JMethodLocation.of(method);
             reference.declaredMethods().add(new JMethodReferenceDelegate(system, s -> s.tryResolve(loc)));
+        }
+
+        for (Field field : cls.getDeclaredFields()) {
+            JFieldLocation loc = JFieldLocation.of(field);
+            reference.declaredFields().add(new JFieldReferenceDelegate(system, s -> s.tryResolve(loc)));
         }
 
         reference.setUnmodifiable(true);

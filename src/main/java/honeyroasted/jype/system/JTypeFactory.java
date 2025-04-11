@@ -4,6 +4,7 @@ import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
@@ -40,4 +41,6 @@ public interface JTypeFactory {
     JWildType.Lower newLowerWildType();
 
     JWildType.Upper newUpperWildType();
+
+    JFieldReference newFieldReference();
 }

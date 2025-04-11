@@ -73,6 +73,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#visit(honeyroasted.jype.type.JType)" tabindex="0">visit(JType)</a></li>
 <li><a href="#visitPrimitiveType(honeyroasted.jype.type.JPrimitiveType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitPrimitiveType(JPrimitiveType, JToSignatureVisitor.Mode)</a></li>
 <li><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitNoneType(JNoneType, JToSignatureVisitor.Mode)</a></li>
+<li><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitFieldType(JFieldReference, JToSignatureVisitor.Mode)</a></li>
 <li><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitMetaVarType(JMetaVarType, JToSignatureVisitor.Mode)</a></li>
 <li><a href="#visitArrayType(honeyroasted.jype.type.JArrayType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitArrayType(JArrayType, JToSignatureVisitor.Mode)</a></li>
 <li><a href="#visitIntersectionType(honeyroasted.jype.type.JIntersectionType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" tabindex="0">visitIntersectionType(JIntersectionType, JToSignatureVisitor.Mode)</a></li>
@@ -160,33 +161,37 @@ implements <a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitIntersectionType(honeyroasted.jype.type.JIntersectionType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitIntersectionType</a><wbr>(<a href="../../../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitFieldType(honeyroasted.jype.type.JFieldReference,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitFieldType</a><wbr>(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitMetaVarType</a><wbr>(<a href="../../../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitIntersectionType(honeyroasted.jype.type.JIntersectionType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitIntersectionType</a><wbr>(<a href="../../../type/JIntersectionType.html" title="interface in honeyroasted.jype.type">JIntersectionType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitMethodType(honeyroasted.jype.type.JMethodType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitMethodType</a><wbr>(<a href="../../../type/JMethodType.html" title="interface in honeyroasted.jype.type">JMethodType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitMetaVarType(honeyroasted.jype.type.JMetaVarType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitMetaVarType</a><wbr>(<a href="../../../type/JMetaVarType.html" title="interface in honeyroasted.jype.type">JMetaVarType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitNoneType</a><wbr>(<a href="../../../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitMethodType(honeyroasted.jype.type.JMethodType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitMethodType</a><wbr>(<a href="../../../type/JMethodType.html" title="interface in honeyroasted.jype.type">JMethodType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitPrimitiveType(honeyroasted.jype.type.JPrimitiveType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitPrimitiveType</a><wbr>(<a href="../../../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitNoneType(honeyroasted.jype.type.JNoneType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitNoneType</a><wbr>(<a href="../../../type/JNoneType.html" title="interface in honeyroasted.jype.type">JNoneType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitVarType(honeyroasted.jype.type.JVarType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitVarType</a><wbr>(<a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&nbsp;type,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitPrimitiveType(honeyroasted.jype.type.JPrimitiveType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitPrimitiveType</a><wbr>(<a href="../../../type/JPrimitiveType.html" title="interface in honeyroasted.jype.type">JPrimitiveType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitWildcardType(honeyroasted.jype.type.JWildType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitWildcardType</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitVarType(honeyroasted.jype.type.JVarType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitVarType</a><wbr>(<a href="../../../type/JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&nbsp;type,
  <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visitWildcardType(honeyroasted.jype.type.JWildType,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)" class="member-name-link">visitWildcardType</a><wbr>(<a href="../../../type/JWildType.html" title="interface in honeyroasted.jype.type">JWildType</a>&nbsp;type,
+ <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -257,6 +262,19 @@ implements <a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../JTypeVisitor.html#visitNoneType(honeyroasted.jype.type.JNoneType,P)">visitNoneType</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.system.visitor">JTypeVisitor</a>&lt;<a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a>, <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&gt;</code></dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="visitFieldType(honeyroasted.jype.type.JFieldReference,honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor.Mode)">
+<h3>visitFieldType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a></span>&nbsp;<span class="element-name">visitFieldType</span><wbr><span class="parameters">(<a href="../../../type/JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&nbsp;type,
+ <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&nbsp;context)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../JTypeVisitor.html#visitFieldType(honeyroasted.jype.type.JFieldReference,P)">visitFieldType</a></code>&nbsp;in interface&nbsp;<code><a href="../JTypeVisitor.html" title="interface in honeyroasted.jype.system.visitor">JTypeVisitor</a>&lt;<a href="../../../metadata/signature/JSignature.html" title="interface in honeyroasted.jype.metadata.signature">JSignature</a>, <a href="JToSignatureVisitor.Mode.html" title="enum class in honeyroasted.jype.system.visitor.visitors">JToSignatureVisitor.Mode</a>&gt;</code></dd>
 </dl>
 </div>
 </section>

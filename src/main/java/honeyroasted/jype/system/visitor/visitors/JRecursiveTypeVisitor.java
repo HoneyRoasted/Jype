@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodType;
@@ -188,5 +189,24 @@ public class JRecursiveTypeVisitor<R, C> implements JTypeVisitor<List<R>, Map<JT
         } else {
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public List<R> visitFieldType(JFieldReference type, Map<JType, List<R>> context) {
+        if (context.containsKey(type)) return context.get(type);
+        List<R> result = new ArrayList<>();
+        context.put(type, result);
+
+        R r = this.visitor.visitFieldType(type, this.context);
+        if (r != null) {
+            result.add(r);
+        }
+        result.addAll(this.visit(type.type(), context));
+
+        if (this.visitStructural) {
+            result.addAll(this.visit(type.outerClass(), context));
+        }
+
+        return result;
     }
 }

@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
@@ -147,7 +148,7 @@ public class JVerboseToStringVisitor implements JToStringVisitor {
     @Override
     public String methodToString(JMethodType type, Set<JType> context) {
         StringBuilder sb = new StringBuilder();
-        sb.append(type.location().simpleName());
+        sb.append(type.location().containing() + "::" + type.location().name());
         if (type instanceof JMethodReference mr && this.includeTypeParameters && mr.hasTypeParameters()) {
             sb.append("<");
             for (int i = 0; i < mr.typeParameters().size(); i++) {
@@ -207,4 +208,8 @@ public class JVerboseToStringVisitor implements JToStringVisitor {
         return "@" + type.name();
     }
 
+    @Override
+    public String visitFieldType(JFieldReference type, Set<JType> context) {
+        return type.location() + ": " + visit(type.type(), context);
+    }
 }

@@ -8,4 +8,9 @@ public interface JReflectionType<T> {
 
     record Executable(java.lang.reflect.Executable type) implements JReflectionType<java.lang.reflect.Executable> {
     }
+
+    record Field(java.lang.reflect.Field type) implements JReflectionType<java.lang.reflect.Field> {
+
+    }
+
 }

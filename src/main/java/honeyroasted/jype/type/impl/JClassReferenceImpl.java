@@ -10,6 +10,7 @@ import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
@@ -34,6 +35,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     private List<JVarType> typeParameters = new ArrayList<>();
 
     private List<JMethodReference> declaredMethods = new ArrayList<>();
+    private List<JFieldReference> declaredFields = new ArrayList<>();
 
     public JClassReferenceImpl(JTypeSystem typeSystem) {
         super(typeSystem);
@@ -56,6 +58,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         copy.setInterfaces(this.interfaces.stream().map(c -> (JClassType) c.copy(cache)).toList());
         copy.setTypeParameters(this.typeParameters.stream().map(v -> (JVarType) v.copy(cache)).toList());
         copy.setDeclaredMethods(this.declaredMethods.stream().map(m -> (JMethodReference) m.copy(cache)).toList());
+        copy.setDeclaredFields(this.declaredFields.stream().map(m -> (JFieldReference) m.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -112,6 +115,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         this.interfaces = List.copyOf(this.interfaces);
         this.typeParameters = List.copyOf(this.typeParameters);
         this.declaredMethods = List.copyOf(this.declaredMethods);
+        this.declaredFields = List.copyOf(this.declaredFields);
     }
 
     @Override
@@ -119,6 +123,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         this.interfaces = new ArrayList<>(this.interfaces);
         this.typeParameters = new ArrayList<>(this.typeParameters);
         this.declaredMethods = new ArrayList<>(this.declaredMethods);
+        this.declaredFields = new ArrayList<>(this.declaredFields);
     }
 
     public JClassNamespace namespace() {
@@ -170,8 +175,19 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
 
     @Override
     public void setDeclaredMethods(List<JMethodReference> methods) {
-        checkUnmodifiable();
+        this.checkUnmodifiable();
         this.declaredMethods = methods;
+    }
+
+    @Override
+    public List<JFieldReference> declaredFields() {
+        return this.declaredFields;
+    }
+
+    @Override
+    public void setDeclaredFields(List<JFieldReference> fields) {
+        this.checkUnmodifiable();
+        this.declaredFields = fields;
     }
 
     @Override

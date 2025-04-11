@@ -4,6 +4,7 @@ import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
@@ -15,6 +16,7 @@ import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
 import honeyroasted.jype.type.impl.JArrayTypeImpl;
 import honeyroasted.jype.type.impl.JClassReferenceImpl;
+import honeyroasted.jype.type.impl.JFieldReferenceImpl;
 import honeyroasted.jype.type.impl.JIntersectionTypeImpl;
 import honeyroasted.jype.type.impl.JMetaVarTypeImpl;
 import honeyroasted.jype.type.impl.JMethodReferenceImpl;
@@ -96,5 +98,10 @@ public class JSimpleTypeFactory implements JTypeFactory {
     @Override
     public JWildType.Upper newUpperWildType() {
         return new JWildTypeUpperImpl(this.system);
+    }
+
+    @Override
+    public JFieldReference newFieldReference() {
+        return new JFieldReferenceImpl(this.system);
     }
 }
