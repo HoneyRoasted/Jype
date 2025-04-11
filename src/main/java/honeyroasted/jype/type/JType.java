@@ -4,12 +4,15 @@ import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.copy.Copyable;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.metadata.signature.JDescriptor;
+import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JInMemoryTypeCache;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +24,18 @@ import java.util.Set;
 public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JType>> {
 
     JTypeSystem typeSystem();
+
+    default JSignature signature() {
+        return JTypeVisitors.TO_SIGNATURE.visit(this, JToSignatureVisitor.Mode.USAGE);
+    }
+
+    default JSignature declarationSignature() {
+        return JTypeVisitors.TO_SIGNATURE.visit(this, JToSignatureVisitor.Mode.DECLARATION);
+    }
+
+    default JDescriptor descriptor() {
+        return JTypeVisitors.TO_DESCRIPTOR.visit(this);
+    }
 
     <R, P> R accept(JTypeVisitor<R, P> visitor, P context);
 

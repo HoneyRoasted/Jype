@@ -6,7 +6,7 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.reflection.JTypeToken;
 import honeyroasted.jype.system.visitor.JTypeVisitors;
 
-public class SignatureTest {
+public class SignatureTest<T> {
 
     private static class Foo<T> {
 
@@ -20,8 +20,6 @@ public class SignatureTest {
 
     }
 
-    private Foo<String>.Bar.Baz<Integer> baz;
-
     public static void main(String[] args) {
         JSignatureParser parser = new JSignatureParser("<T::Lhoneyroasted/jype/system/solver/operations/FindLeastUpperBoundTests$Foo<TT;>;>Ljava/lang/Object;");
         JSignature sig = parser.parseClassDeclaration();
@@ -30,6 +28,16 @@ public class SignatureTest {
         JTypeSystem system = JTypeSystem.RUNTIME_REFLECTION;
         JSignature signature = JTypeVisitors.TO_SIGNATURE.visit(system.tryResolve(new JTypeToken<Foo<String>.Bar.Baz<Integer>>() {}));
         System.out.println(signature);
+
+        try {
+            System.out.println(system.tryResolve(SignatureTest.class.getMethod("getIt", Object.class)).signature());
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public <Z> Z getIt(Z val) {
+        return val;
     }
 
 }
