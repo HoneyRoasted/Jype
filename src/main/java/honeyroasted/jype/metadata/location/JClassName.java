@@ -35,6 +35,25 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
         return new JClassName(Type.CLASS, SubType.NONE, containing, className);
     }
 
+    public static JClassName of(String[] pack, String[] className) {
+        JClassName result = null;
+        if (pack.length != 0) {
+            result = new JClassName(Type.PACKAGE, SubType.NONE, pack[0]);
+            for (int i = 1; i < pack.length; i++) {
+                result = new JClassName(Type.PACKAGE, SubType.NONE, result, pack[i]);
+            }
+        }
+
+        if (className.length != 0) {
+            result = new JClassName(Type.CLASS, SubType.NONE, pack[0]);
+            for (int i = 1; i < className.length; i++) {
+                result = new JClassName(Type.CLASS, SubType.NONE, result, className[i]);
+            }
+        }
+
+        return result;
+    }
+
     public static JClassName of(Class<?> clazz) {
         if (clazz == null) {
             return null;
