@@ -5,6 +5,7 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JInstantiableType;
 import honeyroasted.jype.type.JIntersectionType;
+import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 
 import java.util.LinkedHashSet;
@@ -177,13 +178,15 @@ public interface JExpressionInformation {
     interface Invocation extends JExpressionInformation {
         JClassReference declaring();
 
+        JMethodReference declaringMethod();
+
         List<JExpressionInformation> parameters();
 
         List<JArgumentType> explicitTypeArguments();
     }
 
     interface Instantiation extends Invocation {
-        record Simple(JClassReference declaring, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements Instantiation {
+        record Simple(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements Instantiation {
             @Override
             public String simpleName() {
                 return "new " + this.type.simpleName() +
@@ -195,7 +198,7 @@ public interface JExpressionInformation {
             public String toString() {
                 return "instantiation(" + this.type +
                         (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::toString).collect(Collectors.joining(", ")) + ">") +
-                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + this.declaring + ")";
+                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + (this.declaringMethod == null ? this.declaring : this.declaringMethod) + ")";
             }
         }
 
@@ -203,22 +206,46 @@ public interface JExpressionInformation {
     }
 
     interface MethodInvocation<T> extends Invocation {
-        record Simple<T>(JClassReference declaring, T source, String name, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements MethodInvocation<T> {
+        record Simple<T>(JClassReference declaring, JMethodReference declaringMethod, T source, String name, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) implements MethodInvocation<T> {
             @Override
             public String simpleName() {
                 return (this.source instanceof JExpressionInformation expr ? expr.simpleName() : this.source instanceof JType type ? type.simpleName() : this.source) +
-                        "." + name +
+                        "." + this.name +
                         (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::simpleName).collect(Collectors.joining(", ")) + ">") +
                         "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
             }
 
             @Override
             public String toString() {
-                return "invocation(" + this.source + "." + name +
+                return "invocation(" + this.source + "." + this.name +
                         (this.explicitTypeArguments.isEmpty() ? "" : "<" + this.explicitTypeArguments.stream().map(JType::toString).collect(Collectors.joining(", ")) + ">") +
-                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + this.declaring + ")";
+                        "(" + this.parameters.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ") IN " + (this.declaringMethod == null ? this.declaring : this.declaringMethod) + ")";
             }
         }
+
+        T source();
+
+        String name();
+    }
+
+    interface GetField<T> extends JExpressionInformation {
+        record Simple<T>(JClassReference declaring, JMethodReference declaringMethod, T source, String name) implements GetField<T> {
+            @Override
+            public String simpleName() {
+                return (this.source instanceof JExpressionInformation expr ? expr.simpleName() : this.source instanceof JType type ? type.simpleName() : this.source) +
+                        "." + this.name;
+            }
+
+            @Override
+            public String toString() {
+                return "getfield(" + this.source + "." + this.name + ") IN " +
+                        (this.declaringMethod == null ? this.declaring : this.declaringMethod);
+            }
+        }
+
+        JClassReference declaring();
+
+        JMethodReference declaringMethod();
 
         T source();
 

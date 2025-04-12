@@ -5,6 +5,7 @@ import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 
 import java.util.Collections;
@@ -18,12 +19,13 @@ public class MethodChainTest {
         JTypeSystem system = JTypeSystem.RUNTIME_REFLECTION;
 
         JClassReference declaring = system.tryResolve(MethodChainTest.class);
+        JMethodReference declaringMethod = declaring.declaredMethods().getLast();
 
         JExpressionInformation constStr = new JExpressionInformation.Constant.Simple("Hello World");
-        JExpressionInformation call1 = new JExpressionInformation.Invocation.MethodInvocation.Simple<>(declaring, declaring, "getIt",
+        JExpressionInformation call1 = new JExpressionInformation.Invocation.MethodInvocation.Simple<>(declaring, declaringMethod, declaring, "getIt",
                 List.of(constStr), Collections.emptyList());
 
-        JExpressionInformation call2 = new JExpressionInformation.MethodInvocation.Simple<>(declaring, call1, "getBytes",
+        JExpressionInformation call2 = new JExpressionInformation.MethodInvocation.Simple<>(declaring, declaringMethod, call1, "getBytes",
                 Collections.emptyList(), Collections.emptyList());
 
         JType targetType = system.tryResolve(byte[].class);

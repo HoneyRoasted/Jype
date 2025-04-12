@@ -7,6 +7,7 @@ import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JMethodReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +20,19 @@ public class InferenceTest {
         JTypeSystem system = JTypeSystem.RUNTIME_REFLECTION;
 
         JClassReference declaring = system.tryResolve(InferenceTest.class);
+        JMethodReference declaringMethod = declaring.declaredMethods().getLast();
+
         List<JArgumentType> explicitTypeArguments = List.of();
 
         JClassReference integer = system.constants().intBox();
         List<JExpressionInformation> intParams = List.of(new JExpressionInformation.Constant.Simple(1));
 
-        JExpressionInformation.Instantiation subInst = new JExpressionInformation.Instantiation.Simple(declaring, integer, intParams, explicitTypeArguments);
+        JExpressionInformation.Instantiation subInst = new JExpressionInformation.Instantiation.Simple(declaring, declaringMethod, integer, intParams, explicitTypeArguments);
 
         JClassReference type = system.tryResolve(ArrayList.class);
         List<JExpressionInformation> parameters = List.of(subInst);
 
-        JExpressionInformation.Instantiation instantiation = new JExpressionInformation.Instantiation.Simple(declaring, type, parameters, explicitTypeArguments);
+        JExpressionInformation.Instantiation instantiation = new JExpressionInformation.Instantiation.Simple(declaring, declaringMethod, type, parameters, explicitTypeArguments);
         JClassType targetType = system.<JClassReference>tryResolve(List.class).parameterized(system.<JArgumentType>tryResolve(String.class));
 
         JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(instantiation, ASSIGNMENT, targetType);

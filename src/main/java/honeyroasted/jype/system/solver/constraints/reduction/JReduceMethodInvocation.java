@@ -44,6 +44,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
+         //TODO check access from declaring method -> method
         JExpressionInformation.MethodInvocation<?> invocation = (JExpressionInformation.MethodInvocation<?>) constraint.left();
         JType target = constraint.right();
         JTypeSystem system = target.typeSystem();
