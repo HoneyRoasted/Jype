@@ -17,11 +17,6 @@ public interface JTypeMappingVisitor<P> extends JSimpleTypeVisitor<JType, P>, Fu
         JType visitType(JType type, P context);
     }
 
-    @Override
-    default JType visit(JType type, P context) {
-        return type;
-    }
-
     default JTypeMappingVisitor<Void> withContext(Supplier<P> newContext) {
         return (JTypeMappingVisitor.Default<Void>) (type, context) -> this.visit(type, newContext.get());
     }

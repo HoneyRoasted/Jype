@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.visitor.visitors;
 
+import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JArrayType;
@@ -18,7 +19,8 @@ import java.util.List;
 public class JToDescriptorVisitor implements JTypeVisitor<JDescriptor, Void> {
     @Override
     public JDescriptor visitClassType(JClassType type, Void context) {
-        return null;
+        JClassLocation location = type.namespace().location();
+        return new JDescriptor.Class(location.getPackage().toArray(), location.value());
     }
 
     @Override
