@@ -4,6 +4,9 @@ tests:
   simple_inference_test:
     expect:
       - status: true
+      - instantiation:
+          var: E
+          type: Ljava/lang/String;
     constraints:
       - expression_compatible:
           context: ASSIGNMENT
@@ -20,6 +23,9 @@ tests:
   method_chain_test:
     expect:
       - status: true
+      - instantiation:
+          var: T
+          type: Ljava/lang/String;
     constraints:
       - expression_compatible:
           context: ASSIGNMENT
@@ -34,3 +40,4 @@ tests:
                   name: generic_return
                   parameters:
                     - constant: Hello World
+

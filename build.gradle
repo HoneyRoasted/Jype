@@ -17,7 +17,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
 
-    testImplementation("com.github.HoneyRoasted:JypeStub:0.0.0") {
+    testImplementation("com.github.HoneyRoasted:JypeStub:0.0.2") {
         exclude module: "Jype"
         exclude module: "Collect"
         exclude module: "Almonds"
