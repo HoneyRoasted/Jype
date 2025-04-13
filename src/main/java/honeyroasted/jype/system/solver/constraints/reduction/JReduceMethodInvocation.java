@@ -44,7 +44,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-         //TODO check access from declaring method -> method
+        //TODO check access from declaring method -> method
         JExpressionInformation.MethodInvocation<?> invocation = (JExpressionInformation.MethodInvocation<?>) constraint.left();
         JType targetType = constraint.right();
         JTypeSystem system = targetType.typeSystem();
@@ -76,18 +76,19 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                         JType inst = JResolveBounds.findInstantiation(callTarget, childBranch);
                         childBranch.metadata().first(JTypeContext.TypeMetavarMap.class).ifPresent(mvp -> mvp.instantiations().remove(callTarget)); //Drop variable since it is no longer needed
                         findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
-                            if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
-                                if (ref.parameters().size() == parameters.size()) {
-                                    newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters)));
-                                    newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters)));
-                                }
+                            if (ref.location().name().equals(invocation.name()))
+                                if (ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
+                                    if (ref.parameters().size() == parameters.size()) {
+                                        newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters)));
+                                        newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters)));
+                                    }
 
-                                if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
-                                        ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
-                                    newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg)));
-                                    newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg)));
+                                    if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
+                                            ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
+                                        newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters, vararg)));
+                                        newChildren.add(combine(childBranch, createVarargInvoke(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, constraint, invocation, ref, parameters, vararg)));
+                                    }
                                 }
-                            }
                         }));
                     } else {
                         newChildren.add(childBranch.snapshot());

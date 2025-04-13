@@ -22,15 +22,17 @@ public class MethodChainTest {
         JMethodReference declaringMethod = declaring.declaredMethods().getLast();
 
         JExpressionInformation constStr = new JExpressionInformation.Constant.Simple("Hello World");
-        JExpressionInformation call1 = new JExpressionInformation.Invocation.MethodInvocation.Simple<>(declaring, declaringMethod, declaring, "getIt",
+        JExpressionInformation call1 = new JExpressionInformation.Invocation.MethodInvocation.Simple<>(system.constants().object(), null, declaring, "getIt",
                 List.of(constStr), Collections.emptyList());
 
-        JExpressionInformation call2 = new JExpressionInformation.MethodInvocation.Simple<>(declaring, declaringMethod, call1, "getBytes",
+        JExpressionInformation call2 = new JExpressionInformation.MethodInvocation.Simple<>(system.constants().object(), null, call1, "getBytes",
                 Collections.emptyList(), Collections.emptyList());
 
         JType targetType = system.tryResolve(byte[].class);
 
         JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(call2, ASSIGNMENT, targetType);
+
+        System.out.println(constraint);
 
         ConstraintTree solved = system.operations().inferenceSolver()
                 .bind(constraint)
@@ -39,7 +41,7 @@ public class MethodChainTest {
         System.out.println(solved.toString(true));
     }
 
-    private static <T> T getIt(T value) {
+    public static <T> T getIt(T value) {
         return value;
     }
 

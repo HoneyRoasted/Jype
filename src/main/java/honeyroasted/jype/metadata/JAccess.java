@@ -42,7 +42,7 @@ public enum JAccess {
     }
 
     public boolean canAccess(JAccess other) {
-        return this == other || Arrays.stream(children).anyMatch(ac -> ac == other);
+        return this == other || Arrays.stream(other.children).anyMatch(ac -> ac == this);
     }
 
     public boolean canAccess(int modifiers) {
