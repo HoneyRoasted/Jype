@@ -147,7 +147,7 @@ public class JSignatureParser extends JStringParser {
     }
 
     private JSignature.Type readDescriptor() {
-        if (!this.hasNext()) fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got EOF");
+        if (!this.hasNext()) fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z, V), got EOF");
 
         int typeInd = this.next();
 
@@ -169,8 +169,8 @@ public class JSignatureParser extends JStringParser {
                 yield new JSignature.Type(new JDescriptor.Class(packageName.isEmpty() ?
                         JDescriptor.Class.DEFAULT_PACKAGE : packageName.toArray(String[]::new), className));
             }
-            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> new JSignature.Type(JDescriptor.Primitive.of(Character.toString(typeInd)));
-            default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got " + Character.toString(typeInd));
+            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z', 'V' -> new JSignature.Type(JDescriptor.Primitive.of(Character.toString(typeInd)));
+            default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z, V), got " + Character.toString(typeInd));
         };
     }
 

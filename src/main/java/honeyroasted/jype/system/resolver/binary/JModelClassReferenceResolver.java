@@ -12,6 +12,7 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.resolver.JResolutionFailedException;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
+import honeyroasted.jype.system.resolver.general.JSignatureTypeResolution;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JFieldReference;
@@ -78,7 +79,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             JSignatureParser parser = new JSignatureParser(sigAttr.get().signature().stringValue());
             try {
                 JSignature.ClassDeclaration decl = parser.parseClassDeclaration();
-                JBinaryTypeResolution.applyClassSignature(system, ref, decl);
+                JSignatureTypeResolution.applyClassSignature(system, ref, decl);
                 fallback = false;
             } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
                 fallback = true;
@@ -110,7 +111,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             boolean fieldFallback = true;
             if (fieldSigAttr.isPresent()) {
                 try {
-                    fRef.setType(JBinaryTypeResolution.resolveTypeSig(system, ref,
+                    fRef.setType(JSignatureTypeResolution.resolveTypeSig(system, ref,
                             new JSignatureParser(fieldSigAttr.get().signature().stringValue()).parseInformalType()));
                     fieldFallback = false;
                 } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
@@ -140,7 +141,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             boolean methodFallback = true;
             if (methSigAttr.isPresent()) {
                 try {
-                    JBinaryTypeResolution.applyMethodSignature(system, mRef,
+                    JSignatureTypeResolution.applyMethodSignature(system, mRef,
                             new JSignatureParser(methSigAttr.get().signature().stringValue()).parseMethodDeclaration());
                     methodFallback = false;
                 } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {

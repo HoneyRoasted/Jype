@@ -8,7 +8,8 @@ public interface JGeneralTypeResolution {
             new JClassSourceNameResolver(),
             new JLocationPrimitiveResolver(),
             new JTypeParameterLocationResolver(),
-            new JTypeMethodLocationResolver()
+            new JTypeMethodLocationResolver(),
+            new JDeclaredSignatureTypeResolver()
     );
 
 }

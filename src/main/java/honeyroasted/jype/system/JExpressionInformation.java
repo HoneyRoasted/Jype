@@ -270,7 +270,7 @@ public interface JExpressionInformation extends SimpleName {
     }
 
     interface Lambda extends JExpressionInformation {
-        record Simple(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) implements Lambda {
+        record Simple(JExpressionInformation body, List<JArgumentType> explicitParameterTypes, int parameterCount, boolean implicitReturn) implements Lambda {
             @Override
             public String simpleName() {
                 return "(" + (this.explicitParameterTypes != null && this.explicitParameterTypes.size() == parameterCount ?
@@ -290,7 +290,7 @@ public interface JExpressionInformation extends SimpleName {
 
         JExpressionInformation body();
 
-        List<JType> explicitParameterTypes();
+        List<JArgumentType> explicitParameterTypes();
 
         int parameterCount();
 

@@ -38,7 +38,7 @@ public class JDescriptorParser extends JStringParser {
     }
 
     private JDescriptor.Type readNonArrayType() {
-        if (!this.hasNext()) fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got EOF");
+        if (!this.hasNext()) fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z, V), got EOF");
 
         int typeInd = this.next();
 
@@ -60,8 +60,8 @@ public class JDescriptorParser extends JStringParser {
                 yield new JDescriptor.Class(packageName.isEmpty() ? JDescriptor.Class.DEFAULT_PACKAGE : packageName.toArray(String[]::new),
                         className);
             }
-            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' -> JDescriptor.Primitive.of(Character.toString(typeInd));
-            default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z), got " + Character.toString(typeInd));
+            case 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z', 'V' -> JDescriptor.Primitive.of(Character.toString(typeInd));
+            default -> fail("Expected descriptor start (L, B, C, D, F, I, J, S, Z, V), got " + Character.toString(typeInd));
         };
     }
 

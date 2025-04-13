@@ -181,9 +181,9 @@ public interface JTypeConstraints {
         }
     }
 
-    final class InvocationReferenceThrows extends Constraint.Binary<JExpressionInformation.InvocationReference, JType> {
+    final class InvocationReferenceThrows extends Constraint.Binary<JExpressionInformation.InvocationReference<?>, JType> {
 
-        public InvocationReferenceThrows(JExpressionInformation.InvocationReference left, JType right) {
+        public InvocationReferenceThrows(JExpressionInformation.InvocationReference<?> left, JType right) {
             super(left, right);
         }
 
