@@ -78,7 +78,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             JSignatureParser parser = new JSignatureParser(sigAttr.get().signature().stringValue());
             try {
                 JSignature.ClassDeclaration decl = parser.parseClassDeclaration();
-                JSignatureTypeResolution.applyClassSignature(system, ref, decl);
+                JBinaryTypeResolution.applyClassSignature(system, ref, decl);
                 fallback = false;
             } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
                 fallback = true;
@@ -110,7 +110,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             boolean fieldFallback = true;
             if (fieldSigAttr.isPresent()) {
                 try {
-                    fRef.setType(JSignatureTypeResolution.resolveTypeSig(system, ref,
+                    fRef.setType(JBinaryTypeResolution.resolveTypeSig(system, ref,
                             new JSignatureParser(fieldSigAttr.get().signature().stringValue()).parseInformalType()));
                     fieldFallback = false;
                 } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {
@@ -140,7 +140,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             boolean methodFallback = true;
             if (methSigAttr.isPresent()) {
                 try {
-                    JSignatureTypeResolution.applyMethodSignature(system, mRef,
+                    JBinaryTypeResolution.applyMethodSignature(system, mRef,
                             new JSignatureParser(methSigAttr.get().signature().stringValue()).parseMethodDeclaration());
                     methodFallback = false;
                 } catch (JStringParseException | JResolutionFailedException | JBinaryLookupException ex) {

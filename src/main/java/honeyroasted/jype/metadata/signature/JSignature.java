@@ -1,5 +1,7 @@
 package honeyroasted.jype.metadata.signature;
 
+import honeyroasted.jype.type.JGenericDeclaration;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -147,6 +149,13 @@ public sealed interface JSignature {
             exceptions.forEach(it -> sb.append("^").append(it));
 
             return sb.toString();
+        }
+    }
+
+    record Declared(InformalType signature, JGenericDeclaration containing) {
+        @Override
+        public String toString() {
+            return this.signature + " IN " + this.containing;
         }
     }
 
