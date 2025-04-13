@@ -6,6 +6,7 @@ import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JFieldLocation;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.metadata.location.JTypeParameterLocation;
+import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.system.cache.JTypeStorage;
 import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
@@ -112,6 +113,14 @@ public interface JTypeSystem extends SimpleName {
     
     default <T extends JVarType> T tryResolve(JTypeParameterLocation parameterLocation) {
         return this.<T>resolve(parameterLocation).getOrThrow();
+    }
+
+    default <T extends JType> JResolutionResult<JSignature.Declared, T> resolve(JSignature.Declared declared) {
+        return (JResolutionResult) this.resolve(JSignature.Declared.class, JType.class, declared);
+    }
+
+    default <T extends JType> T tryResolve(JSignature.Declared declared) {
+        return this.<T>resolve(declared).getOrThrow();
     }
 
     void registerResolver(JTypeResolver resolver);
