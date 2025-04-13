@@ -34,9 +34,9 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        JType left = constraint.right();
+        JType targetType = constraint.right();
         JExpressionInformation.Instantiation inst = (JExpressionInformation.Instantiation) constraint.left();
-        JTypeSystem system = left.typeSystem();
+        JTypeSystem system = targetType.typeSystem();
 
         JClassReference target = inst.type();
         JClassReference declaring = inst.declaring();
