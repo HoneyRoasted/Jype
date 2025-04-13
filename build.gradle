@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'maven-publish'
 }
 
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.HoneyRoasted:Collect:0.0.11",
+    api("com.github.HoneyRoasted:Collect:0.0.11",
             "com.github.HoneyRoasted:Almonds:0.0.21")
 
     testImplementation('org.junit.jupiter:junit-jupiter:5.10.3')
@@ -24,19 +24,19 @@ java {
     }
 }
 
-task ghpagesJavadocs(type: Javadoc) {
+tasks.register('ghpagesJavadocs', Javadoc) {
     destinationDir = file("/docs")
 
     source = sourceSets.main.allJava
     classpath = configurations.runtimeClasspath
 }
 
-task javadocJar(type: Jar) {
+tasks.register('javadocJar', Jar) {
     from javadoc
     archiveClassifier.set("javadoc")
 }
 
-task sourceJar(type: Jar) {
+tasks.register('sourceJar', Jar) {
     from sourceSets.main.allSource
     archiveClassifier.set("source")
 }
@@ -47,13 +47,15 @@ artifacts {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
             artifactId = rootProject.name
 
             from components.java
 
             artifact sourceJar
             artifact javadocJar
+
+
         }
     }
 }
