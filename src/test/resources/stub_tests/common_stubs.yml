@@ -1,0 +1,17 @@
+name: Common Stubs
+
+classes:
+  honeyroasted/jypestub/Test:
+    def: <K::Ljava/util/List<TK;>;>Ljava/lang/Object;
+    fields:
+      foo: Ljava/lang/Integer;
+      bar: TK;
+      baz: Ljava/util/Comparator<TK;>;
+    methods:
+      instance_method: ()V
+      static_method:
+        def: ()V
+        flags: [PUBLIC, STATIC]
+      generic_return:
+        def: <T:Ljava/lang/Object;>(TT;)TT;
+        flags: [PUBLIC, STATIC]
