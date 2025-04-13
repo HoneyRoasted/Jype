@@ -34,6 +34,8 @@ public class SignatureTest<T> {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println(system.constants().voidType().descriptor().toString());
     }
 
     public <Z> Z getIt(Z val) {
