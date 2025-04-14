@@ -10,13 +10,11 @@ java {
 }
 
 tasks.register('htmlJavadocs', Javadoc) {
-    destinationDir = file("/docs/")
+    destinationDir = rootProject.file("/docs/" + project.name)
 
     source = sourceSets.main.allJava
     classpath = configurations.runtimeClasspath
 }
-
-build.finalizedBy htmlJavadocs
 
 tasks.register('javadocJar', Jar) {
     from javadoc
