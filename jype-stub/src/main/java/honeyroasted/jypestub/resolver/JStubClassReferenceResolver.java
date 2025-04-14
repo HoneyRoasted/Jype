@@ -24,7 +24,6 @@ import honeyroasted.jypestub.model.types.JStubClass;
 
 import java.lang.reflect.AccessFlag;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class JStubClassReferenceResolver implements JTypeResolver<JStubClass, JType> {
 
@@ -36,7 +35,7 @@ public class JStubClassReferenceResolver implements JTypeResolver<JStubClass, JT
             return JResolutionResult.inherit(value, cached);
         }
 
-        JClassName name = JClassName.of(loc.getPackage().toArray(), value.name().split(Pattern.quote(".")));
+        JClassName name = JClassName.of(loc.getPackage().toArray(), value.name().split("[\\./]"));
 
         JClassReference ref = system.typeFactory().newClassReference();
         ref.setNamespace(new JClassNamespace(loc, name));

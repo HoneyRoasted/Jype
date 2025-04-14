@@ -19,6 +19,7 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
@@ -60,7 +61,13 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
                 JType type = expr.getSimpleType(system, branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get();
-                findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference())));
+                findClassTypes(type).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
+                    if (ct instanceof JParameterizedClassType pct) {
+                        ref = (JMethodReference) pct.varTypeResolver().visit(ref);
+                    }
+                    methods.add(ref);
+                }));
+
                 stat = false;
             } else {
                 //TODO test this rigorously
@@ -75,6 +82,10 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                         JType inst = JResolveBounds.findInstantiation(callTarget, childBranch);
                         childBranch.metadata().first(JTypeContext.TypeMetavarMap.class).ifPresent(mvp -> mvp.instantiations().remove(callTarget)); //Drop variable since it is no longer needed
                         findClassTypes(inst).forEach(ct -> getAllMethods(ct.classReference()).forEach(ref -> {
+                            if (ct instanceof JParameterizedClassType pct) {
+                                ref = (JMethodReference) pct.varTypeResolver().visit(ref);
+                            }
+
                             if (ref.location().name().equals(invocation.name()) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
                                 if (ref.parameters().size() == parameters.size()) {
                                     newChildren.add(combine(childBranch, createInvoke(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, constraint, invocation, ref, parameters)));

@@ -14,11 +14,13 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMetaVarType;
+import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,10 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
                 field = findClassTypes(type).stream()
                         .flatMap(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring).canAccess(jfr.access())).stream())
                         .findFirst().orElse(null);
+
+                if (field != null && type instanceof JParameterizedClassType pct) {
+                    field = (JFieldReference) pct.varTypeResolver().visit(field);
+                }
             } else {
                 JMetaVarType callTarget = system.typeFactory().newMetaVarType("CALL_TARGET");
                 ConstraintTree solved = system.operations().inferenceSolver()
@@ -65,6 +71,10 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
                         JType inst = JResolveBounds.findInstantiation(callTarget, childBranch);
                         childBranch.metadata().first(JTypeContext.TypeMetavarMap.class).ifPresent(mvp -> mvp.instantiations().remove(callTarget)); //Drop variable since it is no longer needed
                         findClassTypes(inst).forEach(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring).canAccess(jfr.access())).forEach(ref -> {
+                            if (ct instanceof JParameterizedClassType pct) {
+                                ref = (JFieldReference) pct.varTypeResolver().visit(ref);
+                            }
+
                             newChildren.add(combine(childBranch, createGetField(constraint, getField, ref)));
                         }));
                     }
@@ -87,10 +97,9 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
     }
 
     private static ConstraintBranch.Snapshot createGetField(JTypeConstraints.ExpressionCompatible constraint, JExpressionInformation.GetField<?> getField, JFieldReference ref) {
-        return new ConstraintBranch.Snapshot(new PropertySet().attach(new JTypeContext.ChosenField(getField, ref)), Map.of(
-                new JTypeConstraints.Compatible(ref.type(), constraint.middle(), constraint.right()),
-                Constraint.Status.UNKNOWN
-        ));
+        Map<Constraint, Constraint.Status> getfield = new LinkedHashMap<>();
+        getfield.put(new JTypeConstraints.Compatible(ref.type(), constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
+        return new ConstraintBranch.Snapshot(new PropertySet().attach(new JTypeContext.ChosenField(getField, ref)), getfield);
     }
 
     private static Collection<JFieldReference> getAllFields(JClassReference ref, Predicate<JFieldReference> filter) {

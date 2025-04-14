@@ -63,6 +63,14 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
         return false;
     }
 
+    default JType fieldTypeOverride(JFieldReference type, JTypeCache<JType, JType> cache) {
+        return type;
+    }
+
+    default boolean overridesFieldType(JFieldReference type) {
+        return false;
+    }
+
     default JType intersectionTypeOverride(JIntersectionType type, JTypeCache<JType, JType> cache) {
         return type;
     }
@@ -205,6 +213,29 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
         if (this.overridesIntersectionType(type)) return this.intersectionTypeOverride(type, context);
 
         return JIntersectionType.of(this.visit(type.children(), context), type.typeSystem());
+    }
+
+    @Override
+    default JType visitFieldType(JFieldReference type, JTypeCache<JType, JType> context) {
+        Optional<JType> cached = context.get(type);
+        if (cached.isPresent()) return cached.get();
+        if (this.overridesFieldType(type)) return this.fieldTypeOverride(type, context);
+
+        JFieldReference newRef = type.typeSystem().typeFactory().newFieldReference();
+        newRef.setModifiers(type.modifiers());
+        newRef.setLocation(type.location());
+
+        if (this.visitStructural()) {
+            JType newOuter = this.visit(type.outerClass(), context);
+            newRef.setOuterClass(newOuter instanceof JClassReference cr ? cr : newRef.outerClass());
+        } else {
+            newRef.setOuterClass(type.outerClass());
+        }
+
+        newRef.setType(this.visit(type.type(), context));
+        newRef.setUnmodifiable(true);
+        
+        return newRef;
     }
 
     @Override

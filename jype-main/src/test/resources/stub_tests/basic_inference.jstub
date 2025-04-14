@@ -1,7 +1,7 @@
 name: Basic Inference Tests
 
 tests:
-  simple_inference_test:
+  instantiation_chain_test:
     expect:
       - status: true
       - instantiation:
@@ -36,8 +36,25 @@ tests:
               parameters: []
               source:
                 invocation:
-                  staticSource: Lhoneyroasted/jypestub/Test;
+                  staticSource: Ljypestub/Test;
                   name: generic_return
                   parameters:
                     - constant: Hello World
+
+  get_field_test:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/String;
+          expr:
+            get_field:
+              name: bar
+              source:
+                instantiation:
+                  type: Ljypestub/Test;
+                  typeArguments:
+                    - Ljava/lang/String;
+                  parameters: []
 
