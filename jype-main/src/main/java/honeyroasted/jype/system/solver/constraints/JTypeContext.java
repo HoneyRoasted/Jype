@@ -4,6 +4,7 @@ import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.system.JExpressionInformation;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
@@ -24,6 +25,13 @@ public interface JTypeContext {
         @Override
         public String simpleName() {
             return "Chosen Method: " + chosen.simpleName() + " in " + context + " for expression: " + expression.simpleName();
+        }
+    }
+
+    record ChosenField(JExpressionInformation.GetField<?> expression, JFieldReference chosen) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Chosen Field: " + chosen.simpleName() + " for expression: " + expression.simpleName();
         }
     }
 

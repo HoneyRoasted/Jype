@@ -34,6 +34,7 @@ import honeyroasted.jype.system.solver.constraints.inference.JVerifyBounds;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceEqual;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
@@ -95,6 +96,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
+            new JReduceGetField(),
             //TODO implement non-simply typed expressions
             new JReduceContains(),
             new JReduceEqual(),
@@ -125,6 +127,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
+            new JReduceGetField(),
             //TODO implement non-simply typed expressions
             new JReduceContains(),
             new JReduceEqual(),

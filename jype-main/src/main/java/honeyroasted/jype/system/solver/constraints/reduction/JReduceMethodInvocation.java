@@ -44,7 +44,6 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-         //TODO check access from declaring method -> method
         JExpressionInformation.MethodInvocation<?> invocation = (JExpressionInformation.MethodInvocation<?>) constraint.left();
         JType targetType = constraint.right();
         JTypeSystem system = targetType.typeSystem();
@@ -56,7 +55,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         boolean stat;
 
         if (invocation.source() instanceof JClassReference ref) { //Static method call
-            ref.declaredMethods().stream().filter(mref -> Modifier.isStatic(mref.modifiers())).forEach(methods::add);
+            methods.addAll(getAllStaticMethods(ref));
             stat = true;
         } else if (invocation.source() instanceof JExpressionInformation expr) { //Instance method call
             if (expr.isSimplyTyped()) {
@@ -64,7 +63,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
                 findClassTypes(type).forEach(ct -> methods.addAll(getAllMethods(ct.classReference())));
                 stat = false;
             } else {
-                //TODO not convinced this works
+                //TODO test this rigorously
                 JMetaVarType callTarget = system.typeFactory().newMetaVarType("CALL_TARGET");
                 ConstraintTree solved = system.operations().inferenceSolver()
                         .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, callTarget))
@@ -210,6 +209,29 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
 
             return attempt;
         }
+    }
+
+    private static Collection<JMethodReference> getAllStaticMethods(JClassReference ref) {
+        List<JMethodReference> result = new ArrayList<>();
+
+        Set<JClassType> building = Set.of(ref);
+        Set<JClassType> next = new LinkedHashSet<>();
+
+        while (!building.isEmpty()) {
+            for (JClassType curr : building) {
+                curr.classReference().declaredMethods()
+                        .stream().filter(mref -> mref.hasModifier(AccessFlag.STATIC))
+                        .forEach(result::add);
+
+                if (curr.superClass() != null) next.add(curr.superClass());
+                next.addAll(curr.interfaces());
+            }
+
+            building = next;
+            next = new LinkedHashSet<>();
+        }
+
+        return result;
     }
 
     private static Collection<JMethodReference> getAllMethods(JClassReference ref) {
