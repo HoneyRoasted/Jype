@@ -39,8 +39,6 @@ publishing {
 
             artifact sourceJar
             artifact javadocJar
-
-
         }
     }
 }
