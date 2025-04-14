@@ -3,69 +3,7 @@ plugins {
     id 'maven-publish'
 }
 
-group 'honeyroasted.jype'
-version '0.0.36'
-
-repositories {
-    mavenCentral()
-    maven { url = 'https://jitpack.io' }
-}
-
-dependencies {
-    api("com.github.HoneyRoasted:Collect:0.0.11",
-            "com.github.HoneyRoasted:Almonds:0.0.21")
-
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
-
-    testImplementation("com.github.HoneyRoasted:JypeStub:0.0.3") {
-        exclude module: "Jype"
-        exclude module: "Collect"
-        exclude module: "Almonds"
-    }
-}
-
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(24))
-    }
-}
-
-tasks.register('ghpagesJavadocs', Javadoc) {
-    destinationDir = file("/docs")
-
-    source = sourceSets.main.allJava
-    classpath = configurations.runtimeClasspath
-}
-
-tasks.register('javadocJar', Jar) {
-    from javadoc
-    archiveClassifier.set("javadoc")
-}
-
-tasks.register('sourceJar', Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier.set("source")
-}
-
-artifacts {
-    archives javadocJar, sourceJar
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = rootProject.name
-
-            from components.java
-
-            artifact sourceJar
-            artifact javadocJar
-
-
-        }
-    }
-}
-
-test {
-    useJUnitPlatform()
+allprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
 }

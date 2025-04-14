@@ -1,0 +1,15 @@
+apply from: rootProject.file('buildSrc/shared.gradle')
+
+group 'honeyroasted.jype'
+version '0.0.3'
+
+dependencies {
+    api("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.18.3",
+            project(":jype-main"))
+
+    testImplementation('org.junit.jupiter:junit-jupiter:5.10.3')
+}
+
+artifacts {
+    archives javadocJar, sourceJar
+}

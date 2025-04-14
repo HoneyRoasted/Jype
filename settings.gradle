@@ -1,2 +1,4 @@
 rootProject.name = 'Jype'
+include 'jype-main'
+include 'jype-stub'
 
