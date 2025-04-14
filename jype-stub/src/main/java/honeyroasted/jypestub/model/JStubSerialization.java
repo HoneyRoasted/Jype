@@ -18,6 +18,8 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import honeyroasted.almonds.ConstraintBranch;
+import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.multi.Triple;
 import honeyroasted.jype.metadata.location.JClassLocation;
@@ -42,6 +44,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.*;
@@ -105,6 +108,16 @@ public interface JStubSerialization {
             return codec.treeAsTokens(sub).readValueAs(reference);
         }
         return fallback;
+    }
+
+    static Set<ConstraintBranch> branches(ConstraintTree tree, JTestCondition.Branch branch) {
+        if (branch == JTestCondition.Branch.ALL) {
+            return tree.branches();
+        } else if (branch == JTestCondition.Branch.INVALID) {
+            return tree.invalidBranches();
+        } else {
+            return tree.validBranches();
+        }
     }
 
     static SimpleName source(JTypeSystem system, JGenericDeclaration containing, String staticSource, JTestExpression.Wrapper source) {

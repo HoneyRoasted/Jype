@@ -23,7 +23,8 @@ public interface JTestConstraint {
             "expression_compatible", ExpressionCompatible.class,
             "contains", Contains.class,
             "expr_throws", Throws.class,
-            "capture", Capture.class
+            "capture", Capture.class,
+            "contradiction", Contradiction.class
     );
 
     Set<Constraint> resolve(JTypeSystem system);
@@ -174,6 +175,24 @@ public interface JTestConstraint {
 
         public static final JStubSerialization.TypeListDeserializer<Capture> DESERIALIZER = new JStubSerialization.TypeListDeserializer<>(Capture.class, str -> new Capture(null, null, str),
                 trip -> new Capture(trip.left(), trip.middle(), trip.right()));
+    }
+
+    record Contradiction(Wrapper left, Wrapper right) implements JTestConstraint {
+        @Override
+        public Set<Constraint> resolve(JTypeSystem system) {
+            Set<Constraint> building = new LinkedHashSet<>();
+
+            Set<Constraint> left = this.left.resolve(system);
+            Set<Constraint> right = this.right.resolve(system);
+
+            for (Constraint l : left) {
+                for (Constraint r : right) {
+                    building.add(new JTypeConstraints.Contradiction(l, r));
+                }
+            }
+
+            return building;
+        }
     }
 
 }

@@ -1,3 +1,6 @@
+group 'honeyroasted.jype'
+version '0.0.40'
+
 repositories {
     mavenCentral()
     maven { url = 'https://jitpack.io' }

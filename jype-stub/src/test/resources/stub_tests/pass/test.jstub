@@ -1,0 +1,21 @@
+name: Basic Test YAML
+
+tests:
+  simple_inference_test:
+    expect:
+      - status: true
+      - instantiation:
+          var: E
+          type: Ljava/lang/String;
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/List<Ljava/lang/String;>;
+          expr:
+            instantiation:
+              type: Ljava/util.ArrayList;
+              parameters:
+                - instantiation:
+                    type: Ljava/lang/Integer;
+                    parameters:
+                      - constant: 1

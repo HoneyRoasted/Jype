@@ -40,19 +40,30 @@ public class YamlDslTests {
 
     @ParameterizedTest
     @MethodSource("stubTestProvider")
-    public void runTest(Map.Entry<String, JStubTest> test) {
+    public void runTest(StubTestWrapper wrapper) {
+        Map.Entry<String, JStubTest> test = wrapper.test();
         JStubTest.Result result = test.getValue().test(system);
         assertTrue(result.result(), () -> buildMessage(test.getKey(), result));
     }
 
     private static String buildMessage(String name, JStubTest.Result result) {
-        return name + ": " + result + "\n\n\nCONSTRAINT TREE:\n-----------------\n" +
+        return name + ": " + result + "\n\nCONSTRAINT TREE:\n-----------------\n" +
                 result.tree().toString(true);
     }
 
     private static Stream<Arguments> stubTestProvider() {
-        return folder.files().stream().flatMap(file -> file.tests().entrySet().stream())
+        return folder.files().stream()
+                .flatMap(file -> file.tests().entrySet().stream())
+                .map(StubTestWrapper::new)
                 .map(Arguments::of);
+    }
+
+    //Just to make it display nicer on the JUnite HTML test results
+    public record StubTestWrapper(Map.Entry<String, JStubTest> test) {
+        @Override
+        public String toString() {
+            return "JStubTest[" + this.test.getKey() + "]";
+        }
     }
 
 }
