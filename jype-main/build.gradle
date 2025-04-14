@@ -1,7 +1,7 @@
 apply from: rootProject.file('buildSrc/shared.gradle')
 
 group 'honeyroasted.jype'
-version '0.0.36'
+version '0.0.37'
 
 dependencies {
     api("com.github.HoneyRoasted:Collect:0.0.11",

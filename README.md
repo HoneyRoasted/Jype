@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.HoneyRoasted:Jype:Version'
+    implementation 'com.github.HoneyRoasted.Jype:jype-main:Version'
 }
 ```
 Additionally, Jype is continuously built with [GitHub actions](https://github.com/HoneyRoasted/Jype/actions). You
