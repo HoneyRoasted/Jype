@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,9 +40,8 @@ public class YamlDslTests {
     @ParameterizedTest
     @MethodSource("stubTestProvider")
     public void runTest(StubTestWrapper wrapper) {
-        Map.Entry<String, JStubTest> test = wrapper.test();
-        JStubTest.Result result = test.getValue().test(system);
-        assertTrue(result.result(), () -> buildMessage(test.getKey(), result));
+        JStubTest.Result result = wrapper.test().test(system);
+        assertTrue(result.result(), () -> buildMessage(wrapper.file() + "/" + wrapper.name(), result));
     }
 
     private static String buildMessage(String name, JStubTest.Result result) {
@@ -53,16 +51,15 @@ public class YamlDslTests {
 
     private static Stream<Arguments> stubTestProvider() {
         return folder.files().stream()
-                .flatMap(file -> file.tests().entrySet().stream())
-                .map(StubTestWrapper::new)
+                .flatMap(file -> file.tests().entrySet().stream().map(e -> new StubTestWrapper(file.name(), e.getKey(), e.getValue())))
                 .map(Arguments::of);
     }
 
     //Just to make it display nicer on the JUnite HTML test results
-    public record StubTestWrapper(Map.Entry<String, JStubTest> test) {
+    public record StubTestWrapper(String file, String name, JStubTest test) {
         @Override
         public String toString() {
-            return "JStubTest[" + this.test.getKey() + "]";
+            return  this.file + " / " + this.name;
         }
     }
 

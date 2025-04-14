@@ -1,4 +1,4 @@
-name: Basic Test YAML
+name: Basic Inference Tests
 
 tests:
   simple_inference_test:
