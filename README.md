@@ -9,8 +9,8 @@ primitives, generics, inference, and more. It is capable of generating signature
 testing assignability between types.
 
 ## Components
-- [Jype Main](jype-main/README.md) - Main type system API
-- [Jype Stub](jype-stub/README.md) - Utility for writing type system components and tests in YAML
+- Jype Main - Main type system API
+- Jype Stub - Utility for writing type system components and tests in YAML
 
 ## Building
 Jype may be built using jitpack:  
