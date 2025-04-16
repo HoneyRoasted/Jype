@@ -53,10 +53,10 @@ jobs:
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list).FILE_LIST }}
+          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list) }}
         run: |
           echo "Files: $FILES"
-          for file in ${FILES}; do
+          for file in ${FILES.FILE_LIST}; do
             echo "Detected gradle file: $file"
             ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
             if [ ! -z "$ver" ]; then
