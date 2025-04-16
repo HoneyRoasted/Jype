@@ -41,6 +41,7 @@ jobs:
         with:
           repo: ${{ github.repository }}
           ref: ${{ github.ref }}
+          path: "."
           ext: ".gradle"
 
       - name: Extract Version
@@ -51,7 +52,9 @@ jobs:
           echo "Files: $FILES"
           echo "$FILES" | jq -c '.[]' | while read file; do
             echo "Detected gradle file: $file"
-            ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
+            path="$GITHUB_WORKSPACE${file:1}"
+            echo "Path: $path"
+            ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $path)
             if [ ! -z "$ver" ]; then
               echo "Found version: $ver"
               echo "ver=$ver" >> $GITHUB_OUTPUT
