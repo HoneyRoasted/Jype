@@ -44,10 +44,16 @@ jobs:
           path: "."
           ext: ".gradle"
 
+      - name: Clean Output
+        id: clean-output
+        env:
+          FILES: ${{ steps.list-files.outputs.paths) }}
+        run: echo "file_list={\"FILE_LIST:\" $FILES }" >> $GITHUB_OUTPUT
+
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJSON('{FILES:' + steps.list-files.outputs.paths) +  '}'}}
+          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list) }}
         run: |
           echo "Files: $FILES"
           for file in ${FILES}; do
