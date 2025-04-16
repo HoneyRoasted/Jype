@@ -9,31 +9,31 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-#      - name: JDK 21 & 24 Install
-#        uses: actions/setup-java@v4
-#        with:
-#          java-version: |
-#            24
-#            21
-#          distribution: 'adopt'
-#          cache: gradle
+      - name: JDK 21 & 24 Install
+        uses: actions/setup-java@v4
+        with:
+          java-version: |
+            24
+            21
+          distribution: 'adopt'
+          cache: gradle
 
-#      - name: Permit Wrapper
-#        run: chmod +x gradlew
+      - name: Permit Wrapper
+        run: chmod +x gradlew
 
-#      - name: Test
-#        run: ./gradlew clean test
+      - name: Test
+        run: ./gradlew clean test
 
-#      - name: Build
-#        run: ./gradlew build
+      - name: Build
+        run: ./gradlew build
 
-#      - name: Upload Artifacts
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: Artifacts
-#          path: |
-#            jype-main/build/libs
-#            jype-stub/build/libs
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Artifacts
+          path: |
+            jype-main/build/libs
+            jype-stub/build/libs
 
       - name: List Files
         id: list-files
