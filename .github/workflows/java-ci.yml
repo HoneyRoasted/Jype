@@ -59,7 +59,7 @@ jobs:
         uses: mukunku/tag-exists-action@v1.6.0
         id: tag-check
         with:
-          tag: ${{ steps.extract-version.outputs.ver }}
+          tag: "${{ steps.extract-version.outputs.ver }}"
 
       - env:
           TAG_EXISTS: ${{ steps.tag-check.outputs.exists }}
@@ -70,7 +70,7 @@ jobs:
         uses: tvdias/github-tagger@v0.0.2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          tag: ${{ steps.extract-version.outputs.ver }}
+          tag: "${{ steps.extract-version.outputs.ver }}"
 
 
       - name: Clean Cache
