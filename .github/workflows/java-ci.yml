@@ -25,7 +25,7 @@ jobs:
         run: ./gradlew clean test
 
       - name: Build
-        run: ./gradlew clean build
+        run: ./gradlew build
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -47,8 +47,9 @@ jobs:
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJson(steps.list-files.outputs.paths) }}
+          FILES: ${{ steps.list-files.outputs.paths }}
         run: |
+          echo "Files: $FILES"
           for file in ${FILES}; do
             echo "Detected gradle file: $file"
             ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
