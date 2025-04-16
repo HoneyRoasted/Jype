@@ -41,7 +41,7 @@ jobs:
         with:
           repo: ${{ github.repository }}
           ref: ${{ github.ref }}
-          path: "."
+          path: $${ github.workspace }
           ext: ".gradle"
 
       - name: Extract Version
