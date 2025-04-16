@@ -12,6 +12,7 @@ import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.JDownwardProjectionVisitor;
 import honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor;
 
 import java.util.Collections;
@@ -19,7 +20,9 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JType>> {
 
@@ -41,8 +44,32 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
 
     PropertySet metadata();
 
+    default JType upwardsProjection() {
+        return upwardsProjection(t -> t instanceof JMetaVarType);
+    }
+
+    default JType upwardsProjection(Predicate<JType> restricted) {
+        return accept(JTypeVisitors.upwardProjection(restricted));
+    }
+
+    default Optional<JType> downwardsProjection() {
+        return downwardsProjection(t -> t instanceof JMetaVarType);
+    }
+
+    default Optional<JType> downwardsProjection(Predicate<JType> restricted) {
+        try {
+            return Optional.of(accept(JTypeVisitors.downwardProjection(restricted)));
+        } catch (JDownwardProjectionVisitor.UndefinedProjectionException ex) {
+            return Optional.empty();
+        }
+    }
+
     default <R, P> R accept(JTypeVisitor<R, P> visitor) {
         return accept(visitor, null);
+    }
+
+    default boolean accept(Predicate<JType> visitor) {
+        return accept(JTypeVisitors.typePredicate(visitor));
     }
 
     default boolean isCompatibleTo(JType other, JTypeConstraints.Compatible.Context context) {

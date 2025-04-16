@@ -20,6 +20,10 @@ public interface JVarType extends PossiblyUnmodifiable, JType, JArgumentType {
 
     void setUpperBounds(Set<JType> upperBounds);
 
+    default JType upperBound() {
+        return JIntersectionType.of(upperBounds(), typeSystem());
+    }
+
     default boolean hasDefaultBounds() {
         return this.upperBounds().isEmpty() || this.upperBounds().equals(Set.of(this.typeSystem().constants().object()));
     }

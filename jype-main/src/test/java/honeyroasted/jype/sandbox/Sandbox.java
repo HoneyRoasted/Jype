@@ -13,6 +13,7 @@ import honeyroasted.jype.type.JClassReference;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 public class Sandbox {
 
@@ -28,6 +29,9 @@ public class Sandbox {
 
         JClassReference bytecodeRef = bytecodeSystem.tryResolve(JDescriptor.class);
         System.out.println(bytecodeRef.nestMembers());
+
+        System.out.println(String[].class.getSuperclass());
+        System.out.println(Arrays.toString(String[].class.getInterfaces()));
     }
 
 }

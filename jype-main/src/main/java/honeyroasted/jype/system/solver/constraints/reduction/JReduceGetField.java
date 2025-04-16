@@ -126,6 +126,7 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
     }
 
     private static Set<JClassType> findClassTypes(JType type) {
+        //TODO figure out the right way to do this
         if (type instanceof JClassType ct) {
             return Set.of(ct);
         } else {

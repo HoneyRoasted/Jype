@@ -18,7 +18,9 @@ public interface JArrayType extends PossiblyUnmodifiable, JInstantiableType, JAr
 
     @Override
     default Set<JType> knownDirectSupertypes() {
-        return Set.of(typeSystem().constants().object());
+        return Set.of(typeSystem().constants().object(),
+                typeSystem().constants().cloneable(),
+                typeSystem().constants().serializable());
     }
 
     @Override

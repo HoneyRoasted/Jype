@@ -153,13 +153,14 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
             JParameterizedClassType newType = type.typeSystem().typeFactory().newParameterizedClassType();
             context.put(type, newType);
 
-            JType newRef = visit(pt.classReference(), context);
-            newType.setClassReference(newRef instanceof JClassReference cr ? cr : pt.classReference());
-
             if (this.visitStructural() || pt.hasRelevantOuterType()) {
+                JType newRef = visit(pt.classReference(), context);
+                newType.setClassReference(newRef instanceof JClassReference cr ? cr : pt.classReference());
+
                 JType newOuter = visit(pt.outerType(), context);
                 newType.setOuterType(newOuter instanceof JClassType ct ? ct : pt.outerType());
             } else {
+                newType.setClassReference(pt.classReference());
                 newType.setOuterType(pt.outerType());
             }
 

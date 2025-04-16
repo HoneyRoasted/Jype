@@ -47,23 +47,31 @@ public class JRecursiveTypeVisitor<R, C> implements JTypeVisitor<List<R>, Map<JT
             result.add(r);
         }
 
+        boolean visitedOuter = false;
         if (type instanceof JParameterizedClassType ct) {
             if (ct.outerType() != null && (this.visitStructural || !Modifier.isStatic(ct.modifiers()))) {
+                visitedOuter = true;
                 result.addAll(this.visit(ct.outerClass(), context));
             }
         }
 
         if (this.visitStructural) {
-            if (type.outerClass() != null) {
-                result.addAll(this.visit(type.outerClass(), context));
-            }
+            if (type instanceof JParameterizedClassType) {
+                result.addAll(this.visit(type.classReference(), context));
+            } else {
+                if (type.outerClass() != null && !visitedOuter) {
+                    result.addAll(this.visit(type.outerClass(), context));
+                }
 
-            if (type.superClass() != null) {
-                result.addAll(this.visit(type.superClass(), context));
-            }
+                if (type.superClass() != null) {
+                    result.addAll(this.visit(type.superClass(), context));
+                }
 
-            type.interfaces().forEach(t -> result.addAll(this.visit(t, context)));
-            type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
+                type.interfaces().forEach(t -> result.addAll(this.visit(t, context)));
+                type.typeParameters().forEach(t -> result.addAll(this.visit(t, context)));
+                type.declaredMethods().forEach(m -> result.addAll(this.visit(m, context)));
+                type.declaredFields().forEach(f -> result.addAll(this.visit(f, context)));
+            }
         }
 
         type.typeArguments().forEach(t -> result.addAll(this.visit(t, context)));
