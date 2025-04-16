@@ -50,7 +50,7 @@ jobs:
           FILES: ${{ steps.list-files.outputs.paths }}
         run: |
           echo "Files: $FILES"
-          echo "$FILES" | jq -c '.[]' | while read file; do
+          echo "$FILES" | jq -r -c '.[]' | while read file; do
             echo "Detected gradle file: $file"
             path="$GITHUB_WORKSPACE${file:1}"
             echo "Path: $path"
