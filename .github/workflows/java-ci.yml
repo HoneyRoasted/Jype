@@ -35,6 +35,44 @@ jobs:
             jype-main/build/libs
             jype-stub/build/libs
 
+      - name: Detect File Changes
+        id: changed-files
+        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c
+        with:
+          files: "**/*.gradle"
+
+      - name: Extract Version
+        id: extract-version
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${CHANGED_FILES}; do
+            echo "Detected change in $file"
+            ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
+            if [ ! -z "$ver" ]; then
+              echo "ver=$ver" >> $GITHUB_OUTPUT
+              break
+            fi
+          done
+
+      - name: Check For Tag
+        uses: mukunku/tag-exists-action@v1.6.0
+        id: tag-check
+        with:
+          tag: ${{ steps.extract-version.outputs.ver }}
+
+      - env:
+          TAG_EXISTS: ${{ steps.tag-check.outputs.exists }}
+        run: echo "Tag already exists - $TAG_EXISTS (if false, a new one will be created)"
+
+      - name: Create Tag
+        if: steps.tag-check.outputs.exists == 'false'
+        uses: tvdias/github-tagger@v0.0.2
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          tag: ${{ steps.extract-version.outputs.ver }}
+
+
       - name: Clean Cache
         run: |
           rm -f ~/.gradle/caches/modules-2/modules-2.lock
