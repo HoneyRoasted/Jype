@@ -26,4 +26,4 @@ dependencies {
 }
 ```
 Additionally, Jype is continuously built with [GitHub actions](https://github.com/HoneyRoasted/Jype/actions). You
-may also download the repository and build from source using Gradle or the `build.sh` script.
+may also download the repository and build from source using Gradle.
