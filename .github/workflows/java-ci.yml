@@ -27,13 +27,13 @@ jobs:
       - name: Build
         run: ./gradlew build
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Artifacts
-          path: | 
-            jype-main/build/libs
-            jype-stub/build/libs
+#      - name: Upload Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: Artifacts
+#          path: |
+#            jype-main/build/libs
+#            jype-stub/build/libs
 
       - name: List Files
         id: list-files
@@ -53,7 +53,7 @@ jobs:
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list) }}
+          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list).FILES }}
         run: |
           echo "Files: $FILES"
           for file in ${FILES}; do
