@@ -15,7 +15,7 @@ import java.util.function.Function;
 
 public class JParameterizedMethodTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JParameterizedMethodType> implements JParameterizedMethodType {
     public JParameterizedMethodTypeDelegate(JTypeSystem system, Function<JTypeSystem, JParameterizedMethodType> factory) {
-        super(system, factory);
+        super(system, factory, JParameterizedMethodTypeDelegate::new);
     }
 
     @Override

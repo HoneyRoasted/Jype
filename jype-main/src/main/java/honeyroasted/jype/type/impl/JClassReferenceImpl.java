@@ -34,6 +34,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     private List<JClassType> interfaces = new ArrayList<>();
     private List<JVarType> typeParameters = new ArrayList<>();
 
+    private List<JClassReference> nestMembers = new ArrayList<>();
     private List<JMethodReference> declaredMethods = new ArrayList<>();
     private List<JFieldReference> declaredFields = new ArrayList<>();
 
@@ -58,7 +59,8 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         copy.setInterfaces(this.interfaces.stream().map(c -> (JClassType) c.copy(cache)).toList());
         copy.setTypeParameters(this.typeParameters.stream().map(v -> (JVarType) v.copy(cache)).toList());
         copy.setDeclaredMethods(this.declaredMethods.stream().map(m -> (JMethodReference) m.copy(cache)).toList());
-        copy.setDeclaredFields(this.declaredFields.stream().map(m -> (JFieldReference) m.copy(cache)).toList());
+        copy.setDeclaredFields(this.declaredFields.stream().map(f -> (JFieldReference) f.copy(cache)).toList());
+        copy.setNestMembers(this.nestMembers.stream().map(c -> (JClassReference) c.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -166,6 +168,17 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     public void setOuterMethod(JMethodReference outerMethod) {
         this.checkUnmodifiable();
         this.outerMethod = outerMethod;
+    }
+
+    @Override
+    public List<JClassReference> nestMembers() {
+        return this.nestMembers;
+    }
+
+    @Override
+    public void setNestMembers(List<JClassReference> nestMembers) {
+        this.checkUnmodifiable();
+        this.nestMembers = nestMembers;
     }
 
     @Override

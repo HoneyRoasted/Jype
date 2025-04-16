@@ -8,6 +8,7 @@ import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.type.JType;
 
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class JAbstractDelegateType<T extends JType> implements JType {
@@ -15,9 +16,12 @@ public class JAbstractDelegateType<T extends JType> implements JType {
     private Function<JTypeSystem, T> factory;
     private T delegate;
 
-    public JAbstractDelegateType(JTypeSystem system, Function<JTypeSystem, T> factory) {
+    private BiFunction<JTypeSystem, Function<JTypeSystem, T>, ? extends JAbstractDelegateType<T>> constructor;
+
+    public JAbstractDelegateType(JTypeSystem system, Function<JTypeSystem, T> factory, BiFunction<JTypeSystem, Function<JTypeSystem, T>, ? extends JAbstractDelegateType<T>> constructor) {
         this.typeSystem = system;
         this.factory = factory;
+        this.constructor = constructor;
     }
 
     protected T delegate() {
@@ -57,7 +61,7 @@ public class JAbstractDelegateType<T extends JType> implements JType {
 
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
-        return delegate().copy(cache);
+        return (T) this.constructor.apply(this.typeSystem, ts -> delegate().copy(cache));
     }
 
     @Override

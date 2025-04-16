@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class JVarTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JVarType> implements JVarType {
     public JVarTypeDelegate(JTypeSystem system, Function<JTypeSystem, JVarType> factory) {
-        super(system, factory);
+        super(system, factory, JVarTypeDelegate::new);
     }
 
     @Override

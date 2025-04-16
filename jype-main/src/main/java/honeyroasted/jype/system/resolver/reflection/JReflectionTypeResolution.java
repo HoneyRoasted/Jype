@@ -352,6 +352,24 @@ public interface JReflectionTypeResolution {
         system.storage().cacheFor(Type.class).put(cls, reference);
         system.storage().cacheFor(JClassLocation.class).put(reference.namespace().location(), reference);
 
+        if (cls.getNestHost() == cls) {
+            for (Class<?> member : cls.getNestMembers()) {
+                if (member != cls) {
+                    JResolutionResult<Type, JType> nestMember = system.resolvers().resolverFor(Type.class, JType.class)
+                            .resolve(system, member);
+                    children.add(nestMember);
+
+                    if (nestMember.failure() || !(nestMember.value() instanceof JClassReference)) {
+                        system.storage().cacheFor(Type.class).remove(cls);
+                        system.storage().cacheFor(JClassLocation.class).remove(reference.namespace().location());
+                        return new JResolutionResult<>("Failed to resolve nest member", cls, children);
+                    } else {
+                        reference.nestMembers().add((JClassReference) nestMember.value());
+                    }
+                }
+            }
+        }
+
         if (cls.getSuperclass() != null) {
             JResolutionResult<Type, JType> superCls = system.resolvers().resolverFor(Type.class, JType.class)
                     .resolve(system, cls.getGenericSuperclass());

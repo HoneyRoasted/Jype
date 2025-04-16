@@ -71,28 +71,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#setClassReference(honeyroasted.jype.type.JClassReference)" tabindex="0">setClassReference(JClassReference)</a></li>
-<li><a href="#namespace()" tabindex="0">namespace()</a></li>
-<li><a href="#setNamespace(honeyroasted.jype.metadata.location.JClassNamespace)" tabindex="0">setNamespace(JClassNamespace)</a></li>
-<li><a href="#modifiers()" tabindex="0">modifiers()</a></li>
-<li><a href="#setModifiers(int)" tabindex="0">setModifiers(int)</a></li>
-<li><a href="#outerClass()" tabindex="0">outerClass()</a></li>
-<li><a href="#setOuterClass(honeyroasted.jype.type.JClassReference)" tabindex="0">setOuterClass(JClassReference)</a></li>
-<li><a href="#outerMethod()" tabindex="0">outerMethod()</a></li>
-<li><a href="#setOuterMethod(honeyroasted.jype.type.JMethodReference)" tabindex="0">setOuterMethod(JMethodReference)</a></li>
-<li><a href="#declaredMethods()" tabindex="0">declaredMethods()</a></li>
-<li><a href="#setDeclaredMethods(java.util.List)" tabindex="0">setDeclaredMethods(List)</a></li>
-<li><a href="#declaredFields()" tabindex="0">declaredFields()</a></li>
-<li><a href="#setDeclaredFields(java.util.List)" tabindex="0">setDeclaredFields(List)</a></li>
+<li><a href="#outerType()" tabindex="0">outerType()</a></li>
 <li><a href="#directSupertype(honeyroasted.jype.type.JClassType)" tabindex="0">directSupertype(JClassType)</a></li>
 <li><a href="#relativeSupertype(honeyroasted.jype.type.JClassType)" tabindex="0">relativeSupertype(JClassType)</a></li>
-<li><a href="#outerType()" tabindex="0">outerType()</a></li>
-<li><a href="#superClass()" tabindex="0">superClass()</a></li>
-<li><a href="#setSuperClass(honeyroasted.jype.type.JClassType)" tabindex="0">setSuperClass(JClassType)</a></li>
-<li><a href="#interfaces()" tabindex="0">interfaces()</a></li>
-<li><a href="#setInterfaces(java.util.List)" tabindex="0">setInterfaces(List)</a></li>
-<li><a href="#typeParameters()" tabindex="0">typeParameters()</a></li>
-<li><a href="#setTypeParameters(java.util.List)" tabindex="0">setTypeParameters(List)</a></li>
-<li><a href="#hasSupertype(honeyroasted.jype.type.JClassReference)" tabindex="0">hasSupertype(JClassReference)</a></li>
 <li><a href="#classReference()" tabindex="0">classReference()</a></li>
 <li><a href="#typeArguments()" tabindex="0">typeArguments()</a></li>
 <li><a href="#setTypeArguments(java.util.List)" tabindex="0">setTypeArguments(List)</a></li>
@@ -164,32 +145,8 @@ implements <a href="../../JParameterizedClassType.html" title="interface in hone
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#classReference()" class="member-name-link">classReference</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaredFields()" class="member-name-link">declaredFields</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#declaredMethods()" class="member-name-link">declaredMethods</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#directSupertype(honeyroasted.jype.type.JClassType)" class="member-name-link">directSupertype</a><wbr>(<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&nbsp;supertypeInstance)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasSupertype(honeyroasted.jype.type.JClassReference)" class="member-name-link">hasSupertype</a><wbr>(<a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;supertype)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#interfaces()" class="member-name-link">interfaces</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#modifiers()" class="member-name-link">modifiers</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#namespace()" class="member-name-link">namespace</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outerClass()" class="member-name-link">outerClass</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outerMethod()" class="member-name-link">outerMethod</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#outerType()" class="member-name-link">outerType</a>()</code></div>
@@ -201,47 +158,14 @@ implements <a href="../../JParameterizedClassType.html" title="interface in hone
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setClassReference(honeyroasted.jype.type.JClassReference)" class="member-name-link">setClassReference</a><wbr>(<a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;classReference)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDeclaredFields(java.util.List)" class="member-name-link">setDeclaredFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;&nbsp;fields)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDeclaredMethods(java.util.List)" class="member-name-link">setDeclaredMethods</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;&nbsp;methods)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInterfaces(java.util.List)" class="member-name-link">setInterfaces</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&gt;&nbsp;interfaces)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setModifiers(int)" class="member-name-link">setModifiers</a><wbr>(int&nbsp;modifiers)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNamespace(honeyroasted.jype.metadata.location.JClassNamespace)" class="member-name-link">setNamespace</a><wbr>(<a href="../../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOuterClass(honeyroasted.jype.type.JClassReference)" class="member-name-link">setOuterClass</a><wbr>(<a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;outerClass)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOuterMethod(honeyroasted.jype.type.JMethodReference)" class="member-name-link">setOuterMethod</a><wbr>(<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;outerMethod)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOuterType(honeyroasted.jype.type.JClassType)" class="member-name-link">setOuterType</a><wbr>(<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&nbsp;outerType)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSuperClass(honeyroasted.jype.type.JClassType)" class="member-name-link">setSuperClass</a><wbr>(<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&nbsp;superClass)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOuterType(honeyroasted.jype.type.JClassType)" class="member-name-link">setOuterType</a><wbr>(<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&nbsp;outerType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTypeArguments(java.util.List)" class="member-name-link">setTypeArguments</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JArgumentType.html" title="interface in honeyroasted.jype.type">JArgumentType</a>&gt;&nbsp;typeArguments)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setTypeParameters(java.util.List)" class="member-name-link">setTypeParameters</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;&nbsp;typeParameters)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#superClass()" class="member-name-link">superClass</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../JArgumentType.html" title="interface in honeyroasted.jype.type">JArgumentType</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeArguments()" class="member-name-link">typeArguments</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../../JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#typeParameters()" class="member-name-link">typeParameters</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -259,7 +183,7 @@ implements <a href="../../JParameterizedClassType.html" title="interface in hone
 <code><a href="../../JClassType.html#accept(honeyroasted.jype.system.visitor.JTypeVisitor,P)">accept</a>, <a href="../../JClassType.html#access()">access</a>, <a href="../../JClassType.html#accessFrom(honeyroasted.jype.type.JClassType)">accessFrom</a>, <a href="../../JClassType.html#buildHierarchyPath(honeyroasted.jype.type.JClassReference,java.util.List)">buildHierarchyPath</a>, <a href="../../JClassType.html#genericDeclarationLocation()">genericDeclarationLocation</a>, <a href="../../JClassType.html#hasAnyTypeArguments()">hasAnyTypeArguments</a>, <a href="../../JClassType.html#hasModifier(honeyroasted.jype.metadata.JAccess)">hasModifier</a>, <a href="../../JClassType.html#hasModifier(java.lang.reflect.AccessFlag)">hasModifier</a>, <a href="../../JClassType.html#hasOuterType()">hasOuterType</a>, <a href="../../JClassType.html#hasRelevantOuterType()">hasRelevantOuterType</a>, <a href="../../JClassType.html#hasTypeParameters()">hasTypeParameters</a>, <a href="../../JClassType.html#hierarchyPathTo(honeyroasted.jype.type.JClassReference)">hierarchyPathTo</a>, <a href="../../JClassType.html#resolveVarType(java.lang.String)">resolveVarType</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.JParameterizedClassType">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="../../JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></h3>
-<code><a href="../../JParameterizedClassType.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="../../JParameterizedClassType.html#hasTypeArguments()">hasTypeArguments</a>, <a href="../../JParameterizedClassType.html#knownDirectSupertypes()">knownDirectSupertypes</a></code></div>
+<code><a href="../../JParameterizedClassType.html#declaredFields()">declaredFields</a>, <a href="../../JParameterizedClassType.html#declaredMethods()">declaredMethods</a>, <a href="../../JParameterizedClassType.html#hasCyclicTypeVariables(java.util.Set)">hasCyclicTypeVariables</a>, <a href="../../JParameterizedClassType.html#hasSupertype(honeyroasted.jype.type.JClassReference)">hasSupertype</a>, <a href="../../JParameterizedClassType.html#hasTypeArguments()">hasTypeArguments</a>, <a href="../../JParameterizedClassType.html#interfaces()">interfaces</a>, <a href="../../JParameterizedClassType.html#knownDirectSupertypes()">knownDirectSupertypes</a>, <a href="../../JParameterizedClassType.html#modifiers()">modifiers</a>, <a href="../../JParameterizedClassType.html#namespace()">namespace</a>, <a href="../../JParameterizedClassType.html#nestMembers()">nestMembers</a>, <a href="../../JParameterizedClassType.html#outerClass()">outerClass</a>, <a href="../../JParameterizedClassType.html#outerMethod()">outerMethod</a>, <a href="../../JParameterizedClassType.html#setDeclaredFields(java.util.List)">setDeclaredFields</a>, <a href="../../JParameterizedClassType.html#setDeclaredMethods(java.util.List)">setDeclaredMethods</a>, <a href="../../JParameterizedClassType.html#setInterfaces(java.util.List)">setInterfaces</a>, <a href="../../JParameterizedClassType.html#setModifiers(int)">setModifiers</a>, <a href="../../JParameterizedClassType.html#setNamespace(honeyroasted.jype.metadata.location.JClassNamespace)">setNamespace</a>, <a href="../../JParameterizedClassType.html#setNestMembers(java.util.List)">setNestMembers</a>, <a href="../../JParameterizedClassType.html#setOuterClass(honeyroasted.jype.type.JClassReference)">setOuterClass</a>, <a href="../../JParameterizedClassType.html#setOuterMethod(honeyroasted.jype.type.JMethodReference)">setOuterMethod</a>, <a href="../../JParameterizedClassType.html#setSuperClass(honeyroasted.jype.type.JClassType)">setSuperClass</a>, <a href="../../JParameterizedClassType.html#setTypeParameters(java.util.List)">setTypeParameters</a>, <a href="../../JParameterizedClassType.html#superClass()">superClass</a>, <a href="../../JParameterizedClassType.html#typeParameters()">typeParameters</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-honeyroasted.jype.type.JParameterizedType">Methods inherited from interface&nbsp;honeyroasted.jype.type.<a href="../../JParameterizedType.html" title="interface in honeyroasted.jype.type">JParameterizedType</a></h3>
 <code><a href="../../JParameterizedType.html#varTypeResolver()">varTypeResolver</a></code></div>
@@ -313,145 +237,15 @@ implements <a href="../../JParameterizedClassType.html" title="interface in hone
 </section>
 </li>
 <li>
-<section class="detail" id="namespace()">
-<h3>namespace</h3>
+<section class="detail" id="outerType()">
+<h3>outerType</h3>
 <div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a></span>&nbsp;<span class="element-name">namespace</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></span>&nbsp;<span class="element-name">outerType</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#namespace()">namespace</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setNamespace(honeyroasted.jype.metadata.location.JClassNamespace)">
-<h3>setNamespace</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setNamespace</span><wbr><span class="parameters">(<a href="../../../metadata/location/JClassNamespace.html" title="class in honeyroasted.jype.metadata.location">JClassNamespace</a>&nbsp;namespace)</span></div>
-<dl class="notes">
+<dd><code><a href="../../JClassType.html#outerType()">outerType</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
 <dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setNamespace(honeyroasted.jype.metadata.location.JClassNamespace)">setNamespace</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="modifiers()">
-<h3>modifiers</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">modifiers</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#modifiers()">modifiers</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setModifiers(int)">
-<h3>setModifiers</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setModifiers</span><wbr><span class="parameters">(int&nbsp;modifiers)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setModifiers(int)">setModifiers</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="outerClass()">
-<h3>outerClass</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a></span>&nbsp;<span class="element-name">outerClass</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#outerClass()">outerClass</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setOuterClass(honeyroasted.jype.type.JClassReference)">
-<h3>setOuterClass</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOuterClass</span><wbr><span class="parameters">(<a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;outerClass)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setOuterClass(honeyroasted.jype.type.JClassReference)">setOuterClass</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="outerMethod()">
-<h3>outerMethod</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a></span>&nbsp;<span class="element-name">outerMethod</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#outerMethod()">outerMethod</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setOuterMethod(honeyroasted.jype.type.JMethodReference)">
-<h3>setOuterMethod</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setOuterMethod</span><wbr><span class="parameters">(<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&nbsp;outerMethod)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setOuterMethod(honeyroasted.jype.type.JMethodReference)">setOuterMethod</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="declaredMethods()">
-<h3>declaredMethods</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;</span>&nbsp;<span class="element-name">declaredMethods</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#declaredMethods()">declaredMethods</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setDeclaredMethods(java.util.List)">
-<h3>setDeclaredMethods</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDeclaredMethods</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JMethodReference.html" title="interface in honeyroasted.jype.type">JMethodReference</a>&gt;&nbsp;methods)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setDeclaredMethods(java.util.List)">setDeclaredMethods</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="declaredFields()">
-<h3>declaredFields</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;</span>&nbsp;<span class="element-name">declaredFields</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#declaredFields()">declaredFields</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setDeclaredFields(java.util.List)">
-<h3>setDeclaredFields</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setDeclaredFields</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JFieldReference.html" title="interface in honeyroasted.jype.type">JFieldReference</a>&gt;&nbsp;fields)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setDeclaredFields(java.util.List)">setDeclaredFields</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
+<dd><code><a href="../../JParameterizedClassType.html#outerType()">outerType</a></code>&nbsp;in interface&nbsp;<code><a href="../../JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></code></dd>
 </dl>
 </div>
 </section>
@@ -476,108 +270,6 @@ implements <a href="../../JParameterizedClassType.html" title="interface in hone
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../JClassType.html#relativeSupertype(honeyroasted.jype.type.JClassType)">relativeSupertype</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="outerType()">
-<h3>outerType</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></span>&nbsp;<span class="element-name">outerType</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#outerType()">outerType</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-<dt>Specified by:</dt>
-<dd><code><a href="../../JParameterizedClassType.html#outerType()">outerType</a></code>&nbsp;in interface&nbsp;<code><a href="../../JParameterizedClassType.html" title="interface in honeyroasted.jype.type">JParameterizedClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="superClass()">
-<h3>superClass</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></span>&nbsp;<span class="element-name">superClass</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#superClass()">superClass</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setSuperClass(honeyroasted.jype.type.JClassType)">
-<h3>setSuperClass</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setSuperClass</span><wbr><span class="parameters">(<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&nbsp;superClass)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setSuperClass(honeyroasted.jype.type.JClassType)">setSuperClass</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="interfaces()">
-<h3>interfaces</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&gt;</span>&nbsp;<span class="element-name">interfaces</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#interfaces()">interfaces</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setInterfaces(java.util.List)">
-<h3>setInterfaces</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setInterfaces</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a>&gt;&nbsp;interfaces)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setInterfaces(java.util.List)">setInterfaces</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="typeParameters()">
-<h3>typeParameters</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;</span>&nbsp;<span class="element-name">typeParameters</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#typeParameters()">typeParameters</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-<dt>Specified by:</dt>
-<dd><code><a href="../../JGenericDeclaration.html#typeParameters()">typeParameters</a></code>&nbsp;in interface&nbsp;<code><a href="../../JGenericDeclaration.html" title="interface in honeyroasted.jype.type">JGenericDeclaration</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="setTypeParameters(java.util.List)">
-<h3>setTypeParameters</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setTypeParameters</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../JVarType.html" title="interface in honeyroasted.jype.type">JVarType</a>&gt;&nbsp;typeParameters)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#setTypeParameters(java.util.List)">setTypeParameters</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
-<dt>Specified by:</dt>
-<dd><code><a href="../../JGenericDeclaration.html#setTypeParameters(java.util.List)">setTypeParameters</a></code>&nbsp;in interface&nbsp;<code><a href="../../JGenericDeclaration.html" title="interface in honeyroasted.jype.type">JGenericDeclaration</a></code></dd>
-</dl>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="hasSupertype(honeyroasted.jype.type.JClassReference)">
-<h3>hasSupertype</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasSupertype</span><wbr><span class="parameters">(<a href="../../JClassReference.html" title="interface in honeyroasted.jype.type">JClassReference</a>&nbsp;supertype)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../../JClassType.html#hasSupertype(honeyroasted.jype.type.JClassReference)">hasSupertype</a></code>&nbsp;in interface&nbsp;<code><a href="../../JClassType.html" title="interface in honeyroasted.jype.type">JClassType</a></code></dd>
 </dl>
 </div>
 </section>

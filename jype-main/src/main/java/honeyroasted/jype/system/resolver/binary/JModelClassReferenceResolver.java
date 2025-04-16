@@ -28,6 +28,8 @@ import java.lang.classfile.MethodModel;
 import java.lang.classfile.attribute.EnclosingMethodAttribute;
 import java.lang.classfile.attribute.ExceptionsAttribute;
 import java.lang.classfile.attribute.InnerClassesAttribute;
+import java.lang.classfile.attribute.NestHostAttribute;
+import java.lang.classfile.attribute.NestMembersAttribute;
 import java.lang.classfile.attribute.SignatureAttribute;
 import java.lang.classfile.constantpool.ClassEntry;
 import java.lang.constant.MethodTypeDesc;
@@ -71,6 +73,28 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
 
         if (outerMethLoc != null) {
             ref.setOuterMethod(new JMethodReferenceDelegate(system, s -> s.tryResolve(outerMethLoc)));
+        }
+
+        Optional<NestHostAttribute> nestHostAttr = value.findAttribute(Attributes.nestHost());
+        Optional<NestMembersAttribute> nestMemberAttr = value.findAttribute(Attributes.nestMembers());
+
+        if (nestMemberAttr.isPresent()) {
+            boolean validHost = true;
+            if (nestHostAttr.isPresent()) {
+                NestHostAttribute host = nestHostAttr.get();
+                if (!loc.equals(JClassLocation.of(host.nestHost()))) {
+                    //Only record nest members if this class is the host
+                    validHost = false;
+                }
+            }
+
+            if (validHost) {
+                NestMembersAttribute nestMembers = nestMemberAttr.get();
+                nestMembers.nestMembers().forEach(ce -> {
+                    JClassLocation ceLoc = JClassLocation.of(ce);
+                    ref.nestMembers().add(new JClassReferenceDelegate(system, s -> s.tryResolve(ceLoc)));
+                });
+            }
         }
 
         Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.signature());

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 public class JWildTypeLowerDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JWildType.Lower> implements JWildType.Lower{
     public JWildTypeLowerDelegate(JTypeSystem system, Function<JTypeSystem, Lower> factory) {
-        super(system, factory);
+        super(system, factory, JWildTypeLowerDelegate::new);
     }
 
     @Override

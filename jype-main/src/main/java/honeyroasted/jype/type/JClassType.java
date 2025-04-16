@@ -49,6 +49,10 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, Poss
 
     void setOuterMethod(JMethodReference outerMethod);
 
+    List<JClassReference> nestMembers();
+
+    void setNestMembers(List<JClassReference> nestMembers);
+
     List<JMethodReference> declaredMethods();
 
     void setDeclaredMethods(List<JMethodReference> methods);

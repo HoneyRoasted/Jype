@@ -17,7 +17,7 @@ import java.util.function.Function;
 public class JClassReferenceDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JClassReference> implements JClassReference {
 
     public JClassReferenceDelegate(JTypeSystem system, Function<JTypeSystem, JClassReference> factory) {
-        super(system, factory);
+        super(system, factory, JClassReferenceDelegate::new);
     }
 
     @Override
@@ -78,6 +78,16 @@ public class JClassReferenceDelegate extends JAbstractPossiblyUnmodifiableDelega
     @Override
     public void setOuterMethod(JMethodReference outerMethod) {
         delegate().setOuterMethod(outerMethod);
+    }
+
+    @Override
+    public List<JClassReference> nestMembers() {
+        return delegate().nestMembers();
+    }
+
+    @Override
+    public void setNestMembers(List<JClassReference> nestMembers) {
+        this.delegate().setNestMembers(nestMembers);
     }
 
     @Override

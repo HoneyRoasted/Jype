@@ -10,7 +10,7 @@ import java.util.function.Function;
 
 public class JFieldReferenceDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JFieldReference> implements JFieldReference {
     public JFieldReferenceDelegate(JTypeSystem system, Function<JTypeSystem, JFieldReference> factory) {
-        super(system, factory);
+        super(system, factory, JFieldReferenceDelegate::new);
     }
 
     @Override

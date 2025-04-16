@@ -9,7 +9,7 @@ import java.util.function.Function;
 public class JArrayTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JArrayType> implements JArrayType {
 
     public JArrayTypeDelegate(JTypeSystem system, Function<JTypeSystem, JArrayType> factory) {
-        super(system, factory);
+        super(system, factory, JArrayTypeDelegate::new);
     }
 
     @Override

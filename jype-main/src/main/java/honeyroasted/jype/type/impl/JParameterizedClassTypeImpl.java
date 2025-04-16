@@ -1,18 +1,14 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
-import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
-import honeyroasted.jype.type.JFieldReference;
-import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
-import honeyroasted.jype.type.JVarType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -147,101 +143,6 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
     public void setTypeArguments(List<JArgumentType> typeArguments) {
         super.checkUnmodifiable();
         this.typeArguments = typeArguments;
-    }
-
-    @Override
-    public JClassNamespace namespace() {
-        return classReference.namespace();
-    }
-
-    @Override
-    public void setNamespace(JClassNamespace location) {
-        classReference.setNamespace(location);
-    }
-
-    @Override
-    public int modifiers() {
-        return classReference.modifiers();
-    }
-
-    @Override
-    public void setModifiers(int modifiers) {
-        classReference.setModifiers(modifiers);
-    }
-
-    @Override
-    public JClassReference outerClass() {
-        return classReference.outerClass();
-    }
-
-    @Override
-    public void setOuterClass(JClassReference outerClass) {
-        classReference.setOuterClass(outerClass);
-    }
-
-    @Override
-    public JMethodReference outerMethod() {
-        return classReference.outerMethod();
-    }
-
-    @Override
-    public void setOuterMethod(JMethodReference outerMethod) {
-        classReference.setOuterMethod(outerMethod);
-    }
-
-    @Override
-    public List<JMethodReference> declaredMethods() {
-        return classReference.declaredMethods();
-    }
-
-    @Override
-    public void setDeclaredMethods(List<JMethodReference> methods) {
-        classReference.setDeclaredMethods(methods);
-    }
-
-    @Override
-    public List<JFieldReference> declaredFields() {
-        return classReference.declaredFields();
-    }
-
-    @Override
-    public void setDeclaredFields(List<JFieldReference> fields) {
-        classReference.setDeclaredFields(fields);
-    }
-
-    @Override
-    public JClassType superClass() {
-        return classReference.superClass();
-    }
-
-    @Override
-    public void setSuperClass(JClassType superClass) {
-        classReference.setSuperClass(superClass);
-    }
-
-    @Override
-    public List<JClassType> interfaces() {
-        return classReference.interfaces();
-    }
-
-    @Override
-    public void setInterfaces(List<JClassType> interfaces) {
-        classReference.setInterfaces(interfaces);
-    }
-
-    @Override
-    public List<JVarType> typeParameters() {
-        return classReference.typeParameters();
-    }
-
-    @Override
-    public void setTypeParameters(List<JVarType> typeParameters) {
-        classReference.setTypeParameters(typeParameters);
-    }
-
-    @Override
-    public boolean hasSupertype(JClassReference supertype) {
-        return classReference.hasSupertype(supertype);
     }
 
     @Override

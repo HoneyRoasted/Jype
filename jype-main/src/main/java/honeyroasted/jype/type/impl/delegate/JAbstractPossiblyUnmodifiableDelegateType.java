@@ -4,12 +4,13 @@ import honeyroasted.collect.modify.PossiblyUnmodifiable;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JType;
 
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public class JAbstractPossiblyUnmodifiableDelegateType<T extends JType & PossiblyUnmodifiable> extends JAbstractDelegateType<T> implements PossiblyUnmodifiable {
 
-    public JAbstractPossiblyUnmodifiableDelegateType(JTypeSystem system, Function<JTypeSystem, T> factory) {
-        super(system, factory);
+    public JAbstractPossiblyUnmodifiableDelegateType(JTypeSystem system, Function<JTypeSystem, T> factory, BiFunction<JTypeSystem, Function<JTypeSystem, T>, ? extends JAbstractDelegateType<T>> constructor) {
+        super(system, factory, constructor);
     }
 
     @Override

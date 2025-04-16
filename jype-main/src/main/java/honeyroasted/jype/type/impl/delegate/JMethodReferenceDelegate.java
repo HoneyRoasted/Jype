@@ -14,7 +14,7 @@ import java.util.function.Function;
 
 public class JMethodReferenceDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JMethodReference> implements JMethodReference {
     public JMethodReferenceDelegate(JTypeSystem system, Function<JTypeSystem, JMethodReference> factory) {
-        super(system, factory);
+        super(system, factory, JMethodReferenceDelegate::new);
     }
 
     @Override

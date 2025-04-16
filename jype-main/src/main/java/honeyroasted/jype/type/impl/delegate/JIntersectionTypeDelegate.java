@@ -10,7 +10,7 @@ import java.util.function.Function;
 public class JIntersectionTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JIntersectionType> implements JIntersectionType {
 
     public JIntersectionTypeDelegate(JTypeSystem system, Function<JTypeSystem, JIntersectionType> factory) {
-        super(system, factory);
+        super(system, factory, JIntersectionTypeDelegate::new);
     }
 
     @Override
