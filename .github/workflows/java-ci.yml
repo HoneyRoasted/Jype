@@ -44,19 +44,13 @@ jobs:
           path: "."
           ext: ".gradle"
 
-      - name: Clean Output
-        id: clean-output
-        env:
-          FILES: ${{ steps.list-files.outputs.paths }}
-        run: 'echo "file_list={\"FILE_LIST\": $FILES }" >> $GITHUB_OUTPUT'
-
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJSON(steps.clean-output.outputs.file_list) }}
+          FILES: ${{ steps.list-files.outputs.paths }}
         run: |
           echo "Files: $FILES"
-          for file in ${FILES.FILE_LIST}; do
+          echo "$FILES" | jq -c '.[]' | while read file; do
             echo "Detected gradle file: $file"
             ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
             if [ ! -z "$ver" ]; then
