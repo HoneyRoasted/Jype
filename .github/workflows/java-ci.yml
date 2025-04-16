@@ -47,7 +47,7 @@ jobs:
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ fromJSON(steps.list-files.outputs.paths) }}
+          FILES: ${{ fromJSON("{FILES:" + steps.list-files.outputs.paths) +  "}"}}
         run: |
           echo "Files: $FILES"
           for file in ${FILES}; do
