@@ -3,7 +3,7 @@ name: Java CI
 on: [push, workflow_dispatch]
 
 jobs:
-  builds:
+  build_and_tag:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,7 +47,7 @@ jobs:
       - name: Extract Version
         id: extract-version
         env:
-          FILES: ${{ steps.list-files.outputs.paths }}
+          FILES: ${{ fromJSON(steps.list-files.outputs.paths) }}
         run: |
           echo "Files: $FILES"
           for file in ${FILES}; do
