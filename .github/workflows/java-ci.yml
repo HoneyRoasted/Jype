@@ -35,21 +35,25 @@ jobs:
             jype-main/build/libs
             jype-stub/build/libs
 
-      - name: Detect File Changes
-        id: changed-files
-        uses: tj-actions/changed-files@ed68ef82c095e0d48ec87eccea555d944a631a4c
+      - name: List Files
+        id: list-files
+        uses: mirko-felice/list-files-action@v3.0.5
         with:
-          files: "**/*.gradle"
+          repo: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          path: "."
+          ext: ".gradle"
 
       - name: Extract Version
         id: extract-version
         env:
-          CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          FILES: ${{ fromJson(steps.list-files.outputs.paths) }}
         run: |
-          for file in ${CHANGED_FILES}; do
-            echo "Detected change in $file"
+          for file in ${FILES}; do
+            echo "Detected gradle file: $file"
             ver=$(awk '$1 == "version"{gsub(/'\''/, "", $2); print $2; exit}' $file)
             if [ ! -z "$ver" ]; then
+              echo "Found version: $ver"
               echo "ver=$ver" >> $GITHUB_OUTPUT
               break
             fi
@@ -59,18 +63,18 @@ jobs:
         uses: mukunku/tag-exists-action@v1.6.0
         id: tag-check
         with:
-          tag: "${{ steps.extract-version.outputs.ver }}"
+          tag: ${{ steps.extract-version.outputs.ver }}
 
       - env:
           TAG_EXISTS: ${{ steps.tag-check.outputs.exists }}
         run: echo "Tag already exists - $TAG_EXISTS (if false, a new one will be created)"
 
       - name: Create Tag
-        if: steps.tag-check.outputs.exists == 'false'
+        if: steps.tag-check.outputs.exists == 'false' && steps.extract-version.outputs.ver != ''
         uses: tvdias/github-tagger@v0.0.2
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          tag: "${{ steps.extract-version.outputs.ver }}"
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ steps.extract-version.outputs.ver }}
 
 
       - name: Clean Cache
