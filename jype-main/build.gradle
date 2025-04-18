@@ -1,7 +1,7 @@
 apply from: rootProject.file('buildSrc/shared.gradle')
 
 dependencies {
-    api("com.github.HoneyRoasted:Almonds:0.0.23")
+    api("com.github.HoneyRoasted:Almonds:0.0.24")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3",
             project(":jype-stub"))
