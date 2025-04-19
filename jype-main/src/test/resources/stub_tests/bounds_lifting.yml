@@ -1,0 +1,43 @@
+name: Bounds Lifting Tests
+
+tests:
+  parameter_inference:
+    expect:
+      - status: true
+      - instantiation:
+          var: T
+          type: Ljava/lang/String;
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/ProcessBuilder;
+          expr:
+            instantiation:
+              type: Ljava/lang/ProcessBuilder;
+              parameters:
+                - invocation:
+                    name: emptyList
+                    paremeters: []
+                    staticSource: Ljava/util/Collections;
+
+  multi_level_bounds:
+    expect:
+      - status: true
+      - instantiation:
+          var: E
+          type: Ljava/lang/String;
+      - instantiation:
+          var: T
+          type: Ljava/lang/String;
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/List<Ljava/lang/String;>;
+          expr:
+            instantiation:
+              type: Ljava/util/ArrayList;
+              parameters:
+                - invocation:
+                    name: emptyList
+                    paremeters: []
+                    staticSource: Ljava/util/Collections;
