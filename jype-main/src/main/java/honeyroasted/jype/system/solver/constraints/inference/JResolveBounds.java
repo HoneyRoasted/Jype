@@ -70,22 +70,24 @@ public class JResolveBounds extends ConstraintMapper.All {
                 Map<JMetaVarType, Pair<JType, Constraint>> candidates = new LinkedHashMap<>();
                 boolean foundAllCandidates = true;
                 for (JMetaVarType mvt : subset) {
-                    Pair<Map<JType, Constraint>, Map<JType, Constraint>> properBounds = this.findProperBounds(branchContext, branch, mvt, branch.constraints());
-                    Map<JType, Constraint> properUpper = properBounds.left();
-                    Map<JType, Constraint> properLower = properBounds.right();
+                    if (!instantiations.containsKey(mvt)) {
+                        Pair<Map<JType, Constraint>, Map<JType, Constraint>> properBounds = this.findProperBounds(branchContext, branch, mvt, branch.constraints());
+                        Map<JType, Constraint> properUpper = properBounds.left();
+                        Map<JType, Constraint> properLower = properBounds.right();
 
-                    if (!properLower.isEmpty()) {
-                        JType lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        candidates.put(mvt, Pair.of(lub, new JTypeConstraints.Equal(mvt, lub)));
-                    } else if (branch.constraints().entrySet().stream().anyMatch(cn -> cn.getValue().isTrue() && cn.getKey() instanceof JTypeConstraints.Throws thr && thr.value().equals(mvt)) &&
-                            properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
-                        JType cand = mvt.typeSystem().constants().runtimeException();
-                        candidates.put(mvt, Pair.of(cand, new JTypeConstraints.Equal(mvt, cand)));
-                    } else if (!properUpper.isEmpty()) {
-                        JType glb = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet());
-                        candidates.put(mvt, Pair.of(glb, new JTypeConstraints.Equal(mvt, glb)));
-                    } else {
-                        foundAllCandidates = false;
+                        if (!properLower.isEmpty()) {
+                            JType lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
+                            candidates.put(mvt, Pair.of(lub, new JTypeConstraints.Equal(mvt, lub)));
+                        } else if (branch.constraints().entrySet().stream().anyMatch(cn -> cn.getValue().isTrue() && cn.getKey() instanceof JTypeConstraints.Throws thr && thr.value().equals(mvt)) &&
+                                properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
+                            JType cand = mvt.typeSystem().constants().runtimeException();
+                            candidates.put(mvt, Pair.of(cand, new JTypeConstraints.Equal(mvt, cand)));
+                        } else if (!properUpper.isEmpty()) {
+                            JType glb = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet());
+                            candidates.put(mvt, Pair.of(glb, new JTypeConstraints.Equal(mvt, glb)));
+                        } else {
+                            foundAllCandidates = false;
+                        }
                     }
                 }
 

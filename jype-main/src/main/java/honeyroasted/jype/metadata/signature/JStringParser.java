@@ -13,6 +13,7 @@ public class JStringParser {
     }
 
     protected int peek() {
+        if (!hasNext()) fail("Reached EOF unexpectedly");
         return this.codepoints[this.index];
     }
 
