@@ -14,6 +14,7 @@ import honeyroasted.jype.type.JClassReference;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class Sandbox {
 
@@ -32,6 +33,14 @@ public class Sandbox {
 
         System.out.println(String[].class.getSuperclass());
         System.out.println(Arrays.toString(String[].class.getInterfaces()));
+    }
+
+    private static void test() {
+        doAThing(a -> 1); //Why does this work??
+    }
+
+    private static <F extends Function<String, Integer>> void doAThing(F func) {
+
     }
 
 }

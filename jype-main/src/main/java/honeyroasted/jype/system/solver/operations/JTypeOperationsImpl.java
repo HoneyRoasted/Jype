@@ -36,6 +36,9 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiationRefExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceInvocationRefExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSubtype;
@@ -93,13 +96,16 @@ public class JTypeOperationsImpl implements JTypeOperations {
 
             new JReduceSubtype(),
             new JReduceCompatible(),
+            new JReduceContains(),
+            new JReduceEqual(),
+
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
             new JReduceGetField(),
-            //TODO implement non-simply typed expressions
-            new JReduceContains(),
-            new JReduceEqual(),
+            new JReduceInstantiationRefExpression(),
+            new JReduceInvocationRefExpression(),
+            new JReduceLambdaExpression(),
 
             new JIncorporationEqualEqual(),
             new JIncorporationEqualSubtype(),
@@ -124,13 +130,16 @@ public class JTypeOperationsImpl implements JTypeOperations {
 
             new JReduceSubtype(),
             new JReduceCompatible(),
+            new JReduceContains(),
+            new JReduceEqual(),
+
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
             new JReduceGetField(),
-            //TODO implement non-simply typed expressions
-            new JReduceContains(),
-            new JReduceEqual(),
+            new JReduceInstantiationRefExpression(),
+            new JReduceInvocationRefExpression(),
+            new JReduceLambdaExpression(),
 
             new JIncorporationEqualEqual(),
             new JIncorporationEqualSubtype(),
