@@ -7,7 +7,6 @@ import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
-import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
@@ -31,10 +30,9 @@ public class JSubtypeGenericClass extends ConstraintMapper.Unary<JTypeConstraint
         JType right = constraint.right();
 
         JClassType l = (JClassType) left;
-        JParameterizedClassType pcr = (JParameterizedClassType) right;
+        JClassType pcr = (JClassType) right;
 
-        Optional<JClassType> superTypeOpt = (l instanceof JParameterizedClassType pcl ? pcl : l.classReference().parameterized())
-                .relativeSupertype(pcr.classReference());
+        Optional<JClassType> superTypeOpt = l.relativeSupertype(pcr.classReference());
         if (superTypeOpt.isPresent()) {
             JClassType relative = superTypeOpt.get();
 

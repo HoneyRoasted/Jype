@@ -14,6 +14,7 @@ import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.JTypeVisitors;
 import honeyroasted.jype.system.visitor.visitors.JDownwardProjectionVisitor;
 import honeyroasted.jype.system.visitor.visitors.JToSignatureVisitor;
+import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +44,10 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     <R, P> R accept(JTypeVisitor<R, P> visitor, P context);
 
     PropertySet metadata();
+
+    default JVarTypeResolveVisitor varTypeResolver() {
+        return new JVarTypeResolveVisitor(Collections.emptyMap());
+    }
 
     default JType upwardsProjection() {
         return upwardsProjection(t -> t instanceof JMetaVarType);

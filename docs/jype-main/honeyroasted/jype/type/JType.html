@@ -70,6 +70,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#descriptor()" tabindex="0">descriptor()</a></li>
 <li><a href="#accept(honeyroasted.jype.system.visitor.JTypeVisitor,P)" tabindex="0">accept(JTypeVisitor, P)</a></li>
 <li><a href="#metadata()" tabindex="0">metadata()</a></li>
+<li><a href="#varTypeResolver()" tabindex="0">varTypeResolver()</a></li>
 <li><a href="#upwardsProjection()" tabindex="0">upwardsProjection()</a></li>
 <li><a href="#upwardsProjection(java.util.function.Predicate)" tabindex="0">upwardsProjection(Predicate)</a></li>
 <li><a href="#downwardsProjection()" tabindex="0">downwardsProjection()</a></li>
@@ -319,6 +320,9 @@ extends honeyroasted.almonds.SimpleName, honeyroasted.collect.copy.Copyable&lt;<
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="JType.html" title="interface in honeyroasted.jype.type">JType</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#upwardsProjection(java.util.function.Predicate)" class="member-name-link">upwardsProjection</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html" title="class or interface in java.util.function" class="external-link">Predicate</a>&lt;<a href="JType.html" title="interface in honeyroasted.jype.type">JType</a>&gt;&nbsp;restricted)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../system/visitor/visitors/JVarTypeResolveVisitor.html" title="class in honeyroasted.jype.system.visitor.visitors">JVarTypeResolveVisitor</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#varTypeResolver()" class="member-name-link">varTypeResolver</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -382,6 +386,14 @@ extends honeyroasted.almonds.SimpleName, honeyroasted.collect.copy.Copyable&lt;<
 <h3>metadata</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type">honeyroasted.collect.property.PropertySet</span>&nbsp;<span class="element-name">metadata</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="varTypeResolver()">
+<h3>varTypeResolver</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../system/visitor/visitors/JVarTypeResolveVisitor.html" title="class in honeyroasted.jype.system.visitor.visitors">JVarTypeResolveVisitor</a></span>&nbsp;<span class="element-name">varTypeResolver</span>()</div>
 </div>
 </section>
 </li>

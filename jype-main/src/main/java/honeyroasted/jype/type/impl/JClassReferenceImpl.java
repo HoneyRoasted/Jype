@@ -67,7 +67,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
 
     @Override
     public JParameterizedClassType parameterized(List<JArgumentType> typeArguments) {
-        if (typeArguments.size() != this.typeParameters.size()) {
+        if (!typeArguments.isEmpty() && typeArguments.size() != this.typeParameters.size()) {
             throw new IllegalArgumentException("Expected exactly " + this.typeParameters.size() + " type arguments");
         }
 
