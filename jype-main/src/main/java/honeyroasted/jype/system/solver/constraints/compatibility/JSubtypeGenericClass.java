@@ -20,7 +20,8 @@ public class JSubtypeGenericClass extends ConstraintMapper.Unary<JTypeConstraint
         JType right = constraint.right();
 
         return status.isUnknown() && left.isProperType() && right.isProperType() &&
-                left instanceof JClassType && right instanceof JClassType ct && ct.hasTypeArguments();
+                left instanceof JClassType l && right instanceof JClassType r &&
+                (l.hasAnyTypeArguments() || r.hasAnyTypeArguments());
     }
 
     @Override

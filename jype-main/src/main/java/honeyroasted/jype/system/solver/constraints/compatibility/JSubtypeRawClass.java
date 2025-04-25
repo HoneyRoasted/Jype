@@ -15,8 +15,8 @@ public class JSubtypeRawClass extends ConstraintMapper.Unary<JTypeConstraints.Su
         JType right = constraint.right();
 
         return status.isUnknown() && left.isProperType() && right.isProperType() &&
-                left instanceof JClassType l && !l.hasTypeArguments() &&
-                right instanceof JClassType r && !r.hasTypeArguments();
+                left instanceof JClassType l && right instanceof JClassType r &&
+                (!l.hasAnyTypeArguments() && !r.hasAnyTypeArguments());
     }
 
     @Override
