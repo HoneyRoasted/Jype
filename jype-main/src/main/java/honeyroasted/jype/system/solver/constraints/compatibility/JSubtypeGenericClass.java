@@ -36,7 +36,13 @@ public class JSubtypeGenericClass extends ConstraintMapper.Unary<JTypeConstraint
         if (superTypeOpt.isPresent()) {
             JClassType relative = superTypeOpt.get();
 
-            if (relative.typeArguments().size() == pcr.typeArguments().size()) {
+            if (relative.typeArguments().isEmpty() || pcr.typeArguments().isEmpty()) {
+                if (l.hasRelevantOuterType() && pcr.hasRelevantOuterType()) {
+                    branch.add(new JTypeConstraints.Subtype(l.outerType(), pcr.outerType()));
+                } else {
+                    branch.set(constraint, Constraint.Status.known(l.classReference().hasSupertype(pcr.classReference())));
+                }
+            } else if (relative.typeArguments().size() == pcr.typeArguments().size()) {
                 branch.drop(constraint);
                 for (int i = 0; i < relative.typeArguments().size(); i++) {
                     JType ti = relative.typeArguments().get(i);

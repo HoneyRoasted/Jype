@@ -1,0 +1,38 @@
+name: Basic Compatibility Tests
+
+tests:
+  subclass_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - subtype:
+          - Ljava/lang/String;
+          - Ljava/lang/CharSequence;
+
+  not_subclass_test:
+    expect:
+      - status: false
+    solver: COMPATIBILITY
+    constraints:
+      - subtype:
+          - Ljava/lang/CharSequence;
+          - Ljava/lang/String;
+
+  generic_unchecked_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - subtype:
+          - Ljava/util/ArrayList<Ljava/lang/String;>;
+          - Ljava/util/List;
+
+  not_generic_unchecked_test:
+    expect:
+      - status: false
+    solver: COMPATIBILITY
+    constraints:
+      - subtype:
+          - Ljava/util/List;
+          - Ljava/util/ArrayList<Ljava/lang/String;>;
