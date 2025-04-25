@@ -198,7 +198,7 @@ public class JSignatureParser extends JStringParser {
 
     private JSignature.WildType readWild() {
         if (!this.hasNext()) fail("Expected wild type start (+, -, *) start, got EOF");
-        if (peek() != '-' || peek() != '+' || peek() != '*') fail("Expected wild type start (+, -, *), got " + Character.toString(peek()));
+        if (peek() != '-' && peek() != '+' && peek() != '*') fail("Expected wild type start (+, -, *), got " + Character.toString(peek()));
 
         int wildInd = next();
         if (wildInd == '-') {

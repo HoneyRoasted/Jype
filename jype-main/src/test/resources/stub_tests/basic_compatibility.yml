@@ -36,3 +36,15 @@ tests:
       - subtype:
           - Ljava/util/List;
           - Ljava/util/ArrayList<Ljava/lang/String;>;
+
+  unchecked_wildcard_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - subtype:
+          - Ljava/util/List<-Ljava/lang/Object;>;
+          - Ljava/util/List;
+      - subtype:
+          - Ljava/util/List;
+          - Ljava/util/List<-Ljava/lang/Object;>;

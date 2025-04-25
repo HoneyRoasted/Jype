@@ -210,7 +210,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
 
     @Override
     public Optional<JClassType> relativeSupertype(JClassType superType) {
-        return this.parameterizedWithTypeVars().relativeSupertype(superType);
+        return this.parameterized().relativeSupertype(superType);
     }
 
     public JClassType superClass() {
