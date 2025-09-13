@@ -4,12 +4,19 @@ import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.metadata.signature.JDescriptor;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
-public interface JPrimitiveType extends JType {
+import java.util.Optional;
+
+public interface JPrimitiveType extends JReferencableType {
     JClassNamespace namespace();
 
     JClassNamespace boxNamespace();
 
     JClassReference box();
+
+    @Override
+    default Optional<JClassNamespace> classNamespace() {
+        return Optional.of(this.namespace());
+    }
 
     String name();
 

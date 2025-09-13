@@ -1,9 +1,11 @@
 package honeyroasted.jype.type.impl.delegate;
 
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JType;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public class JArrayTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JArrayType> implements JArrayType {
@@ -25,5 +27,10 @@ public class JArrayTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateTyp
     @Override
     public int depth() {
         return delegate().depth();
+    }
+
+    @Override
+    public Optional<JClassNamespace> classNamespace() {
+        return Optional.empty();
     }
 }

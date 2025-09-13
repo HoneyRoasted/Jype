@@ -1,9 +1,13 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
+import honeyroasted.jype.metadata.location.JClassLocation;
+import honeyroasted.jype.metadata.location.JClassName;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.type.JReferencableType;
 import honeyroasted.jype.type.JType;
 
 import java.util.Optional;
@@ -11,6 +15,7 @@ import java.util.Set;
 
 public final class JArrayTypeImpl extends JAbstractPossiblyUnmodifiableType implements JArrayType {
     private JType component;
+    private Optional<JClassNamespace> namespace;
 
     public JArrayTypeImpl(JTypeSystem typeSystem) {
         super(typeSystem);
@@ -36,9 +41,31 @@ public final class JArrayTypeImpl extends JAbstractPossiblyUnmodifiableType impl
     }
 
     @Override
+    public Optional<JClassNamespace> classNamespace() {
+        if (this.namespace == null) {
+            if (this.component instanceof JReferencableType jrt) {
+                Optional<JClassNamespace> containingOpt = jrt.classNamespace();
+                if (containingOpt.isPresent()) {
+                    JClassNamespace containing = containingOpt.get();
+
+                    namespace = Optional.of(new JClassNamespace(
+                            new JClassLocation(JClassLocation.Type.ARRAY, containing.location(), "[]"),
+                            new JClassName(JClassName.Type.CLASS, JClassName.SubType.ARRAY, containing.name(), "[]")
+                    ));
+                } else {
+                    this.namespace = Optional.empty();
+                }
+            }
+        }
+
+        return this.namespace;
+    }
+
+    @Override
     public void setComponent(JType component) {
         super.checkUnmodifiable();
         this.component = component;
+        this.namespace = null;
     }
 
     @Override

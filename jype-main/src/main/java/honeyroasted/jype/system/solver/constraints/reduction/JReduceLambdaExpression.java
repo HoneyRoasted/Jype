@@ -15,6 +15,6 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-
+        //TODO implement
     }
 }

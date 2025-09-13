@@ -1,6 +1,7 @@
 package honeyroasted.jype.type.impl;
 
 import honeyroasted.collect.multi.Pair;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JNoneType;
@@ -15,6 +16,11 @@ public final class JNoneTypeImpl extends JAbstractType implements JNoneType {
     public JNoneTypeImpl(JTypeSystem system, String name) {
         super(system);
         this.name = name;
+    }
+
+    @Override
+    public JClassNamespace namespace() {
+        return JClassNamespace.VOID;
     }
 
     @Override

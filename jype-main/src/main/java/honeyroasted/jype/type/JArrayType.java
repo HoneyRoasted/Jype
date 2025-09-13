@@ -5,7 +5,7 @@ import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 import java.util.Set;
 
-public interface JArrayType extends PossiblyUnmodifiable, JInstantiableType, JArgumentType {
+public interface JArrayType extends PossiblyUnmodifiable, JInstantiableType, JReferencableType, JArgumentType {
     JType component();
 
     default JType deepComponent() {

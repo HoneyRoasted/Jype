@@ -1,6 +1,7 @@
 package honeyroasted.jype.metadata.location;
 
 public record JClassNamespace(JClassLocation location, JClassName name) implements JGenericDeclarationLocation {
+    public static final JClassNamespace VOID = JClassNamespace.of(void.class);
 
     public static JClassNamespace of(Class<?> cls) {
         return new JClassNamespace(JClassLocation.of(cls), JClassName.of(cls));

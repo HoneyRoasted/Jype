@@ -14,11 +14,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface JClassType extends JGenericDeclaration, JInstantiableType, PossiblyUnmodifiable, JArgumentType {
+public interface JClassType extends JGenericDeclaration, JInstantiableType, JReferencableType, PossiblyUnmodifiable, JArgumentType {
 
     JClassNamespace namespace();
 
     void setNamespace(JClassNamespace namespace);
+
+    @Override
+    default Optional<JClassNamespace> classNamespace() {
+        return Optional.of(this.namespace());
+    }
 
     @Override
     default JGenericDeclarationLocation genericDeclarationLocation() {

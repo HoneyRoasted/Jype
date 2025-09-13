@@ -15,6 +15,6 @@ public class JReduceInstantiationRefExpression extends ConstraintMapper.Unary<JT
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-
+        //TODO implement
     }
 }

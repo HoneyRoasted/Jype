@@ -14,12 +14,10 @@ import honeyroasted.jype.system.resolver.JResolutionResult;
 import honeyroasted.jype.system.resolver.JTypeResolver;
 import honeyroasted.jype.system.resolver.binary.JBinaryLookupException;
 import honeyroasted.jype.system.resolver.general.JSignatureTypeResolution;
-import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
-import honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate;
 import honeyroasted.jypestub.model.types.JStubClass;
 
 import java.lang.reflect.AccessFlag;
@@ -85,18 +83,6 @@ public class JStubClassReferenceResolver implements JTypeResolver<JStubClass, JT
 
         ref.setUnmodifiable(true);
         return new JResolutionResult<>(ref, value);
-    }
-
-    private static JType delayed(JTypeSystem system, JClassLocation location) {
-        if (location.isArray()) {
-            JArrayType type = system.typeFactory().newArrayType();
-            type.setComponent(delayed(system, location.containing()));
-            return type;
-        } else if (location.getPackage().isDefaultPackage() && ("void".equals(location.value()) || system.constants().allPrimitives().stream().anyMatch(prim -> prim.namespace().location().equals(location)))) {
-            return system.tryResolve(location);
-        } else {
-            return new JClassReferenceDelegate(system, s -> s.tryResolve(location));
-        }
     }
 
     private static int makeMask(Set<AccessFlag> flags) {

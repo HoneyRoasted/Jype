@@ -1,8 +1,18 @@
 package honeyroasted.jype.type;
 
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
 
-public interface JNoneType extends JType {
+import java.util.Optional;
+
+public interface JNoneType extends JType, JReferencableType {
+
+    JClassNamespace namespace();
+
+    @Override
+    default Optional<JClassNamespace> classNamespace() {
+        return Optional.of(this.namespace());
+    }
 
     String name();
 

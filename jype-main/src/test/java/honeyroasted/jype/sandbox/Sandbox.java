@@ -2,6 +2,7 @@ package honeyroasted.jype.sandbox;
 
 import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.location.JClassName;
+import honeyroasted.jype.metadata.location.JClassNamespace;
 import honeyroasted.jype.system.JSimpleTypeSystem;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;
@@ -10,7 +11,7 @@ import honeyroasted.jype.system.resolver.binary.JBinaryLocationClassReferenceRes
 import honeyroasted.jype.system.resolver.binary.JBinaryTypeResolution;
 import honeyroasted.jype.system.resolver.general.JGeneralTypeResolution;
 import honeyroasted.jype.system.resolver.reflection.JReflectionTypeResolution;
-import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JReferencableType;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -61,12 +62,13 @@ public class Sandbox {
         }
 
         classes.add(Test.class);
+        classes.add(String[].class);
 
         for (Class cls : classes) {
-            JClassReference ref = bytecodeSystem.tryResolve(JClassLocation.of(cls));
+            JReferencableType ref = bytecodeSystem.tryResolve(JClassLocation.of(cls));
             System.out.println("-------------- " + cls + " -------------- ");
             System.out.println("Expected name: " + JClassName.of(cls));
-            System.out.println("Determi. name: " + ref.namespace().name());
+            System.out.println("Determi. name: " + ref.classNamespace().map(JClassNamespace::name).orElse(null));
             System.out.println("-------------- -------------- --------------");
         }
     }
