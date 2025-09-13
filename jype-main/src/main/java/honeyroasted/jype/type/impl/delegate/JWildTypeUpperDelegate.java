@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class JWildTypeUpperDelegate extends JAbstractPossiblyUnmodifiableDelegateType<JWildType.Upper> implements JWildType.Upper {
+
     public JWildTypeUpperDelegate(JTypeSystem system, Function<JTypeSystem, Upper> factory) {
         super(system, factory, JWildTypeUpperDelegate::new);
     }

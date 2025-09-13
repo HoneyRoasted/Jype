@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 public class JMetaVarTypeDelegate extends JAbstractDelegateType<JMetaVarType> implements JMetaVarType {
+
     public JMetaVarTypeDelegate(JTypeSystem system, Function<JTypeSystem, JMetaVarType> factory) {
         super(system, factory, JMetaVarTypeDelegate::new);
     }

@@ -27,11 +27,13 @@ import java.lang.classfile.FieldModel;
 import java.lang.classfile.MethodModel;
 import java.lang.classfile.attribute.EnclosingMethodAttribute;
 import java.lang.classfile.attribute.ExceptionsAttribute;
+import java.lang.classfile.attribute.InnerClassInfo;
 import java.lang.classfile.attribute.InnerClassesAttribute;
 import java.lang.classfile.attribute.NestHostAttribute;
 import java.lang.classfile.attribute.NestMembersAttribute;
 import java.lang.classfile.attribute.SignatureAttribute;
 import java.lang.classfile.constantpool.ClassEntry;
+import java.lang.classfile.constantpool.NameAndTypeEntry;
 import java.lang.constant.MethodTypeDesc;
 import java.util.Optional;
 
@@ -51,13 +53,101 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
 
         JClassName name = null;
 
+        Optional<NestHostAttribute> nestHostAttr = value.findAttribute(Attributes.nestHost());
+        Optional<NestMembersAttribute> nestMemberAttr = value.findAttribute(Attributes.nestMembers());
+
+        boolean validHost = true;
+        if (nestHostAttr.isPresent()) {
+            NestHostAttribute host = nestHostAttr.get();
+            if (!loc.equals(JClassLocation.of(host.nestHost()))) {
+                //Only record nest members if this class is the host
+                validHost = false;
+            }
+        }
+
+        if (nestMemberAttr.isPresent()) {
+            if (validHost) {
+                NestMembersAttribute nestMembers = nestMemberAttr.get();
+                nestMembers.nestMembers().forEach(ce -> {
+                    JClassLocation ceLoc = JClassLocation.of(ce);
+                    ref.nestMembers().add(new JClassReferenceDelegate(system, s -> s.tryResolve(ceLoc)));
+                });
+            }
+        }
+
         Optional<InnerClassesAttribute> innerClsAttr = value.findAttribute(Attributes.innerClasses());
         Optional<EnclosingMethodAttribute> enclMethAttr = value.findAttribute(Attributes.enclosingMethod());
 
+        boolean anonymous = innerClsAttr.map(attr -> attr.classes().stream()
+                        .anyMatch(ic -> ic.innerClass().equals(value.thisClass()) && ic.innerName().isEmpty()))
+                .orElse(false);
+
         JClassLocation outerClsLoc = null;
         JMethodLocation outerMethLoc = null;
-        if (innerClsAttr.isPresent() || enclMethAttr.isPresent()) {
-            //TODO Generate correct name
+
+        String simpleName = null;
+        if (innerClsAttr.isPresent()) {
+            Optional<InnerClassInfo> selfInfoOpt = innerClsAttr.get().classes()
+                    .stream().filter(icl -> icl.innerClass().equals(value.thisClass()))
+                    .findFirst();
+
+            if (selfInfoOpt.isPresent()) {
+                InnerClassInfo selfInfo = selfInfoOpt.get();
+
+                if (selfInfo.innerName().isPresent()) {
+                    simpleName = selfInfo.innerName().get().stringValue();
+                }
+
+                if (enclMethAttr.isEmpty()) {
+                    if (selfInfo.outerClass().isPresent()) {
+                        JClassReference outerCls = system.tryResolve(JClassLocation.of(selfInfo.outerClass().get()));
+                        name = anonymous ? JClassName.anonymous(outerCls.namespace().name()) :
+                                JClassName.className(simpleName, outerCls.namespace().name());
+                    }
+                }
+            }
+        }
+
+        if (simpleName == null) {
+            simpleName = anonymous ? "<anonymous>" : loc.value();
+        }
+
+        if (enclMethAttr.isPresent()) {
+            JClassName containing = null;
+
+            EnclosingMethodAttribute attr = enclMethAttr.get();
+            ClassEntry enclClass = attr.enclosingClass();
+            JClassReference enclRef = system.tryResolve(JClassLocation.of(enclClass));
+
+            if (attr.enclosingMethod().isPresent()) {
+                NameAndTypeEntry method = attr.enclosingMethod().get();
+                String methodName = method.name().stringValue();
+                String methodDesc = method.type().stringValue();
+
+                Optional<JMethodReference> enclMethodOpt = enclRef.declaredMethods().stream()
+                        .filter(mref -> methodName.equals(mref.location().name()) &&
+                                methodDesc.equals(mref.descriptor().toString()))
+                        .findFirst();
+
+                if (enclMethodOpt.isPresent()) {
+                    JMethodReference enclMethod = enclMethodOpt.get();
+                    outerMethLoc = enclMethod.location();
+                    outerClsLoc = enclMethod.outerClass().namespace().location();
+
+                    containing = JClassName.of(enclMethod);
+                }
+            } else {
+                //Must be a class inside an initializer
+                containing = JClassName.initializer(enclRef.namespace().name());
+            }
+
+            if (containing != null) {
+                if (anonymous) {
+                    name = JClassName.anonymous(containing);
+                } else {
+                    name = JClassName.className(simpleName, containing);
+                }
+            }
         }
 
         if (name == null) {
@@ -68,33 +158,13 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
         ref.setModifiers(value.flags().flagsMask());
 
         if (outerClsLoc != null) {
-            ref.setOuterClass(new JClassReferenceDelegate(system, s -> s.tryResolve(outerClsLoc)));
+            JClassLocation finalOuterClsLoc = outerClsLoc;
+            ref.setOuterClass(new JClassReferenceDelegate(system, s -> s.tryResolve(finalOuterClsLoc)));
         }
 
         if (outerMethLoc != null) {
-            ref.setOuterMethod(new JMethodReferenceDelegate(system, s -> s.tryResolve(outerMethLoc)));
-        }
-
-        Optional<NestHostAttribute> nestHostAttr = value.findAttribute(Attributes.nestHost());
-        Optional<NestMembersAttribute> nestMemberAttr = value.findAttribute(Attributes.nestMembers());
-
-        if (nestMemberAttr.isPresent()) {
-            boolean validHost = true;
-            if (nestHostAttr.isPresent()) {
-                NestHostAttribute host = nestHostAttr.get();
-                if (!loc.equals(JClassLocation.of(host.nestHost()))) {
-                    //Only record nest members if this class is the host
-                    validHost = false;
-                }
-            }
-
-            if (validHost) {
-                NestMembersAttribute nestMembers = nestMemberAttr.get();
-                nestMembers.nestMembers().forEach(ce -> {
-                    JClassLocation ceLoc = JClassLocation.of(ce);
-                    ref.nestMembers().add(new JClassReferenceDelegate(system, s -> s.tryResolve(ceLoc)));
-                });
-            }
+            JMethodLocation finalOuterMethLoc = outerMethLoc;
+            ref.setOuterMethod(new JMethodReferenceDelegate(system, s -> s.tryResolve(finalOuterMethLoc)));
         }
 
         Optional<SignatureAttribute> sigAttr = value.findAttribute(Attributes.signature());

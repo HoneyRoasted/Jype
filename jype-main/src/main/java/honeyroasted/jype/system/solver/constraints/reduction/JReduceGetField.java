@@ -102,7 +102,7 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
         return new ConstraintBranch.Snapshot(new PropertySet().attach(new JTypeContext.ChosenField(getField, ref)), getfield);
     }
 
-    private static Collection<JFieldReference> getAllFields(JClassReference ref, Predicate<JFieldReference> filter) {
+    public static Collection<JFieldReference> getAllFields(JClassReference ref, Predicate<JFieldReference> filter) {
         List<JFieldReference> result = new ArrayList<>();
 
         Set<JClassType> building = Set.of(ref);
@@ -125,7 +125,7 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
         return result;
     }
 
-    private static Set<JClassType> findClassTypes(JType type) {
+    public static Set<JClassType> findClassTypes(JType type) {
         //TODO figure out the right way to do this
         if (type instanceof JClassType ct) {
             return Set.of(ct);

@@ -1,6 +1,13 @@
 package honeyroasted.jype.metadata.location;
 
 import honeyroasted.jype.metadata.JClassSourceName;
+import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JNoneType;
+import honeyroasted.jype.type.JPrimitiveType;
+import honeyroasted.jype.type.JType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -68,7 +75,7 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
         JClassName containing;
 
         if (JClassName.isInInitializer(clazz)) {
-            containing = new JClassName(Type.METHOD, SubType.INITIALIZER, of(clazz.getEnclosingClass()), "<initializer$" + nestIndex(clazz) + ">");
+            containing = initializer(of(clazz.getEnclosingClass()));
         } else if (clazz.getEnclosingMethod() != null) {
             containing = of(clazz.getEnclosingMethod());
         } else if (clazz.getEnclosingConstructor() != null) {
@@ -80,10 +87,22 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
         }
 
         if (clazz.isAnonymousClass()) {
-            return new JClassName(Type.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous>");
+            return anonymous(containing);
         } else {
             return new JClassName(Type.CLASS, SubType.NONE, containing, clazz.getSimpleName());
         }
+    }
+
+    public static JClassName anonymous(JClassName containing) {
+        return new JClassName(Type.CLASS, SubType.ANONYMOUS_CLASS, containing, "<anonymous>");
+    }
+
+    public static JClassName initializer(JClassName containing) {
+        return new JClassName(Type.METHOD, SubType.INITIALIZER, containing, "<initializer>");
+    }
+
+    public static JClassName className(String name, JClassName containing) {
+        return new JClassName(Type.CLASS, SubType.NONE, containing, name);
     }
 
     public static JClassName of(Method method) {
@@ -91,9 +110,35 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
             return null;
         }
 
-        String simpleName = method.getName() + "(" + Stream.of(method.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(".")) + ")" +
+        String simpleName = method.getName() + "(" + Stream.of(method.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(",")) + ")" +
                 JClassName.of(method.getReturnType());
         return new JClassName(Type.METHOD, SubType.NONE, of(method.getDeclaringClass()), simpleName);
+    }
+
+    public static JClassName of(JMethodReference ref) {
+        if (ref == null) {
+            return null;
+        }
+        ref = (JMethodReference) JTypeVisitors.ERASURE.visit(ref);
+
+        String simpleName = ref.location().name() + "(" +
+                ref.parameters().stream().map(c -> of(c).toString()).collect(Collectors.joining(",")) +
+                ")" + of(ref.returnType());
+        return new JClassName(Type.METHOD, SubType.NONE, ref.outerClass().namespace().name(), simpleName);
+    }
+
+    private static JClassName of(JType type) {
+        if (type instanceof JClassType jct) {
+            return jct.namespace().name();
+        } else if (type instanceof JArrayType arr) {
+            return new JClassName(Type.CLASS, SubType.ARRAY, of(arr.component()), "[]");
+        } else if (type instanceof JNoneType) {
+            return JClassName.of(void.class);
+        } else if (type instanceof JPrimitiveType prim) {
+            return prim.namespace().name();
+        }
+
+        throw new IllegalArgumentException(type + " does not have a valid class name");
     }
 
     public static JClassName of(Constructor<?> constructor) {
@@ -101,7 +146,7 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
             return null;
         }
 
-        String simpleName = "<constructor>(" + Stream.of(constructor.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(".")) + ")";
+        String simpleName = "<constructor>(" + Stream.of(constructor.getParameterTypes()).map(c -> JClassName.of(c).toString()).collect(Collectors.joining(",")) + ")";
         return new JClassName(Type.METHOD, SubType.CONSTRUCTOR, of(constructor.getDeclaringClass()), simpleName);
     }
 
@@ -146,10 +191,6 @@ public record  JClassName(Type type, SubType subType, JClassName containing, Str
                 cls.getEnclosingConstructor() == null &&
                 cls.getDeclaringClass() == null &&
                 cls.getEnclosingClass() != null;
-    }
-
-    private static int nestIndex(Class<?> cls) {
-        return indexOf(cls, cls.getEnclosingClass().getNestMembers());
     }
 
     private static <T> int indexOf(T val, T[] arr) {

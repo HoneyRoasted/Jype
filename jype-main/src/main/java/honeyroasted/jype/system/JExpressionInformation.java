@@ -1,12 +1,15 @@
 package honeyroasted.jype.system;
 
 import honeyroasted.almonds.SimpleName;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JInstantiableType;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 
 import java.lang.reflect.AccessFlag;
@@ -254,7 +257,16 @@ public interface JExpressionInformation extends SimpleName {
                 return jcr.declaredFields().stream().filter(jfr -> jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(this.name()))
                         .findFirst().map(mapper);
             } else if (this.source() instanceof JExpressionInformation expr && expr.isSimplyTyped()) {
-                //TODO process expression
+                JType type = expr.getSimpleType(system, mapper).get();
+                JFieldReference field = JReduceGetField.findClassTypes(type).stream()
+                        .flatMap(ct -> JReduceGetField.getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name()) && jfr.outerClass().accessFrom(declaring()).canAccess(jfr.access())).stream())
+                        .findFirst().orElse(null);
+
+                if (field != null && type instanceof JParameterizedClassType pct) {
+                    field = (JFieldReference) pct.varTypeResolver().visit(field);
+                }
+
+                return Optional.ofNullable(field);
             }
 
             return Optional.empty();
