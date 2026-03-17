@@ -205,7 +205,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         return Pair.of(newConstraints, new JVarTypeResolveVisitor(resolution));
     }
 
-    private static Set<JClassType> findClassTypes(JType type) {
+    static Set<JClassType> findClassTypes(JType type) {
         //TODO figure out the right way to do this
         if (type instanceof JClassType ct) {
             return Set.of(ct);
@@ -246,7 +246,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         return result;
     }
 
-    private static Collection<JMethodReference> getAllMethods(JClassReference ref) {
+    static Collection<JMethodReference> getAllMethods(JClassReference ref) {
         List<JMethodReference> result = new ArrayList<>();
 
         Set<JClassType> building = Set.of(ref);
