@@ -123,6 +123,11 @@ public class JReduceInstantiationRefExpression extends ConstraintMapper.Unary<JT
                                 Constraint.Status.UNKNOWN);
                     }
 
+                    // If no sub-constraints, mark the original constraint TRUE directly
+                    if (constraints.isEmpty()) {
+                        constraints.put(constraint, Constraint.Status.TRUE);
+                    }
+
                     newChildren.add(new ConstraintBranch.Snapshot(new PropertySet(), constraints));
                 });
 

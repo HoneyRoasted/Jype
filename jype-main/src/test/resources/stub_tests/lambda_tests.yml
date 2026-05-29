@@ -1,0 +1,200 @@
+name: Lambda Tests
+
+tests:
+
+  # --- Lambda Expression Tests ---
+
+  # () -> run() satisfies Runnable: 0 params, void return, no constraints emitted
+  lambda_runnable:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Runnable;
+          expr:
+            lambda:
+              parameterCount: 0
+              implicitReturn: false
+              body:
+                constant: 0
+
+  # () -> "hello" satisfies Supplier<String>: body type String <: SAM return String
+  lambda_supplier_string:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Supplier<Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterCount: 0
+              implicitReturn: true
+              body:
+                constant: hello
+
+  # (String s) -> void satisfies Consumer<String>: explicit param Equal(String, String)
+  lambda_consumer_explicit_param:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Consumer<Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterTypes:
+                - Ljava/lang/String;
+              implicitReturn: false
+              body:
+                constant: 0
+
+  # (String s) -> "hello" satisfies Function<String, String>: param Equal + body return
+  lambda_function_explicit_param:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterTypes:
+                - Ljava/lang/String;
+              implicitReturn: true
+              body:
+                constant: hello
+
+  # (a, b) -> 0 satisfies Comparator<String>: implicit 2-param, body int matches SAM return int
+  lambda_comparator_implicit_params:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/Comparator<Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterCount: 2
+              implicitReturn: true
+              body:
+                constant: 0
+
+  # (String a, String b) -> void does NOT satisfy Runnable (0 params): wrong param count
+  lambda_wrong_param_count:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Runnable;
+          expr:
+            lambda:
+              parameterTypes:
+                - Ljava/lang/String;
+                - Ljava/lang/String;
+              implicitReturn: false
+              body:
+                constant: 0
+
+  # () -> 42 does NOT satisfy Supplier<String>: body type int is not compatible with String
+  lambda_wrong_return_type:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Supplier<Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterCount: 0
+              implicitReturn: true
+              body:
+                constant: 42
+
+  # Lambda targeting a class (not an interface) is always false
+  lambda_not_interface:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Object;
+          expr:
+            lambda:
+              parameterCount: 0
+              implicitReturn: false
+              body:
+                constant: 0
+
+  # Lambda targeting an interface with no SAM (Serializable = marker interface) is false
+  lambda_no_sam:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/io/Serializable;
+          expr:
+            lambda:
+              parameterCount: 0
+              implicitReturn: false
+              body:
+                constant: 0
+
+  # --- Method Reference Tests ---
+
+  # String::length used as Function<String, Integer>:
+  # unbound instance ref, first SAM param (String) is receiver, return int boxes to Integer
+  method_ref_unbound_instance:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+          expr:
+            invocation_ref:
+              staticSource: Ljava/lang/String;
+              methodName: length
+
+  # Integer::parseInt used as Function<String, Integer>:
+  # static method ref, SAM param String matches parseInt(String), return int boxes to Integer
+  method_ref_static:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+          expr:
+            invocation_ref:
+              staticSource: Ljava/lang/Integer;
+              methodName: parseInt
+
+  # --- Constructor Reference Tests ---
+
+  # Thread::new used as Runnable: Thread() has 0 params, Runnable.run() returns void
+  constructor_ref_runnable:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Runnable;
+          expr:
+            instantiation_ref:
+              type: Ljava/lang/Thread;
+
+  # StringBuilder::new used as Supplier<StringBuilder>: no-arg ctor, return type matches SAM
+  constructor_ref_supplier:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Supplier<Ljava/lang/StringBuilder;>;
+          expr:
+            instantiation_ref:
+              type: Ljava/lang/StringBuilder;

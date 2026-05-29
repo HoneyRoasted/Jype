@@ -77,22 +77,30 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
             }
         }
 
-        // Reduce to sub-constraints
-        branch.drop(constraint);
+        // Collect sub-constraints before deciding how to reduce
+        List<Constraint> subConstraints = new ArrayList<>();
 
         // JLS §18.2.1: explicit parameter type equality constraints ‹Fi = Gi›
         if (explicitlyTyped) {
             for (int i = 0; i < lambda.parameterCount(); i++) {
-                branch.add(new JTypeConstraints.Equal(lambda.explicitParameterTypes().get(i), samParams.get(i)));
+                subConstraints.add(new JTypeConstraints.Equal(lambda.explicitParameterTypes().get(i), samParams.get(i)));
             }
         }
 
         // JLS §18.2.1: return type constraint ‹body → R›
         if (!returnsVoid) {
-            branch.add(new JTypeConstraints.ExpressionCompatible(
+            subConstraints.add(new JTypeConstraints.ExpressionCompatible(
                     lambda.body(),
                     JTypeConstraints.Compatible.Context.ASSIGNMENT,
                     samReturn));
+        }
+
+        // If nothing to prove, the constraint is trivially satisfied
+        if (subConstraints.isEmpty()) {
+            branch.set(constraint, Constraint.Status.TRUE);
+        } else {
+            branch.drop(constraint);
+            subConstraints.forEach(branch::add);
         }
     }
 
@@ -115,7 +123,7 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
             }
         }
 
-        return abstractMethods.size() == 1 ? Optional.of(abstractMethods.get(0)) : Optional.empty();
+        return abstractMethods.size() == 1 ? Optional.of(abstractMethods.getFirst()) : Optional.empty();
     }
 
     /**
