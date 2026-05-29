@@ -3,7 +3,7 @@ package honeyroasted.jypestub.model.test;
 import com.fasterxml.jackson.core.type.TypeReference;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.multi.Triple;
-import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;

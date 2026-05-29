@@ -1,7 +1,7 @@
 package honeyroasted.jypestub.model.test;
 
 import honeyroasted.almonds.Constraint;
-import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JGenericDeclaration;

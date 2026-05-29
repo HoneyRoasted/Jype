@@ -1,7 +1,7 @@
 package honeyroasted.jype.system.solver.constraints;
 
 import honeyroasted.almonds.SimpleName;
-import honeyroasted.jype.system.JExpressionInformation;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JFieldReference;

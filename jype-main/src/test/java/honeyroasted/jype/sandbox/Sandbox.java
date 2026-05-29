@@ -69,6 +69,7 @@ public class Sandbox {
             System.out.println("-------------- " + cls + " -------------- ");
             System.out.println("Expected name: " + JClassName.of(cls));
             System.out.println("Determi. name: " + ref.classNamespace().map(JClassNamespace::name).orElse(null));
+            System.out.println("Referenceable: " + ref.classNamespace().orElse(null).name().isReferenceable());
             System.out.println("-------------- -------------- --------------");
         }
     }
