@@ -91,7 +91,7 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
 
     private Optional<JClassType> identifySuperclass(JClassReference target, JType type) {
         if (type instanceof JClassType ct) {
-            Optional<JClassType> found = ct.relativeSupertype(ct);
+            Optional<JClassType> found = ct.relativeSupertype(target);
             return found;
         } else {
             for (JType supertype : type.knownDirectSupertypes()) {

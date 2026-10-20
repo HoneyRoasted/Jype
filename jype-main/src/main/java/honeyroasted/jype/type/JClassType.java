@@ -94,14 +94,27 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
     Optional<JClassType> relativeSupertype(JClassType superType);
 
     default JAccess accessFrom(JClassType other) {
+        return this.accessFrom(other, null);
+    }
+
+    /**
+     * JLS §6.6.2: when a protected member is accessed through an explicit qualifying
+     * expression (rather than an unqualified/{@code this} reference), the access is permitted
+     * only if the type of that expression is the accessing class {@code other} or a subclass of
+     * it - being merely a subclass of the declaring class is not sufficient. {@code receiverType}
+     * should be the static type of that qualifying expression, or {@code null} when access is
+     * unqualified/static (in which case this refinement does not apply).
+     */
+    default JAccess accessFrom(JClassType other, JClassType receiverType) {
         if (this.classReference().equals(other.classReference())) {
             return JAccess.PRIVATE;
-        } else if (other.hasSupertype(this.classReference())) {
+        } else if (other.hasSupertype(this.classReference())
+                && (receiverType == null || receiverType.hasSupertype(other.classReference()))) {
             return JAccess.PROTECTED;
         } else if (this.namespace().location().getPackage().equals(other.namespace().location().getPackage())) {
             return JAccess.PACKAGE_PROTECTED;
         } else if (other.hasOuterType()) {
-            return this.accessFrom(other.outerType());
+            return this.accessFrom(other.outerType(), receiverType);
         } else {
             return JAccess.PUBLIC;
         }

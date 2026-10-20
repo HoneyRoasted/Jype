@@ -97,6 +97,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
 
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
+        branch.put(Constraint.identity(Set.of(ref, context, false)), Constraint.Status.TRUE);
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
         branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
         for (int i = 0; i < parameters.size(); i++) {
@@ -114,6 +115,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
 
         Map<Constraint, Constraint.Status> branch = new HashMap<>();
+        branch.put(Constraint.identity(Set.of(ref, context, true)), Constraint.Status.TRUE);
         typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
         branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
         int index;
@@ -126,7 +128,7 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
 
         PropertySet metadata = new PropertySet();
-        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, false));
+        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, true));
         metadata.attach(map);
 
         return new ConstraintBranch.Snapshot(metadata, branch);

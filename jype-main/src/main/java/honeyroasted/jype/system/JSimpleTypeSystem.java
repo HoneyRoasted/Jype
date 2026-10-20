@@ -74,7 +74,8 @@ public class JSimpleTypeSystem implements JTypeSystem {
         constants.setObject(this.tryLocResolve(Object.class))
                 .setCloneable(this.tryLocResolve(Cloneable.class))
                 .setSerializable(this.tryLocResolve(Serializable.class))
-                .setRuntimeException(this.tryLocResolve(RuntimeException.class));
+                .setRuntimeException(this.tryLocResolve(RuntimeException.class))
+                .setError(this.tryLocResolve(Error.class));
 
         this.operations = new JTypeOperationsImpl(this);
     }

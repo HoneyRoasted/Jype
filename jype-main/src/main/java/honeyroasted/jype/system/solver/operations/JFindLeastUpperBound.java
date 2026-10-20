@@ -66,6 +66,7 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
             }
 
             Map<JClassType, Set<JParameterizedClassType>> relevantParams = new LinkedHashMap<>();
+            Set<JClassType> rawOccurrenceCandidates = new HashSet<>();
             Set<JType> paramKeyPart = new HashSet<>();
             for (JType candidate : minimalErasedCandidates) {
                 if (candidate instanceof JClassType ct && ct.hasTypeParameters()) {
@@ -75,6 +76,9 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
                                 relevantParams.computeIfAbsent(ct, k -> new LinkedHashSet<>())
                                         .add(pct);
                                 paramKeyPart.add(pct);
+                            } else if (supertype instanceof JClassType st && !(supertype instanceof JParameterizedClassType) &&
+                                    ct.classReference().typeEquals(st.classReference())) {
+                                rawOccurrenceCandidates.add(ct);
                             }
                         }
                     }
@@ -91,7 +95,11 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
             Set<JType> lub = new LinkedHashSet<>();
             for (JType candidate : minimalErasedCandidates) {
                 if (relevantParams.containsKey(candidate)) {
-                    lub.add(leastContainingParameterization(system, lubCache, relevantParams.get(candidate)));
+                    JParameterizedClassType merged = leastContainingParameterization(system, lubCache, relevantParams.get(candidate));
+                    if (rawOccurrenceCandidates.contains(candidate)) {
+                        merged = widenForRawOccurrence(system, lubCache, merged);
+                    }
+                    lub.add(merged);
                 } else {
                     lub.add(candidate);
                 }
@@ -116,7 +124,7 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
 
     private JParameterizedClassType leastContainingParameterization(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, Set<JParameterizedClassType> params) {
         if (params.size() == 1) {
-            return leastContainingParameterization(system, lubCache, params.iterator().next());
+            return params.iterator().next();
         }
 
         Iterator<JParameterizedClassType> iter = params.iterator();
@@ -129,12 +137,12 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
         return curr;
     }
 
-    private JParameterizedClassType leastContainingParameterization(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JParameterizedClassType pct) {
+    private JParameterizedClassType widenForRawOccurrence(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JParameterizedClassType pct) {
         JParameterizedClassType lcta = system.typeFactory().newParameterizedClassType();
         lcta.setClassReference(pct.classReference());
 
         if (pct.outerType() instanceof JParameterizedClassType outer) {
-            lcta.setOuterType(leastContainingParameterization(system, lubCache, outer));
+            lcta.setOuterType(widenForRawOccurrence(system, lubCache, outer));
         }
 
         List<JArgumentType> generated = new ArrayList<>();
@@ -197,7 +205,7 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
                 } else if (other instanceof JWildType.Lower owl) {
                     return wildType(system);
                 } else {
-                    return lubWild(system, lubCache, wtu.upperBounds(), v);
+                    return lubWild(system, lubCache, wtu.upperBounds(), other);
                 }
             } else if (wild instanceof JWildType.Lower wtl) {
                 if (other instanceof JWildType.Upper owt) {
@@ -205,7 +213,7 @@ public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
                 } else if (other instanceof JWildType.Lower owl) {
                     return glbWild(system, wtl.lowerBounds(), owl.lowerBounds());
                 } else {
-                    return lubWild(system, lubCache, wtl.lowerBound(), other);
+                    return glbWild(system, wtl.lowerBounds(), Set.of(other));
                 }
             } else {
                 return lubWild(system, lubCache, u, v);

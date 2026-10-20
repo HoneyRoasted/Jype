@@ -66,6 +66,20 @@ public class JResolveBounds extends ConstraintMapper.All {
             boolean hasCapture = branch.constraints().entrySet().stream().anyMatch(node -> node.getValue().isTrue() && node.getKey() instanceof JTypeConstraints.Capture cpt &&
                     cpt.left().typeArguments().stream().anyMatch(subset::contains));
 
+            // JLS §18.4's "bound set contains a capture" fallback below only ever *verifies
+            // consistency* for a captured variable that has no proper bound to resolve to (e.g.
+            // Box<? extends Number> box; box.set(box.get()) - the two captured variables are only
+            // ever related to each other, never to a concrete type). Without this marker, this
+            // whole method - a ConstraintMapper.All whose filter is just "branch is true", so it
+            // never stops firing on its own - would re-verify the exact same subset from scratch on
+            // every single pass forever, each time minting a brand-new never-reused set of fresh
+            // "shadow" variables. Once a given subset has been verified consistent once, there is
+            // nothing more to derive for it, so later passes can skip straight past.
+            Constraint captureConsistencyMarker = hasCapture ? Constraint.identity(new LinkedHashSet<Object>(subset)) : null;
+            if (captureConsistencyMarker != null && branch.status(captureConsistencyMarker).isTrue()) {
+                return;
+            }
+
             if (!hasCapture) {
                 Map<JMetaVarType, Pair<JType, Constraint>> candidates = new LinkedHashMap<>();
                 boolean foundAllCandidates = true;
@@ -107,6 +121,8 @@ public class JResolveBounds extends ConstraintMapper.All {
                 }
             }
 
+            Map<JMetaVarType, JType> capturedResolutions = new LinkedHashMap<>();
+
             if (hasCapture || generatedBounds.isEmpty() || generatedBounds.entrySet().stream().anyMatch(e -> e.getKey() instanceof False || e.getValue() == Constraint.Status.FALSE)) {
                 Map<JMetaVarType, JMetaVarType> freshVars = new LinkedHashMap<>();
                 varsAndDeps.forEach(mv -> freshVars.put(mv, mv.typeSystem().typeFactory().newMetaVarType(mv.name() + "_y")));
@@ -130,12 +146,14 @@ public class JResolveBounds extends ConstraintMapper.All {
                         JType lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
                         newBounds.put(JTypeConstraints.Equal.createBound(mvt, lower), Constraint.Status.ASSUMED);
                         y.lowerBounds().add(lower);
+                        capturedResolutions.put(mvt, lower);
                     }
 
                     if (!properUpper.isEmpty()) {
                         JType upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
                         newBounds.put(JTypeConstraints.Equal.createBound(mvt, upper), Constraint.Status.ASSUMED);
                         y.upperBounds().add(upper);
+                        capturedResolutions.putIfAbsent(mvt, upper);
                     }
                 }
 
@@ -158,7 +176,25 @@ public class JResolveBounds extends ConstraintMapper.All {
             if (temp.numBranches() == 1 && snap.status().isTrue()) {
                 //Diverging means it failed, I think
                 branch.metadata().inheritFrom(snap.metadata());
-                snap.constraints().forEach(branch::add);
+
+                if (captureConsistencyMarker != null) {
+                    // Only the resolved instantiations (if any - possibly none, if the captured
+                    // variable(s) are never related to a proper type) and the consistency marker
+                    // need to survive. The nested temp-tree's own derived bounds - including the
+                    // throwaway fresh "shadow" variables - are internal scaffolding for this one
+                    // consistency check; merging them into the main branch would feed them back into
+                    // discoverDependencies() on the next pass (they're metavar-involving Equal
+                    // bounds too) and trigger another round of fresh-variable generation for the
+                    // shadow variables themselves, and so on indefinitely.
+                    capturedResolutions.forEach((mvt, type) -> {
+                        branch.add(new JTypeConstraints.Instantiation(mvt, type), Constraint.Status.TRUE);
+                        branch.metadata().firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
+                                .instantiations().put(mvt, type);
+                    });
+                    branch.add(captureConsistencyMarker, Constraint.Status.TRUE);
+                } else {
+                    snap.constraints().forEach(branch::add);
+                }
             } else {
                 branch.add(Constraint.FALSE, Constraint.Status.FALSE);
             }

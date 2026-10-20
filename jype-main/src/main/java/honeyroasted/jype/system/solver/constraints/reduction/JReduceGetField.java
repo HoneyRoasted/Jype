@@ -7,6 +7,7 @@ import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.JMemberLookup;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
 
@@ -52,8 +52,10 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
         } else if (getField.source() instanceof JExpressionInformation expr) {
             if (expr.isSimplyTyped()) {
                 JType type = expr.getSimpleType(system, branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty())).get();
-                field = findClassTypes(type).stream()
-                        .flatMap(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring).canAccess(jfr.access())).stream())
+                type = JMemberLookup.captureConvert(branch, type); // JLS §5.1.10
+                JClassType receiverType = type instanceof JClassType ct ? ct : null;
+                field = JMemberLookup.findClassTypes(type).stream()
+                        .flatMap(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring, receiverType).canAccess(jfr.access())).stream())
                         .findFirst().orElse(null);
 
                 if (field != null && type instanceof JParameterizedClassType pct) {
@@ -69,8 +71,10 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
                 solved.branches().forEach(childBranch -> {
                     if (childBranch.status().isTrue()) {
                         JType inst = JResolveBounds.findInstantiation(callTarget, childBranch);
+                        inst = JMemberLookup.captureConvert(childBranch, inst); // JLS §5.1.10
+                        JClassType instReceiverType = inst instanceof JClassType ct ? ct : null;
                         childBranch.metadata().first(JTypeContext.TypeMetavarMap.class).ifPresent(mvp -> mvp.instantiations().remove(callTarget)); //Drop variable since it is no longer needed
-                        findClassTypes(inst).forEach(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring).canAccess(jfr.access())).forEach(ref -> {
+                        JMemberLookup.findClassTypes(inst).forEach(ct -> getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name) && jfr.outerClass().accessFrom(declaring, instReceiverType).canAccess(jfr.access())).forEach(ref -> {
                             if (ct instanceof JParameterizedClassType pct) {
                                 ref = (JFieldReference) pct.varTypeResolver().visit(ref);
                             }
@@ -123,24 +127,6 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
         }
 
         return result;
-    }
-
-    public static Set<JClassType> findClassTypes(JType type) {
-        //TODO figure out the right way to do this
-        if (type instanceof JClassType ct) {
-            return Set.of(ct);
-        } else {
-            Set<JType> working = Set.of(type);
-            Set<JClassType> attempt;
-
-            do {
-                attempt = working.stream().flatMap(t -> t.knownDirectSupertypes().stream()).filter(t -> t instanceof JClassType)
-                        .map(t -> (JClassType) t).collect(Collectors.toCollection(LinkedHashSet::new));
-                working = working.stream().flatMap(t -> t.knownDirectSupertypes().stream()).collect(Collectors.toCollection(LinkedHashSet::new));
-            } while (attempt.isEmpty() && !working.isEmpty());
-
-            return attempt;
-        }
     }
 
     private static ConstraintBranch.Snapshot combine(ConstraintBranch a, ConstraintBranch.Snapshot b) {

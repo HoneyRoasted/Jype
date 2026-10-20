@@ -24,6 +24,11 @@ public interface JIntersectionType extends JType, PossiblyUnmodifiable {
 
     Set<JType> children();
 
+    @Override
+    default Set<JType> knownDirectSupertypes() {
+        return children();
+    }
+
     JType simplify();
 
     default JType flatten() {

@@ -5,6 +5,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
@@ -34,8 +35,11 @@ public class JCompatibleLooseInvocation extends ConstraintMapper.Unary<JTypeCons
         newChildren.add(new JTypeConstraints.Subtype(left, right));
         if (left instanceof JPrimitiveType l && !(right instanceof JPrimitiveType)) {
             newChildren.add(new JTypeConstraints.Subtype(l.box(), right));
-        } else if (right instanceof JPrimitiveType r && !(left instanceof JPrimitiveType)) {
-            newChildren.add(new JTypeConstraints.Subtype(left, r.box()));
+        } else if (right instanceof JPrimitiveType && left instanceof JClassType lct) {
+            JType unboxed = lct.typeSystem().constants().primitiveByBox().get(lct.namespace());
+            if (unboxed != null) {
+                newChildren.add(new JTypeConstraints.Subtype(unboxed, right));
+            }
         }
 
         branch.drop(constraint).diverge(newChildren);

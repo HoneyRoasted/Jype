@@ -4,9 +4,11 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintSolver;
+import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleExplicitCast;
 import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleLooseInvocation;
@@ -30,11 +32,18 @@ import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationE
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationSubtypeSubtype;
 import honeyroasted.jype.system.solver.constraints.inference.JBuildInitialBounds;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
+import honeyroasted.jype.system.solver.constraints.inference.JResolveMostSpecificMethod;
 import honeyroasted.jype.system.solver.constraints.inference.JVerifyBounds;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayCreation;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayInitializer;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceBinaryOperator;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceCast;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceCompatible;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceConditionalExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceContains;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiationRefExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInvocationRefExpression;
@@ -42,9 +51,12 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpres
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSubtype;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceUnaryOperator;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
+import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JParameterizedMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
@@ -55,7 +67,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public class JTypeOperationsImpl implements JTypeOperations {
-    public static final ConstraintMapperApplier COMPATIBILITY_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> COMPATIBILITY_MAPPERS = List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -78,9 +90,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JSubtypeVar(),
             new JSubtypeWild(),
             new JSubtypeIntersection()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
-    public static final ConstraintMapperApplier INCORPORATION_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> INCORPORATION_MAPPERS = List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -88,9 +100,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
-    public static final ConstraintMapperApplier REDUCTION_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> REDUCTION_MAPPERS = List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -99,6 +111,13 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceContains(),
             new JReduceEqual(),
 
+            new JReduceCast(),
+            new JReduceInstanceOf(),
+            new JReduceUnaryOperator(),
+            new JReduceBinaryOperator(),
+            new JReduceConditionalExpression(),
+            new JReduceArrayCreation(),
+            new JReduceArrayInitializer(),
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
@@ -111,13 +130,13 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
-    public static final ConstraintMapperApplier BUILD_INITIAL_BOUNDS_APPLIER = ConstraintMapperApplier.of(List.of(
-                    new JBuildInitialBounds())
-            , ConstraintMapperApplier.Type.ORDERED);
+    public static final List<ConstraintMapper> BUILD_INITIAL_BOUNDS_MAPPERS = List.of(
+            new JBuildInitialBounds()
+    );
 
-    public static final ConstraintMapperApplier INFERENCE_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> INFERENCE_MAPPERS = List.of(
             new ConstraintMapper.True(),
             new ConstraintMapper.False(),
 
@@ -133,6 +152,13 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceContains(),
             new JReduceEqual(),
 
+            new JReduceCast(),
+            new JReduceInstanceOf(),
+            new JReduceUnaryOperator(),
+            new JReduceBinaryOperator(),
+            new JReduceConditionalExpression(),
+            new JReduceArrayCreation(),
+            new JReduceArrayInitializer(),
             new JReduceSimplyTypedExpression(),
             new JReduceInstantiation(),
             new JReduceMethodInvocation(),
@@ -145,21 +171,23 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationEqualSubtype(),
             new JIncorporationSubtypeSubtype(),
             new JIncorporationCapture()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
-    public static final ConstraintMapperApplier RESOLVE_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> RESOLVE_MAPPERS = List.of(
             new JResolveBounds()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
-    public static final ConstraintMapperApplier VERIFY_APPLIER = ConstraintMapperApplier.of(List.of(
+    public static final List<ConstraintMapper> VERIFY_MAPPERS = List.of(
             new JVerifyBounds()
-    ), ConstraintMapperApplier.Type.ORDERED);
+    );
 
     public static final JTypeOperation<JType, Set<JType>> FIND_ALL_KNOWN_SUPERTYPES = new JFindAllKnownSupertypes();
     public static final JTypeOperation<Set<JType>, JType> FIND_GREATEST_LOWER_BOUND = new JFindGreatestLowerBound();
     public static final JTypeOperation<Set<JType>, JType> FIND_LEAST_UPPER_BOUND = new JFindLeastUpperBound();
     public static final JTypeOperation<Set<JType>, JType> FIND_MOST_SPECIFIC_TYPE = new JFindMostSpecificType();
     public static final JTypeOperation<Set<JType>, Set<JType>> FIND_MOST_SPECIFIC_TYPES = new JFindMostSpecificTypes();
+    public static final JTypeOperation<JExpressionInformation.MethodInvocation<?>, JParameterizedMethodType> FIND_APPLICABLE_METHOD = new JFindApplicableMethod();
+    public static final JCheckOverrideValidity CHECK_OVERRIDE_VALIDITY = new JCheckOverrideValidity();
 
     private JTypeSystem typeSystem;
 
@@ -173,47 +201,49 @@ public class JTypeOperationsImpl implements JTypeOperations {
     }
 
     @Override
-    public ConstraintMapperApplier reductionApplier() {
-        return REDUCTION_APPLIER;
+    public ConstraintMapperApplier reductionApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(REDUCTION_MAPPERS, type);
     }
 
     @Override
-    public ConstraintMapperApplier resolutionApplier() {
-        return RESOLVE_APPLIER;
+    public ConstraintMapperApplier resolutionApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(RESOLVE_MAPPERS, type);
     }
 
     @Override
-    public ConstraintMapperApplier verifyApplier() {
-        return VERIFY_APPLIER;
+    public ConstraintMapperApplier verifyApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(VERIFY_MAPPERS, type);
     }
 
     @Override
-    public ConstraintMapperApplier incorporationApplier() {
-        return INCORPORATION_APPLIER;
+    public ConstraintMapperApplier incorporationApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(INCORPORATION_MAPPERS, type);
     }
 
     @Override
-    public ConstraintMapperApplier compatibilityApplier() {
-        return COMPATIBILITY_APPLIER;
+    public ConstraintMapperApplier compatibilityApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(COMPATIBILITY_MAPPERS, type);
     }
 
     @Override
-    public ConstraintMapperApplier initialBoundsApplier() {
-        return BUILD_INITIAL_BOUNDS_APPLIER;
+    public ConstraintMapperApplier initialBoundsApplier(ConstraintMapperApplier.Type type) {
+        return ConstraintMapperApplier.of(BUILD_INITIAL_BOUNDS_MAPPERS, type);
     }
 
     @Override
     public ConstraintSolver compatibilitySolver() {
-        return new ConstraintSolver(List.of(COMPATIBILITY_APPLIER));
+        return new ConstraintSolver(List.of(this.compatibilityApplier(ConstraintMapperApplier.Type.ORDERED)));
     }
 
     @Override
     public ConstraintSolver inferenceSolver() {
-        return new ConstraintSolver(List.of(
-                INFERENCE_APPLIER,
-                RESOLVE_APPLIER,
-                VERIFY_APPLIER
-        )).withContext(new PropertySet()
+        JTypeSystem system = this.typeSystem;
+        ConstraintSolver solver = new ConstraintSolver(List.of(
+                ConstraintMapperApplier.of(INFERENCE_MAPPERS, ConstraintMapperApplier.Type.UNTRIMMED),
+                this.resolutionApplier(ConstraintMapperApplier.Type.UNTRIMMED),
+                this.verifyApplier(ConstraintMapperApplier.Type.UNTRIMMED)
+        )).postSolve(tree -> JResolveMostSpecificMethod.prune(tree, system));
+        return solver.withContext(new PropertySet()
                 .attach(this.typeSystem));
     }
 
@@ -290,5 +320,14 @@ public class JTypeOperationsImpl implements JTypeOperations {
         return Optional.empty();
     }
 
+    @Override
+    public JParameterizedMethodType findApplicableMethod(JExpressionInformation.MethodInvocation<?> invocation) {
+        return FIND_APPLICABLE_METHOD.apply(this.typeSystem, invocation);
+    }
+
+    @Override
+    public JCheckOverrideValidity.Result checkOverrideValidity(JMethodReference override, JMethodReference overridden) {
+        return CHECK_OVERRIDE_VALIDITY.apply(this.typeSystem, new JCheckOverrideValidity.Pair(override, overridden));
+    }
 
 }

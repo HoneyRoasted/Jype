@@ -43,7 +43,7 @@ public class JIncorporationEqualEqual extends ConstraintMapper.Binary<JTypeConst
                 JType rlRes = subResolver.visit(rl);
                 JType rrRes = subResolver.visit(rr);
                 if (!rlRes.structuralEquals(rl) || !rrRes.structuralEquals(rr)) {
-                    addEqualBound(branch, leftConstraint, rlRes, rightConstraint, rlRes);
+                    addEqualBound(branch, leftConstraint, rlRes, rightConstraint, rrRes);
                 }
             }
         }

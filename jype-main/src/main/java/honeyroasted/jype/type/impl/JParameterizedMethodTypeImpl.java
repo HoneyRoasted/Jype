@@ -37,7 +37,7 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
 
         copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setMethodReference(this.methodReference.copy(cache));
-        copy.setOuterType(this.outerType.copy(cache));
+        copy.setOuterType(this.outerType == null ? outerType : outerType.copy(cache));
         copy.setTypeArguments(this.typeArguments.stream().map(t -> (JArgumentType) t.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;

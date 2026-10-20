@@ -41,12 +41,12 @@ public class JMetaVarTypeImpl extends JAbstractType implements JMetaVarType {
 
     @Override
     public Set<JType> upperBounds() {
-        return this.lowerBounds;
+        return this.upperBounds;
     }
 
     @Override
     public Set<JType> lowerBounds() {
-        return this.upperBounds;
+        return this.lowerBounds;
     }
 
     @Override

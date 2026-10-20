@@ -1,7 +1,7 @@
 apply from: rootProject.file('buildSrc/shared.gradle')
 
 dependencies {
-    api("com.github.HoneyRoasted:Almonds:0.0.25")
+    api("com.github.HoneyRoasted:Almonds:0.0.29")
     api("com.github.HoneyRoasted:Collect:0.0.13")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3",

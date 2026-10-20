@@ -48,3 +48,36 @@ tests:
       - subtype:
           - Ljava/util/List;
           - Ljava/util/List<-Ljava/lang/Object;>;
+
+  loose_invocation_unboxing_then_widening_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - compatible:
+          context: LOOSE_INVOCATION
+          children:
+            - Ljava/lang/Integer;
+            - J
+
+  loose_invocation_boxing_then_widening_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - compatible:
+          context: LOOSE_INVOCATION
+          children:
+            - I
+            - Ljava/lang/Object;
+
+  strict_invocation_rejects_unboxing_test:
+    expect:
+      - status: false
+    solver: COMPATIBILITY
+    constraints:
+      - compatible:
+          context: STRICT_INVOCATION
+          children:
+            - Ljava/lang/Integer;
+            - J

@@ -41,7 +41,7 @@ public class JIncorporationEqualSubtype extends ConstraintMapper.Binary<JTypeCon
                 JType rlRes = subResolver.visit(rl);
                 JType rrRes = subResolver.visit(rr);
                 if (!rlRes.structuralEquals(rl) || !rrRes.structuralEquals(rr)) {
-                    addSubtypeBound(branch, leftConstraint, rlRes, rightConstraint, rlRes);
+                    addSubtypeBound(branch, leftConstraint, rlRes, rightConstraint, rrRes);
                 }
             }
         }
