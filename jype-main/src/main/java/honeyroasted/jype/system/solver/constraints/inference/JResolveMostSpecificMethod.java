@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Prunes sibling {@link JTypeContext.ChosenMethod}-tagged branches of an already-solved
@@ -264,13 +265,6 @@ public class JResolveMostSpecificMethod {
         return solved.branches().stream().anyMatch(b -> b.status().isTrue());
     }
 
-    /**
-     * JLS §15.12.2.5: "A type S is more specific than a type T for any expression if S <: T" -
-     * plus the functional-interface-specific refinement defined a few paragraphs later, which
-     * compares S/T's function types (JLS §9.9) instead of a plain S <: T whenever both are
-     * functional interface types and neither's interface is a super/subinterface of the other's
-     * (in that related case, plain S <: T already gives the right answer).
-     */
     private static boolean moreSpecificType(JTypeSystem system, JType s, JType t, JExpressionInformation expr) {
         if (isFunctionalInterfaceType(s) && isFunctionalInterfaceType(t) && !interfacesRelated(system, s, t)) {
             return moreSpecificFunctionalInterface(system, s, t, expr);
@@ -279,12 +273,6 @@ public class JResolveMostSpecificMethod {
         return system.operations().isSubtype(s, t);
     }
 
-    /**
-     * Whether S's and T's underlying interfaces are related by inheritance at all, ignoring type
-     * arguments (JLS: "the interface of S is neither a superinterface nor a subinterface of the
-     * interface of T"). Uses erasure specifically to strip type arguments before checking, since
-     * the raw interface identity - not the parameterization - is what this bullet cares about.
-     */
     private static boolean interfacesRelated(JTypeSystem system, JType s, JType t) {
         JType erasedS = JTypeVisitors.ERASURE.visit(s);
         JType erasedT = JTypeVisitors.ERASURE.visit(t);
@@ -295,18 +283,6 @@ public class JResolveMostSpecificMethod {
         return JReduceLambdaExpression.findFunctionalMethod(type).isPresent();
     }
 
-    /**
-     * JLS §15.12.2.5's functional-interface comparison: match the two SAMs' type parameter
-     * counts and arity, then compare their function types' type-parameter bounds, formal
-     * parameters, and return type.
-     *
-     * Models capture conversion of S properly (MTS = function type of the *capture* of S, MTS' =
-     * function type of S without capture - see {@link #captureConvert}), mirroring
-     * {@link #generateFunctionalInterfaceConstraints}'s treatment of the same distinction for the
-     * §18.5.4 path; the only difference here is that every comparison below is an immediate
-     * boolean decision rather than a generated constraint, since this path is only reached once T
-     * is already a proper type (no unresolved inference variables left to solve for).
-     */
     private static boolean moreSpecificFunctionalInterface(JTypeSystem system, JType s, JType t, JExpressionInformation expr) {
         JType capturedS = captureConvert(system, s, new ArrayList<>());
         Optional<JMethodReference> mtsOpt = JReduceLambdaExpression.findFunctionalMethod(capturedS);
@@ -361,61 +337,57 @@ public class JResolveMostSpecificMethod {
         return moreSpecificReturnType(system, rs, rt, expr);
     }
 
-    /**
-     * JLS §15.12.2.5's return-type step of the functional-interface comparison: mostly a plain
-     * RS <: RT, refined by the shape of the actual argument expression at this position.
-     * Switch-expression recursion is not modeled (this codebase doesn't model switch expressions
-     * at all yet) - it falls back to the plain subtype check, same as any other expression shape
-     * the literal spec doesn't special-case.
-     */
     private static boolean moreSpecificReturnType(JTypeSystem system, JType rs, JType rt, JExpressionInformation expr) {
-        if (expr instanceof JExpressionInformation.Lambda lambda && isExplicitlyTyped(lambda)) {
-            if (rt.typeEquals(system.constants().voidType())) return true;
-
-            JExpressionInformation result = lambda.resultExpressions().isEmpty() ? null : lambda.resultExpressions().getFirst();
-
-            Optional<JMethodReference> rsSam = JReduceLambdaExpression.findFunctionalMethod(rs);
-            Optional<JMethodReference> rtSam = JReduceLambdaExpression.findFunctionalMethod(rt);
-            if (rsSam.isPresent() && rtSam.isPresent()) {
-                return moreSpecificType(system, rs, rt, result);
-            }
-
-            boolean rsPrimitive = rs instanceof JPrimitiveType;
-            boolean rtPrimitive = rt instanceof JPrimitiveType;
-            if (rsPrimitive && !rtPrimitive && isStandalonePrimitive(system, result)) {
-                return true;
-            }
-            if (rtPrimitive && !rsPrimitive && isStandaloneReferenceOrPoly(system, result)) {
-                return true;
-            }
-
-            return system.operations().isSubtype(rs, rt);
-        }
-
-        if (isExactMethodReference(system, expr)) {
-            if (rt.typeEquals(system.constants().voidType())) return true;
-
-            boolean rsPrimitive = rs instanceof JPrimitiveType;
-            boolean rtPrimitive = rt instanceof JPrimitiveType;
-            Boolean declarationReturnsPrimitive = exactMethodReferenceReturnsPrimitive(system, expr);
-            if (declarationReturnsPrimitive != null) {
-                if (rsPrimitive && !rtPrimitive && declarationReturnsPrimitive) return true;
-                if (rtPrimitive && !rsPrimitive && !declarationReturnsPrimitive) return true;
-            }
-
-            return system.operations().isSubtype(rs, rt);
-        }
-
         if (expr instanceof JExpressionInformation.Conditional cond) {
-            return moreSpecificReturnType(system, rs, rt, cond.whenTrue())
-                    && moreSpecificReturnType(system, rs, rt, cond.whenFalse());
+            // JLS §15.12.2.5 a conditional expression applies recursively to both operands
+            return moreSpecificReturnType(system, rs, rt, cond.whenTrue()) && moreSpecificReturnType(system, rs, rt, cond.whenFalse());
         }
-
-        return system.operations().isSubtype(rs, rt);
+        if (expr instanceof JExpressionInformation.Lambda lambda && isExplicitlyTyped(lambda)) {
+            // JLS §15.12.2.5 explicitly typed lambda
+            if (rt.typeEquals(system.constants().voidType())) {
+                return true;
+            }
+            if (rs.typeEquals(system.constants().voidType())) {
+                return false;
+            }
+            if (system.operations().isSubtype(rs, rt)) {
+                return true;
+            }
+            List<JExpressionInformation> results = lambda.resultExpressions();
+            if (results.isEmpty()) {
+                return false;
+            }
+            if (isFunctionalInterfaceType(rs) && isFunctionalInterfaceType(rt)) {
+                return results.stream().allMatch(r -> moreSpecificType(system, rs, rt, r));
+            }
+            if (rs instanceof JPrimitiveType && !(rt instanceof JPrimitiveType)) {
+                return results.stream().allMatch(r -> isStandalonePrimitive(system, r));
+            }
+            if (!(rs instanceof JPrimitiveType) && rt instanceof JPrimitiveType) {
+                return results.stream().allMatch(r -> isStandaloneReferenceOrPoly(system, r));
+            }
+            return false;
+        }
+        if (isExactMethodReference(system, expr)) {
+            // JLS §15.12.2.5 exact method reference
+            if (rt.typeEquals(system.constants().voidType())) {
+                return true;
+            }
+            if (system.operations().isSubtype(rs, rt)) {
+                return true;
+            }
+            Boolean declarationReturnsPrimitive = exactMethodReferenceReturnsPrimitive(system, expr);
+            if (declarationReturnsPrimitive == null) {
+                return false;
+            }
+            return rs instanceof JPrimitiveType ? !(rt instanceof JPrimitiveType) && declarationReturnsPrimitive : rt instanceof JPrimitiveType && !declarationReturnsPrimitive;
+        }
+        return false;
     }
 
     private static boolean isExplicitlyTyped(JExpressionInformation.Lambda lambda) {
-        return lambda.explicitParameterTypes() != null && lambda.explicitParameterTypes().size() == lambda.parameterCount();
+        // JLS §15.27.1 a lambda without parameters is explicitly typed
+        return lambda.parameterCount() == 0 || lambda.explicitParameterTypes() != null && lambda.explicitParameterTypes().size() == lambda.parameterCount();
     }
 
     private static boolean isStandalonePrimitive(JTypeSystem system, JExpressionInformation expr) {
@@ -428,25 +400,6 @@ public class JResolveMostSpecificMethod {
         return expr.getSimpleType(system, Function.identity()).map(t -> !(t instanceof JPrimitiveType)).orElse(false);
     }
 
-    /**
-     * JLS §18.5.4's own elaborate MTS/MTT bullet, reached when Si and Ti are both functional
-     * interface types with unrelated interfaces and Ti is *not* proper (i.e. it mentions one of
-     * m2's still-unresolved type parameters) - so unlike {@link #moreSpecificFunctionalInterface},
-     * this can't decide the comparison immediately and instead generates equality/subtype
-     * constraint formulas into {@code constraints}, to be resolved together with everything else
-     * in the same nested {@link #isMoreSpecificGeneric} solve.
-     *
-     * Unlike {@link #moreSpecificFunctionalInterface} (which treats MTS and MTS' as identical),
-     * this models capture conversion of Si properly via {@link #captureConvert}: MTS is the
-     * function type of the *captured* Si, MTS' is the function type of Si without capture.
-     *
-     * Simplification (matching {@link #moreSpecificFunctionalInterface}'s own documented
-     * approach): the spec's "if the bound of Aj/Uj/RS mentions one of MTS's own type parameters
-     * and the corresponding MTT part is not a proper type, false" escape hatches aren't modeled -
-     * an equality/subtype constraint is generated unconditionally instead. This only matters for a
-     * SAM method that is itself generic (not merely the enclosing functional interface), which is
-     * vanishingly rare in practice.
-     */
     private static boolean generateFunctionalInterfaceConstraints(JTypeSystem system, JType si, JType ti, JExpressionInformation expr, List<Constraint> constraints) {
         JType capturedSi = captureConvert(system, si, constraints);
         Optional<JMethodReference> mtsOpt = JReduceLambdaExpression.findFunctionalMethod(capturedSi);
@@ -469,9 +422,14 @@ public class JResolveMostSpecificMethod {
         }
         JVarTypeResolveVisitor thetaPrimeResolver = new JVarTypeResolveVisitor(thetaPrime);
 
+        Predicate<JType> mentionsMts = t -> t.mentions(x -> x instanceof JVarType v && mts.typeParameters().contains(v));
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             JType boundA = mts.typeParameters().get(j).upperBound();
             JType boundB = thetaPrimeResolver.apply(mtt.typeParameters().get(j).upperBound());
+            if (mentionsMts.test(boundA) && !boundB.isProperType()) {
+                // JLS §18.5.4 a bound mentioning a type parameter of MTS against an improper bound
+                return false;
+            }
             constraints.add(new JTypeConstraints.Equal(boundA, boundB));
         }
 
@@ -486,6 +444,10 @@ public class JResolveMostSpecificMethod {
         for (int j = 0; j < mts.parameters().size(); j++) {
             JType uj = mts.parameters().get(j);
             JType vj = thetaPrimeResolver.apply(mtt.parameters().get(j));
+            if (mentionsMts.test(uj) && !vj.isProperType()) {
+                // JLS §18.5.4 a formal parameter mentioning a type parameter of MTS against an improper type
+                return false;
+            }
             constraints.add(new JTypeConstraints.Subtype(vj, uj));
 
             JType ujPrime = mtsPrime.parameters().get(j);
@@ -495,63 +457,61 @@ public class JResolveMostSpecificMethod {
 
         JType rs = mts.returnType();
         JType rt = thetaPrimeResolver.apply(mtt.returnType());
+        if (mentionsMts.test(rs) && !rt.isProperType()) {
+            // JLS §18.5.4 a return type mentioning a type parameter of MTS against an improper type
+            return false;
+        }
         return generateReturnTypeConstraints(system, rs, rt, expr, constraints);
     }
 
-    /**
-     * Constraint-generating counterpart of {@link #moreSpecificReturnType}, used when RT may
-     * still mention m2's unresolved inference variables (so the comparison can't be decided
-     * immediately) - same expression-shape dispatch, but the terminal "RS <: RT" case is emitted
-     * as a {@link JTypeConstraints.Subtype} constraint instead of an immediate
-     * {@code isSubtype} check.
-     */
     private static boolean generateReturnTypeConstraints(JTypeSystem system, JType rs, JType rt, JExpressionInformation expr, List<Constraint> constraints) {
+        if (rt.isProperType()) {
+            return moreSpecificReturnType(system, rs, rt, expr);
+        }
+        if (expr instanceof JExpressionInformation.Conditional cond) {
+            // JLS §18.5.4 a conditional expression applies recursively to both operands
+            return generateReturnTypeConstraints(system, rs, rt, cond.whenTrue(), constraints) && generateReturnTypeConstraints(system, rs, rt, cond.whenFalse(), constraints);
+        }
         if (expr instanceof JExpressionInformation.Lambda lambda && isExplicitlyTyped(lambda)) {
-            if (rt.typeEquals(system.constants().voidType())) return true;
-
-            JExpressionInformation result = lambda.resultExpressions().isEmpty() ? null : lambda.resultExpressions().getFirst();
-
-            Optional<JMethodReference> rsSam = JReduceLambdaExpression.findFunctionalMethod(rs);
-            Optional<JMethodReference> rtSam = JReduceLambdaExpression.findFunctionalMethod(rt);
-            if (rsSam.isPresent() && rtSam.isPresent()) {
-                return generateFunctionalInterfaceConstraints(system, rs, rt, result, constraints);
-            }
-
-            boolean rsPrimitive = rs instanceof JPrimitiveType;
-            boolean rtPrimitive = rt instanceof JPrimitiveType;
-            if (rsPrimitive && !rtPrimitive && isStandalonePrimitive(system, result)) {
+            if (rt.typeEquals(system.constants().voidType())) {
                 return true;
             }
-            if (rtPrimitive && !rsPrimitive && isStandaloneReferenceOrPoly(system, result)) {
+            if (rs.typeEquals(system.constants().voidType())) {
+                return false;
+            }
+            List<JExpressionInformation> results = lambda.resultExpressions();
+            if (!results.isEmpty() && isFunctionalInterfaceType(rs) && isFunctionalInterfaceType(rt) && !interfacesRelated(system, rs, rt)) {
+                // JLS §18.5.4 RS more specific than RT for each result expression
+                return results.stream().allMatch(r -> generateFunctionalInterfaceConstraints(system, rs, rt, r, constraints));
+            }
+            if (!results.isEmpty() && rs instanceof JPrimitiveType && !(rt instanceof JPrimitiveType) && results.stream().allMatch(r -> isStandalonePrimitive(system, r))) {
                 return true;
             }
-
+            if (!results.isEmpty() && !(rs instanceof JPrimitiveType) && rt instanceof JPrimitiveType && results.stream().allMatch(r -> isStandaloneReferenceOrPoly(system, r))) {
+                return true;
+            }
+            // JLS §18.5.4 ‹RS <: RT›
             constraints.add(new JTypeConstraints.Subtype(rs, rt));
             return true;
         }
-
         if (isExactMethodReference(system, expr)) {
-            if (rt.typeEquals(system.constants().voidType())) return true;
-
-            boolean rsPrimitive = rs instanceof JPrimitiveType;
-            boolean rtPrimitive = rt instanceof JPrimitiveType;
+            if (rt.typeEquals(system.constants().voidType())) {
+                return true;
+            }
             Boolean declarationReturnsPrimitive = exactMethodReferenceReturnsPrimitive(system, expr);
             if (declarationReturnsPrimitive != null) {
-                if (rsPrimitive && !rtPrimitive && declarationReturnsPrimitive) return true;
-                if (rtPrimitive && !rsPrimitive && !declarationReturnsPrimitive) return true;
+                if (rs instanceof JPrimitiveType && !(rt instanceof JPrimitiveType) && declarationReturnsPrimitive) {
+                    return true;
+                }
+                if (rt instanceof JPrimitiveType && !(rs instanceof JPrimitiveType) && !declarationReturnsPrimitive) {
+                    return true;
+                }
             }
-
             constraints.add(new JTypeConstraints.Subtype(rs, rt));
             return true;
         }
-
-        if (expr instanceof JExpressionInformation.Conditional cond) {
-            return generateReturnTypeConstraints(system, rs, rt, cond.whenTrue(), constraints)
-                    && generateReturnTypeConstraints(system, rs, rt, cond.whenFalse(), constraints);
-        }
-
-        constraints.add(new JTypeConstraints.Subtype(rs, rt));
-        return true;
+        // JLS §18.5.4 no other expression form makes Si more specific than Ti
+        return false;
     }
 
     static JType captureConvert(JTypeSystem system, JType type, List<Constraint> constraints) {

@@ -866,3 +866,18 @@ Baseline: 177 tests green.
   - 13 javac-verified cases added to `JCheckOverrideValidityTests` (e.g. `m(List<Integer>)` vs
     `m(List<String>)` clash, `m(List)` overrides `m(List<String>)` but not vice versa, `p(Object)` overrides
     `<T> p(T)` but not vice versa, `static int v()` cannot hide `static void v()`). Suite 192/192; fuzz 12–13: 0.
+
+- **§15.12.2.5 / §18.5.4 functional-interface most specific — done.**
+  - Lambdas without parameters count as explicitly typed (§15.27.1); they were treated as implicit.
+  - Return-type rule now uses every result expression and requires at least one for the functional-interface
+    and primitive/reference cases; RS <: RT is tried first for explicit lambdas and exact method references.
+  - Expression forms with no §15.12.2.5 case (implicit lambdas, inexact method references, other
+    expressions) give false instead of falling back to RS <: RT: `a(s -> 1)` with `F1<String,Integer>` /
+    `F2<String,Number>` overloads is ambiguous in javac (Jype used to pick F1).
+  - **javac deviation, followed deliberately:** JLS SE 24 lists a switch-expression case (recurse into result
+    expressions), but javac 24's `MostSpecificFunctionReturnChecker` has no switch visitor and treats it as
+    not more specific (`b(switch (1) { default -> () -> 1; })` is ambiguous in javac). Jype follows javac,
+    consistent with the project's existing javac alignments (and the fuzz oracle).
+  - §18.5.4 escape hatches: a bound / formal parameter / return type of MTS mentioning MTS's own type
+    parameters against an improper MTT counterpart gives false.
+  - `JMostSpecificFunctionalTests` (10 javac-verified cases; fails on the previous code). Suite 193/193.
