@@ -577,3 +577,16 @@ still not started (see [[project_remaining_scope]] memory); unchecked-conversion
 explicitly out of scope per prior user direction.
 
 - Current test count: **177 tests, all passing, 0 skipped** (`jype-main`).
+
+## Session 6: full JLS SE 24 audit + fix-everything pass (started 2026-11-07)
+
+Plan: `C:\Users\johnr\.claude\plans\finish-fixing-any-remaining-squishy-pelican.md` (items 1-49, 7 phases).
+User rules this session: comments only `// JLS §x.y.z <case>`; per item javac repro -> Jype test with
+same verdict -> confirm fails pre-fix -> full suite -> commit; scratch javac repros deleted at end;
+Phase 7 = differential fuzzing vs javac. Unchecked *warnings* stay out of scope, unchecked-conversion
+legality/typing is in scope.
+
+Setup: Jackson 3 jype-stub migration committed on `main` (129db16), merged into this branch (2aa984f).
+Baseline: 177 tests green.
+
+### Progress log
