@@ -20,7 +20,6 @@ public interface JTestExpression {
     Map<String, Class<? extends JTestExpression>> SUBTYPE_KEYS = Map.of(
             "simple", SimplyTyped.class,
             "constant", Constant.class,
-            "multi", Multi.class,
             "invocation", Invocation.class,
             "instantiation", Instantiation.class,
             "get_field", GetField.class,
@@ -59,17 +58,6 @@ public interface JTestExpression {
 
         public static JStubSerialization.UnwrappingSerializer<Constant, Object> SERIALIZER = new JStubSerialization.UnwrappingSerializer<>(Constant.class, Constant::value);
         public static JStubSerialization.WrappingDeserializer<Constant, Object> DESERIALIZER = new JStubSerialization.WrappingDeserializer<>(Constant.class, new TypeReference<Object>() {}, Constant::new);
-    }
-
-    record Multi(List<Wrapper> children) implements JTestExpression {
-        @Override
-        public JExpressionInformation resolve(JTypeSystem system) {
-            return new JExpressionInformation.Multi.Simple(this.children().stream().map(wrapper -> wrapper.inner().resolve(system)).toList());
-        }
-
-        public static JStubSerialization.UnwrappingSerializer<Multi, List<Wrapper>> SERIALIZER = new JStubSerialization.UnwrappingSerializer<>(Multi.class, Multi::children);
-        public static JStubSerialization.WrappingDeserializer<Multi, List<Wrapper>> DESERIALIZER = new JStubSerialization.WrappingDeserializer<>(Multi.class, new TypeReference<List<Wrapper>>() {}, Multi::new);
-
     }
 
     record Instantiation(String declaring, String declaringMethod, String type, List<Wrapper> parameters, List<String> typeArguments) implements JTestExpression {

@@ -30,8 +30,6 @@ import java.util.stream.IntStream;
 
 public interface JExpressionInformation extends SimpleName {
 
-    JExpressionInformation toSimple(JType type);
-
     static SimplyTyped of(JType type) {
         return new SimplyTyped.Simple(type);
     }
@@ -60,10 +58,6 @@ public interface JExpressionInformation extends SimpleName {
             public String toString() {
                 return "simply-typed(" + this.type + ")";
             }
-        }
-
-        default SimplyTyped toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
         }
 
         default SimplyTyped createNew(JType type) { return new SimplyTyped.Simple(type); }
@@ -123,7 +117,6 @@ public interface JExpressionInformation extends SimpleName {
 
                 return string;
             }
-
         }
 
         Object value();
@@ -143,67 +136,6 @@ public interface JExpressionInformation extends SimpleName {
                     }
                 }
                 return type;
-            }
-        }
-    }
-
-    interface Multi extends JExpressionInformation {
-        record Simple(List<? extends JExpressionInformation> children) implements Multi {
-            @Override
-            public String simpleName() {
-                return this.children().stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(" & "));
-            }
-
-            @Override
-            public String toString() {
-                return "multi(" + this.children.stream().map(JExpressionInformation::toString).collect(Collectors.joining(", ")) + ")";
-            }
-        }
-
-        record Typed(Multi delegate, JType simpleType) implements Multi {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public List<? extends JExpressionInformation> children() { return delegate.children(); }
-        }
-
-        List<? extends JExpressionInformation> children();
-
-        @Override
-        default Multi toSimple(JType type) {
-            return new Multi.Typed(this, type);
-        }
-
-        default Multi createNew(List<? extends JExpressionInformation> children) { return new Multi.Simple(children); }
-
-        @Override
-        default boolean isSimplyTyped() {
-            return this.children().stream().allMatch(JExpressionInformation::isSimplyTyped);
-        }
-
-        @Override
-        default Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) {
-            if (!this.isSimplyTyped()) {
-                return Optional.empty();
-            }
-
-            if (this.children().isEmpty()) {
-                return Optional.of(system.constants().voidType());
-            } else if (this.children().size() == 1) {
-                return this.children().get(0).getSimpleType(system, Function.identity());
-            } else {
-                Set<JType> childrenTypes = new LinkedHashSet<>();
-                this.children().forEach(c -> {
-                    JType childType = c.getSimpleType(system, Function.identity()).get();
-
-                    if (childType instanceof JIntersectionType it) {
-                        childrenTypes.addAll(it.children());
-                    } else {
-                        childrenTypes.add(childType);
-                    }
-                });
-
-                return Optional.of(mapper.apply(JIntersectionType.of(childrenTypes, system)));
             }
         }
     }
@@ -248,21 +180,6 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Typed(Instantiation delegate, JType simpleType) implements Instantiation {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public JClassReference declaring() { return delegate.declaring(); }
-            @Override public JMethodReference declaringMethod() { return delegate.declaringMethod(); }
-            @Override public List<JExpressionInformation> parameters() { return delegate.parameters(); }
-            @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
-            @Override public JClassReference type() { return delegate.type(); }
-            @Override public boolean raw() { return delegate.raw(); }
-            @Override public boolean anonymous() { return delegate.anonymous(); }
-            @Override public List<JArgumentType> constructorTypeArguments() { return delegate.constructorTypeArguments(); }
-            @Override public JExpressionInformation outerInstance() { return delegate.outerInstance(); }
-        }
-
         record Anonymous(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments,
                          List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
             @Override
@@ -290,11 +207,6 @@ public interface JExpressionInformation extends SimpleName {
 
         default JExpressionInformation outerInstance() {
             return null;
-        }
-
-        @Override
-        default Instantiation toSimple(JType type) {
-            return new Instantiation.Typed(this, type);
         }
 
         default Instantiation createNew(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) { return new Instantiation.Simple(declaring, declaringMethod, type, parameters, explicitTypeArguments); }
@@ -351,11 +263,6 @@ public interface JExpressionInformation extends SimpleName {
             @Override public String name() { return delegate.name(); }
         }
 
-        @Override
-        default MethodInvocation<T> toSimple(JType type) {
-            return new MethodInvocation.Typed<>(this, type);
-        }
-
         default MethodInvocation<T> createNew(JClassReference declaring, JMethodReference declaringMethod, T source, String name, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments) { return new MethodInvocation.Simple<>(declaring, declaringMethod, source, name, parameters, explicitTypeArguments); }
 
         T source();
@@ -409,11 +316,6 @@ public interface JExpressionInformation extends SimpleName {
             @Override public String name() { return delegate.name(); }
         }
 
-        @Override
-        default GetField<T> toSimple(JType type) {
-            return new GetField.Typed<>(this, type);
-        }
-
         default GetField<T> createNew(JClassReference declaring, JMethodReference declaringMethod, T source, String name) { return new GetField.Simple<>(declaring, declaringMethod, source, name); }
 
         JClassReference declaring();
@@ -430,11 +332,6 @@ public interface JExpressionInformation extends SimpleName {
 
         public static LambdaParameter fresh(String name) {
             return new LambdaParameter(COUNTER.incrementAndGet(), name);
-        }
-
-        @Override
-        public JExpressionInformation toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
         }
 
         @Override
@@ -496,20 +393,6 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Typed(Lambda delegate, JType simpleType) implements Lambda {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public List<LambdaParameter> parameters() { return delegate.parameters(); }
-            @Override public List<JType> explicitParameterTypes() { return delegate.explicitParameterTypes(); }
-            @Override public LambdaBody lambdaBody() { return delegate.lambdaBody(); }
-        }
-
-        @Override
-        default Lambda toSimple(JType type) {
-            return new Lambda.Typed(this, type);
-        }
-
         List<LambdaParameter> parameters();
 
         List<JType> explicitParameterTypes();
@@ -544,20 +427,6 @@ public interface JExpressionInformation extends SimpleName {
                         "<" + this.explicitTypeArguments.stream().map(Object::toString).collect(Collectors.joining(", ")) + ">") +
                         ")";
             }
-        }
-
-        record Typed(InstantiationReference delegate, JType simpleType) implements InstantiationReference {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public JInstantiableType type() { return delegate.type(); }
-            @Override public JClassReference declaring() { return delegate.declaring(); }
-            @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
-        }
-
-        @Override
-        default InstantiationReference toSimple(JType type) {
-            return new InstantiationReference.Typed(this, type);
         }
 
         default InstantiationReference createNew(JInstantiableType type, List<JArgumentType> explicitTypeArguments) { return new InstantiationReference.Simple(type, explicitTypeArguments); }
@@ -603,11 +472,6 @@ public interface JExpressionInformation extends SimpleName {
             @Override public String methodName() { return delegate.methodName(); }
             @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
             @Override public JClassReference declaring() { return delegate.declaring(); }
-        }
-
-        @Override
-        default InvocationReference<T> toSimple(JType type) {
-            return new InvocationReference.Typed<>(this, type);
         }
 
         default InvocationReference<T> createNew(T source, String methodName, List<JArgumentType> explicitTypeArguments) { return new InvocationReference.Simple<>(source, methodName, explicitTypeArguments); }
@@ -662,11 +526,6 @@ public interface JExpressionInformation extends SimpleName {
             return Optional.of(mapper.apply(this.castType()));
         }
 
-        @Override
-        default JExpressionInformation toSimple(JType type) {
-            return this;
-        }
-
         default Cast createNew(JExpressionInformation operand, JType castType) {
             return new Cast.Simple(operand, castType);
         }
@@ -705,11 +564,6 @@ public interface JExpressionInformation extends SimpleName {
         @Override
         default Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) {
             return Optional.of(mapper.apply(system.constants().booleanType()));
-        }
-
-        @Override
-        default JExpressionInformation toSimple(JType type) {
-            return this;
         }
 
         default InstanceOf createNew(JExpressionInformation operand, JType checkedType) {
@@ -760,25 +614,12 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Typed(UnaryOperator delegate, JType simpleType) implements UnaryOperator {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public Kind kind() { return delegate.kind(); }
-            @Override public JExpressionInformation operand() { return delegate.operand(); }
-        }
-
         Kind kind();
 
         JExpressionInformation operand();
 
         default UnaryOperator createNew(Kind kind, JExpressionInformation operand) {
             return new UnaryOperator.Simple(kind, operand);
-        }
-
-        @Override
-        default UnaryOperator toSimple(JType type) {
-            return new UnaryOperator.Typed(this, type);
         }
 
         static Optional<JType> resultType(Kind kind, JType operandType, JTypeSystem system) {
@@ -851,15 +692,6 @@ public interface JExpressionInformation extends SimpleName {
             };
         }
 
-        record Typed(BinaryOperator delegate, JType simpleType) implements BinaryOperator {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public Kind kind() { return delegate.kind(); }
-            @Override public JExpressionInformation left() { return delegate.left(); }
-            @Override public JExpressionInformation right() { return delegate.right(); }
-        }
-
         Kind kind();
 
         JExpressionInformation left();
@@ -868,11 +700,6 @@ public interface JExpressionInformation extends SimpleName {
 
         default BinaryOperator createNew(Kind kind, JExpressionInformation left, JExpressionInformation right) {
             return new BinaryOperator.Simple(kind, left, right);
-        }
-
-        @Override
-        default BinaryOperator toSimple(JType type) {
-            return new BinaryOperator.Typed(this, type);
         }
 
         static boolean isExactlyString(JType type, JTypeSystem system) {
@@ -980,15 +807,6 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Typed(Conditional delegate, JType simpleType) implements Conditional {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public JExpressionInformation condition() { return delegate.condition(); }
-            @Override public JExpressionInformation whenTrue() { return delegate.whenTrue(); }
-            @Override public JExpressionInformation whenFalse() { return delegate.whenFalse(); }
-        }
-
         JExpressionInformation condition();
 
         JExpressionInformation whenTrue();
@@ -997,11 +815,6 @@ public interface JExpressionInformation extends SimpleName {
 
         default Conditional createNew(JExpressionInformation condition, JExpressionInformation whenTrue, JExpressionInformation whenFalse) {
             return new Conditional.Simple(condition, whenTrue, whenFalse);
-        }
-
-        @Override
-        default Conditional toSimple(JType type) {
-            return new Conditional.Typed(this, type);
         }
 
         /**
@@ -1141,11 +954,6 @@ public interface JExpressionInformation extends SimpleName {
             return Optional.of(mapper.apply(this.arrayType(system)));
         }
 
-        @Override
-        default JExpressionInformation toSimple(JType type) {
-            return this;
-        }
-
         default ArrayCreation createNew(JType componentType, List<JExpressionInformation> dimensions, int extraDimensions) {
             return new ArrayCreation.Simple(componentType, dimensions, extraDimensions, null);
         }
@@ -1175,22 +983,10 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Typed(ArrayInitializer delegate, JType simpleType) implements ArrayInitializer {
-            @Override public boolean isSimplyTyped() { return true; }
-            @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
-            @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public List<JExpressionInformation> elements() { return delegate.elements(); }
-        }
-
         List<JExpressionInformation> elements();
 
         default ArrayInitializer createNew(List<JExpressionInformation> elements) {
             return new ArrayInitializer.Simple(elements);
-        }
-
-        @Override
-        default ArrayInitializer toSimple(JType type) {
-            return new ArrayInitializer.Typed(this, type);
         }
     }
 
@@ -1279,22 +1075,12 @@ public interface JExpressionInformation extends SimpleName {
 
     record ArrayAccess(JExpressionInformation array, JExpressionInformation index) implements JExpressionInformation {
         @Override
-        public JExpressionInformation toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
-        }
-
-        @Override
         public String simpleName() {
             return this.array.simpleName() + "[" + this.index.simpleName() + "]";
         }
     }
 
     record Assignment(JExpressionInformation variable, BinaryOperator.Kind operator, JExpressionInformation value) implements JExpressionInformation {
-        @Override
-        public JExpressionInformation toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
-        }
-
         @Override
         public String simpleName() {
             return this.variable.simpleName() + " " + (this.operator == null ? "" : BinaryOperator.symbol(this.operator)) + "= " + this.value.simpleName();
@@ -1303,11 +1089,6 @@ public interface JExpressionInformation extends SimpleName {
 
     record IncrementDecrement(JExpressionInformation variable, boolean increment, boolean prefix) implements JExpressionInformation {
         @Override
-        public JExpressionInformation toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
-        }
-
-        @Override
         public String simpleName() {
             String op = this.increment ? "++" : "--";
             return this.prefix ? op + this.variable.simpleName() : this.variable.simpleName() + op;
@@ -1315,11 +1096,6 @@ public interface JExpressionInformation extends SimpleName {
     }
 
     record Switch(JExpressionInformation selector, List<JExpressionInformation> results, boolean patternLabels) implements JExpressionInformation {
-        @Override
-        public JExpressionInformation toSimple(JType type) {
-            return new SimplyTyped.Simple(type);
-        }
-
         @Override
         public String simpleName() {
             return "switch (" + this.selector.simpleName() + ") { " + this.results.stream().map(r -> "-> " + r.simpleName() + "; ").collect(Collectors.joining()) + "}";

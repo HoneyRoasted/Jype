@@ -69,9 +69,6 @@ public interface JStubSerialization {
         module.addDeserializer(JTestExpression.Constant.class, JTestExpression.Constant.DESERIALIZER)
                 .addSerializer(JTestExpression.Constant.SERIALIZER);
 
-        module.addDeserializer(JTestExpression.Multi.class, JTestExpression.Multi.DESERIALIZER)
-                .addSerializer(JTestExpression.Multi.SERIALIZER);
-
         module.addDeserializer(JTestCondition.Status.class, JTestCondition.Status.DESERIALIZER)
                 .addSerializer(JTestCondition.Status.SERIALIZER);
 
