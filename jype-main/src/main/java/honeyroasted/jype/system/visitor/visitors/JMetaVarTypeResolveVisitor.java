@@ -3,6 +3,7 @@ package honeyroasted.jype.system.visitor.visitors;
 import honeyroasted.jype.system.cache.JTypeCache;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JVarType;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -24,6 +25,20 @@ public class JMetaVarTypeResolveVisitor implements JDeepStructuralTypeMappingVis
     @Override
     public boolean visitStructural() {
         return false;
+    }
+
+    @Override
+    public boolean overridesVarType(JVarType type) {
+        return type.upperBounds().stream().noneMatch(this::mentionsResolvable) && type.lowerBounds().stream().noneMatch(this::mentionsResolvable);
+    }
+
+    @Override
+    public JType varTypeOverride(JVarType type, JTypeCache<JType, JType> cache) {
+        return type;
+    }
+
+    private boolean mentionsResolvable(JType type) {
+        return type.mentions(t -> t instanceof JMetaVarType mvt && this.resolves.test(mvt));
     }
 
     @Override

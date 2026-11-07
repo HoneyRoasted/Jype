@@ -906,3 +906,11 @@ Baseline: 177 tests green.
   - New `stub_tests/expression_shapes.yml` (19 javac-verified cases). YAML suite 52/52.
   - Branch-wide tidy: inline fully qualified names replaced by imports, unused imports removed, prose
     comments added on this branch removed (only `// JLS` references remain), dead `JMemberLookup` helpers gone.
+
+- **Long fuzz run + fresh-variable copy bug — done.** Expression seeds 19–36 (18 × 20 worlds × 80 probes) and
+  relation seeds 9–14: one mismatch, `Runnable x = m3()` with `<A extends Comparable<A>> A m3()` (javac
+  accepts). The fresh `Y` of the second resolution attempt was deep-copied by `JMetaVarTypeResolveVisitor`
+  while its bounds were still being built, leaving a bound-less copy equal to `Y` by location inside
+  `Comparable<Y>`; the derived `Y <: Runnable` then failed. The resolver now keeps type variables whose bounds
+  mention no resolvable inference variable. Regression case added to `JResolveBoundsSecondAttemptTests`.
+  Suite 213/213 (main + stub); fuzz seeds 22, 35, 36: 0 mismatches.

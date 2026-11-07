@@ -34,6 +34,10 @@ public class JResolveBoundsSecondAttemptTests {
         public static <T> T id(T a) {
             return a;
         }
+
+        public static <A extends Comparable<A>> A fbound() {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static final JTypeSystem TS = JTypeSystem.RUNTIME_REFLECTION;
@@ -67,6 +71,7 @@ public class JResolveBoundsSecondAttemptTests {
         assertEquals(false, solves(pickLiLn, typeOf("superNumber")), "List<? super Number> x = pick(li, ln)");
         assertEquals(true, solves(pickLiLn, typeOf("extendsNumber")), "List<? extends Number> x = pick(li, ln)");
         assertEquals(true, solves(call("pick", field("lsup"), field("li")), typeOf("superInteger")), "List<? super Integer> x = pick(lsup, li)");
+        assertEquals(true, solves(call("fbound"), TS.tryResolve(Runnable.class)), "Runnable x = fbound()");
     }
 
     @Test
