@@ -63,6 +63,11 @@ The version is in `buildSrc/shared.gradle`. The toolchain is Java 24 (a local JD
   - `compatibility/` holds the proper-type relation constraints.
 - **Overload selection** for invocations, instantiations and method references runs through `JInvocationSelection`: phases, pertinence to applicability, most-specific, and the invocation type with §18.5.2.1 early resolution. `JMethodLookup`/`JFieldLookup` handle members, `JFunctionalInterfaces` handles §9.9 function types, `JStandaloneTyping` types standalone sub-expressions, and `JConstantEvaluator` handles §15.29.
 - **Wiring.** Mapper lists are in `operations/JTypeOperationsImpl`. A new reducer must be added to both the reduction list and the inference list.
+- **Cyclic and expansive subtyping.** `JTypeRelations.isSubtype` treats both kinds of check as false. There are two ways to hit this:
+  - A pair that is already being checked further up the stack. This is inductive: javac rejects `N<? super C> x = new C()` for `class C implements N<N<? super C>>`.
+  - Recursion deeper than `MAX_SUBTYPE_DEPTH` (64). These are expansive hierarchies such as `class C<X> implements N<N<? super C<C<X>>>>`, where javac itself throws `StackOverflowError`.
+
+  This matters if relations are ever moved into the constraint solver. Almonds' `add` uses `putIfAbsent`, so a repeated constraint is silently shared and effectively treated as true (coinductive). That would accept the javac-rejected case above. See `JTypeRelationsCycleTests`.
 
 ### Deliberate javac alignments
 

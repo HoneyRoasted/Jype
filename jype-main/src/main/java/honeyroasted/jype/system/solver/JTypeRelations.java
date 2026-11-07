@@ -40,6 +40,7 @@ public final class JTypeRelations {
     );
 
     private static final ThreadLocal<Set<Pair<JType, JType>>> SUBTYPE_STACK = ThreadLocal.withInitial(HashSet::new);
+    private static final int MAX_SUBTYPE_DEPTH = 64;
 
     private JTypeRelations() {
     }
@@ -102,7 +103,8 @@ public final class JTypeRelations {
     public static boolean isSubtype(JType s, JType t) {
         Pair<JType, JType> key = Pair.identity(s, t);
         Set<Pair<JType, JType>> stack = SUBTYPE_STACK.get();
-        if (!stack.add(key)) {
+        if (stack.size() >= MAX_SUBTYPE_DEPTH || !stack.add(key)) {
+            // JLS §4.10 a cyclic or expansively growing subtype check does not hold (javac rejects or fails on both)
             return false;
         }
         try {
