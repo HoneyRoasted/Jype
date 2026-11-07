@@ -143,12 +143,8 @@ public interface JTestConstraint {
             JExpressionInformation expr = this.expr().resolve(system);
             JType type = JStubSerialization.readType(system, type(), containing);
 
-            if (expr instanceof JExpressionInformation.Lambda jel) {
-                return Set.of(new JTypeConstraints.LambdaThrows(jel, type));
-            } else if (expr instanceof JExpressionInformation.InvocationReference<?> jir) {
-                return Set.of(new JTypeConstraints.InvocationReferenceThrows(jir, type));
-            } else if (expr instanceof JExpressionInformation.InstantiationReference jir) {
-                return Set.of(new JTypeConstraints.InstantiationReferenceThrows(jir, type));
+            if (expr instanceof JExpressionInformation.Invocation) {
+                return Set.of(new JTypeConstraints.LambdaThrowsCheck(expr, List.of(type)));
             }
 
             return Collections.emptySet();

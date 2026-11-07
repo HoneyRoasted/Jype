@@ -314,12 +314,18 @@ public final class JInvocationSelection {
                 }
             }
         }
-        if (!(constraint.right() instanceof honeyroasted.jype.type.JNoneType none && none.typeEquals(system.constants().voidType()) && result.typeEquals(system.constants().voidType()))) {
+        if (!constraint.right().typeEquals(system.constants().voidType())) {
             // JLS §18.5.2.1 ‹R θ → T›
             constraints.put(new JTypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
         }
 
+        List<JType> thrown = new ArrayList<>();
+        JVarTypeResolveVisitor thrownResolver = new JVarTypeResolveVisitor(inst.theta());
+        for (JType t : candidate.thrown()) {
+            thrown.add(chosen.unchecked() ? JTypeRelations.erasure(t) : thrownResolver.visit(t));
+        }
         PropertySet metadata = new PropertySet()
+                .attach(new JTypeContext.ThrownTypes(expr, thrown))
                 .attach(new JTypeContext.ChosenMethod(expr, candidate.method(), context(chosen.phase()), chosen.phase() == Phase.VARARG))
                 .attach(new JTypeContext.ExpressionType(expr, result));
         return new ConstraintBranch.Snapshot(metadata, constraints);

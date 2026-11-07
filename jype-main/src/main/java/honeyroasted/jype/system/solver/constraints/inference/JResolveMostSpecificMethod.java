@@ -372,7 +372,7 @@ public class JResolveMostSpecificMethod {
         if (expr instanceof JExpressionInformation.Lambda lambda && isExplicitlyTyped(lambda)) {
             if (rt.typeEquals(system.constants().voidType())) return true;
 
-            JExpressionInformation result = lambda.body();
+            JExpressionInformation result = lambda.resultExpressions().isEmpty() ? null : lambda.resultExpressions().getFirst();
 
             Optional<JMethodReference> rsSam = JReduceLambdaExpression.findFunctionalMethod(rs);
             Optional<JMethodReference> rtSam = JReduceLambdaExpression.findFunctionalMethod(rt);
@@ -509,7 +509,7 @@ public class JResolveMostSpecificMethod {
         if (expr instanceof JExpressionInformation.Lambda lambda && isExplicitlyTyped(lambda)) {
             if (rt.typeEquals(system.constants().voidType())) return true;
 
-            JExpressionInformation result = lambda.body();
+            JExpressionInformation result = lambda.resultExpressions().isEmpty() ? null : lambda.resultExpressions().getFirst();
 
             Optional<JMethodReference> rsSam = JReduceLambdaExpression.findFunctionalMethod(rs);
             Optional<JMethodReference> rtSam = JReduceLambdaExpression.findFunctionalMethod(rt);

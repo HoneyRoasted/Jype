@@ -236,6 +236,18 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
+        record Full(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments,
+                    boolean raw, List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
+            @Override
+            public String simpleName() {
+                return (this.outerInstance == null ? "" : this.outerInstance.simpleName() + ".") + "new " +
+                        (this.constructorTypeArguments.isEmpty() ? "" : "<" + this.constructorTypeArguments.stream().map(JType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                        this.type.simpleName() +
+                        (this.raw ? "" : "<" + this.explicitTypeArguments.stream().map(JType::simpleName).collect(Collectors.joining(", ")) + ">") +
+                        "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ")";
+            }
+        }
+
         record Typed(Instantiation delegate, JType simpleType) implements Instantiation {
             @Override public boolean isSimplyTyped() { return true; }
             @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
@@ -245,6 +257,21 @@ public interface JExpressionInformation extends SimpleName {
             @Override public List<JExpressionInformation> parameters() { return delegate.parameters(); }
             @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
             @Override public JClassReference type() { return delegate.type(); }
+            @Override public boolean raw() { return delegate.raw(); }
+            @Override public List<JArgumentType> constructorTypeArguments() { return delegate.constructorTypeArguments(); }
+            @Override public JExpressionInformation outerInstance() { return delegate.outerInstance(); }
+        }
+
+        default boolean raw() {
+            return false;
+        }
+
+        default List<JArgumentType> constructorTypeArguments() {
+            return List.of();
+        }
+
+        default JExpressionInformation outerInstance() {
+            return null;
         }
 
         @Override
@@ -380,22 +407,74 @@ public interface JExpressionInformation extends SimpleName {
         String name();
     }
 
+    record LambdaParameter(int id, String name) implements JExpressionInformation {
+        private static final java.util.concurrent.atomic.AtomicInteger COUNTER = new java.util.concurrent.atomic.AtomicInteger();
+
+        public static LambdaParameter fresh(String name) {
+            return new LambdaParameter(COUNTER.incrementAndGet(), name);
+        }
+
+        @Override
+        public JExpressionInformation toSimple(JType type) {
+            return new SimplyTyped.Simple(type);
+        }
+
+        @Override
+        public String simpleName() {
+            return this.name;
+        }
+    }
+
+    interface LambdaBody {
+        List<JExpressionInformation> resultExpressions();
+
+        record Expression(JExpressionInformation expression) implements LambdaBody {
+            @Override
+            public List<JExpressionInformation> resultExpressions() {
+                return List.of(this.expression);
+            }
+        }
+
+        record Block(List<JExpressionInformation> statements, List<JExpressionInformation> returnExpressions, boolean hasVoidReturn, boolean canCompleteNormally) implements LambdaBody {
+            public static Block empty() {
+                return new Block(List.of(), List.of(), false, true);
+            }
+
+            @Override
+            public List<JExpressionInformation> resultExpressions() {
+                return this.returnExpressions;
+            }
+
+            public boolean isVoidCompatible() {
+                return this.returnExpressions.isEmpty();
+            }
+
+            public boolean isValueCompatible() {
+                return !this.canCompleteNormally && !this.hasVoidReturn;
+            }
+        }
+    }
+
     interface Lambda extends JExpressionInformation {
-        record Simple(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) implements Lambda {
+        record Simple(List<LambdaParameter> parameters, List<JType> explicitParameterTypes, LambdaBody lambdaBody) implements Lambda {
+            public Simple(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) {
+                this(IntStream.range(0, parameterCount).mapToObj(i -> LambdaParameter.fresh("arg" + i)).toList(), explicitParameterTypes,
+                        implicitReturn ? new LambdaBody.Expression(body) : LambdaBody.Block.empty());
+            }
+
             @Override
             public String simpleName() {
-                return "(" + (this.explicitParameterTypes != null && this.explicitParameterTypes.size() == parameterCount ?
-                        this.explicitParameterTypes.stream().map(SimpleName::simpleName).collect(Collectors.joining(", ")) :
-                        IntStream.range(0, parameterCount).mapToObj(i -> "arg" + i).collect(Collectors.joining(", "))) +
-                        ") -> " + (this.implicitReturn ? "" : "{ ") + this.body.simpleName() + (this.implicitReturn ? "" : " }");
+                String params = this.explicitParameterTypes != null && this.explicitParameterTypes.size() == this.parameters.size() ?
+                        IntStream.range(0, this.parameters.size()).mapToObj(i -> this.explicitParameterTypes.get(i).simpleName() + " " + this.parameters.get(i).name()).collect(Collectors.joining(", ")) :
+                        this.parameters.stream().map(LambdaParameter::name).collect(Collectors.joining(", "));
+                String body = this.lambdaBody instanceof LambdaBody.Expression e ? e.expression().simpleName() :
+                        "{ " + ((LambdaBody.Block) this.lambdaBody).returnExpressions().stream().map(r -> "return " + r.simpleName() + "; ").collect(Collectors.joining()) + "}";
+                return "(" + params + ") -> " + body;
             }
 
             @Override
             public String toString() {
-                return "lambda([" + (this.explicitParameterTypes != null && this.explicitParameterTypes.size() == parameterCount ?
-                        this.explicitParameterTypes.stream().map(Object::toString).collect(Collectors.joining(", ")) :
-                        this.parameterCount) + "] -> "
-                        + (this.implicitReturn ? "" : "{ ") + this.body + (this.implicitReturn ? "" : " }");
+                return "lambda(" + this.parameters + " " + this.explicitParameterTypes + " -> " + this.lambdaBody + ")";
             }
         }
 
@@ -403,10 +482,9 @@ public interface JExpressionInformation extends SimpleName {
             @Override public boolean isSimplyTyped() { return true; }
             @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
             @Override public String simpleName() { return delegate.simpleName(); }
-            @Override public JExpressionInformation body() { return delegate.body(); }
+            @Override public List<LambdaParameter> parameters() { return delegate.parameters(); }
             @Override public List<JType> explicitParameterTypes() { return delegate.explicitParameterTypes(); }
-            @Override public int parameterCount() { return delegate.parameterCount(); }
-            @Override public boolean implicitReturn() { return delegate.implicitReturn(); }
+            @Override public LambdaBody lambdaBody() { return delegate.lambdaBody(); }
         }
 
         @Override
@@ -414,15 +492,23 @@ public interface JExpressionInformation extends SimpleName {
             return new Lambda.Typed(this, type);
         }
 
-        default Lambda createNew(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) { return new Lambda.Simple(body, explicitParameterTypes, parameterCount, implicitReturn); }
-
-        JExpressionInformation body();
+        List<LambdaParameter> parameters();
 
         List<JType> explicitParameterTypes();
 
-        int parameterCount();
+        LambdaBody lambdaBody();
 
-        boolean implicitReturn();
+        default int parameterCount() {
+            return this.parameters().size();
+        }
+
+        default boolean isExplicitlyTyped() {
+            return this.parameters().isEmpty() || (this.explicitParameterTypes() != null && this.explicitParameterTypes().size() == this.parameters().size());
+        }
+
+        default List<JExpressionInformation> resultExpressions() {
+            return this.lambdaBody().resultExpressions();
+        }
     }
 
     interface InstantiationReference extends JExpressionInformation {

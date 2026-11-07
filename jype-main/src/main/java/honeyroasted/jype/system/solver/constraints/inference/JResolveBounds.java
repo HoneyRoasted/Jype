@@ -37,8 +37,23 @@ public class JResolveBounds extends ConstraintMapper.All {
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch) {
         JTypeSystem system = branch.parent().metadata().firstOr(JTypeSystem.class, JTypeSystem.RUNTIME_REFLECTION);
+        if (!saturated(system, branch)) {
+            // JLS §18.4 resolution operates on a fully incorporated bound set
+            return;
+        }
 
         Set<JMetaVarType> variables = mentionedVariables(branch);
+        Set<JMetaVarType> requested = deferredInputs(branch);
+        if (!requested.isEmpty()) {
+            // JLS §18.5.2.2 resolve only the input variables of deferred constraints (and their dependencies)
+            Map<JMetaVarType, Set<JMetaVarType>> allDependencies = discoverDependencies(branch, variables);
+            Set<JMetaVarType> restricted = new LinkedHashSet<>();
+            for (JMetaVarType r : requested) {
+                restricted.add(r);
+                restricted.addAll(allDependencies.getOrDefault(r, Set.of()));
+            }
+            variables = restricted;
+        }
         Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
         for (JMetaVarType mvt : variables) {
             JType inst = findInstantiation(mvt, branch);
@@ -139,9 +154,32 @@ public class JResolveBounds extends ConstraintMapper.All {
         }
     }
 
+    private static boolean saturated(JTypeSystem system, ConstraintBranch branch) {
+        ConstraintTree temp = new ConstraintTree();
+        temp.metadata().inheritFrom(branch.parent().metadata());
+        temp.metadata().attach(JTypeConstraints.ResolutionScratch.INSTANCE);
+        int before = branch.size();
+        ConstraintBranch snap = branch.copy(temp);
+        snap.executeChanges();
+        temp.addBranch(snap);
+        system.operations().incorporationApplier().accept(temp);
+        return temp.branches().size() == 1 && temp.branches().iterator().next().size() == before;
+    }
+
+    private static Set<JMetaVarType> deferredInputs(ConstraintBranch branch) {
+        Set<JMetaVarType> result = new LinkedHashSet<>();
+        branch.constraints().forEach((con, status) -> {
+            if (con instanceof JTypeConstraints.Deferred d && status == Constraint.Status.ASSUMED) {
+                result.addAll(d.right());
+            }
+        });
+        return result;
+    }
+
     private static Optional<ConstraintBranch> incorporate(JTypeSystem system, ConstraintBranch branch, Map<JMetaVarType, JType> candidates, List<JTypeConstraints.Capture> removed) {
         ConstraintTree temp = new ConstraintTree();
         temp.metadata().inheritFrom(branch.parent().metadata());
+        temp.metadata().attach(JTypeConstraints.ResolutionScratch.INSTANCE);
         ConstraintBranch snap = branch.copy(temp);
         snap.executeChanges();
         temp.addBranch(snap);

@@ -149,54 +149,19 @@ public interface JTypeConstraints {
         }
     }
 
-    final class LambdaThrows extends Constraint.Binary<JExpressionInformation.Lambda, JType> {
-
-        public LambdaThrows(JExpressionInformation.Lambda left, JType right) {
+    final class LambdaThrowsCheck extends Constraint.Binary<JExpressionInformation, java.util.List<JType>> {
+        public LambdaThrowsCheck(JExpressionInformation left, java.util.List<JType> right) {
             super(left, right);
         }
 
         @Override
         public String toString() {
-            return this.left() + " THROWS " + this.right();
+            return this.left() + " MAY ONLY THROW " + this.right();
         }
 
         @Override
         public String simpleName() {
-            return this.left().simpleName() + " throws(" + this.right().simpleName() + ")";
-        }
-    }
-
-    final class InvocationReferenceThrows extends Constraint.Binary<JExpressionInformation.InvocationReference<?>, JType> {
-
-        public InvocationReferenceThrows(JExpressionInformation.InvocationReference<?> left, JType right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " THROWS " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " throws(" + this.right().simpleName() + ")";
-        }
-    }
-
-    final class InstantiationReferenceThrows extends Constraint.Binary<JExpressionInformation.InstantiationReference, JType> {
-
-        public InstantiationReferenceThrows(JExpressionInformation.InstantiationReference left, JType right) {
-            super(left, right);
-        }
-
-        @Override
-        public String toString() {
-            return this.left() + " THROWS " + this.right();
-        }
-
-        @Override
-        public String simpleName() {
-            return this.left().simpleName() + " throws(" + this.right().simpleName() + ")";
+            return "throwsCheck(" + this.left().simpleName() + ")";
         }
     }
 
@@ -230,6 +195,29 @@ public interface JTypeConstraints {
         public String simpleName() {
             return this.left().simpleName() + " = capture(" + this.right().simpleName() + ")";
         }
+    }
+
+    final class Deferred extends Constraint.Binary<ExpressionCompatible, java.util.Set<JMetaVarType>> {
+        public Deferred(ExpressionCompatible left, java.util.Set<JMetaVarType> right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " DEFERRED UNTIL " + this.right() + " ARE RESOLVED";
+        }
+
+        @Override
+        public String simpleName() {
+            return "deferred(" + this.left().simpleName() + " | " + this.right().stream().map(JMetaVarType::simpleName).collect(java.util.stream.Collectors.joining(", ")) + ")";
+        }
+    }
+
+    final class ResolutionScratch {
+        private ResolutionScratch() {
+        }
+
+        public static final ResolutionScratch INSTANCE = new ResolutionScratch();
     }
 
     final class UncheckedConversion extends Constraint.Binary<JType, JType> {

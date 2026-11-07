@@ -37,6 +37,8 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiationRefExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInvocationRefExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceDeferred;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaThrowsCheck;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
@@ -103,6 +105,8 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceInstantiationRefExpression(),
             new JReduceInvocationRefExpression(),
             new JReduceLambdaExpression(),
+            new JReduceDeferred(),
+            new JReduceLambdaThrowsCheck(),
 
             new JIncorporationEqualEqual(),
             new JIncorporationEqualSubtype(),
@@ -144,6 +148,8 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceInstantiationRefExpression(),
             new JReduceInvocationRefExpression(),
             new JReduceLambdaExpression(),
+            new JReduceDeferred(),
+            new JReduceLambdaThrowsCheck(),
 
             new JIncorporationEqualEqual(),
             new JIncorporationEqualSubtype(),
@@ -216,9 +222,10 @@ public class JTypeOperationsImpl implements JTypeOperations {
     @Override
     public ConstraintSolver inferenceSolver() {
         JTypeSystem system = this.typeSystem;
+        List<ConstraintMapper> loop = new java.util.ArrayList<>(INFERENCE_MAPPERS);
+        loop.addAll(RESOLVE_MAPPERS);
         ConstraintSolver solver = new ConstraintSolver(List.of(
-                ConstraintMapperApplier.of(INFERENCE_MAPPERS, ConstraintMapperApplier.Type.UNTRIMMED),
-                this.resolutionApplier(ConstraintMapperApplier.Type.UNTRIMMED),
+                ConstraintMapperApplier.of(loop, ConstraintMapperApplier.Type.UNTRIMMED),
                 this.verifyApplier(ConstraintMapperApplier.Type.UNTRIMMED)
         )).postSolve(tree -> JResolveMostSpecificMethod.prune(tree, system));
         return solver.withContext(new PropertySet()

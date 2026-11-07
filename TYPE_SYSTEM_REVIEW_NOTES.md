@@ -717,3 +717,38 @@ Baseline: 177 tests green.
     method, `super.m` must not be abstract, `Interface.super.m` supported).
   Expression fuzz seed 1 × 15 worlds: 600 probes, 2 mismatches left (void-SAM lambda body; ctor-ref).
   Suite 180/180.
+
+- **Items 25, 26, 27, 28, 32, 37 (most), 40 — lambdas, deferral, functional interfaces, instantiation.**
+  - Lambda model: `Lambda.Simple(List<LambdaParameter>, List<JType> explicitTypes, LambdaBody)` with
+    `LambdaBody.Expression` / `LambdaBody.Block(statements, returnExpressions, hasVoidReturn,
+    canCompleteNormally)`; old `(body, types, count, implicitReturn)` constructor kept (implicitReturn=false
+    = empty void block). `LambdaParameter` references are substituted with the parameter types before the
+    body is reduced (`JExpressionSubstitution`).
+  - `JReduceLambdaExpression` rewritten: §18.5.2.2 deferral — a lambda whose target is an inference
+    variable, or an implicitly typed lambda whose function-type parameter types mention unresolved
+    inference variables, becomes a `Deferred` constraint (ASSUMED); `JResolveBounds` then resolves only
+    those input variables (and dependencies) and `JReduceDeferred` re-issues the constraint. This replaces
+    the earlier deliberate deviation of reducing implicit lambdas with improper parameter types.
+    Ground target type: §9.9 non-wildcard parameterization (implicit) / §18.5.3 inference (explicit);
+    generic function types rejected (§15.27.3); void function type needs a statement-expression body or
+    void-compatible block (javac-verified `F2 x = () -> 300` rejected); value function type needs
+    value-compatible block. Checked exceptions (§18.2.5) via `LambdaThrowsCheck` constraints on every
+    invocation in the body, reduced once the invocation's thrown types (`JTypeContext.ThrownTypes`, θ
+    applied) are known. Old unused `LambdaThrows/InvocationReferenceThrows/InstantiationReferenceThrows`
+    removed (stub DSL `expr_throws` now maps to the check).
+  - Statement contexts use target `void`: invocation/instantiation skip the return compatibility.
+  - `JResolveBounds` moved into the main inference loop (so deferred constraints can be reduced after
+    resolution) and waits until incorporation is saturated (§18.4 works on an incorporated bound set —
+    without this, `new ArrayList<>(Collections.emptyList())` → `List<String>` resolved emptyList's T to a
+    fresh Y instead of String). `JVerifyBounds` substitutes instantiations and decides bounds; a still
+    deferred constraint fails.
+  - `JFunctionalInterfaces` (§9.8): abstract methods of all superinterfaces substituted through the
+    parameterization (`UnaryOperator<String>.apply(String)`), Object public methods excluded by
+    signature, overridden methods removed, override-equivalent abstract methods merged (subsignature +
+    return-type-substitutable).
+  - `JReduceInstantiation` on `JInvocationSelection`: abstract/interface rejected (§15.9.1), diamond
+    infers class + constructor type parameters (§15.9.3), explicit class arguments substitute
+    constructor signatures, generic constructors with explicit constructor type arguments, raw form
+    (erased signatures), qualified `outer.new Inner()` and implicit enclosing instance (§15.9.2), via new
+    `Instantiation.Full` (old `Simple` keeps diamond-when-empty semantics).
+  Fuzz: expressions seed 1 (1 mismatch left: constructor reference), relations seed 2 (0). Suite 180/180.

@@ -35,6 +35,13 @@ public interface JTypeContext {
         }
     }
 
+    record ThrownTypes(JExpressionInformation expression, java.util.List<JType> types) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Thrown Types: " + expression.simpleName() + " : " + types;
+        }
+    }
+
     record ChosenField(JExpressionInformation.GetField<?> expression, JFieldReference chosen) implements SimpleName {
         @Override
         public String simpleName() {
