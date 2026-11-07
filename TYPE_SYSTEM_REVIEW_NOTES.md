@@ -645,3 +645,19 @@ Baseline: 177 tests green.
   YAML `unchecked_wildcard_test` asserted raw `List <: List<? super Object>` (javac: false; it is unchecked
   *conversion*); split into subtype=false + assignment=true cases.
   After: seeds 1-5, ~67k checks, **0 mismatches**. Suite 179/179.
+
+- **Item 17 (lub/glb) — done.** `JFindLeastUpperBound` rewritten after javac `Types.lub` (JLS §4.10.4 leaves
+  the infinite-type case to the implementation): erased-candidate set from closures, closureMin,
+  per-candidate `asSuper` + intersect/merge (containment first, else `? extends lub(...)` with a
+  recursion guard yielding `?`), array and mixed array/class cases (Serializable & Cloneable), null
+  operands ignored. `JFindGreatestLowerBound` of the empty set is now Object. Relation fuzzer gained a
+  behavioural lub check (subtype relations of javac's vs Jype's lub against every world type).
+  javac-verified updates to `FindLeastUpperBoundTests`: lub(Bar, Baz) = `Foo<? extends Foo<?>>`;
+  lub(Box<? super Integer>, Box<Number>) = `Box<? super Integer>` (javac merge keeps the containing
+  argument; the old test asserted a union of lower bounds); lub(raw-Box user, Box<String> user) = raw `Box`.
+  Fuzzer-found fixes: `JVarTypeImpl.hashCode` depended on recursive bounds (equal vars hashed
+  differently, substitution map lookups missed) — now location-only; `JVarTypeResolveVisitor` re-visited
+  its replacement with a fresh cache (non-simultaneous substitution, infinite loop for
+  `class C2 extends C1<C1>`) — now simultaneous per JLS; deep structural mapping rebuilt a
+  `JClassReference`'s declared supertypes during substitution — references are now atomic unless the
+  visitor is structural. Seeds 1,6,7 x 40 worlds: 0 mismatches. Suite 179/179.

@@ -104,7 +104,7 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
         if (seen.contains(this)) return 0;
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(Objects.hashCode(location), JType.hashCode(upperBounds, seen));
+        return Objects.hashCode(location);
     }
 
 }

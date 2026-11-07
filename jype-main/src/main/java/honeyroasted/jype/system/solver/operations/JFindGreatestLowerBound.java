@@ -10,6 +10,9 @@ public class JFindGreatestLowerBound implements JTypeOperation<Set<JType>, JType
 
     @Override
     public JType apply(JTypeSystem system, Set<JType> types) {
+        if (types.isEmpty()) {
+            return system.constants().object();
+        }
         return JIntersectionType.of(types, system);
     }
 

@@ -25,27 +25,20 @@ public class FindLeastUpperBoundTests {
     @Test
     public void testInfiniteLub() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
-
-        //Create test type to compare too
         JClassReference foo = ts.tryResolve(Foo.class);
-        JParameterizedClassType pct = ts.typeFactory().newParameterizedClassType();
-        pct.setClassReference(foo);
-        JWildType.Upper wtu = ts.typeFactory().newUpperWildType();
-        wtu.setUpperBounds(Set.of(pct));
-        pct.setTypeArguments(List.of(wtu));
 
-        //Create infinite lub
+        JWildType.Upper inner = ts.typeFactory().newUpperWildType();
+        inner.setUpperBounds(Set.of());
+        JParameterizedClassType innerFoo = foo.parameterized(List.of((JArgumentType) inner));
+        JWildType.Upper outer = ts.typeFactory().newUpperWildType();
+        outer.setUpperBounds(Set.of(innerFoo));
+        JParameterizedClassType expected = foo.parameterized(List.of((JArgumentType) outer));
+
         JType bar = ts.tryResolve(Bar.class);
         JType baz = ts.tryResolve(Baz.class);
         JType lub = ts.operations().findLeastUpperBound(Set.of(bar, baz));
 
-        //Set wild type identity to be the same, otherwise they will not be considered equal
-        if (lub instanceof JParameterizedClassType lubPct && !lubPct.typeArguments().isEmpty() &&
-                lubPct.typeArguments().get(0) instanceof JWildType.Upper lubWtu) {
-            wtu.setIdentity(lubWtu.identity());
-        }
-
-        assertTrue(lub.typeEquals(pct), lub.simpleName() + " = " + pct.simpleName());
+        assertTrue(lub.typeEquals(expected), "javac: lub(Bar, Baz) = Foo<? extends Foo<?>>, got " + lub.simpleName());
     }
 
     @Test
@@ -99,8 +92,7 @@ public class FindLeastUpperBoundTests {
         JArgumentType arg = ((JParameterizedClassType) lub).typeArguments().get(0);
         assertTrue(arg instanceof JWildType.Lower, arg + " should be a lower wildcard");
         Set<JType> bounds = ((JWildType.Lower) arg).lowerBounds();
-        assertTrue(bounds.stream().anyMatch(integerType::typeEquals), "expected lower bounds to contain Integer, got " + bounds);
-        assertTrue(bounds.stream().anyMatch(numberType::typeEquals), "expected lower bounds to contain Number, got " + bounds);
+        assertTrue(bounds.size() == 1 && bounds.iterator().next().typeEquals(integerType), "javac: lub(Box<? super Integer>, Box<Number>) = Box<? super Integer>, got " + bounds);
     }
 
     @Test
@@ -131,10 +123,7 @@ public class FindLeastUpperBoundTests {
 
         JType lub = ts.operations().findLeastUpperBound(Set.of(rawUser, typedUser));
 
-        JParameterizedClassType boxMember = findIntersectionMember(lub, box);
-        assertNotNull(boxMember, "expected " + lub.simpleName() + " to contain a Box member");
-        assertTrue(boxMember.typeArguments().get(0) instanceof JWildType.Upper,
-                "expected Box<?> since one operand uses Box raw, got Box<" + boxMember.typeArguments().get(0).simpleName() + ">");
+        assertTrue(lub.typeEquals(box), "javac: lub(RawBoxUser, TypedBoxUser) = raw Box, got " + lub.simpleName());
     }
 
     private static JParameterizedClassType findIntersectionMember(JType lub, JClassReference classRef) {

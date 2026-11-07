@@ -35,11 +35,7 @@ public class JVarTypeResolveVisitor implements JDeepStructuralTypeMappingVisitor
     public JType varTypeOverride(JVarType type, JTypeCache<JType, JType> cache) {
         JType resolved = this.resolver.apply(type);
         cache.put(type, resolved);
-        if (resolved.typeEquals(type)) {
-            return resolved;
-        } else {
-            return visit(resolved);
-        }
+        return resolved;
     }
 
     public JVarTypeResolveVisitor and(JVarTypeResolveVisitor other) {

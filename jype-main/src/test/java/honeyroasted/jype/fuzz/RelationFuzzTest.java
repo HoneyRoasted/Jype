@@ -107,6 +107,42 @@ public class RelationFuzzTest {
                     }
                 }
             }
+
+            List<String> refs = names.stream().filter(n -> !(jypeTypes.get(n) instanceof honeyroasted.jype.type.JPrimitiveType)).toList();
+            for (int i = 0; i < Math.min(30, refs.size()) && refs.size() >= 2; i++) {
+                int k = 2 + (random.nextInt(4) == 0 ? 1 : 0);
+                List<String> picked = new ArrayList<>();
+                for (int j = 0; j < k; j++) {
+                    picked.add(refs.get(random.nextInt(refs.size())));
+                }
+                com.sun.tools.javac.util.List<Type> jl = com.sun.tools.javac.util.List.from(picked.stream().map(compiled.fieldTypes()::get).toList());
+                Type expected = compiled.types().lub(jl);
+                if (expected == null || expected.isErroneous()) {
+                    continue;
+                }
+                java.util.Set<JType> set = new java.util.LinkedHashSet<>();
+                picked.forEach(p -> set.add(jypeTypes.get(p)));
+                Outcome<JType> actual = runner.run(() -> system.operations().findLeastUpperBound(set));
+                String desc = "lub(" + String.join(", ", picked.stream().map(compiled.fieldSources()::get).toList()) + ")";
+                checks++;
+                if (actual.value() == null) {
+                    record(mismatches, tally, new FuzzMismatch("lub-" + (actual.timedOut() ? "timeout" : "error"), desc, expected.toString(), actual.render(), "  world " + worldSeed + ":\n" + indent(compiled.source())));
+                    continue;
+                }
+                JType lub = actual.value();
+                for (String f : refs) {
+                    Type jf = compiled.fieldTypes().get(f);
+                    JType tf = jypeTypes.get(f);
+                    boolean e1 = compiled.types().isSubtype(expected, jf);
+                    boolean e2 = compiled.types().isSubtype(jf, expected);
+                    Outcome<Boolean> a1 = runner.run(() -> system.operations().isSubtype(lub, tf));
+                    Outcome<Boolean> a2 = runner.run(() -> system.operations().isSubtype(tf, lub));
+                    if (a1.value() == null || a1.value() != e1 || a2.value() == null || a2.value() != e2) {
+                        record(mismatches, tally, new FuzzMismatch("lub", desc + " vs " + compiled.fieldSources().get(f), expected + " (lub<:f " + e1 + ", f<:lub " + e2 + ")", lub + " (lub<:f " + a1.render() + ", f<:lub " + a2.render() + ")", "  world " + worldSeed + ":\n" + indent(compiled.source())));
+                        break;
+                    }
+                }
+            }
         }
         return checks;
     }

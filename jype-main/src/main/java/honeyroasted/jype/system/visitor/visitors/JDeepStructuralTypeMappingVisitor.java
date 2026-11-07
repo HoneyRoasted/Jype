@@ -118,7 +118,9 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
         if (cached.isPresent()) return cached.get();
         if (this.overridesClassType(type)) return this.classTypeOverride(type, context);
 
-        if (type instanceof JClassReference ref) {
+        if (type instanceof JClassReference ref && !this.visitStructural()) {
+            return type;
+        } else if (type instanceof JClassReference ref) {
             JClassReference newRef = ref.typeSystem().typeFactory().newClassReference();
             context.put(type, newRef);
             newRef.setNamespace(ref.namespace());

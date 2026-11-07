@@ -1,290 +1,330 @@
 package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.collect.multi.Pair;
+import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.JTypeSystem;
-import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.system.solver.JTypeRelations;
+import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
+import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JIntersectionType;
+import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JFindLeastUpperBound implements JTypeOperation<Set<JType>, JType> {
+    private static final ThreadLocal<Set<Pair<JType, JType>>> MERGE_CACHE = ThreadLocal.withInitial(HashSet::new);
 
     @Override
     public JType apply(JTypeSystem system, Set<JType> types) {
-        return findLub(system, types, new HashMap<>());
+        return lub(system, new ArrayList<>(types));
     }
 
-    private JType findLub(JTypeSystem system, Set<JType> types, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache) {
-        if (types.isEmpty()) {
-            return system.constants().nullType();
-        } else if (types.size() == 1) {
-            return types.iterator().next();
-        } else {
-            Set<Set<JType>> supertypeSets = new LinkedHashSet<>();
-            Set<Set<JType>> erasedSupertypeSets = new LinkedHashSet<>();
-
-            for (JType ui : types) {
-                Set<JType> st = allSupertypes(ui);
-                Set<JType> est = st.stream().map(JTypeVisitors.ERASURE).collect(Collectors.toCollection(LinkedHashSet::new));
-                supertypeSets.add(st);
-                erasedSupertypeSets.add(est);
+    private static JType lub(JTypeSystem system, List<JType> ts) {
+        JTypeConstants c = system.constants();
+        boolean anyArray = false;
+        boolean anyClass = false;
+        List<JType> filtered = new ArrayList<>();
+        for (JType t : ts) {
+            JType bound = t;
+            while (bound instanceof JVarType vt) {
+                bound = vt.upperBound();
             }
-
-            Set<JType> erasedCandidates = intersection(erasedSupertypeSets);
-            Set<JType> minimalErasedCandidates = new LinkedHashSet<>();
-
-            for (JType erasedCandidate : erasedCandidates) {
-                boolean permitted = true;
-
-                for (JType otherCand : erasedCandidates) {
-                    if (!erasedCandidate.typeEquals(otherCand) && system.operations().isSubtype(otherCand, erasedCandidate)) {
-                        permitted = false;
-                        break;
-                    }
-                }
-
-                if (permitted) {
-                    minimalErasedCandidates.add(erasedCandidate);
-                }
+            if (t instanceof JPrimitiveType) {
+                return c.noneType();
+            } else if (t instanceof JNoneType) {
+                continue;
+            } else if (bound instanceof JArrayType) {
+                anyArray = true;
+            } else {
+                anyClass = true;
             }
+            filtered.add(t);
+        }
 
-            Map<JClassType, Set<JParameterizedClassType>> relevantParams = new LinkedHashMap<>();
-            Set<JClassType> rawOccurrenceCandidates = new HashSet<>();
-            Set<JType> paramKeyPart = new HashSet<>();
-            for (JType candidate : minimalErasedCandidates) {
-                if (candidate instanceof JClassType ct && ct.hasTypeParameters()) {
-                    for (Set<JType> supertypes : supertypeSets) {
-                        for (JType supertype : supertypes) {
-                            if (supertype instanceof JParameterizedClassType pct && ct.classReference().typeEquals(pct.classReference())) {
-                                relevantParams.computeIfAbsent(ct, k -> new LinkedHashSet<>())
-                                        .add(pct);
-                                paramKeyPart.add(pct);
-                            } else if (supertype instanceof JClassType st && !(supertype instanceof JParameterizedClassType) &&
-                                    ct.classReference().typeEquals(st.classReference())) {
-                                rawOccurrenceCandidates.add(ct);
-                            }
+        if (filtered.isEmpty()) {
+            return c.nullType();
+        }
+        if (filtered.size() == 1) {
+            return filtered.getFirst();
+        }
+
+        if (anyArray && !anyClass) {
+            // JLS §4.10.4 lub of array types
+            List<JType> elements = new ArrayList<>();
+            for (JType t : filtered) {
+                JType elem = elementType(t);
+                if (elem instanceof JPrimitiveType) {
+                    JType first = filtered.getFirst();
+                    for (JType other : filtered) {
+                        if (!JTypeRelations.isSameType(first, other)) {
+                            return arraySuperType(system);
                         }
                     }
+                    return first;
+                }
+                elements.add(elem);
+            }
+            JArrayType arr = system.typeFactory().newArrayType();
+            arr.setComponent(lub(system, elements));
+            arr.setUnmodifiable(true);
+            return arr;
+        } else if (anyArray) {
+            List<JType> classes = new ArrayList<>();
+            for (JType t : filtered) {
+                JType bound = t;
+                while (bound instanceof JVarType vt) {
+                    bound = vt.upperBound();
+                }
+                if (!(bound instanceof JArrayType)) {
+                    classes.add(t);
                 }
             }
+            classes.add(arraySuperType(system));
+            return lub(system, classes);
+        }
 
-            Pair<Set<JType>, Set<JType>> key = Pair.of(minimalErasedCandidates, paramKeyPart);
+        // JLS §4.10.4 erased candidate set EC, minimal erased candidates MEC
+        List<JType> ec = erasedSupertypes(filtered.getFirst());
+        for (int i = 1; i < filtered.size(); i++) {
+            List<JType> other = erasedSupertypes(filtered.get(i));
+            List<JType> next = new ArrayList<>();
+            for (JType e : ec) {
+                if (other.stream().anyMatch(o -> JTypeRelations.isSameType(o, e))) {
+                    next.add(e);
+                }
+            }
+            ec = next;
+        }
+        List<JType> mec = closureMin(ec);
 
-            if (lubCache.containsKey(key)) return lubCache.get(key);
+        List<JType> candidates = new ArrayList<>();
+        for (JType erased : mec) {
+            JType lci = null;
+            boolean valid = true;
+            for (JType t : filtered) {
+                JType sup = asSuper(t, erased);
+                if (sup == null) {
+                    valid = false;
+                    break;
+                }
+                lci = lci == null ? sup : intersect(system, lci, sup);
+                if (lci == null) {
+                    valid = false;
+                    break;
+                }
+            }
+            if (valid && lci != null) {
+                candidates.add(lci);
+            }
+        }
+        return compoundMin(system, candidates);
+    }
 
-            JIntersectionType type = system.typeFactory().newIntersectionType();
-            lubCache.put(key, type);
+    private static JType elementType(JType t) {
+        while (t instanceof JVarType vt) {
+            t = vt.upperBound();
+        }
+        return ((JArrayType) t).component();
+    }
 
-            Set<JType> lub = new LinkedHashSet<>();
-            for (JType candidate : minimalErasedCandidates) {
-                if (relevantParams.containsKey(candidate)) {
-                    JParameterizedClassType merged = leastContainingParameterization(system, lubCache, relevantParams.get(candidate));
-                    if (rawOccurrenceCandidates.contains(candidate)) {
-                        merged = widenForRawOccurrence(system, lubCache, merged);
+    private static JType arraySuperType(JTypeSystem system) {
+        Set<JType> children = new LinkedHashSet<>();
+        children.add(system.constants().serializable());
+        children.add(system.constants().cloneable());
+        JIntersectionType it = system.typeFactory().newIntersectionType();
+        it.setChildren(children);
+        it.setUnmodifiable(true);
+        return it;
+    }
+
+    private static JType asSuper(JType t, JType erased) {
+        if (erased instanceof JVarType) {
+            return JTypeRelations.isSubtype(t, erased) ? erased : null;
+        }
+        return JTypeRelations.asSuper(t, ((JClassType) erased).classReference());
+    }
+
+    private static JType intersect(JTypeSystem system, JType a, JType b) {
+        if (JTypeRelations.isSameType(a, b)) {
+            return a;
+        }
+        if (a instanceof JClassType ac && b instanceof JClassType bc && ac.classReference().typeEquals(bc.classReference())) {
+            if (ac.hasTypeArguments() && bc.hasTypeArguments()) {
+                return merge(system, ac, bc);
+            }
+            if (JTypeRelations.isRaw(ac) || JTypeRelations.isRaw(bc)) {
+                return ac.classReference();
+            }
+        }
+        return null;
+    }
+
+    private static JType merge(JTypeSystem system, JClassType c1, JClassType c2) {
+        List<JArgumentType> act1 = c1.typeArguments();
+        List<JArgumentType> act2 = c2.typeArguments();
+        List<JArgumentType> merged = new ArrayList<>();
+        for (int i = 0; i < act1.size() && i < act2.size(); i++) {
+            JArgumentType a1 = act1.get(i);
+            JArgumentType a2 = act2.get(i);
+            if (JTypeRelations.contains(a2, a1)) {
+                merged.add(a1);
+            } else if (JTypeRelations.contains(a1, a2)) {
+                merged.add(a2);
+            } else {
+                Pair<JType, JType> pair = Pair.identity(c1, c2);
+                Set<Pair<JType, JType>> cache = MERGE_CACHE.get();
+                JWildType.Upper w = system.typeFactory().newUpperWildType();
+                if (cache.add(pair)) {
+                    try {
+                        // JLS §4.10.4 lcta(U, V) = ? extends lub(U, V)
+                        JType l = lub(system, List.of(wildUpperBound(a1), wildUpperBound(a2)));
+                        w.setUpperBounds(l.typeEquals(system.constants().object()) ? new LinkedHashSet<>() : new LinkedHashSet<>(Set.of(l)));
+                    } finally {
+                        cache.remove(pair);
                     }
-                    lub.add(merged);
                 } else {
-                    lub.add(candidate);
+                    w.setUpperBounds(new LinkedHashSet<>());
+                }
+                w.setUnmodifiable(true);
+                merged.add(w);
+            }
+        }
+        JParameterizedClassType result = c1.classReference().parameterized(merged);
+        if (c1.hasRelevantOuterType() && c1.outerType() != null) {
+            result.setUnmodifiable(false);
+            result.setOuterType(c1.outerType());
+            result.setUnmodifiable(true);
+        }
+        return result;
+    }
+
+    private static JType wildUpperBound(JType t) {
+        if (t instanceof JWildType.Upper wu) {
+            return wu.hasDefaultBounds() ? t.typeSystem().constants().object() : wildUpperBound(wu.upperBound());
+        } else if (t instanceof JWildType) {
+            return t.typeSystem().constants().object();
+        }
+        return t;
+    }
+
+    private static JType compoundMin(JTypeSystem system, List<JType> candidates) {
+        if (candidates.isEmpty()) {
+            return system.constants().object();
+        }
+        List<JType> min = closureMin(candidates);
+        if (min.isEmpty()) {
+            return system.constants().object();
+        } else if (min.size() == 1) {
+            return min.getFirst();
+        }
+        List<JType> classes = new ArrayList<>();
+        List<JType> interfaces = new ArrayList<>();
+        for (JType t : min) {
+            if (t instanceof JClassType ct && ct.classReference().hasModifier(java.lang.reflect.AccessFlag.INTERFACE)) {
+                interfaces.add(t);
+            } else {
+                classes.add(t);
+            }
+        }
+        Set<JType> children = new LinkedHashSet<>(classes);
+        children.addAll(interfaces);
+        JIntersectionType it = system.typeFactory().newIntersectionType();
+        it.setChildren(children);
+        it.setUnmodifiable(true);
+        return it;
+    }
+
+    private static List<JType> closureMin(List<JType> cl) {
+        List<JType> result = new ArrayList<>();
+        for (int i = 0; i < cl.size(); i++) {
+            JType current = cl.get(i);
+            boolean keep = true;
+            for (int j = 0; j < cl.size(); j++) {
+                if (i == j) {
+                    continue;
+                }
+                JType other = cl.get(j);
+                if (JTypeRelations.isSameType(other, current)) {
+                    if (j < i) {
+                        keep = false;
+                        break;
+                    }
+                } else if (JTypeRelations.isSubtype(other, current)) {
+                    keep = false;
+                    break;
                 }
             }
-
-            if (lub.size() > 1) {
-                lub.remove(system.constants().object());
-            }
-
-            type.setChildren(JIntersectionType.flatten(lub));
-            type.setUnmodifiable(true);
-
-            if (lub.isEmpty()) {
-                return system.constants().nullType();
-            } else if (lub.size() == 1) {
-                return lub.iterator().next();
-            } else {
-                return type.simplify();
+            if (keep) {
+                result.add(current);
             }
         }
+        return result;
     }
 
-    private JParameterizedClassType leastContainingParameterization(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, Set<JParameterizedClassType> params) {
-        if (params.size() == 1) {
-            return params.iterator().next();
-        }
-
-        Iterator<JParameterizedClassType> iter = params.iterator();
-
-        JParameterizedClassType curr = iter.next();
-        while (iter.hasNext()) {
-            JParameterizedClassType next = iter.next();
-            curr = leastContainingParameterization(system, lubCache, curr, next);
-        }
-        return curr;
-    }
-
-    private JParameterizedClassType widenForRawOccurrence(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JParameterizedClassType pct) {
-        JParameterizedClassType lcta = system.typeFactory().newParameterizedClassType();
-        lcta.setClassReference(pct.classReference());
-
-        if (pct.outerType() instanceof JParameterizedClassType outer) {
-            lcta.setOuterType(widenForRawOccurrence(system, lubCache, outer));
-        }
-
-        List<JArgumentType> generated = new ArrayList<>();
-        for (int i = 0; i < pct.typeArguments().size(); i++) {
-            generated.add(singleLeastContainingTypeArgument(system, lubCache, pct.typeArguments().get(i), pct.typeParameters().get(i)));
-        }
-
-        lcta.setTypeArguments(generated);
-        lcta.setUnmodifiable(true);
-
-        return lcta;
-    }
-
-    private JParameterizedClassType leastContainingParameterization(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JParameterizedClassType left, JParameterizedClassType right) {
-        JParameterizedClassType lcta = system.typeFactory().newParameterizedClassType();
-        lcta.setClassReference(left.classReference());
-
-        if (left.outerType() instanceof JParameterizedClassType lo && right.outerType() instanceof JParameterizedClassType ro) {
-            lcta.setOuterType(leastContainingParameterization(system, lubCache, lo, ro));
-        }
-
-        List<JArgumentType> generatedArguments = new ArrayList<>();
-        for (int i = 0; i < Math.max(left.typeArguments().size(), right.typeArguments().size()); i++) {
-            if (i < left.typeArguments().size() && i < right.typeArguments().size()) {
-                generatedArguments.add(leastContainingTypeArgument(system, lubCache, left.typeArguments().get(i), right.typeArguments().get(i)));
-            } else if (i < left.typeArguments().size()) {
-                generatedArguments.add(singleLeastContainingTypeArgument(system, lubCache, left.typeArguments().get(i), left.typeParameters().get(i)));
-            } else {
-                generatedArguments.add(singleLeastContainingTypeArgument(system, lubCache, right.typeArguments().get(i), right.typeParameters().get(i)));
+    private static List<JType> erasedSupertypes(JType t) {
+        List<JType> result = new ArrayList<>();
+        for (JType sup : closure(t)) {
+            JType e = sup instanceof JVarType ? sup : JTypeRelations.erasure(sup);
+            if (result.stream().noneMatch(r -> JTypeRelations.isSameType(r, e))) {
+                result.add(e);
             }
         }
-        lcta.setTypeArguments(generatedArguments);
-        lcta.setUnmodifiable(true);
-
-        return lcta;
+        return result;
     }
 
-    private JArgumentType singleLeastContainingTypeArgument(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JType u, JVarType corresponding) {
-        if (u instanceof JWildType.Upper wtu && wtu.hasDefaultBounds()) {
-            return wildType(system);
-        } else if (u instanceof JVarType vt && vt.hasDefaultBounds()) {
-            return wildType(system);
-        } else if (corresponding.hasDefaultBounds()) {
-            return wildType(system);
-        }
-
-        return this.lubWild(system, lubCache, u, u.typeSystem().constants().object());
+    private static List<JType> closure(JType t) {
+        List<JType> result = new ArrayList<>();
+        closure(t, result, new HashSet<>());
+        return result;
     }
 
-    private JArgumentType leastContainingTypeArgument(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JArgumentType u, JArgumentType v) {
-        if (u.typeEquals(v)) return u;
-
-        if (u instanceof JWildType || v instanceof JWildType) {
-            JWildType wild = (JWildType) (u instanceof JWildType ? u : v);
-            JType other = u instanceof JWildType ? v : u;
-
-            if (wild instanceof JWildType.Upper wtu) {
-                if (other instanceof JWildType.Upper owt) {
-                    return lubWild(lubCache, system, wtu.upperBounds(), owt.upperBounds());
-                } else if (other instanceof JWildType.Lower owl) {
-                    return wildType(system);
-                } else {
-                    return lubWild(system, lubCache, wtu.upperBounds(), other);
-                }
-            } else if (wild instanceof JWildType.Lower wtl) {
-                if (other instanceof JWildType.Upper owt) {
-                    return wildType(system);
-                } else if (other instanceof JWildType.Lower owl) {
-                    return glbWild(system, wtl.lowerBounds(), owl.lowerBounds());
-                } else {
-                    return glbWild(system, wtl.lowerBounds(), Set.of(other));
-                }
-            } else {
-                return lubWild(system, lubCache, u, v);
+    private static void closure(JType t, List<JType> result, Set<JType> seen) {
+        if (t instanceof JIntersectionType it) {
+            for (JType child : it.children()) {
+                closure(child, result, seen);
             }
-        } else {
-            return lubWild(system, lubCache, u, v);
+            return;
         }
-    }
-
-    private JWildType.Lower glbWild(JTypeSystem system, Set<JType> left, Set<JType> right) {
-        Set<JType> bounds = new LinkedHashSet<>();
-        bounds.addAll(left);
-        bounds.addAll(right);
-
-        JWildType.Lower lower = system.typeFactory().newLowerWildType();
-        lower.setLowerBounds(bounds);
-        lower.setUnmodifiable(true);
-        return lower;
-    }
-
-    private JWildType.Upper wildType(JTypeSystem system) {
-        JWildType.Upper wild = system.typeFactory().newUpperWildType();
-        wild.setUpperBounds(Set.of(system.constants().object()));
-        wild.setUnmodifiable(true);
-        return wild;
-    }
-
-    private JWildType.Upper lubWild(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JType... types) {
-        JWildType.Upper result = system.typeFactory().newUpperWildType();
-        result.setUpperBounds(Set.of(this.findLub(system, Set.of(types), lubCache)));
-        result.setUnmodifiable(true);
-        return result;
-    }
-
-    private JWildType.Upper lubWild(JTypeSystem system, Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, Set<JType> set, JType... types) {
-        Set<JType> bounds = new LinkedHashSet<>(set);
-        Collections.addAll(bounds, types);
-
-        JWildType.Upper result = system.typeFactory().newUpperWildType();
-        result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
-        result.setUnmodifiable(true);
-        return result;
-    }
-
-    private JWildType.Upper lubWild(Map<Pair<Set<JType>, Set<JType>>, JType> lubCache, JTypeSystem system, Set<JType> set, Set<JType> other) {
-        Set<JType> bounds = new LinkedHashSet<>(set);
-        bounds.addAll(other);
-
-        JWildType.Upper result = system.typeFactory().newUpperWildType();
-        result.setUpperBounds(Set.of(this.findLub(system, bounds, lubCache)));
-        result.setUnmodifiable(true);
-        return result;
-    }
-
-    private <T> Set<T> intersection(Collection<? extends Set<? extends T>> sets) {
-        Set<T> result = new LinkedHashSet<>();
-        sets.forEach(result::addAll);
-        sets.forEach(result::retainAll);
-        return result;
-    }
-
-    private Set<JType> allSupertypes(JType type) {
-        Set<JType> result = new LinkedHashSet<>();
-        allSupertypes(type, result);
-        return result;
-    }
-
-    private void allSupertypes(JType type, Set<JType> types) {
-        if (!types.contains(type)) {
-            types.add(type);
-            type.knownDirectSupertypes().forEach(t -> allSupertypes(t, types));
+        if (result.stream().anyMatch(r -> JTypeRelations.isSameType(r, t))) {
+            return;
+        }
+        result.add(t);
+        if (t instanceof JVarType vt) {
+            for (JType bound : JTypeRelations.upperBounds(vt)) {
+                closure(bound, result, seen);
+            }
+        } else if (t instanceof JClassType ct) {
+            JClassReference ref = ct.classReference();
+            if (!seen.add(ref) && !ct.hasTypeArguments()) {
+                return;
+            }
+            boolean raw = JTypeRelations.isRaw(ct);
+            Map<JVarType, JType> theta = raw ? Map.of() : JTypeRelations.substitution(ct);
+            JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(theta);
+            List<JClassType> supers = new ArrayList<>();
+            if (ref.superClass() != null) {
+                supers.add(ref.superClass());
+            }
+            supers.addAll(ref.interfaces());
+            for (JClassType sup : supers) {
+                closure(raw ? sup.classReference() : (JClassType) resolver.visit(sup), result, seen);
+            }
+            if (ref.superClass() == null && !ref.typeEquals(t.typeSystem().constants().object())) {
+                closure(t.typeSystem().constants().object(), result, seen);
+            }
         }
     }
 }
