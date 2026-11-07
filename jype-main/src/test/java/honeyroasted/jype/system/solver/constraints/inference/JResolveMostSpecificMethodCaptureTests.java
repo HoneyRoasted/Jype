@@ -2,8 +2,8 @@ package honeyroasted.jype.system.solver.constraints.inference;
 
 import honeyroasted.almonds.Constraint;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
-import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
@@ -36,7 +36,7 @@ public class JResolveMostSpecificMethodCaptureTests {
         T get();
     }
 
-    private static JParameterizedClassType boxOf(JTypeSystem ts, honeyroasted.jype.type.JArgumentType typeArgument) {
+    private static JParameterizedClassType boxOf(JTypeSystem ts, JArgumentType typeArgument) {
         JClassReference box = ts.tryResolve(Box.class);
         JParameterizedClassType boxType = ts.typeFactory().newParameterizedClassType();
         boxType.setClassReference(box);

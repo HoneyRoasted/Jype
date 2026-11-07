@@ -22,12 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Reduces a type comparison expression {@code operand instanceof T} (JLS §15.20.2) into the
- * same castability check used for an explicit cast (JLS §15.20.2 explicitly defers to §5.5 here:
- * the comparison is only legal if a cast of the operand's type to T would also be legal), plus
- * the expression's own {@code boolean} result type satisfying whatever context it is embedded in.
- */
 public class JReduceInstanceOf extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {

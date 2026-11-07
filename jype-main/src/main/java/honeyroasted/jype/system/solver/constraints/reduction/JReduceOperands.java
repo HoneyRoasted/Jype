@@ -2,9 +2,7 @@ package honeyroasted.jype.system.solver.constraints.reduction;
 
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
-import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JStandaloneType;
 import honeyroasted.jype.system.solver.JStandaloneTyping;
@@ -12,7 +10,6 @@ import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JType;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;

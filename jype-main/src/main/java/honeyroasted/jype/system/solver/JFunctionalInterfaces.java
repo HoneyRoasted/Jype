@@ -1,7 +1,9 @@
 package honeyroasted.jype.system.solver;
 
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.visitor.JTypeVisitor;
 import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
@@ -9,6 +11,7 @@ import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
@@ -126,7 +129,7 @@ public final class JFunctionalInterfaces {
         if (r1.typeEquals(system.constants().voidType())) {
             return r2.typeEquals(system.constants().voidType());
         }
-        if (r1 instanceof honeyroasted.jype.type.JPrimitiveType) {
+        if (r1 instanceof JPrimitiveType) {
             return r1.typeEquals(r2);
         }
         // JLS §8.4.5 return-type-substitutable
@@ -220,7 +223,7 @@ public final class JFunctionalInterfaces {
     }
 
     private static boolean mentionsAny(JType type, List<JVarType> vars) {
-        return !new honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor<JType, Void>((honeyroasted.jype.system.visitor.JTypeVisitor.Default) (t, c) -> t instanceof JVarType vt && vars.contains(vt) ? vt : null, null, false)
+        return !new JRecursiveTypeVisitor<JType, Void>((JTypeVisitor.Default) (t, c) -> t instanceof JVarType vt && vars.contains(vt) ? vt : null, null, false)
                 .visit(type, new HashMap<>()).isEmpty();
     }
 }

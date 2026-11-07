@@ -3,6 +3,7 @@ package honeyroasted.jype.system.solver.operations;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.fixtures.privateaccess.PrivateOwner;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JParameterizedMethodType;
@@ -300,7 +301,7 @@ public class FindApplicableMethodTests {
     @Test
     public void privateMethodIsNotAccessibleFromAnotherTopLevelClass() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
-        JClassReference owner = ts.tryResolve(honeyroasted.jype.system.solver.fixtures.privateaccess.PrivateOwner.class);
+        JClassReference owner = ts.tryResolve(PrivateOwner.class);
         JClassReference caller = ts.tryResolve(Caller.class);
         JType stringType = ts.tryResolve(String.class);
 

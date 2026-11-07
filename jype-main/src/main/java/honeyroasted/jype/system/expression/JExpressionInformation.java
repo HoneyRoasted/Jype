@@ -2,19 +2,24 @@ package honeyroasted.jype.system.expression;
 
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.JConstantEvaluator;
 import honeyroasted.jype.system.solver.JFieldLookup;
-import honeyroasted.jype.system.solver.JMemberLookup;
 import honeyroasted.jype.system.solver.JOperatorTypes;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayCreation;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayInitializer;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceBinaryOperator;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceCast;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceConditionalExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceUnaryOperator;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
-import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JInstantiableType;
-import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMethodReference;
-import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
@@ -23,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -214,14 +218,6 @@ public interface JExpressionInformation extends SimpleName {
         JClassReference type();
     }
 
-    /**
-     * Marks a method-invocation source as a (possibly qualified) super-invocation, e.g.
-     * {@code super.method()} (where {@code outer} is the invoking class itself) or
-     * {@code Outer.super.method()} (where {@code outer} is a lexically enclosing class).
-     * Method resolution for such an invocation begins at {@code outer}'s direct superclass, so
-     * overrides declared in {@code outer} itself are skipped, matching the non-virtual dispatch
-     * semantics of JLS §15.12.1.
-     */
     record SuperReference(JClassReference outer) implements SimpleName {
         @Override
         public String simpleName() {
@@ -494,11 +490,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * An explicit cast expression {@code (T) operand} (JLS §15.16/§5.5). Its own type is
-     * {@code castType} unconditionally; whether the cast itself is legal is checked separately
-     * (see {@link honeyroasted.jype.system.solver.constraints.reduction.JReduceCast}).
-     */
     interface Cast extends JExpressionInformation {
         record Simple(JExpressionInformation operand, JType castType) implements Cast {
             @Override
@@ -531,14 +522,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * A type comparison expression {@code operand instanceof T} (JLS §15.20.2). Its own type is
-     * always {@code boolean}; whether the comparison is legal at all is checked via the same
-     * castability rule as an explicit cast (JLS §15.20.2 explicitly defers to §5.5's casting
-     * conversion rules here) - see {@link honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf}.
-     * Pattern variable bindings ({@code instanceof T name}) are a flow-scoping concern this
-     * expression-level model does not represent; only the boolean type-comparison itself is checked.
-     */
     interface InstanceOf extends JExpressionInformation {
         record Simple(JExpressionInformation operand, JType checkedType) implements InstanceOf {
             @Override
@@ -571,22 +554,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * A unary operator expression (JLS §15.15): {@code +}/{@code -} (numeric, unary numeric
-     * promotion applied per §5.6.1), {@code ~} (bitwise complement, integral operand only, unary
-     * numeric promotion applied), or {@code !} (logical complement, boolean operand only). Like
-     * {@link MethodInvocation} or {@link Instantiation}, this is never simply typed on its own:
-     * whether it's legal - and thus what its type is - depends on the operand's type, which is
-     * only known once solved, so {@code isSimplyTyped()==true} could never be a safe promise here
-     * (that contract requires {@code getSimpleType()} to always be present, and there's no
-     * operand-type-independent way to guarantee that without a {@link JTypeSystem} in hand, which
-     * {@code isSimplyTyped()} doesn't receive). {@link
-     * honeyroasted.jype.system.solver.constraints.reduction.JReduceUnaryOperator} resolves the
-     * operand's type (directly if it's simply typed, otherwise via its own sub-solve, exactly like
-     * a nested method invocation would be) and applies {@link #resultType} to it.
-     * {@code ++}/{@code --} are deliberately not modeled: they require an assignable-lvalue notion
-     * this expression-only model doesn't have.
-     */
     interface UnaryOperator extends JExpressionInformation {
         enum Kind {
             PLUS("+"), MINUS("-"), BITWISE_COMPLEMENT("~"), LOGICAL_COMPLEMENT("!");
@@ -633,19 +600,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * A binary operator expression (JLS §15.17-§15.24): arithmetic ({@code + - * / %}, with
-     * {@code +} also covering string concatenation per §15.18.1 when either operand's type is
-     * exactly {@code String}), shift ({@code << >> >>>}, each operand independently unary-promoted,
-     * result type is the promoted left operand type per §15.19), relational ({@code < > <= >=}),
-     * equality ({@code == !=}, numeric/boolean per usual promotion or - for two reference types -
-     * requiring one side castable to the other per §15.21), bitwise/logical ({@code & ^ |}, either
-     * both-boolean or both-integral), and conditional ({@code && ||}, both-boolean). As with
-     * {@link UnaryOperator}, this is never simply typed on its own - see that type's docs for why -
-     * and {@link honeyroasted.jype.system.solver.constraints.reduction.JReduceBinaryOperator}
-     * resolves both operands' types (directly where possible, otherwise via their own sub-solve)
-     * before applying {@link #resultType}.
-     */
     interface BinaryOperator extends JExpressionInformation {
         enum Kind {
             ADD, SUB, MUL, DIV, MOD,
@@ -782,17 +736,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * A conditional expression {@code condition ? whenTrue : whenFalse} (JLS §15.25). Like
-     * {@link UnaryOperator}/{@link BinaryOperator}, never simply typed on its own - the merge rule
-     * below needs the branches' resolved types in hand. {@link
-     * honeyroasted.jype.system.solver.constraints.reduction.JReduceConditionalExpression} handles
-     * two distinct cases: if either branch is an inherently poly expression form (a lambda or a
-     * method/constructor reference, which cannot be typed without a target type at all), the outer
-     * context is propagated directly to both branches per JLS's own "poly conditional expression"
-     * rule; otherwise both branches are resolved to concrete types (directly, or via their own
-     * sub-solve) and merged with {@link #resultType}.
-     */
     interface Conditional extends JExpressionInformation {
         record Simple(JExpressionInformation condition, JExpressionInformation whenTrue,
                        JExpressionInformation whenFalse) implements Conditional {
@@ -817,13 +760,6 @@ public interface JExpressionInformation extends SimpleName {
             return new Conditional.Simple(condition, whenTrue, whenFalse);
         }
 
-        /**
-         * JLS §15.25's numeric/boolean/reference merge for a "standalone" (non-poly) conditional
-         * expression, given the two branches' already-resolved types. {@code trueExpr}/{@code
-         * falseExpr} are needed alongside the resolved types only for the constant-narrowing rule
-         * (a byte/short/char operand paired with a representable {@code int} constant on the other
-         * side keeps the narrower type).
-         */
         static Optional<JType> resultType(JExpressionInformation trueExpr, JType trueType, JExpressionInformation falseExpr, JType falseType, JTypeSystem system) {
             if (trueType.typeEquals(falseType)) {
                 return Optional.of(trueType);
@@ -868,7 +804,7 @@ public interface JExpressionInformation extends SimpleName {
             if (!constCandidatePrim.typeEquals(c.intType())) {
                 return Optional.empty();
             }
-            Optional<honeyroasted.jype.system.solver.JConstantEvaluator.Value> constant = honeyroasted.jype.system.solver.JConstantEvaluator.evaluate(constCandidate, system);
+            Optional<JConstantEvaluator.Value> constant = JConstantEvaluator.evaluate(constCandidate, system);
             if (constant.isEmpty() || !(constant.get().value() instanceof Integer i)) {
                 return Optional.empty();
             }
@@ -885,19 +821,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * An array-creation expression (JLS §15.10): either dimension-expression form
-     * ({@code new T[e1][e2]...}, optionally with trailing dimensionless brackets like
-     * {@code new T[e1][]}), or initializer form ({@code new T[]{...}}, {@code initializer} holding
-     * the top-level {@link ArrayInitializer}). {@code dimensions.size() + extraDimensions} is the
-     * array's total depth. Unlike {@link UnaryOperator}/{@link BinaryOperator}/{@link Conditional},
-     * the resulting type here never depends on operand legality - it's exactly
-     * {@code componentType} wrapped in that many array dimensions regardless of whether the
-     * dimension expressions or initializer elements are themselves legal - so, like {@link Cast},
-     * this is always simply typed; {@link
-     * honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayCreation} checks dimension-
-     * expression and initializer legality as independent side constraints.
-     */
     interface ArrayCreation extends JExpressionInformation {
         record Simple(JType componentType, List<JExpressionInformation> dimensions, int extraDimensions,
                        JExpressionInformation initializer) implements ArrayCreation {
@@ -959,17 +882,6 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
-    /**
-     * A bare array initializer {@code {e1, e2, ...}} (JLS §10.6), only ever meaningful nested
-     * inside an {@link ArrayCreation} or another {@code ArrayInitializer} - it has no type of its
-     * own without an externally supplied target array type to determine the component type each
-     * element is checked against, so - like {@link Lambda} - it's never simply typed.
-     * {@link honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayInitializer} reads
-     * that target type from its own enclosing {@code ExpressionCompatible} constraint and checks
-     * each element against the component type (recursing naturally for nested initializers, since
-     * a nested element that's itself an {@code ArrayInitializer} goes through the same reducer
-     * again with the next-level-down component type as its target).
-     */
     interface ArrayInitializer extends JExpressionInformation {
         record Simple(List<JExpressionInformation> elements) implements ArrayInitializer {
             @Override
@@ -1001,7 +913,7 @@ public interface JExpressionInformation extends SimpleName {
     record ClassLiteral(JType type) implements SimplyTyped {
         @Override
         public JType type(JTypeSystem system) {
-            JType erased = honeyroasted.jype.system.solver.JTypeRelations.erasure(this.type);
+            JType erased = JTypeRelations.erasure(this.type);
             JType arg = erased instanceof JPrimitiveType p ? p.box() : erased.typeEquals(system.constants().voidType()) ? system.constants().voidBox() : erased;
             return system.tryResolve(Class.class) instanceof JClassReference cls ? cls.parameterized(List.of((JArgumentType) arg)) : null;
         }

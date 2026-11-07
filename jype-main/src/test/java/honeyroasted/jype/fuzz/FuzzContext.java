@@ -2,6 +2,7 @@ package honeyroasted.jype.fuzz;
 
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 
 public interface FuzzContext {
@@ -13,5 +14,5 @@ public interface FuzzContext {
 
     JClassReference classNamed(String name);
 
-    honeyroasted.jype.type.JMethodReference probeMethod();
+    JMethodReference probeMethod();
 }

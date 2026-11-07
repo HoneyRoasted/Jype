@@ -5,6 +5,7 @@ import com.sun.tools.javac.code.Types;
 import honeyroasted.jype.system.JSimpleTypeSystem;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -108,7 +109,7 @@ public class RelationFuzzTest {
                 }
             }
 
-            List<String> refs = names.stream().filter(n -> !(jypeTypes.get(n) instanceof honeyroasted.jype.type.JPrimitiveType)).toList();
+            List<String> refs = names.stream().filter(n -> !(jypeTypes.get(n) instanceof JPrimitiveType)).toList();
             for (int i = 0; i < Math.min(30, refs.size()) && refs.size() >= 2; i++) {
                 int k = 2 + (random.nextInt(4) == 0 ? 1 : 0);
                 List<String> picked = new ArrayList<>();

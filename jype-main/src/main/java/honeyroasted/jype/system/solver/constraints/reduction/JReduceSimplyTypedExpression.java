@@ -7,11 +7,12 @@ import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
 
 public class JReduceSimplyTypedExpression extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left().isSimplyTyped() && !hasDedicatedReducer(constraint.left()) && !honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant.applies(constraint);
+        return status.isUnknown() && constraint.left().isSimplyTyped() && !hasDedicatedReducer(constraint.left()) && !JExpressionAssignmentConstant.applies(constraint);
     }
 
     @Override

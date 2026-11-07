@@ -4,7 +4,6 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintSolver;
-import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;

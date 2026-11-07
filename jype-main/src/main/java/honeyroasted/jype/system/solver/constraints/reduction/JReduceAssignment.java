@@ -7,12 +7,15 @@ import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JFieldLookup;
+import honeyroasted.jype.system.solver.JMemberLookup;
 import honeyroasted.jype.system.solver.JOperatorTypes;
 import honeyroasted.jype.system.solver.JStandaloneType;
 import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JType;
 
@@ -77,8 +80,8 @@ public class JReduceAssignment extends ConstraintMapper.Unary<JTypeConstraints.E
             JFieldLookup.staticAccess(ref, gf.name(), gf.declaring()).ifPresent(f -> result.add(new JStandaloneType(null, null, f.field().type())));
         } else if (variable instanceof JExpressionInformation.GetField<?> gf && gf.source() instanceof JExpressionInformation expr) {
             for (JStandaloneType receiver : JStandaloneTyping.resolve(expr, system)) {
-                JType site = receiver.type() instanceof honeyroasted.jype.type.JClassType ct ? JTypeRelations.capture(ct) : receiver.type();
-                for (honeyroasted.jype.type.JClassType ct : honeyroasted.jype.system.solver.JMemberLookup.findClassTypes(site)) {
+                JType site = receiver.type() instanceof JClassType ct ? JTypeRelations.capture(ct) : receiver.type();
+                for (JClassType ct : JMemberLookup.findClassTypes(site)) {
                     Optional<JFieldReference> field = JFieldLookup.member(ct.classReference(), gf.name());
                     if (field.isPresent()) {
                         // JLS §15.26.1 the variable has its declared (uncaptured) member type
@@ -89,7 +92,7 @@ public class JReduceAssignment extends ConstraintMapper.Unary<JTypeConstraints.E
             }
         } else if (variable instanceof JExpressionInformation.ArrayAccess access) {
             for (JStandaloneType array : JStandaloneTyping.resolve(access.array(), system)) {
-                if (array.type() instanceof honeyroasted.jype.type.JArrayType at) {
+                if (array.type() instanceof JArrayType at) {
                     JTypeConstraints.ExpressionCompatible index = new JTypeConstraints.ExpressionCompatible(access.index(), JTypeConstraints.Compatible.Context.ASSIGNMENT, system.constants().intType());
                     result.add(new JStandaloneType(array.branch(), index, at.component()));
                 }
@@ -110,7 +113,7 @@ public class JReduceAssignment extends ConstraintMapper.Unary<JTypeConstraints.E
             } else if (gf.source() instanceof JExpressionInformation expr) {
                 for (JStandaloneType receiver : JStandaloneTyping.resolve(expr, system)) {
                     field = JFieldLookup.instanceAccess(receiver.type(), gf.name(), gf.declaring()).map(JFieldLookup.Found::field);
-                    if (field.isPresent() || receiver.type() instanceof honeyroasted.jype.type.JArrayType) {
+                    if (field.isPresent() || receiver.type() instanceof JArrayType) {
                         break;
                     }
                 }

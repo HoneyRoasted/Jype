@@ -2,6 +2,8 @@ package honeyroasted.jype.fuzz;
 
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.type.JArgumentType;
+import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JInstantiableType;
 import honeyroasted.jype.type.JType;
 
@@ -176,7 +178,7 @@ public interface FuzzExpr {
         @Override
         public JExpressionInformation toJype(FuzzContext ctx) {
             JType t = this.type.resolve(ctx);
-            return new JExpressionInformation.InstantiationReference.Simple((JInstantiableType) (t instanceof honeyroasted.jype.type.JClassType ct && !(t instanceof honeyroasted.jype.type.JArrayType) ? ct.classReference() : t), Collections.emptyList());
+            return new JExpressionInformation.InstantiationReference.Simple((JInstantiableType) (t instanceof JClassType ct && !(t instanceof JArrayType) ? ct.classReference() : t), Collections.emptyList());
         }
     }
 

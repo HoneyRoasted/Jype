@@ -12,6 +12,7 @@ import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JType;
 
@@ -21,7 +22,7 @@ import java.util.List;
 public class JReduceConditionalExpression extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.Conditional && !honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant.applies(constraint);
+        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.Conditional && !JExpressionAssignmentConstant.applies(constraint);
     }
 
     @Override

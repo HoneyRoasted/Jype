@@ -17,7 +17,6 @@ import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
-import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;

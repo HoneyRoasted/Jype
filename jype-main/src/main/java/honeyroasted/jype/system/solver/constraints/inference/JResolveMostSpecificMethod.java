@@ -5,7 +5,9 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
-import honeyroasted.jype.system.solver.JMemberLookup;
+import honeyroasted.jype.system.solver.JMethodLookup;
+import honeyroasted.jype.system.solver.JStandaloneType;
+import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
@@ -18,11 +20,9 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
-import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
-import honeyroasted.jype.type.JWildType;
 
 import java.lang.reflect.AccessFlag;
 import java.lang.reflect.Modifier;
@@ -36,13 +36,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-/**
- * Prunes sibling {@link JTypeContext.ChosenMethod}-tagged branches of an already-solved
- * {@link ConstraintTree} down to the JLS §15.12.2 compile-time declaration: the first phase
- * (strict, then loose, then variable arity) with any applicable candidate, and within that
- * phase, the most specific applicable candidate. Must run only after the tree has fully
- * settled, since it inspects final branch status rather than reducing constraints itself.
- */
 public class JResolveMostSpecificMethod {
 
     private JResolveMostSpecificMethod() {
@@ -91,9 +84,6 @@ public class JResolveMostSpecificMethod {
             return;
         }
 
-        // A single candidate legitimately produces both a strict- and loose-invocation
-        // branch (strict implies loose), so group by the actual chosen method first -
-        // those are representations of one candidate, not competing candidates.
         Map<JMethodReference, List<ConstraintBranch>> byMethod = new LinkedHashMap<>();
         for (ConstraintBranch branch : samePhase) {
             byMethod.computeIfAbsent(chosenOf(branch).chosen(), k -> new ArrayList<>()).add(branch);
@@ -160,15 +150,6 @@ public class JResolveMostSpecificMethod {
         return cm.context() == JTypeConstraints.Compatible.Context.STRICT_INVOCATION ? 0 : 1;
     }
 
-    /**
-     * A method's own formal parameter types (vararg-expanded to the call's argument count when
-     * applicable), left exactly as declared - even if the method is generic, its own type
-     * parameters are never substituted here. Per JLS §18.5.4: "no substitution is applied to
-     * S1, ..., Sk; even if m1 is generic, the type parameters of m1 are treated as type
-     * variables, not inference variables" - this holds for whichever method is playing the "m1"
-     * role in a given pairwise direction, regardless of what its type parameters actually
-     * resolved to for this specific call.
-     */
     private static List<JType> declaredParameters(JTypeContext.ChosenMethod cm) {
         List<JType> declared = cm.chosen().parameters();
         if (!cm.vararg()) {
@@ -188,12 +169,6 @@ public class JResolveMostSpecificMethod {
         return effective;
     }
 
-    /**
-     * JLS §15.12.2.5: is {@code m1} more specific than {@code m2}? This is directional - the two
-     * arguments are not interchangeable - and is invoked twice (once per direction) by
-     * {@link #pruneGroup} to determine the "strictly more specific" relation between a pair of
-     * candidates.
-     */
     public static boolean isMoreSpecific(JTypeSystem system, JTypeContext.ChosenMethod m1, JTypeContext.ChosenMethod m2) {
         List<JType> s = declaredParameters(m1);
         List<JType> t = declaredParameters(m2);
@@ -201,7 +176,6 @@ public class JResolveMostSpecificMethod {
         int size = Math.min(s.size(), t.size());
 
         if (m2.chosen().typeParameters().isEmpty()) {
-            // m2 is not generic: Si is more specific than Ti for all i, no inference needed.
             for (int i = 0; i < size; i++) {
                 if (!moreSpecificType(system, s.get(i), t.get(i), args.get(i))) {
                     return false;
@@ -213,18 +187,10 @@ public class JResolveMostSpecificMethod {
         return isMoreSpecificGeneric(system, s, m2.chosen(), t, args, size);
     }
 
-    /**
-     * JLS §18.5.4 ("More Specific Method Inference"): m2 is generic, so testing whether m1 is
-     * more specific requires inferring an instantiation of m2's own type parameters (P1...Pp)
-     * under fresh inference variables (α1...αp) that makes m1 more specific than the
-     * θ-substituted m2, where θ = [P1:=α1, ..., Pp:=αp].
-     */
     private static boolean isMoreSpecificGeneric(JTypeSystem system, List<JType> s, JMethodReference m2, List<JType> declaredT, List<JExpressionInformation> args, int size) {
         Map<JVarType, JType> substitution = new LinkedHashMap<>();
         List<Constraint> constraints = new ArrayList<>();
 
-        // Initial bound set B, generated from the declared bounds of P1, ..., Pp (JLS §18.1.3):
-        // each Infer constraint below is picked up by JBuildInitialBounds inside inferenceSolver().
         for (JVarType p : m2.typeParameters()) {
             JMetaVarType alpha = p.createMetaVar();
             substitution.put(p, alpha);
@@ -237,17 +203,11 @@ public class JResolveMostSpecificMethod {
             JType ti = theta.apply(declaredT.get(i));
 
             if (ti.isProperType()) {
-                // Ti mentions none of m2's type parameters: no inference needed for this
-                // position, the result is simply whether Si is more specific than Ti.
                 if (!moreSpecificType(system, si, ti, args.get(i))) {
                     return false;
                 }
             } else if (isFunctionalInterfaceType(si) && isFunctionalInterfaceType(ti) && !interfacesRelated(system, si, ti)) {
                 // JLS §18.5.4's own elaborate MTS/MTT bullet: Ti isn't proper (it mentions one of
-                // m2's still-unresolved type parameters), so unlike moreSpecificType's plain
-                // isSubtype-or-functional-interface-comparison decision, the function-type
-                // comparison itself has to be expressed as constraints fed into the same nested
-                // solve as everything else here, rather than decided immediately.
                 if (!generateFunctionalInterfaceConstraints(system, si, ti, args.get(i), constraints)) {
                     return false;
                 }
@@ -256,9 +216,6 @@ public class JResolveMostSpecificMethod {
             }
         }
 
-        // Fourth: reduce/incorporate the generated bounds with B to produce B'. m1 is more
-        // specific than m2 iff B' contains no false bound and resolution of all inference
-        // variables in B' succeeds - i.e. at least one branch of this nested solve is true.
         ConstraintTree solved = system.operations().inferenceSolver()
                 .bind(constraints.toArray(new Constraint[0]))
                 .solve();
@@ -298,24 +255,18 @@ public class JResolveMostSpecificMethod {
         if (mts.parameters().size() != mtt.parameters().size()) return false;
         if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) return false;
 
-        // θ' = [B1:=A1, ..., Bn:=An]: map MTT's own type parameters onto MTS's.
         Map<JVarType, JType> thetaPrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             thetaPrime.put(mtt.typeParameters().get(j), mts.typeParameters().get(j));
         }
         JVarTypeResolveVisitor thetaPrimeResolver = new JVarTypeResolveVisitor(thetaPrime);
 
-        // Type parameters' own declared bounds must line up under θ' (in practice almost always
-        // vacuous - a functional interface's SAM essentially never declares its own generic
-        // method type parameters).
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             JType boundA = mts.typeParameters().get(j).upperBound();
             JType boundB = thetaPrimeResolver.apply(mtt.typeParameters().get(j).upperBound());
             if (!boundA.typeEquals(boundB)) return false;
         }
 
-        // θ'' = [B1:=A1', ..., Bn:=An']: map MTT's type parameters onto MTS' (uncaptured) ones,
-        // for the capture-sensitive half of the formal-parameter comparison below.
         Map<JVarType, JType> thetaDoublePrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             thetaDoublePrime.put(mtt.typeParameters().get(j), mtsPrime.typeParameters().get(j));
@@ -415,7 +366,6 @@ public class JResolveMostSpecificMethod {
         if (mts.parameters().size() != mtt.parameters().size()) return false;
         if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) return false;
 
-        // θ' = [B1:=A1, ..., Bn:=An]: map MTT's own type parameters onto MTS's.
         Map<JVarType, JType> thetaPrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             thetaPrime.put(mtt.typeParameters().get(j), mts.typeParameters().get(j));
@@ -433,8 +383,6 @@ public class JResolveMostSpecificMethod {
             constraints.add(new JTypeConstraints.Equal(boundA, boundB));
         }
 
-        // θ'' = [B1:=A1', ..., Bn:=An']: map MTT's type parameters onto MTS' (uncaptured) ones,
-        // for the capture-sensitive half of the formal-parameter comparison below.
         Map<JVarType, JType> thetaDoublePrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             thetaDoublePrime.put(mtt.typeParameters().get(j), mtsPrime.typeParameters().get(j));
@@ -522,18 +470,6 @@ public class JResolveMostSpecificMethod {
         return type;
     }
 
-    /**
-     * JLS §15.13.1: whether a method/constructor reference expression's compile-time declaration
-     * can be determined without its target type at all - i.e. exactly one applicable-by-name,
-     * non-variable-arity, non-generic-or-explicitly-witnessed candidate exists (or it's an array
-     * constructor reference, always exact).
-     *
-     * Approximation: this codebase doesn't model raw types (see [[project_remaining_scope]] -
-     * unchecked-conversion tracking is explicitly out of scope), so the spec's "ReferenceType/
-     * ClassType does not denote a raw type" condition is skipped, and accessibility is approximated
-     * as "found via the ordinary member-lookup used elsewhere in this file" rather than the full
-     * JLS accessibility procedure.
-     */
     public static boolean isExactMethodReference(JTypeSystem system, JExpressionInformation expr) {
         if (expr instanceof JExpressionInformation.InstantiationReference instRef && instRef.type() instanceof JArrayType) {
             return true;
@@ -541,14 +477,8 @@ public class JResolveMostSpecificMethod {
         return exactMethodReferenceDeclaration(system, expr).isPresent();
     }
 
-    /**
-     * Whether the compile-time declaration an exact method/constructor reference resolves to has
-     * a primitive return type - {@code null} if {@code expr} isn't an exact method reference at
-     * all (callers should fall back to a plain subtype comparison in that case).
-     */
     private static Boolean exactMethodReferenceReturnsPrimitive(JTypeSystem system, JExpressionInformation expr) {
         if (expr instanceof JExpressionInformation.InstantiationReference) {
-            // Constructors (including the synthetic T[]::new) never yield a primitive type.
             return false;
         }
         return exactMethodReferenceDeclaration(system, expr)
@@ -562,7 +492,7 @@ public class JResolveMostSpecificMethod {
             if (methodRef.source() instanceof JClassReference classRef) {
                 site = classRef;
             } else if (methodRef.source() instanceof JExpressionInformation sourceExpr) {
-                List<honeyroasted.jype.system.solver.JStandaloneType> types = honeyroasted.jype.system.solver.JStandaloneTyping.resolve(sourceExpr, system);
+                List<JStandaloneType> types = JStandaloneTyping.resolve(sourceExpr, system);
                 if (types.size() != 1) {
                     return Optional.empty();
                 }
@@ -572,8 +502,8 @@ public class JResolveMostSpecificMethod {
             }
             JClassReference declaring = methodRef instanceof JExpressionInformation.InvocationReference.Full<?> full ? full.declaring() : null;
             // JLS §15.13.1 the type to search has exactly one accessible member method with the name
-            List<JMethodReference> candidates = honeyroasted.jype.system.solver.JMethodLookup.members(site, methodRef.methodName()).stream()
-                    .map(honeyroasted.jype.system.solver.JMethodLookup.Member::method)
+            List<JMethodReference> candidates = JMethodLookup.members(site, methodRef.methodName()).stream()
+                    .map(JMethodLookup.Member::method)
                     .filter(m -> declaring == null ? !m.hasModifier(AccessFlag.PRIVATE) || site instanceof JClassType sct && m.outerClass().typeEquals(sct.classReference())
                             : m.outerClass().accessFrom(declaring, null).canAccess(m.access()))
                     .toList();
@@ -586,7 +516,6 @@ public class JResolveMostSpecificMethod {
 
         if (expr instanceof JExpressionInformation.InstantiationReference instRef) {
             if (instRef.type() instanceof JArrayType) {
-                // Always exact, but there's no user-declared member to report a declaration for.
                 return Optional.empty();
             }
             if (!(instRef.type() instanceof JClassReference classRef)) return Optional.empty();

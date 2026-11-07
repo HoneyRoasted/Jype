@@ -3,6 +3,7 @@ package honeyroasted.jype.system.solver.operations;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JWildType;
@@ -127,7 +128,7 @@ public class FindLeastUpperBoundTests {
     }
 
     private static JParameterizedClassType findIntersectionMember(JType lub, JClassReference classRef) {
-        List<JType> children = lub instanceof honeyroasted.jype.type.JIntersectionType it ? List.copyOf(it.children()) : List.of(lub);
+        List<JType> children = lub instanceof JIntersectionType it ? List.copyOf(it.children()) : List.of(lub);
         for (JType child : children) {
             if (child instanceof JParameterizedClassType pct && pct.classReference().typeEquals(classRef)) {
                 return pct;

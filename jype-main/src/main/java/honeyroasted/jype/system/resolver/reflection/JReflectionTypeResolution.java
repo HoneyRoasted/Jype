@@ -18,6 +18,7 @@ import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JFieldReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
 
@@ -384,7 +385,7 @@ public interface JReflectionTypeResolution {
 
         if (cls.isSealed()) {
             for (Class<?> permitted : cls.getPermittedSubclasses()) {
-                reference.permittedSubclasses().add(new honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate(system, s -> s.tryResolve(permitted)));
+                reference.permittedSubclasses().add(new JClassReferenceDelegate(system, s -> s.tryResolve(permitted)));
             }
         }
 

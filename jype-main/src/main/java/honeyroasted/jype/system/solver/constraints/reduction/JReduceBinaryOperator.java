@@ -9,18 +9,15 @@ import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JStandaloneType;
 import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
-import honeyroasted.jype.type.JType;
+import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class JReduceBinaryOperator extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.BinaryOperator && !honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant.applies(constraint);
+        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.BinaryOperator && !JExpressionAssignmentConstant.applies(constraint);
     }
 
     @Override

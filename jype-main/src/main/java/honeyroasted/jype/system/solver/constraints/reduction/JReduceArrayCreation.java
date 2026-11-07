@@ -9,13 +9,6 @@ import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JType;
 
-/**
- * Reduces an array-creation expression (JLS §15.10) into: each dimension expression being
- * assignment-compatible with {@code int} (the existing {@code ASSIGNMENT} compatibility rule
- * already implements JLS §15.10.1's "char, byte, short, or int, with unboxing but no narrowing
- * from long" exactly, so no bespoke check is needed here), the initializer (if any) being
- * compatible with the array's own type, and that type itself satisfying the outer context.
- */
 public class JReduceArrayCreation extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {

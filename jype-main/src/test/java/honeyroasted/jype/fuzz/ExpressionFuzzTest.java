@@ -6,16 +6,11 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.SimpleJavaFileObject;
-import javax.tools.ToolProvider;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -29,6 +24,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileObject;
+import javax.tools.SimpleJavaFileObject;
+import javax.tools.ToolProvider;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -78,7 +79,7 @@ public class ExpressionFuzzTest {
                     continue;
                 }
                 Map<String, JType> holderCache = new HashMap<>();
-                honeyroasted.jype.type.JMethodReference[] currentProbe = new honeyroasted.jype.type.JMethodReference[1];
+                JMethodReference[] currentProbe = new JMethodReference[1];
                 FuzzContext ctx = new FuzzContext() {
                     @Override
                     public JTypeSystem system() {
@@ -102,7 +103,7 @@ public class ExpressionFuzzTest {
                     }
 
                     @Override
-                    public honeyroasted.jype.type.JMethodReference probeMethod() {
+                    public JMethodReference probeMethod() {
                         return currentProbe[0];
                     }
 

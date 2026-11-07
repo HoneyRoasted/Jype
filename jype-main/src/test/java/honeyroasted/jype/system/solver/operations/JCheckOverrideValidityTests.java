@@ -1,6 +1,7 @@
 package honeyroasted.jype.system.solver.operations;
 
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.fixtures.packageaccess.PackageHost;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JMethodReference;
 import org.junit.jupiter.api.Test;
@@ -212,7 +213,7 @@ public class JCheckOverrideValidityTests {
         assertEquals(JCheckOverrideValidity.Reason.RETURN_TYPE_NOT_SUBSTITUTABLE, check(ts, StaticString.class, StaticObject.class, "v"), "static int v() vs static void v()");
         assertEquals(JCheckOverrideValidity.Reason.CANNOT_OVERRIDE_FINAL, check(ts, StaticString.class, StaticObject.class, "f"), "static f() vs static final f()");
         assertEquals(JCheckOverrideValidity.Reason.NOT_INHERITED, ts.operations().checkOverrideValidity(method(ts, SamePackageName.class, "pp"),
-                method(ts, honeyroasted.jype.system.solver.fixtures.packageaccess.PackageHost.class, "pp")).reason(), "int pp() vs package-private pp() in another package");
+                method(ts, PackageHost.class, "pp")).reason(), "int pp() vs package-private pp() in another package");
     }
 
     private static JMethodReference method(JTypeSystem ts, Class<?> cls, String name) {

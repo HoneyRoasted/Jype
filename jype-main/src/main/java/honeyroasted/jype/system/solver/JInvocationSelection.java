@@ -8,6 +8,7 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveMostSpecificMethod;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
@@ -20,6 +21,7 @@ import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
@@ -401,9 +403,9 @@ public final class JInvocationSelection {
         List<JType> sources = new ArrayList<>(equal);
         sources.addAll(lower);
         boolean trigger = false;
-        if (target instanceof honeyroasted.jype.type.JPrimitiveType) {
+        if (target instanceof JPrimitiveType) {
             // JLS §18.5.2.1 a primitive target and a wrapper class bound
-            JType inst = honeyroasted.jype.system.solver.constraints.inference.JResolveBounds.findInstantiation(alpha, b2);
+            JType inst = JResolveBounds.findInstantiation(alpha, b2);
             List<JType> all = new ArrayList<>(sources);
             if (inst != null) {
                 all.add(inst);
@@ -424,7 +426,7 @@ public final class JInvocationSelection {
         if (!trigger) {
             return null;
         }
-        return honeyroasted.jype.system.solver.constraints.inference.JResolveBounds.findInstantiation(alpha, b2);
+        return JResolveBounds.findInstantiation(alpha, b2);
     }
 
     private static boolean wildcardOrConflicting(List<JType> sources, List<JType> lower) {
@@ -489,8 +491,8 @@ public final class JInvocationSelection {
                 }
             }
         }
-        if (constraint.middle() == JTypeConstraints.Compatible.Context.STRICT_INVOCATION && constraint.right() instanceof honeyroasted.jype.type.JPrimitiveType && expr instanceof JExpressionInformation.MethodInvocation<?>
-                && (candidate.result() instanceof JVarType || !(candidate.result() instanceof honeyroasted.jype.type.JPrimitiveType))) {
+        if (constraint.middle() == JTypeConstraints.Compatible.Context.STRICT_INVOCATION && constraint.right() instanceof JPrimitiveType && expr instanceof JExpressionInformation.MethodInvocation<?>
+                && (candidate.result() instanceof JVarType || !(candidate.result() instanceof JPrimitiveType))) {
             // JLS §18.5.2.1 a poly invocation in a strict context is not compatible with a primitive target
             constraints.put(Constraint.FALSE, Constraint.Status.FALSE);
         }
