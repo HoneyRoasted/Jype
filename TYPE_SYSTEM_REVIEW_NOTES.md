@@ -881,3 +881,16 @@ Baseline: 177 tests green.
   - §18.5.4 escape hatches: a bound / formal parameter / return type of MTS mentioning MTS's own type
     parameters against an improper MTT counterpart gives false.
   - `JMostSpecificFunctionalTests` (10 javac-verified cases; fails on the previous code). Suite 193/193.
+
+- **§18.4 second resolution attempt, null receivers (fuzz seeds 14–16) — done.**
+  - `List<? super Integer> x = pick(li, ln)` compiles with javac although lub(List<Integer>, List<Number>) is
+    not a subtype of the upper bound. javac's `GraphSolver` rolls back a failed resolution and calls
+    `instantiateAsUninferredVars`: αi = glb(upper bounds) (Object without uppers), or a fresh type variable
+    (upper glb(Uθ), lower ⊥) only when an upper bound mentions the variables being solved; lower bounds are
+    then re-checked by incorporation. **javac deviation, followed deliberately:** the JLS §18.4 second attempt
+    gives Yi the lower bound lub(L), and `Yi` with lub(L) not <: glb(U) fails. Jype now performs javac's
+    version when there is no capture bound; the capture path keeps the JLS fresh variables (javac's
+    CAPTURED step builds the same lower/upper bounds). `id(pick(li, ln))` still fails, as in javac.
+  - Method invocation / method reference on a receiver of the null type is rejected (`(null).clone()`).
+  - Fuzz harness: anonymous diamond probes passed the source type arguments to Jype as explicit arguments.
+  - `JResolveBoundsSecondAttemptTests` (8 javac-verified cases). Suite 195/195; fuzz seeds 14–18: 0 mismatches.

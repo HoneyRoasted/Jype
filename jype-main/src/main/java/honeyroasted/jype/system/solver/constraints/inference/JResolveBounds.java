@@ -106,6 +106,8 @@ public class JResolveBounds extends ConstraintMapper.All {
                 merge(branch, result.get(), candidates, List.of());
                 return;
             }
+            uninferred(system, branch, subset, instantiations);
+            return;
         }
 
         // JLS §18.4 fresh type variables Y1...Yn
@@ -149,6 +151,49 @@ public class JResolveBounds extends ConstraintMapper.All {
         Optional<ConstraintBranch> result = incorporate(system, branch, freshCandidates, removed);
         if (result.isPresent()) {
             merge(branch, result.get(), freshCandidates, removed);
+        } else {
+            branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+        }
+    }
+
+    private static void uninferred(JTypeSystem system, ConstraintBranch branch, List<JMetaVarType> subset, Map<JMetaVarType, JType> instantiations) {
+        Map<JMetaVarType, JType> candidates = new LinkedHashMap<>();
+        Map<JMetaVarType, JVarType> fresh = new LinkedHashMap<>();
+        JMetaVarTypeResolveVisitor resolved = new JMetaVarTypeResolveVisitor(instantiations);
+        for (JMetaVarType mvt : subset) {
+            Set<JType> upper = new LinkedHashSet<>();
+            allUpperBounds(branch, mvt).forEach(u -> upper.add(resolved.visit(u)));
+            if (upper.stream().anyMatch(u -> discoverMetaVars(u).stream().anyMatch(subset::contains))) {
+                fresh.put(mvt, JFreshTypeVariables.create(system, "Y"));
+                candidates.put(mvt, fresh.get(mvt));
+            } else if (upper.isEmpty()) {
+                candidates.put(mvt, system.constants().object());
+            } else if (upper.stream().allMatch(JType::isProperType) && JTypeRelations.isWellFormedGlb(upper)) {
+                // JLS §18.4 second attempt as javac performs it: Ti = glb(U1...Uk) without a lower bound
+                candidates.put(mvt, system.operations().findGreatestLowerBound(upper));
+            } else {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+                return;
+            }
+        }
+        Map<JMetaVarType, JType> theta = new HashMap<>(instantiations);
+        theta.putAll(candidates);
+        JMetaVarTypeResolveVisitor thetaVisitor = new JMetaVarTypeResolveVisitor(theta);
+        for (Map.Entry<JMetaVarType, JVarType> entry : fresh.entrySet()) {
+            Set<JType> upper = new LinkedHashSet<>();
+            for (JType u : allUpperBounds(branch, entry.getKey())) {
+                upper.add(thetaVisitor.visit(u));
+            }
+            if (!JTypeRelations.isWellFormedGlb(upper)) {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+                return;
+            }
+            // JLS §18.4 a fresh type variable whose upper bound mentions the resolved variables
+            JFreshTypeVariables.finish(entry.getValue(), Set.of(system.operations().findGreatestLowerBound(upper)), Set.of());
+        }
+        Optional<ConstraintBranch> result = incorporate(system, branch, candidates, List.of());
+        if (result.isPresent()) {
+            merge(branch, result.get(), candidates, List.of());
         } else {
             branch.add(Constraint.FALSE, Constraint.Status.FALSE);
         }

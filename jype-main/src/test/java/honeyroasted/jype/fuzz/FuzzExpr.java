@@ -336,7 +336,7 @@ public interface FuzzExpr {
         @Override
         public JExpressionInformation toJype(FuzzContext ctx) {
             return new JExpressionInformation.Instantiation.Anonymous(ctx.host(), null, ctx.classNamed(this.className),
-                    this.arguments.stream().map(a -> a.toJype(ctx)).toList(), args(ctx, this.typeArguments), List.of(), null);
+                    this.arguments.stream().map(a -> a.toJype(ctx)).toList(), this.diamond ? List.of() : args(ctx, this.typeArguments), List.of(), null);
         }
     }
 

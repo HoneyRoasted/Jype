@@ -20,6 +20,7 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
@@ -82,7 +83,8 @@ public class JReduceInvocationRefExpression extends ConstraintMapper.Unary<JType
             }
         } else if (ref.source() instanceof JExpressionInformation expr) {
             for (JStandaloneType receiver : JStandaloneTyping.resolve(expr, system)) {
-                if (receiver.type() instanceof JPrimitiveType) {
+                if (receiver.type() instanceof JPrimitiveType || receiver.type() instanceof JNoneType) {
+                    // JLS §15.12.1 a primitive or null receiver cannot be dereferenced
                     continue;
                 }
                 Map<Constraint, Constraint.Status> extra = new LinkedHashMap<>();
