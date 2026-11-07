@@ -5,61 +5,41 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JType;
-
-import java.util.Map;
 
 public class JIncorporationEqualEqual extends ConstraintMapper.Binary<JTypeConstraints.Equal, JTypeConstraints.Equal> {
     @Override
     protected boolean filterLeft(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal constraint, Constraint.Status status) {
-        return status.isTrue();
+        return status.isTrue() && JIncorporationSupport.isBound(constraint);
     }
 
     @Override
     protected boolean filterRight(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal constraint, Constraint.Status status) {
-        return super.filterRight(allContext, branchContext, branch, constraint, status);
+        return status.isTrue() && JIncorporationSupport.isBound(constraint);
     }
 
     @Override
-    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal leftConstraint, Constraint.Status leftStatus, JTypeConstraints.Equal rightConstraint, Constraint.Status rightStatus) {
-        JType ll = leftConstraint.left(), lr = leftConstraint.right(),
-                rl = rightConstraint.left(), rr = rightConstraint.right();
-
-        if (ll instanceof JMetaVarType || lr instanceof JMetaVarType) {
-            JMetaVarType mvt = (JMetaVarType) (ll instanceof JMetaVarType ? ll : lr);
-            JType otherType = ll instanceof JMetaVarType ? lr : ll;
-            JMetaVarTypeResolveVisitor subResolver = new JMetaVarTypeResolveVisitor(Map.of(mvt, otherType));
-
-            if (rl.typeEquals(mvt)) {
-                //Case where alpha = S and alpha = T => S = T (18.3.1, Bullet #1)
-                addEqualBound(branch, leftConstraint, otherType, rightConstraint, rr);
-
-                branch.add(JTypeConstraints.Equal.createBound(otherType, rr), Constraint.Status.ASSUMED);
-            } else if (rr.typeEquals(mvt)) {
-                addEqualBound(branch, leftConstraint, otherType, rightConstraint, rl);
-            } else {
-                JType rlRes = subResolver.visit(rl);
-                JType rrRes = subResolver.visit(rr);
-                if (!rlRes.structuralEquals(rl) || !rrRes.structuralEquals(rr)) {
-                    addEqualBound(branch, leftConstraint, rlRes, rightConstraint, rlRes);
-                }
-            }
+    protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal left, Constraint.Status leftStatus, JTypeConstraints.Equal right, Constraint.Status rightStatus) {
+        if (left.equals(right)) {
+            return;
         }
+        apply(branch, left, left.left(), left.right(), right);
+        apply(branch, left, left.right(), left.left(), right);
     }
 
-    private static void addEqualBound(ConstraintBranch branch, Constraint leftCons, JType left, Constraint rightCons, JType right) {
-        if (left.isProperType() && right.isProperType()) {
-            boolean equal = left.typeEquals(right);
-            if (equal) {
-                branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.TRUE);
-            } else {
-                branch.add(new JTypeConstraints.Equal(left, right), Constraint.Status.FALSE);
-                branch.add(new JTypeConstraints.Contradiction(leftCons, rightCons), Constraint.Status.FALSE);
-            }
-        } else {
-            branch.add(JTypeConstraints.Equal.createBound(left, right), Constraint.Status.ASSUMED);
+    private static void apply(ConstraintBranch branch, JTypeConstraints.Equal bound, JType alphaSide, JType u, JTypeConstraints.Equal other) {
+        if (!(alphaSide instanceof JMetaVarType alpha)) {
+            return;
+        }
+        if (other.left().typeEquals(alpha)) {
+            // JLS §18.3.1 α = S and α = T imply ‹S = T›
+            JIncorporationSupport.deriveEqual(branch, bound, other, u, other.right());
+        } else if (other.right().typeEquals(alpha)) {
+            JIncorporationSupport.deriveEqual(branch, bound, other, u, other.left());
+        } else if (!JIncorporationSupport.mentions(u, alpha) && (JIncorporationSupport.mentions(other.left(), alpha) || JIncorporationSupport.mentions(other.right(), alpha))) {
+            // JLS §18.3.1 α = U and S = T imply ‹S[α:=U] = T[α:=U]›
+            JIncorporationSupport.deriveEqual(branch, bound, other, JIncorporationSupport.substitute(other.left(), alpha, u), JIncorporationSupport.substitute(other.right(), alpha, u));
         }
     }
 }

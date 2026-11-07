@@ -1,5 +1,6 @@
 package honeyroasted.jype.type.impl;
 
+import java.util.Objects;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.metadata.location.JMethodLocation;
 import honeyroasted.jype.system.JTypeSystem;
@@ -30,14 +31,16 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JParameterizedMethodType copy = this.typeSystem().typeFactory().newParameterizedMethodType();
         cache.put(this, copy);
 
         copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setMethodReference(this.methodReference.copy(cache));
-        copy.setOuterType(this.outerType.copy(cache));
+        copy.setOuterType(this.outerType == null ? outerType : outerType.copy(cache));
         copy.setTypeArguments(this.typeArguments.stream().map(t -> (JArgumentType) t.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
@@ -156,7 +159,9 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JMethodType mt) {
@@ -179,15 +184,28 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
+        if (seen.contains(this)) {
+            return 0;
+        }
         seen = JType.concat(seen, this);
 
-        if (JType.structuralEquals(this, this.methodReference)) {
-            return JType.hashCode(methodReference, seen);
-        } else {
-            return JType.multiHash(JType.hashCode(methodReference, seen), JType.hashCode(outerType, seen),
-                    JType.hashCode(typeArguments, seen));
+        int base = this.methodReference == null ? 0 : Objects.hashCode(this.methodReference.location());
+        if (this.typeArguments == null || this.typeArguments.isEmpty() || this.methodReference == null) {
+            return base;
         }
+        List<JVarType> params = this.methodReference.typeParameters();
+        boolean own = params.size() == this.typeArguments.size();
+        for (int i = 0; own && i < params.size(); i++) {
+            own = this.typeArguments.get(i) instanceof JVarType vt && Objects.equals(vt.location(), params.get(i).location());
+        }
+        if (own) {
+            return base;
+        }
+        int h = base;
+        for (JArgumentType arg : this.typeArguments) {
+            h = h * 31 + JType.shallowHash(arg);
+        }
+        return h;
     }
 
 }

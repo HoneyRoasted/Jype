@@ -4,9 +4,9 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.type.JType;
 
 import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compatible.Context.*;
@@ -14,7 +14,8 @@ import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compa
 public class JExpressionSimplyTyped extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof JExpressionInformation.Constant);
+        return status.isUnknown() && constraint.left().isSimplyTyped() && !JExpressionAssignmentConstant.applies(constraint)
+                && !JReduceSimplyTypedExpression.hasDedicatedReducer(constraint.left());
     }
 
     @Override

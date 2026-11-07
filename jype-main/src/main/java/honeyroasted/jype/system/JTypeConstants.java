@@ -25,6 +25,8 @@ public interface JTypeConstants {
 
     JClassReference runtimeException();
 
+    JClassReference error();
+
     JNoneType voidType();
 
     JNoneType nullType();

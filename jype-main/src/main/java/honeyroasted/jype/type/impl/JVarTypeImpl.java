@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implements JVarType {
     private JTypeParameterLocation location;
     private Set<JType> upperBounds = new LinkedHashSet<>();
+    private Set<JType> lowerBounds = new LinkedHashSet<>();
 
     public JVarTypeImpl(JTypeSystem typeSystem) {
         super(typeSystem);
@@ -25,7 +26,9 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JVarType copy = this.typeSystem().typeFactory().newVarType();
         cache.put(this, copy);
@@ -33,6 +36,7 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
         copy.metadata().inheritFrom(this.metadata().copy(cache));
         copy.setLocation(this.location);
         copy.setUpperBounds(this.upperBounds.stream().map(t -> (JType) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
+        copy.setLowerBounds(this.lowerBounds.stream().map(t -> (JType) t.copy(cache)).collect(Collectors.toCollection(LinkedHashSet::new)));
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -40,11 +44,13 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
     @Override
     protected void makeUnmodifiable() {
         this.upperBounds = JWildType.linkedCopyOf(this.upperBounds);
+        this.lowerBounds = JWildType.linkedCopyOf(this.lowerBounds);
     }
 
     @Override
     protected void makeModifiable() {
         this.upperBounds = new LinkedHashSet<>(this.upperBounds);
+        this.lowerBounds = new LinkedHashSet<>(this.lowerBounds);
     }
 
     @Override
@@ -70,14 +76,28 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
     }
 
     @Override
+    public Set<JType> lowerBounds() {
+        return this.lowerBounds;
+    }
+
+    @Override
+    public void setLowerBounds(Set<JType> lowerBounds) {
+        super.checkUnmodifiable();
+        this.lowerBounds = lowerBounds;
+    }
+
+    @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
-        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
+        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JVarType vt) {
-            return Objects.equals(location, vt.location()) &&
-                    JType.equals(upperBounds, vt.upperBounds(), kind, seen);
+            return Objects.equals(location, vt.location());
         } else {
             return false;
         }
@@ -85,10 +105,12 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
+        if (seen.contains(this)) {
+            return 0;
+        }
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(Objects.hashCode(location), JType.hashCode(upperBounds, seen));
+        return Objects.hashCode(location);
     }
 
 }

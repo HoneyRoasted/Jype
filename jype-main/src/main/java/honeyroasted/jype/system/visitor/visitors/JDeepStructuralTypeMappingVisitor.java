@@ -115,10 +115,16 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitClassType(JClassType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesClassType(type)) return this.classTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesClassType(type)) {
+            return this.classTypeOverride(type, context);
+        }
 
-        if (type instanceof JClassReference ref) {
+        if (type instanceof JClassReference ref && !this.visitStructural()) {
+            return type;
+        } else if (type instanceof JClassReference ref) {
             JClassReference newRef = ref.typeSystem().typeFactory().newClassReference();
             context.put(type, newRef);
             newRef.setNamespace(ref.namespace());
@@ -175,8 +181,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitWildcardType(JWildType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesWildcardType(type)) return this.wildcardTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesWildcardType(type)) {
+            return this.wildcardTypeOverride(type, context);
+        }
 
         if (type instanceof JWildType.Lower lower) {
             JWildType.Lower newLower = lower.typeSystem().typeFactory().newLowerWildType();
@@ -197,8 +207,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitArrayType(JArrayType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesArrayType(type)) return this.arrayTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesArrayType(type)) {
+            return this.arrayTypeOverride(type, context);
+        }
 
         JArrayType newArray = type.typeSystem().typeFactory().newArrayType();
         context.put(type, newArray);
@@ -210,8 +224,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitIntersectionType(JIntersectionType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesIntersectionType(type)) return this.intersectionTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesIntersectionType(type)) {
+            return this.intersectionTypeOverride(type, context);
+        }
 
         return JIntersectionType.of(this.visit(type.children(), context), type.typeSystem());
     }
@@ -219,12 +237,17 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitFieldType(JFieldReference type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesFieldType(type)) return this.fieldTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesFieldType(type)) {
+            return this.fieldTypeOverride(type, context);
+        }
 
         JFieldReference newRef = type.typeSystem().typeFactory().newFieldReference();
         newRef.setModifiers(type.modifiers());
         newRef.setLocation(type.location());
+        type.constantValue().ifPresent(newRef::setConstantValue);
 
         if (this.visitStructural()) {
             JType newOuter = this.visit(type.outerClass(), context);
@@ -242,8 +265,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitMethodType(JMethodType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesMethodType(type)) return this.methodTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesMethodType(type)) {
+            return this.methodTypeOverride(type, context);
+        }
 
         if (type instanceof JMethodReference ref) {
             JMethodReference newRef = ref.typeSystem().typeFactory().newMethodReference();
@@ -288,13 +315,19 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitVarType(JVarType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesVarType(type)) return this.varTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesVarType(type)) {
+            return this.varTypeOverride(type, context);
+        }
 
         JVarType newType = type.typeSystem().typeFactory().newVarType();
         context.put(type, newType);
+        newType.metadata().inheritFrom(type.metadata());
         newType.setLocation(type.location());
         newType.setUpperBounds(this.visit(type.upperBounds(), context));
+        newType.setLowerBounds(this.visit(type.lowerBounds(), context));
         newType.setUnmodifiable(true);
         return newType;
     }
@@ -302,8 +335,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitMetaVarType(JMetaVarType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesMetaVarType(type)) return this.metaVarTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesMetaVarType(type)) {
+            return this.metaVarTypeOverride(type, context);
+        }
 
         return type;
     }
@@ -311,8 +348,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitNoneType(JNoneType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesNoneType(type)) return this.noneTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesNoneType(type)) {
+            return this.noneTypeOverride(type, context);
+        }
 
         return type;
     }
@@ -320,8 +361,12 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
     @Override
     default JType visitPrimitiveType(JPrimitiveType type, JTypeCache<JType, JType> context) {
         Optional<JType> cached = context.get(type);
-        if (cached.isPresent()) return cached.get();
-        if (this.overridesPrimitiveType(type)) return this.primitiveTypeOverride(type, context);
+        if (cached.isPresent()) {
+            return cached.get();
+        }
+        if (this.overridesPrimitiveType(type)) {
+            return this.primitiveTypeOverride(type, context);
+        }
 
         return type;
     }

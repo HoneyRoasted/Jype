@@ -1,0 +1,129 @@
+package honeyroasted.jype.system.solver.constraints.reduction;
+
+import honeyroasted.almonds.ConstraintTree;
+import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.system.solver.JTypeRelations;
+import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JWildType;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+/**
+ * Covers JLS §5.1.10: accessing a member through a wildcard-parameterized receiver must apply
+ * capture conversion, replacing the wildcard with a fresh type variable bounded per JLS §18.3.2
+ * rather than exposing the raw wildcard - so the captured value is known to be *some* subtype of
+ * the wildcard's upper bound, not the upper bound type itself.
+ */
+public class JReduceMethodInvocationCaptureTests {
+
+    public interface Box<T> {
+        T get();
+
+        void set(T value);
+    }
+
+    private static JParameterizedClassType boxOfExtendsNumber(JTypeSystem ts) {
+        JClassReference box = ts.tryResolve(Box.class);
+        JParameterizedClassType boxType = ts.typeFactory().newParameterizedClassType();
+        boxType.setClassReference(box);
+
+        JWildType.Upper wtu = ts.typeFactory().newUpperWildType();
+        wtu.setUpperBounds(Set.of(ts.tryResolve(Number.class)));
+        boxType.setTypeArguments(List.of(wtu));
+
+        return boxType;
+    }
+
+    private static boolean solvesGet(JTypeSystem ts, JParameterizedClassType boxType, JType target) {
+        JClassReference declaring = ts.tryResolve(Box.class);
+        JExpressionInformation.MethodInvocation<?> invocation = new JExpressionInformation.MethodInvocation.Simple<>(
+                declaring, null, JExpressionInformation.of(boxType), "get", List.of(), Collections.emptyList());
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(
+                invocation, JTypeConstraints.Compatible.Context.ASSIGNMENT, target);
+        ConstraintTree tree = ts.operations().inferenceSolver().bind(constraint).solve();
+        return tree.branches().stream().anyMatch(b -> b.status().isTrue());
+    }
+
+    @Test
+    public void capturedWildcardResultIsCompatibleWithItsUpperBound() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JParameterizedClassType boxType = boxOfExtendsNumber(ts);
+        JClassReference number = ts.tryResolve(Number.class);
+
+        assertTrue(solvesGet(ts, boxType, number),
+                "expected Box<? extends Number>.get() to be assignable to its captured upper bound Number");
+    }
+
+    @Test
+    public void capturedWildcardResultIsNotCompatibleWithASpecificSubtypeOfItsUpperBound() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JParameterizedClassType boxType = boxOfExtendsNumber(ts);
+        JClassReference integer = ts.tryResolve(Integer.class);
+
+        assertFalse(solvesGet(ts, boxType, integer),
+                "expected Box<? extends Number>.get() to NOT be assignable to Integer - the captured type could be any subtype of Number, not necessarily Integer");
+    }
+
+    @Test
+    @Timeout(value = 15, unit = TimeUnit.SECONDS)
+    public void setWithResultOfGetOnExtendsWildcardIsRejected() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JParameterizedClassType boxType = boxOfExtendsNumber(ts);
+        JClassReference declaring = ts.tryResolve(Box.class);
+
+        JExpressionInformation.MethodInvocation<?> getInvocation = new JExpressionInformation.MethodInvocation.Simple<>(
+                declaring, null, JExpressionInformation.of(boxType), "get", List.of(), Collections.emptyList());
+        JExpressionInformation.MethodInvocation<?> setInvocation = new JExpressionInformation.MethodInvocation.Simple<>(
+                declaring, null, JExpressionInformation.of(boxType), "set", List.of(getInvocation), Collections.emptyList());
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(
+                setInvocation, JTypeConstraints.Compatible.Context.ASSIGNMENT, ts.constants().voidType());
+        ConstraintTree tree = ts.operations().inferenceSolver().bind(constraint).solve();
+        boolean solved = tree.branches().stream().anyMatch(b -> b.status().isTrue());
+
+        assertFalse(solved, "javac: box.set(box.get()) on Box<? extends Number> is rejected, each receiver occurrence is captured separately");
+    }
+
+    @Test
+    @Timeout(value = 15, unit = TimeUnit.SECONDS)
+    public void setOnExtendsWildcardWithUnrelatedValueIsRejected() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JParameterizedClassType boxType = boxOfExtendsNumber(ts);
+        JClassReference declaring = ts.tryResolve(Box.class);
+        JClassReference integer = ts.tryResolve(Integer.class);
+
+        JExpressionInformation.MethodInvocation<?> setInvocation = new JExpressionInformation.MethodInvocation.Simple<>(
+                declaring, null, JExpressionInformation.of(boxType), "set", List.of(JExpressionInformation.of(integer)), Collections.emptyList());
+        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(
+                setInvocation, JTypeConstraints.Compatible.Context.ASSIGNMENT, ts.constants().voidType());
+        ConstraintTree tree = ts.operations().inferenceSolver().bind(constraint).solve();
+        boolean solved = tree.branches().stream().anyMatch(b -> b.status().isTrue());
+
+        assertFalse(solved, "expected box.set(anIntegerValue) to be rejected for box: Box<? extends Number> - the captured type could be any subtype of Number, not necessarily Integer (PECS)");
+    }
+
+    @Test
+    public void captureOfExtendsWildcardYieldsFreshTypeVariableBoundedByUpperBound() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JParameterizedClassType boxType = boxOfExtendsNumber(ts);
+        JClassReference number = ts.tryResolve(Number.class);
+
+        JClassType captured = JTypeRelations.capture(boxType);
+        JType arg = captured.typeArguments().getFirst();
+
+        assertTrue(arg instanceof JVarType vt && vt.upperBounds().stream().anyMatch(u -> u.typeEquals(number)) && vt.lowerBounds().isEmpty(),
+                "expected capture(Box<? extends Number>) = Box<CAP> with CAP <: Number (JLS §5.1.10)");
+    }
+}

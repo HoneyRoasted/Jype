@@ -16,6 +16,7 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
     private JClassReference cloneable;
     private JClassReference serializable;
     private JClassReference runtimeException;
+    private JClassReference error;
     private JNoneType voidType;
     private JNoneType nullType;
     private JNoneType noneType;
@@ -72,6 +73,11 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
 
     public JInMemoryTypeConstants setRuntimeException(JClassReference runtimeException) {
         this.runtimeException = runtimeException;
+        return this;
+    }
+
+    public JInMemoryTypeConstants setError(JClassReference error) {
+        this.error = error;
         return this;
     }
 
@@ -173,6 +179,11 @@ public final class JInMemoryTypeConstants implements JTypeConstants {
     @Override
     public JClassReference runtimeException() {
         return this.runtimeException;
+    }
+
+    @Override
+    public JClassReference error() {
+        return this.error;
     }
 
     @Override

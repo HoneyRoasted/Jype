@@ -28,6 +28,27 @@ public interface JTypeContext {
         }
     }
 
+    record InvocationTypeArguments(JExpressionInformation expression, Map<JVarType, JType> theta) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Invocation Type Arguments: " + expression.simpleName() + " : " + theta;
+        }
+    }
+
+    record ExpressionType(JExpressionInformation expression, JType type) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Expression Type: " + expression.simpleName() + " : " + type.simpleName();
+        }
+    }
+
+    record ThrownTypes(JExpressionInformation expression, java.util.List<JType> types) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Thrown Types: " + expression.simpleName() + " : " + types;
+        }
+    }
+
     record ChosenField(JExpressionInformation.GetField<?> expression, JFieldReference chosen) implements SimpleName {
         @Override
         public String simpleName() {
@@ -120,8 +141,12 @@ public interface JTypeContext {
 
         @Override
         public boolean equals(Object object) {
-            if (this == object) return true;
-            if (object == null || getClass() != object.getClass()) return false;
+            if (this == object) {
+                return true;
+            }
+            if (object == null || getClass() != object.getClass()) {
+                return false;
+            }
             TypeMetavarMap that = (TypeMetavarMap) object;
             return Objects.equals(instantiations, that.instantiations) && Objects.equals(metaVars, that.metaVars);
         }

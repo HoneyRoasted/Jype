@@ -1,9 +1,38 @@
 apply from: rootProject.file('buildSrc/shared.gradle')
 
 dependencies {
-    api("com.github.HoneyRoasted:Almonds:0.0.25")
+    api("com.github.HoneyRoasted:Almonds:0.0.29")
     api("com.github.HoneyRoasted:Collect:0.0.13")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3",
             project(":jype-stub"))
+}
+def javacExports = ['api', 'code', 'util', 'comp', 'tree'].collect { "--add-exports=jdk.compiler/com.sun.tools.javac.${it}=ALL-UNNAMED" }
+
+compileTestJava {
+    options.compilerArgs += javacExports
+}
+
+test {
+    useJUnitPlatform {
+        excludeTags 'fuzz'
+    }
+}
+
+tasks.register('fuzzTest', Test) {
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags 'fuzz'
+    }
+    jvmArgs javacExports
+    maxHeapSize = '4g'
+    systemProperty 'fuzz.seed', project.findProperty('fuzz.seed') ?: '1'
+    systemProperty 'fuzz.count', project.findProperty('fuzz.count') ?: '20'
+    systemProperty 'fuzz.out', layout.buildDirectory.dir('fuzz-failures').get().asFile.absolutePath
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+    outputs.upToDateWhen { false }
 }

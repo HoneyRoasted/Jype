@@ -4,26 +4,30 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.JInvocationCandidate;
+import honeyroasted.jype.system.solver.JInvocationSelection;
+import honeyroasted.jype.system.solver.JStandaloneType;
+import honeyroasted.jype.system.solver.JStandaloneTyping;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.JTypeContext;
-import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.system.visitor.JTypeVisitors;
+import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
+import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
-import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
+import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
 
@@ -34,57 +38,46 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        JType targetType = constraint.right();
         JExpressionInformation.Instantiation inst = (JExpressionInformation.Instantiation) constraint.left();
-        JTypeSystem system = targetType.typeSystem();
+        JTypeSystem system = constraint.right().typeSystem();
+        JClassReference type = inst.type();
 
-        JClassReference target = inst.type();
-        JClassReference declaring = inst.declaring();
-
-        List<JExpressionInformation> parameters = new ArrayList<>();
-        if (target.hasRelevantOuterType()) {
-            Optional<JClassType> outerType = system.operations().outerTypeFromDeclaring(target, declaring);
-            if (outerType.isPresent()) {
-                parameters.add(JExpressionInformation.of(outerType.get()));
-            } else {
-                branch.set(constraint, Constraint.Status.FALSE);
-                return;
-            }
+        if (!inst.anonymous() && (type.hasModifier(AccessFlag.ABSTRACT) || type.hasModifier(AccessFlag.INTERFACE))) {
+            // JLS §15.9.1 a class instance creation may not instantiate an abstract class or interface
+            branch.set(constraint, Constraint.Status.FALSE);
+            return;
         }
-        parameters.addAll(inst.parameters());
-
-        Set<JTypeConstraints.Infer> typeParams = new LinkedHashSet<>();
-        Map<JVarType, JMetaVarType> metaVars = new HashMap<>();
-        if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
-            for (int i = 0; i < target.typeParameters().size(); i++) {
-                JVarType vt = target.typeParameters().get(i);
-                JMetaVarType mvt = vt.createMetaVar();
-                typeParams.add(new JTypeConstraints.Infer(mvt, vt));
-                metaVars.put(vt, mvt);
-            }
+        if (inst.anonymous() && (type.hasModifier(AccessFlag.FINAL) || type.hasModifier(AccessFlag.ENUM) || type.isSealed()
+                || (type.hasModifier(AccessFlag.INTERFACE) && !inst.parameters().isEmpty()))) {
+            // JLS §15.9.1 an anonymous class may not extend a final, enum or sealed class; an interface takes no arguments
+            branch.set(constraint, Constraint.Status.FALSE);
+            return;
         }
-
-        branchContext.first(JTypeContext.TypeMetavarMap.class).ifPresent(mp -> metaVars.putAll(mp.metaVars()));
-        Map<JMetaVarType, JType> instantiations = branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty()).instantiations();
+        if (!inst.raw() && !inst.explicitTypeArguments().isEmpty() && inst.explicitTypeArguments().size() != type.typeParameters().size()) {
+            branch.set(constraint, Constraint.Status.FALSE);
+            return;
+        }
 
         List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
-        JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
-                target.parameterizedWithMetaVars();
-
-        inst.type().declaredMethods().stream().filter(m -> m.location().isConstructor()).forEach(ref -> {
-            if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {
-                if (ref.parameters().size() == parameters.size()) {
-                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters));
-                    newChildren.add(createConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters));
+        if (type.hasRelevantOuterType() && inst.outerInstance() != null) {
+            for (JStandaloneType outer : JStandaloneTyping.resolve(inst.outerInstance(), system)) {
+                JClassType outerType = JTypeRelations.asSuper(outer.type(), type.outerClass());
+                if (outerType == null) {
+                    continue;
                 }
-
-                if (ref.hasModifier(AccessFlag.VARARGS) && parameters.size() >= ref.parameters().size() - 1 &&
-                        ref.parameters().get(ref.parameters().size() - 1) instanceof JArrayType vararg) {
-                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.STRICT_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters, vararg));
-                    newChildren.add(createVarargConstruct(JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, instantiations, metaVars, typeParams, inst, constraint, ref, result, parameters, vararg));
+                Map<Constraint, Constraint.Status> extra = new LinkedHashMap<>();
+                if (outer.extra() != null) {
+                    extra.put(outer.extra(), Constraint.Status.UNKNOWN);
                 }
+                select(system, inst, outerType, constraint, extra).ifPresent(s -> newChildren.add(outer.branch() == null ? s : JStandaloneTyping.combine(outer.branch(), s)));
             }
-        });
+        } else if (type.hasRelevantOuterType()) {
+            // JLS §15.9.2 the immediately enclosing instance is implicit
+            Optional<JClassType> outerType = inst.declaring() == null ? Optional.empty() : system.operations().outerTypeFromDeclaring(type, inst.declaring());
+            outerType.flatMap(o -> select(system, inst, o, constraint, Map.of())).ifPresent(newChildren::add);
+        } else {
+            select(system, inst, null, constraint, Map.of()).ifPresent(newChildren::add);
+        }
 
         if (!newChildren.isEmpty()) {
             branch.drop(constraint).divergeBranches(newChildren);
@@ -93,42 +86,68 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         }
     }
 
-    private static ConstraintBranch.Snapshot createConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters) {
-        JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
+    private static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.Instantiation inst, JClassType outer, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+        JClassReference type = inst.type();
+        boolean generic = !type.typeParameters().isEmpty();
+        boolean diamond = generic && !inst.raw() && inst.explicitTypeArguments().isEmpty();
 
-        Map<Constraint, Constraint.Status> branch = new HashMap<>();
-        typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
-        branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
-        for (int i = 0; i < parameters.size(); i++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(i), context, map.apply(ref.parameters().get(i))), Constraint.Status.UNKNOWN);
+        JClassType classType;
+        List<JVarType> classParams = new ArrayList<>();
+        Map<JVarType, JType> classTheta = new LinkedHashMap<>();
+        if (inst.raw() || !generic) {
+            classType = type;
+        } else if (diamond) {
+            // JLS §15.9.3 diamond: class type parameters are inferred alongside the constructor's
+            classParams.addAll(type.typeParameters());
+            classType = type.parameterized(type.typeParameters().stream().map(p -> (JArgumentType) p).toList());
+        } else {
+            classType = type.parameterized(inst.explicitTypeArguments());
+            for (int i = 0; i < type.typeParameters().size(); i++) {
+                classTheta.put(type.typeParameters().get(i), inst.explicitTypeArguments().get(i));
+            }
         }
-
-        PropertySet metadata = new PropertySet();
-        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, false));
-        metadata.attach(map);
-
-        return new ConstraintBranch.Snapshot(metadata, branch);
-    }
-
-    private static ConstraintBranch.Snapshot createVarargConstruct(JTypeConstraints.Compatible.Context context, Map<JMetaVarType, JType> instantiations, Map<JVarType, JMetaVarType> metaVars, Set<JTypeConstraints.Infer> typeParams, JExpressionInformation.Instantiation inst, JTypeConstraints.ExpressionCompatible constraint, JMethodReference ref, JType result, List<JExpressionInformation> parameters, JArrayType vararg) {
-        JTypeContext.TypeMetavarMap map = new JTypeContext.TypeMetavarMap(new HashMap<>(instantiations), new HashMap<>(metaVars));
-
-        Map<Constraint, Constraint.Status> branch = new HashMap<>();
-        typeParams.forEach(c -> branch.put(c, Constraint.Status.UNKNOWN));
-        branch.put(new JTypeConstraints.Compatible(map.apply(result), constraint.middle(), map.apply(constraint.right())), Constraint.Status.UNKNOWN);
-        int index;
-        for (index = 0; index < ref.parameters().size() - 1; index++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, map.apply(ref.parameters().get(index))), Constraint.Status.UNKNOWN);
+        if (outer != null && outer.hasAnyTypeArguments()) {
+            JParameterizedClassType pct = classType instanceof JParameterizedClassType p ? p : type.parameterized(List.of());
+            pct.setUnmodifiable(false);
+            pct.setOuterType(outer);
+            pct.setUnmodifiable(true);
+            classType = pct;
         }
+        Map<JVarType, JType> outerTheta = outer == null ? Map.of() : JTypeRelations.substitution(outer);
 
-        for (; index < parameters.size(); index++) {
-            branch.put(new JTypeConstraints.ExpressionCompatible(parameters.get(index), context, map.apply(vararg.component())), Constraint.Status.UNKNOWN);
+        List<JInvocationCandidate> candidates = new ArrayList<>();
+        if (inst.anonymous() && type.hasModifier(AccessFlag.INTERFACE)) {
+            // JLS §15.9.5.1 an anonymous class implementing an interface has an implicit no-argument constructor
+            JMethodReference objectCtor = system.constants().object().declaredMethods().stream().filter(m -> m.location().isConstructor()).findFirst().orElse(null);
+            if (objectCtor != null) {
+                candidates.add(new JInvocationCandidate(objectCtor, List.of(), new ArrayList<>(classParams), List.of(), classType, List.of(), false));
+            }
         }
-
-        PropertySet metadata = new PropertySet();
-        metadata.attach(new JTypeContext.ChosenMethod(inst, ref, context, false));
-        metadata.attach(map);
-
-        return new ConstraintBranch.Snapshot(metadata, branch);
+        for (JMethodReference ctor : type.hasModifier(AccessFlag.INTERFACE) ? List.<JMethodReference>of() : type.declaredMethods()) {
+            if (!ctor.location().isConstructor() || ctor.hasModifier(AccessFlag.SYNTHETIC)) {
+                continue;
+            }
+            if (inst.declaring() != null && !ctor.outerClass().accessFrom(inst.declaring()).canAccess(ctor.access())) {
+                // JLS §15.9.3 the constructor must be accessible
+                continue;
+            }
+            JMethodReference c = ctor;
+            if (inst.raw()) {
+                c = (JMethodReference) JTypeVisitors.ERASURE.visit(ctor);
+            } else if (!classTheta.isEmpty() || !outerTheta.isEmpty()) {
+                Map<JVarType, JType> theta = new LinkedHashMap<>(outerTheta);
+                theta.putAll(classTheta);
+                c = (JMethodReference) new JVarTypeResolveVisitor(theta).visit(ctor);
+            }
+            List<JType> formals = new ArrayList<>(c.parameters());
+            if (outer != null && formals.size() == inst.parameters().size() + 1
+                    && JTypeRelations.erasure(formals.getFirst()) instanceof JClassType first && first.classReference().typeEquals(type.outerClass())) {
+                formals.removeFirst();
+            }
+            List<JVarType> typeParams = new ArrayList<>(classParams);
+            typeParams.addAll(c.typeParameters());
+            candidates.add(new JInvocationCandidate(c, formals, typeParams, c.typeParameters(), classType, c.exceptionTypes(), c.hasModifier(AccessFlag.VARARGS)));
+        }
+        return JInvocationSelection.select(system, inst, candidates, inst.parameters(), inst.constructorTypeArguments(), constraint, extra);
     }
 }

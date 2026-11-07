@@ -58,6 +58,14 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
 
     void setNestMembers(List<JClassReference> nestMembers);
 
+    List<JClassReference> permittedSubclasses();
+
+    void setPermittedSubclasses(List<JClassReference> permittedSubclasses);
+
+    default boolean isSealed() {
+        return !this.permittedSubclasses().isEmpty();
+    }
+
     List<JMethodReference> declaredMethods();
 
     void setDeclaredMethods(List<JMethodReference> methods);
@@ -94,17 +102,34 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
     Optional<JClassType> relativeSupertype(JClassType superType);
 
     default JAccess accessFrom(JClassType other) {
-        if (this.classReference().equals(other.classReference())) {
+        return this.accessFrom(other, null);
+    }
+
+    default JAccess accessFrom(JClassType other, JClassType receiverType) {
+        if (outermost(this.classReference()).equals(outermost(other.classReference()))) {
+            // JLS §6.6.1 private access within the enclosing top level class
             return JAccess.PRIVATE;
-        } else if (other.hasSupertype(this.classReference())) {
-            return JAccess.PROTECTED;
         } else if (this.namespace().location().getPackage().equals(other.namespace().location().getPackage())) {
+            // JLS §6.6.1 package access
             return JAccess.PACKAGE_PROTECTED;
-        } else if (other.hasOuterType()) {
-            return this.accessFrom(other.outerType());
-        } else {
-            return JAccess.PUBLIC;
         }
+        JClassType current = other;
+        while (current != null) {
+            if (current.hasSupertype(this.classReference()) && (receiverType == null || receiverType.hasSupertype(current.classReference()))) {
+                // JLS §6.6.2.1 protected access within the body of a subclass
+                return JAccess.PROTECTED;
+            }
+            current = current.hasOuterType() ? current.outerType() : null;
+        }
+        return JAccess.PUBLIC;
+    }
+
+    private static JClassReference outermost(JClassReference ref) {
+        JClassReference current = ref;
+        while (current.outerClass() != null) {
+            current = current.outerClass();
+        }
+        return current;
     }
 
     @Override
@@ -153,7 +178,9 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
     }
 
     default boolean buildHierarchyPath(JClassReference supertype, List<JClassType> building) {
-        if (supertype == null) return false;
+        if (supertype == null) {
+            return false;
+        }
 
         if (this.classReference().equals(supertype)) {
             building.add(0, this);

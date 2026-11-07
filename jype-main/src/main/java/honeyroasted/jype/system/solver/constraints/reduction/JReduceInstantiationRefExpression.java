@@ -4,137 +4,86 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.JReferenceSupport;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
+import honeyroasted.jype.system.solver.constraints.inference.JResolveMostSpecificMethod;
 import honeyroasted.jype.type.JArgumentType;
+import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
-import honeyroasted.jype.type.JMethodReference;
-import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
-import honeyroasted.jype.type.JVarType;
 
-import java.lang.reflect.AccessFlag;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 public class JReduceInstantiationRefExpression extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
-
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown()
-                && constraint.left() instanceof JExpressionInformation.InstantiationReference
-                && constraint.right() instanceof JClassType;
+        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.InstantiationReference;
     }
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        JExpressionInformation.InstantiationReference instRef =
-                (JExpressionInformation.InstantiationReference) constraint.left();
-        JClassType targetType = (JClassType) constraint.right();
+        JExpressionInformation.InstantiationReference ref = (JExpressionInformation.InstantiationReference) constraint.left();
+        JType target = constraint.right();
+        JTypeSystem system = target.typeSystem();
 
-        // T must be a functional interface
-        if (!targetType.classReference().hasModifier(AccessFlag.INTERFACE)) {
+        if (target instanceof JMetaVarType mvt) {
+            // JLS §18.5.2.2 the target is an input variable
+            JReferenceSupport.defer(branch, constraint, Set.of(mvt));
+            return;
+        }
+        Optional<JReferenceSupport.FunctionType> fn = JReferenceSupport.functionType(target);
+        if (fn.isEmpty()) {
+            // JLS §15.13.2 the target must be a functional interface type
+            branch.set(constraint, Constraint.Status.FALSE);
+            return;
+        }
+        List<JType> params = fn.get().parameters();
+        if (!JResolveMostSpecificMethod.isExactMethodReference(system, ref)) {
+            Set<JMetaVarType> missing = new LinkedHashSet<>();
+            Optional<List<JType>> resolved = JReferenceSupport.resolveInputs(branch, params, missing);
+            if (resolved.isEmpty()) {
+                // JLS §18.5.2.2 an inexact constructor reference waits for its parameter types
+                JReferenceSupport.defer(branch, constraint, missing);
+                return;
+            }
+            params = resolved.get();
+        }
+        JType ret = fn.get().returnType();
+        JType voidType = system.constants().voidType();
+
+        if (ref.type() instanceof JArrayType array) {
+            if (params.size() != 1) {
+                // JLS §15.13.1 an array constructor reference takes exactly one int argument
+                branch.set(constraint, Constraint.Status.FALSE);
+                return;
+            }
+            branch.set(constraint, Constraint.Status.TRUE);
+            branch.add(new JTypeConstraints.Compatible(params.getFirst(), JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, system.constants().intType()));
+            if (!ret.typeEquals(voidType)) {
+                branch.add(new JTypeConstraints.Compatible(array, JTypeConstraints.Compatible.Context.ASSIGNMENT, ret));
+            }
+            return;
+        }
+        if (!(ref.type() instanceof JClassType classType)) {
             branch.set(constraint, Constraint.Status.FALSE);
             return;
         }
 
-        Optional<JMethodReference> samOpt = JReduceLambdaExpression.findFunctionalMethod(targetType);
-        if (samOpt.isEmpty()) {
-            branch.set(constraint, Constraint.Status.FALSE);
-            return;
-        }
-
-        JMethodReference sam = samOpt.get();
-        if (targetType instanceof JParameterizedClassType pct) {
-            sam = (JMethodReference) pct.varTypeResolver().visit(sam);
-        }
-
-        List<JType> samParams = sam.parameters();
-        JType samReturn = sam.returnType();
-        boolean returnsVoid = samReturn.typeEquals(targetType.typeSystem().constants().voidType());
-
-        // The type being constructed must be a class reference
-        if (!(instRef.type() instanceof JClassReference classRef)) {
-            branch.set(constraint, Constraint.Status.FALSE);
-            return;
-        }
-
-        List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
-
-        // Find all constructors of the target class
-        classRef.declaredMethods().stream()
-                .filter(m -> m.location().isConstructor() && !m.hasModifier(AccessFlag.PRIVATE))
-                .forEach(ctor -> {
-                    if (ctor.parameters().size() != samParams.size()) return;
-
-                    // Set up type inference for the class's type parameters
-                    List<JArgumentType> explicitTypeArgs = instRef.explicitTypeArguments();
-                    Set<JTypeConstraints.Infer> typeParamConstraints = new LinkedHashSet<>();
-                    Map<JVarType, JType> resolution = new LinkedHashMap<>();
-
-                    if (explicitTypeArgs == null || explicitTypeArgs.isEmpty()
-                            || explicitTypeArgs.size() != classRef.typeParameters().size()) {
-                        for (JVarType vt : classRef.typeParameters()) {
-                            JMetaVarType mvt = vt.createMetaVar();
-                            typeParamConstraints.add(new JTypeConstraints.Infer(mvt, vt));
-                            resolution.put(vt, mvt);
-                        }
-                    } else {
-                        for (int i = 0; i < classRef.typeParameters().size(); i++) {
-                            resolution.put(classRef.typeParameters().get(i), explicitTypeArgs.get(i));
-                        }
-                    }
-
-                    JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(resolution);
-
-                    // The constructed type (with inferred or explicit type args)
-                    JClassType constructedType = resolution.isEmpty()
-                            ? classRef
-                            : (explicitTypeArgs != null && !explicitTypeArgs.isEmpty()
-                            ? classRef.parameterized(explicitTypeArgs)
-                            : classRef.parameterizedWithMetaVars());
-
-                    Map<Constraint, Constraint.Status> constraints = new HashMap<>();
-                    typeParamConstraints.forEach(c -> constraints.put(c, Constraint.Status.UNKNOWN));
-
-                    // SAM params → constructor params
-                    for (int i = 0; i < samParams.size(); i++) {
-                        constraints.put(
-                                new JTypeConstraints.Compatible(
-                                        samParams.get(i), constraint.middle(),
-                                        resolver.apply(ctor.parameters().get(i))),
-                                Constraint.Status.UNKNOWN);
-                    }
-
-                    // Constructed type must be compatible with the SAM's return type
-                    if (!returnsVoid) {
-                        constraints.put(
-                                new JTypeConstraints.Compatible(
-                                        resolver.apply(constructedType), constraint.middle(), samReturn),
-                                Constraint.Status.UNKNOWN);
-                    }
-
-                    // If no sub-constraints, mark the original constraint TRUE directly
-                    if (constraints.isEmpty()) {
-                        constraints.put(constraint, Constraint.Status.TRUE);
-                    }
-
-                    newChildren.add(new ConstraintBranch.Snapshot(new PropertySet(), constraints));
-                });
-
-        if (!newChildren.isEmpty()) {
-            branch.drop(constraint).divergeBranches(newChildren);
-        } else {
-            branch.set(constraint, Constraint.Status.FALSE);
-        }
+        JClassReference cls = classType.classReference();
+        List<JArgumentType> classArgs = classType.hasTypeArguments() ? classType.typeArguments() : List.of();
+        List<JArgumentType> ctorArgs = ref.explicitTypeArguments() == null ? List.of() : ref.explicitTypeArguments();
+        List<JExpressionInformation> args = params.stream().map(p -> (JExpressionInformation) JExpressionInformation.of(p)).toList();
+        // JLS §15.13.1 ClassType::new behaves as a class instance creation with arguments of types P1..Pn
+        JExpressionInformation.Instantiation synthetic = new JExpressionInformation.Instantiation.Full(ref.declaring(), null, cls, args, classArgs, false, ctorArgs, null);
+        branch.drop(constraint);
+        branch.add(new JTypeConstraints.ExpressionCompatible(synthetic, JTypeConstraints.Compatible.Context.ASSIGNMENT, ret));
+        branch.add(new JTypeConstraints.LambdaThrowsCheck(synthetic, fn.get().sam().exceptionTypes()));
     }
 }

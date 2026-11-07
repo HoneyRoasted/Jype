@@ -7,6 +7,8 @@ import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JType;
 
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -34,13 +36,29 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
         return this.children;
     }
 
+    private boolean isRedundant(List<JType> list, int i) {
+        JType current = list.get(i);
+        for (int j = 0; j < list.size(); j++) {
+            if (i != j) {
+                JType other = list.get(j);
+                if (other.typeEquals(current)) {
+                    if (j < i) {
+                        return true;
+                    }
+                } else if (this.typeSystem().operations().isSubtype(other, current)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isSimplified() {
-        for (JType current : this.children()) {
-            for (JType other : this.children()) {
-                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
-                    return false;
-                }
+        List<JType> list = new ArrayList<>(this.children());
+        for (int i = 0; i < list.size(); i++) {
+            if (isRedundant(list, i)) {
+                return false;
             }
         }
 
@@ -51,18 +69,11 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
     public JType simplify() {
         Set<JType> newChildren = new LinkedHashSet<>();
         Set<JType> currChildren = JIntersectionType.flatten(this.children);
+        List<JType> list = new ArrayList<>(currChildren);
 
-        for (JType current : currChildren) {
-            boolean foundSubtype = false;
-            for (JType other : currChildren) {
-                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
-                    foundSubtype = true;
-                    break;
-                }
-            }
-
-            if (!foundSubtype) {
-                newChildren.add(current);
+        for (int i = 0; i < list.size(); i++) {
+            if (!isRedundant(list, i)) {
+                newChildren.add(list.get(i));
             }
         }
 
@@ -92,7 +103,9 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JIntersectionType copy = this.typeSystem().typeFactory().newIntersectionType();
         cache.put(this, copy);
@@ -105,8 +118,12 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
-        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
+        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JIntersectionType it) {
@@ -122,7 +139,9 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
+        if (seen.contains(this)) {
+            return 0;
+        }
         seen = JType.concat(seen, this);
 
         return JType.hashCode(children, seen);

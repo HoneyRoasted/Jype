@@ -1,5 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.jype.type.JVarType;
+import java.util.Objects;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
@@ -32,7 +34,9 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JParameterizedClassType copy = this.typeSystem().typeFactory().newParameterizedClassType();
         cache.put(this, copy);
@@ -147,8 +151,12 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
-        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
+        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JClassType ct) {
@@ -171,15 +179,23 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
-        seen = JType.concat(seen, this);
-
-        if (JType.structuralEquals(this, this.classReference)) {
-            return JType.hashCode(classReference, seen);
-        } else {
-            return JType.multiHash(JType.hashCode(classReference, seen), JType.hashCode(outerType, seen),
-                    JType.hashCode(typeArguments, seen));
+        int base = this.classReference == null ? 0 : Objects.hashCode(this.classReference.namespace());
+        if (this.typeArguments == null || this.typeArguments.isEmpty() || this.classReference == null) {
+            return base;
         }
+        List<JVarType> params = this.classReference.typeParameters();
+        boolean own = params.size() == this.typeArguments.size();
+        for (int i = 0; own && i < params.size(); i++) {
+            own = this.typeArguments.get(i) instanceof JVarType vt && Objects.equals(vt.location(), params.get(i).location());
+        }
+        if (own) {
+            return base;
+        }
+        int h = base;
+        for (JArgumentType arg : this.typeArguments) {
+            h = h * 31 + JType.shallowHash(arg);
+        }
+        return h;
     }
 
 }

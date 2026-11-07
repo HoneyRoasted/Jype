@@ -1,0 +1,299 @@
+name: Expression Shape Tests
+
+tests:
+
+  # Function<String, Integer> f = s -> s.length()
+  lambda_parameter_receiver:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/Integer;>;
+          expr:
+            lambda:
+              parameterNames: [s]
+              implicitReturn: true
+              body:
+                invocation:
+                  name: length
+                  parameters: []
+                  source:
+                    lambda_param: s
+
+  # Function<String, String> f = s -> s == null ? "x" : s
+  lambda_parameter_conditional:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Function<Ljava/lang/String;Ljava/lang/String;>;
+          expr:
+            lambda:
+              parameterNames: [s]
+              implicitReturn: true
+              body:
+                conditional:
+                  condition:
+                    binary:
+                      operator: EQ
+                      left:
+                        lambda_param: s
+                      right:
+                        constant: null
+                  whenTrue:
+                    constant: x
+                  whenFalse:
+                    lambda_param: s
+
+  # int x = arr[0]
+  array_access_int_index:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            array_access:
+              array:
+                simple:
+                  def: "[I"
+              index:
+                constant: 0
+
+  # int x = arr["s"]
+  array_access_string_index:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            array_access:
+              array:
+                simple:
+                  def: "[I"
+              index:
+                constant: s
+
+  # int x = (i += 2.5)
+  compound_assignment_narrows:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            assignment:
+              operator: ADD
+              variable:
+                local:
+                  name: i
+                  type: I
+              value:
+                constant: 2.5
+
+  # final int fi; int x = (fi += 1)
+  final_local_assignment:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            assignment:
+              operator: ADD
+              variable:
+                local:
+                  name: fi
+                  type: I
+                  isFinal: true
+              value:
+                constant: 1
+
+  # boolean x = (flag++)
+  boolean_increment:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Z
+          expr:
+            increment:
+              increment: true
+              prefix: false
+              variable:
+                local:
+                  name: flag
+                  type: Z
+
+  # long x = switch (i) { default -> { if (flag) yield 1; yield l; } }
+  switch_poly_long:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: J
+          expr:
+            switch:
+              selector:
+                local:
+                  name: i
+                  type: I
+              results:
+                - constant: 1
+                - local:
+                    name: l
+                    type: J
+
+  # int x = switch (i) { default -> { if (flag) yield 1; yield l; } }
+  switch_poly_long_to_int:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            switch:
+              selector:
+                local:
+                  name: i
+                  type: I
+              results:
+                - constant: 1
+                - local:
+                    name: l
+                    type: J
+
+  # Class<?> x = String.class
+  class_literal_wildcard:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Class<*>;
+          expr:
+            class_literal:
+              type: Ljava/lang/String;
+
+  # Class<Integer> x = String.class
+  class_literal_wrong_argument:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Class<Ljava/lang/Integer;>;
+          expr:
+            class_literal:
+              type: Ljava/lang/String;
+
+  # Runnable x = (Runnable) "s"
+  cast_final_class_to_unrelated_interface:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Runnable;
+          expr:
+            cast:
+              type: Ljava/lang/Runnable;
+              operand:
+                constant: s
+
+  # boolean x = "s" instanceof Integer
+  instanceof_unrelated_class:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Z
+          expr:
+            instance_of:
+              type: Ljava/lang/Integer;
+              operand:
+                constant: s
+
+  # int x = -("s")
+  unary_minus_string:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: I
+          expr:
+            unary:
+              operator: MINUS
+              operand:
+                constant: s
+
+  # String x = "a" + 1
+  string_concatenation:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/String;
+          expr:
+            binary:
+              operator: ADD
+              left:
+                constant: a
+              right:
+                constant: 1
+
+  # List<String> x = new ArrayList<>() {}
+  anonymous_diamond:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/List<Ljava/lang/String;>;
+          expr:
+            anonymous:
+              type: Ljava/util/ArrayList;
+              parameters: []
+              typeArguments: []
+
+  # Supplier<Integer> x = () -> { if (flag) return 1; return 2; }
+  block_lambda_two_returns:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/Supplier<Ljava/lang/Integer;>;
+          expr:
+            lambda:
+              block: true
+              returns:
+                - constant: 1
+                - constant: 2
+
+  # Runnable x = () -> { return 1; }
+  block_lambda_value_to_void:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/lang/Runnable;
+          expr:
+            lambda:
+              block: true
+              returns:
+                - constant: 1

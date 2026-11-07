@@ -18,6 +18,7 @@ import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JFieldReferenceDelegate;
 import honeyroasted.jype.type.impl.delegate.JMethodReferenceDelegate;
 
@@ -105,7 +106,7 @@ public interface JReflectionTypeResolution {
                 depth++;
             }
 
-            Class<?> target = Class.forName(current.toRuntimeName());
+            Class<?> target = loadClass(current.toRuntimeName());
 
             if (depth != 0) {
                 target = Array.newInstance(target, new int[depth]).getClass();
@@ -115,6 +116,17 @@ public interface JReflectionTypeResolution {
         } catch (ClassNotFoundException ex) {
             throw new JReflectionLookupException("Failed to resolve class (runtime lookup failed): " + location, ex);
         }
+    }
+
+    private static Class<?> loadClass(String name) throws ClassNotFoundException {
+        ClassLoader context = Thread.currentThread().getContextClassLoader();
+        if (context != null) {
+            try {
+                return Class.forName(name, false, context);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        return Class.forName(name);
     }
 
     static Field fieldFromLocation(JFieldLocation location) throws JResolutionFailedException {
@@ -218,6 +230,7 @@ public interface JReflectionTypeResolution {
         fRef.metadata().attach(new JReflectionType.Field(field));
         fRef.setLocation(location);
         fRef.setModifiers(field.getModifiers());
+        JReflectionConstantValues.constantValue(field).ifPresent(fRef::setConstantValue);
 
         system.storage().cacheFor(JFieldLocation.class).put(location, fRef);
 
@@ -367,6 +380,12 @@ public interface JReflectionTypeResolution {
                         reference.nestMembers().add((JClassReference) nestMember.value());
                     }
                 }
+            }
+        }
+
+        if (cls.isSealed()) {
+            for (Class<?> permitted : cls.getPermittedSubclasses()) {
+                reference.permittedSubclasses().add(new JClassReferenceDelegate(system, s -> s.tryResolve(permitted)));
             }
         }
 

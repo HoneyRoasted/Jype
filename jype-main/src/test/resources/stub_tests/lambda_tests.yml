@@ -173,6 +173,49 @@ tests:
               staticSource: Ljava/lang/Integer;
               methodName: parseInt
 
+  # Arrays::asList used as BiFunction<String, String, List<String>>:
+  # static vararg method <T> List<T> asList(T... a), 2 fixed SAM params spread into the vararg array
+  method_ref_static_vararg:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/BiFunction<Ljava/lang/String;Ljava/lang/String;Ljava/util/List<Ljava/lang/String;>;>;
+          expr:
+            invocation_ref:
+              staticSource: Ljava/util/Arrays;
+              methodName: asList
+
+  # PrintStream::printf used as BiFunction<PrintStream, String, PrintStream>:
+  # unbound instance vararg method printf(String, Object...), first SAM param is the receiver,
+  # second SAM param matches the fixed "format" param, zero args spread into the vararg
+  method_ref_unbound_instance_vararg:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/BiFunction<Ljava/io/PrintStream;Ljava/lang/String;Ljava/io/PrintStream;>;
+          expr:
+            invocation_ref:
+              staticSource: Ljava/io/PrintStream;
+              methodName: printf
+
+  # PrintStream::printf used as BiFunction<PrintStream, Integer, PrintStream>: the second SAM param
+  # (Integer) is not compatible with printf's fixed "format" String parameter, so this must fail
+  method_ref_unbound_instance_vararg_wrong_type:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/BiFunction<Ljava/io/PrintStream;Ljava/lang/Integer;Ljava/io/PrintStream;>;
+          expr:
+            invocation_ref:
+              staticSource: Ljava/io/PrintStream;
+              methodName: printf
+
   # --- Constructor Reference Tests ---
 
   # Thread::new used as Runnable: Thread() has 0 params, Runnable.run() returns void
@@ -198,3 +241,42 @@ tests:
           expr:
             instantiation_ref:
               type: Ljava/lang/StringBuilder;
+
+  # int[]::new used as IntFunction<int[]>: array creation reference (JLS 15.13.1),
+  # synthetic single int-length parameter, return type matches the array type
+  constructor_ref_array:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/IntFunction<[I>;
+          expr:
+            instantiation_ref:
+              type: "[I"
+
+  # int[]::new used as IntFunction<String[]>: the created array type (int[]) is not
+  # compatible with the SAM's required return type (String[]), so this must fail
+  constructor_ref_array_wrong_component:
+    expect:
+      - status: false
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/IntFunction<[Ljava/lang/String;>;
+          expr:
+            instantiation_ref:
+              type: "[I"
+
+  # ProcessBuilder::new used as BiFunction<String, String, ProcessBuilder>:
+  # vararg ctor ProcessBuilder(String... command), both SAM params spread into the vararg array
+  constructor_ref_vararg:
+    expect:
+      - status: true
+    constraints:
+      - expression_compatible:
+          context: ASSIGNMENT
+          type: Ljava/util/function/BiFunction<Ljava/lang/String;Ljava/lang/String;Ljava/lang/ProcessBuilder;>;
+          expr:
+            instantiation_ref:
+              type: Ljava/lang/ProcessBuilder;

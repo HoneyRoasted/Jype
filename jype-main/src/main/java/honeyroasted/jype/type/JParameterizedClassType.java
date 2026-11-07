@@ -57,6 +57,14 @@ public interface JParameterizedClassType extends PossiblyUnmodifiable, JClassTyp
     }
 
     @Override
+    default List<JClassReference> permittedSubclasses() {
+        return this.classReference().permittedSubclasses();
+    }
+
+    default void setPermittedSubclasses(List<JClassReference> permittedSubclasses) {
+        this.classReference().setPermittedSubclasses(permittedSubclasses);
+    }
+
     default List<JClassReference> nestMembers() {
         return this.classReference().nestMembers();
     }
