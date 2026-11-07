@@ -129,7 +129,7 @@ public class JResolveMostSpecificMethodTests {
      */
     private static Set<JMethodReference> survivingMethods(ConstraintTree tree) {
         return chosenMethodBranches(tree).stream()
-                .map(b -> b.metadata().first(JTypeContext.ChosenMethod.class).get().chosen())
+                .flatMap(b -> b.metadata().all(JTypeContext.ChosenMethod.class).stream().map(JTypeContext.ChosenMethod::chosen).filter(m -> !m.location().name().equals("five")))
                 .collect(Collectors.toCollection(java.util.LinkedHashSet::new));
     }
 
@@ -293,7 +293,8 @@ public class JResolveMostSpecificMethodTests {
         assertEquals(1, survivingMethods(tree).size(), "expected pick(() -> ExactMethodReferenceHost::five) to have exactly one surviving overload, not be ambiguous");
 
         List<ConstraintBranch> survivors = chosenMethodBranches(tree);
-        JTypeContext.ChosenMethod chosen = survivors.get(0).metadata().first(JTypeContext.ChosenMethod.class).get();
+        JTypeContext.ChosenMethod chosen = survivors.get(0).metadata().all(JTypeContext.ChosenMethod.class).stream()
+                .filter(cm -> cm.chosen().location().name().equals("pick")).findFirst().get();
         assertTrue(chosen.chosen().parameters().get(0).simpleName().contains("Outer1"),
                 "expected the Outer1 overload to win, matching real javac (the compile-time declaration's primitive return type breaks the tie one level down)");
     }

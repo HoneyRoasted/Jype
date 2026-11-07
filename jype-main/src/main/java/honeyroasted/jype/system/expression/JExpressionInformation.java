@@ -533,6 +533,7 @@ public interface JExpressionInformation extends SimpleName {
             @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
             @Override public String simpleName() { return delegate.simpleName(); }
             @Override public JInstantiableType type() { return delegate.type(); }
+            @Override public JClassReference declaring() { return delegate.declaring(); }
             @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
         }
 
@@ -542,6 +543,17 @@ public interface JExpressionInformation extends SimpleName {
         }
 
         default InstantiationReference createNew(JInstantiableType type, List<JArgumentType> explicitTypeArguments) { return new InstantiationReference.Simple(type, explicitTypeArguments); }
+
+        record Full(JClassReference declaring, JInstantiableType type, List<JArgumentType> explicitTypeArguments) implements InstantiationReference {
+            @Override
+            public String simpleName() {
+                return this.type.simpleName() + "::new";
+            }
+        }
+
+        default JClassReference declaring() {
+            return null;
+        }
 
         JInstantiableType type();
 
@@ -572,6 +584,7 @@ public interface JExpressionInformation extends SimpleName {
             @Override public T source() { return delegate.source(); }
             @Override public String methodName() { return delegate.methodName(); }
             @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
+            @Override public JClassReference declaring() { return delegate.declaring(); }
         }
 
         @Override
@@ -586,6 +599,17 @@ public interface JExpressionInformation extends SimpleName {
         String methodName();
 
         List<JArgumentType> explicitTypeArguments();
+
+        record Full<T extends SimpleName>(JClassReference declaring, T source, String methodName, List<JArgumentType> explicitTypeArguments) implements InvocationReference<T> {
+            @Override
+            public String simpleName() {
+                return this.source.simpleName() + "::" + this.methodName;
+            }
+        }
+
+        default JClassReference declaring() {
+            return null;
+        }
     }
 
     /**

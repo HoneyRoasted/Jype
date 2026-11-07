@@ -752,3 +752,18 @@ Baseline: 177 tests green.
     (erased signatures), qualified `outer.new Inner()` and implicit enclosing instance (§15.9.2), via new
     `Instantiation.Full` (old `Simple` keeps diamond-when-empty semantics).
   Fuzz: expressions seed 1 (1 mismatch left: constructor reference), relations seed 2 (0). Suite 180/180.
+
+- **Item 39 (method/constructor references) — rewritten.** `JReduceInvocationRefExpression`: ground target via
+  §9.9 non-wildcard parameterization (§15.13.2), deferral for inexact references until parameter types are
+  resolved and for inference-variable targets (§18.5.2.2), compile-time declaration through
+  `JInvocationSelection` with synthetic arguments of the function-type parameter types: `ReferenceType::m`
+  runs both §15.13.1 searches (static with P1..Pn, unbound receiver with P2..Pn on the raw-type
+  parameterization found from P1, plus ‹P1 <: ReferenceType›) and applies the static/instance
+  selection rule; `Primary::m` must pick an instance method; `super::m` / `I.super::m` must pick a
+  non-abstract instance method; return ‹R' → R› unless void; thrown types checked (§18.2.5). Varargs and
+  `getClass()` handled by the engine/lookup. `JReduceInstantiationRefExpression`: `ClassType::new` reduces to
+  a synthetic class instance creation (diamond when raw generic, §15.13.1), `T[]::new` needs a single
+  int-compatible parameter. New `InvocationReference.Full` / `InstantiationReference.Full` carry the
+  declaring class for access checks. Engine gained `selectDetailed` (applicable set + chosen).
+  Test fix: `exactMethodReferenceWithPrimitiveReturnPicksPrimitiveMaker` read the first `ChosenMethod` in
+  branch metadata, which is now the nested reference's synthetic invocation; it now selects `pick`'s.

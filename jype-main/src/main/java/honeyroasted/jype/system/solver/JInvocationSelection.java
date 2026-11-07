@@ -44,8 +44,16 @@ public final class JInvocationSelection {
     private record Instantiated(Map<JVarType, JType> theta, List<Constraint> constraints, List<JType> formals) {
     }
 
+    public record Selection(Optional<ConstraintBranch.Snapshot> snapshot, List<JMethodReference> applicable, JMethodReference chosen) {
+    }
+
     public static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args,
                                                             List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+        return selectDetailed(system, expr, candidates, args, explicitTypeArguments, constraint, extra).snapshot();
+    }
+
+    public static Selection selectDetailed(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args,
+                                           List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         List<Applicable> applicable = new ArrayList<>();
         for (Phase phase : Phase.values()) {
             for (JInvocationCandidate candidate : candidates) {
@@ -58,15 +66,16 @@ public final class JInvocationSelection {
                 break;
             }
         }
+        List<JMethodReference> applicableMethods = applicable.stream().map(a -> a.candidate().method()).toList();
         if (applicable.isEmpty()) {
-            return Optional.empty();
+            return new Selection(Optional.empty(), applicableMethods, null);
         }
 
         Applicable chosen = mostSpecific(system, expr, applicable);
         if (chosen == null) {
-            return Optional.empty();
+            return new Selection(Optional.empty(), applicableMethods, null);
         }
-        return Optional.of(invocationSnapshot(system, expr, chosen, args, explicitTypeArguments, constraint, extra));
+        return new Selection(Optional.of(invocationSnapshot(system, expr, chosen, args, explicitTypeArguments, constraint, extra)), applicableMethods, chosen.candidate().method());
     }
 
     private static JTypeConstraints.Compatible.Context context(Phase phase) {
