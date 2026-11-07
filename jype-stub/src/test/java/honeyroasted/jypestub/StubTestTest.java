@@ -1,6 +1,6 @@
 package honeyroasted.jypestub;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import honeyroasted.jype.system.JSimpleTypeSystem;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCacheFactory;

@@ -1,17 +1,14 @@
 package honeyroasted.jypestub.model.types;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jypestub.model.JStubSerialization;
 
-import java.io.IOException;
 import java.lang.reflect.AccessFlag;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -41,20 +38,19 @@ public record JStubClass(@JsonIgnore String location, String def, String name, S
         }
 
         @Override
-        public JStubClass deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+        public JStubClass deserialize(JsonParser p, DeserializationContext ctxt) {
             String name = ctxt.getParser().currentName();
 
-            ObjectCodec oc = p.getCodec();
-            JsonNode node = oc.readTree(p);
+            JsonNode node = ctxt.readTree(p);
             if (node.isValueNode()) {
-                return new JStubClass(name, node.asText(), name, defaultFlags, Collections.emptyMap(), Collections.emptyMap());
+                return new JStubClass(name, node.asString(), name, defaultFlags, Collections.emptyMap(), Collections.emptyMap());
             } else if (node.isObject()) {
                 return new JStubClass(name,
                         JStubSerialization.getOrDefault(node, "def", name),
                         JStubSerialization.getOrDefault(node, "name", name),
-                        JStubSerialization.getOrDefault(oc, node, new TypeReference<Set<AccessFlag>>() {}, "flags", defaultFlags),
-                        JStubSerialization.getOrDefault(oc, node, new TypeReference<Map<String, JStubMember>>() {}, "fields", Collections.emptyMap()),
-                        JStubSerialization.getOrDefault(oc, node, new TypeReference<Map<String, JStubMember>>() {}, "methods", Collections.emptyMap()));
+                        JStubSerialization.getOrDefault(ctxt, node, new TypeReference<Set<AccessFlag>>() {}, "flags", defaultFlags),
+                        JStubSerialization.getOrDefault(ctxt, node, new TypeReference<Map<String, JStubMember>>() {}, "fields", Collections.emptyMap()),
+                        JStubSerialization.getOrDefault(ctxt, node, new TypeReference<Map<String, JStubMember>>() {}, "methods", Collections.emptyMap()));
             }
             return null;
         }

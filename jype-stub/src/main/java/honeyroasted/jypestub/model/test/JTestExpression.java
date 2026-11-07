@@ -1,6 +1,6 @@
 package honeyroasted.jypestub.model.test;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.multi.Triple;
 import honeyroasted.jype.system.expression.JExpressionInformation;

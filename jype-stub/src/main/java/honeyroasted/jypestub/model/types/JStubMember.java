@@ -1,17 +1,14 @@
 package honeyroasted.jypestub.model.types;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import honeyroasted.jype.type.JFieldReference;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jypestub.model.JStubSerialization;
 
-import java.io.IOException;
 import java.lang.reflect.AccessFlag;
 import java.util.Set;
 
@@ -33,14 +30,13 @@ public record JStubMember(String def, Set<AccessFlag> flags) {
         }
 
         @Override
-        public JStubMember deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-            ObjectCodec oc = p.getCodec();
-            JsonNode node = oc.readTree(p);
+        public JStubMember deserialize(JsonParser p, DeserializationContext ctxt) {
+            JsonNode node = ctxt.readTree(p);
             if (node.isValueNode()) {
-                return new JStubMember(node.asText(), defaultFlags);
+                return new JStubMember(node.asString(), defaultFlags);
             } else if (node.isObject()) {
-                return new JStubMember(node.get("def").asText(),
-                        JStubSerialization.getOrDefault(oc, node, new TypeReference<Set<AccessFlag>>() {}, "flags", defaultFlags));
+                return new JStubMember(node.get("def").asString(),
+                        JStubSerialization.getOrDefault(ctxt, node, new TypeReference<Set<AccessFlag>>() {}, "flags", defaultFlags));
             }
             return null;
         }

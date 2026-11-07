@@ -2,22 +2,19 @@ package honeyroasted.jypestub.model;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.Version;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ser.std.StdSerializer;
+import tools.jackson.dataformat.yaml.YAMLMapper;
+import tools.jackson.dataformat.yaml.YAMLWriteFeature;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.almonds.SimpleName;
@@ -38,30 +35,19 @@ import honeyroasted.jypestub.model.test.JTestExpression;
 import honeyroasted.jypestub.model.types.JStubClass;
 import honeyroasted.jypestub.model.types.JStubMember;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.*;
-import static com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature.*;
+import static tools.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES;
 
 public interface JStubSerialization {
 
     static ObjectMapper buildMapper() {
-        ObjectMapper mapper = new ObjectMapper(new YAMLFactory()
-                .enable(MINIMIZE_QUOTES)
-                .disable(WRITE_DOC_START_MARKER));
-
-        mapper.disable(FAIL_ON_UNKNOWN_PROPERTIES);
-
-        mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));
-
-        SimpleModule module = new SimpleModule("JStubModule", new Version(0, 0, 0, null));
+        SimpleModule module = new SimpleModule("JStubModule", Version.unknownVersion());
 
         module.addDeserializer(JTestExpression.Wrapper.class, JTestExpression.Wrapper.DESERIALIZER)
                 .addSerializer(JTestExpression.Wrapper.SERIALIZER);
@@ -84,28 +70,32 @@ public interface JStubSerialization {
                 .addSerializer(JTestExpression.Constant.SERIALIZER);
 
         module.addDeserializer(JTestExpression.Multi.class, JTestExpression.Multi.DESERIALIZER)
-                .addSerializer(JTestExpression.Multi.SERIALIZER);;
+                .addSerializer(JTestExpression.Multi.SERIALIZER);
 
         module.addDeserializer(JTestCondition.Status.class, JTestCondition.Status.DESERIALIZER)
-                .addSerializer(JTestCondition.Status.SERIALIZER);;
+                .addSerializer(JTestCondition.Status.SERIALIZER);
 
-        mapper.registerModule(module);
-
-        return mapper;
+        return YAMLMapper.builder()
+                .enable(YAMLWriteFeature.MINIMIZE_QUOTES)
+                .disable(YAMLWriteFeature.WRITE_DOC_START_MARKER)
+                .disable(FAIL_ON_UNKNOWN_PROPERTIES)
+                .changeDefaultNullHandling(existing -> JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY))
+                .addModule(module)
+                .build();
     }
 
     static String getOrDefault(JsonNode node, String key, String fallback) {
         JsonNode sub = node.get(key);
         if (sub != null) {
-            return sub.asText(fallback);
+            return sub.asString(fallback);
         }
         return fallback;
     }
 
-    static <T> T getOrDefault(ObjectCodec codec, JsonNode node, TypeReference<T> reference, String key, T fallback) throws IOException {
+    static <T> T getOrDefault(DeserializationContext ctxt, JsonNode node, TypeReference<T> reference, String key, T fallback) {
         JsonNode sub = node.get(key);
         if (sub != null) {
-            return codec.treeAsTokens(sub).readValueAs(reference);
+            return ctxt.readTreeAsValue(sub, ctxt.getTypeFactory().constructType(reference));
         }
         return fallback;
     }
@@ -179,8 +169,8 @@ public interface JStubSerialization {
         }
 
         @Override
-        public void serialize(T value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            gen.getCodec().writeValue(gen, this.getter.apply(value));
+        public void serialize(T value, JsonGenerator gen, SerializationContext ctxt) {
+            ctxt.writeValue(gen, this.getter.apply(value));
         }
     }
 
@@ -195,9 +185,8 @@ public interface JStubSerialization {
         }
 
         @Override
-        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            ObjectCodec oc = p.getCodec();
-            return constructor.apply(oc.readValue(p, this.value));
+        public T deserialize(JsonParser p, DeserializationContext ctxt) {
+            return constructor.apply(ctxt.readValue(p, this.value));
         }
     }
 
@@ -213,15 +202,13 @@ public interface JStubSerialization {
         }
 
         @Override
-        public T deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-            ObjectCodec oc = p.getCodec();
-            JsonNode node = oc.readTree(p);
+        public T deserialize(JsonParser p, DeserializationContext ctxt) {
+            JsonNode node = ctxt.readTree(p);
 
             if (node.isArray()) {
                 List<String> types = new ArrayList<>();
-                Iterator<JsonNode> nodes = node.elements();
-                while (nodes.hasNext()) {
-                    types.add(nodes.next().asText());
+                for (JsonNode element : node.values()) {
+                    types.add(element.asString());
                 }
 
                 return this.constructor.apply(types);
@@ -229,7 +216,7 @@ public interface JStubSerialization {
                 return this.wideConstructor.apply(Triple.of(
                         getOrDefault(node, "declaring", null),
                         getOrDefault(node, "declaringMethod", null),
-                        getOrDefault(oc, node, new TypeReference<List<String>>() {}, "children", Collections.emptyList())
+                        getOrDefault(ctxt, node, new TypeReference<List<String>>() {}, "children", Collections.emptyList())
                 ));
             }
         }
@@ -250,15 +237,18 @@ public interface JStubSerialization {
         }
 
         @Override
-        public void serialize(W value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-            gen.writeStartObject();
-
+        public void serialize(W value, JsonGenerator gen, SerializationContext ctxt) {
             Class<?> inner = value.inner() == null ? null : value.inner().getClass();
-            gen.writeObjectField(subtypeKeys.entrySet().stream()
-                            .filter(en -> en.getValue().equals(inner))
-                            .findFirst().map(Map.Entry::getKey)
-                            .orElseThrow(() -> new JsonGenerationException("Failed to map value of type " + inner, gen)),
-                    value.inner());
+            String key = subtypeKeys.entrySet().stream()
+                    .filter(en -> en.getValue().equals(inner))
+                    .findFirst().map(Map.Entry::getKey)
+                    .orElse(null);
+            if (key == null) {
+                ctxt.reportMappingProblem("Failed to map value of type " + inner);
+            }
+
+            gen.writeStartObject();
+            gen.writePOJOProperty(key, value.inner());
 
             gen.writeEndObject();
         }
@@ -275,23 +265,18 @@ public interface JStubSerialization {
         }
 
         @Override
-        public W deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-            ObjectCodec oc = p.getCodec();
-            JsonNode node = oc.readTree(p);
+        public W deserialize(JsonParser p, DeserializationContext ctxt) {
+            JsonNode node = ctxt.readTree(p);
             if (node.isObject()) {
-                Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
-                if (fields.hasNext()) {
-                    while (fields.hasNext()) {
-                        Map.Entry<String, JsonNode> entry = fields.next();
-                        if (subtypeKeys.containsKey(entry.getKey())) {
-                            return this.constructor.apply(oc.treeToValue(entry.getValue(), subtypeKeys.get(entry.getKey())));
-                        }
+                for (Map.Entry<String, JsonNode> entry : node.properties()) {
+                    if (subtypeKeys.containsKey(entry.getKey())) {
+                        return this.constructor.apply(ctxt.readTreeAsValue(entry.getValue(), subtypeKeys.get(entry.getKey())));
                     }
                 }
-                throw new JsonParseException("No valid key included in object");
+                return ctxt.reportInputMismatch(this, "No valid key included in object");
             }
 
-            throw new JsonParseException(p, "Node is not an object");
+            return ctxt.reportInputMismatch(this, "Node is not an object");
         }
     }
 }
