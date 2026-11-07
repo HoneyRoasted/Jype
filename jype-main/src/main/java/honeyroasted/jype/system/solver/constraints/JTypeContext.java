@@ -28,6 +28,13 @@ public interface JTypeContext {
         }
     }
 
+    record ExpressionType(JExpressionInformation expression, JType type) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Expression Type: " + expression.simpleName() + " : " + type.simpleName();
+        }
+    }
+
     record ChosenField(JExpressionInformation.GetField<?> expression, JFieldReference chosen) implements SimpleName {
         @Override
         public String simpleName() {

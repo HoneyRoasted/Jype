@@ -3,6 +3,7 @@ package honeyroasted.jype.system.solver;
 import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JClassType;
+import honeyroasted.jype.type.JNoneType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
@@ -23,23 +24,21 @@ public final class JOperatorTypes {
     public static Optional<JPrimitiveType> asPrimitive(JType type, JTypeSystem system) {
         if (type instanceof JPrimitiveType pt) {
             return Optional.of(pt);
-        } else if (type instanceof JClassType ct) {
-            JPrimitiveType unboxed = system.constants().primitiveByBox().get(ct.namespace());
-            if (unboxed != null) {
-                return Optional.of(unboxed);
-            }
+        } else if (type instanceof JNoneType) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        // JLS §5.1.8 unboxing conversion
+        return Optional.ofNullable(JTypeRelations.unboxedType(type));
     }
 
     public static boolean isBoolean(JPrimitiveType type, JTypeSystem system) {
-        return type == system.constants().booleanType();
+        return type.typeEquals(system.constants().booleanType());
     }
 
     public static boolean isIntegral(JPrimitiveType type, JTypeSystem system) {
         JTypeConstants c = system.constants();
-        return type == c.byteType() || type == c.shortType() || type == c.charType() ||
-                type == c.intType() || type == c.longType();
+        return type.typeEquals(c.byteType()) || type.typeEquals(c.shortType()) || type.typeEquals(c.charType()) ||
+                type.typeEquals(c.intType()) || type.typeEquals(c.longType());
     }
 
     public static boolean isNumeric(JPrimitiveType type, JTypeSystem system) {
@@ -55,7 +54,7 @@ public final class JOperatorTypes {
             JTypeConstants c = system.constants();
             if (isBoolean(pt, system)) {
                 return Optional.empty();
-            } else if (pt == c.byteType() || pt == c.shortType() || pt == c.charType()) {
+            } else if (pt.typeEquals(c.byteType()) || pt.typeEquals(c.shortType()) || pt.typeEquals(c.charType())) {
                 return Optional.of(c.intType());
             } else {
                 return Optional.of(pt);
@@ -79,11 +78,11 @@ public final class JOperatorTypes {
         JPrimitiveType r = rp.get();
         if (isBoolean(l, system) || isBoolean(r, system)) {
             return Optional.empty();
-        } else if (l == c.doubleType() || r == c.doubleType()) {
+        } else if (l.typeEquals(c.doubleType()) || r.typeEquals(c.doubleType())) {
             return Optional.of(c.doubleType());
-        } else if (l == c.floatType() || r == c.floatType()) {
+        } else if (l.typeEquals(c.floatType()) || r.typeEquals(c.floatType())) {
             return Optional.of(c.floatType());
-        } else if (l == c.longType() || r == c.longType()) {
+        } else if (l.typeEquals(c.longType()) || r.typeEquals(c.longType())) {
             return Optional.of(c.longType());
         } else {
             return Optional.of(c.intType());
@@ -97,6 +96,6 @@ public final class JOperatorTypes {
      */
     public static Optional<JPrimitiveType> binaryIntegralPromotion(JType left, JType right, JTypeSystem system) {
         return binaryNumericPromotion(left, right, system)
-                .filter(pt -> pt != system.constants().floatType() && pt != system.constants().doubleType());
+                .filter(pt -> !pt.typeEquals(system.constants().floatType()) && !pt.typeEquals(system.constants().doubleType()));
     }
 }

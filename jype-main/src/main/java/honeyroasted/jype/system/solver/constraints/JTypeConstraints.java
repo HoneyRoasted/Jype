@@ -232,6 +232,22 @@ public interface JTypeConstraints {
         }
     }
 
+    final class UncheckedConversion extends Constraint.Binary<JType, JType> {
+        public UncheckedConversion(JType left, JType right) {
+            super(left, right);
+        }
+
+        @Override
+        public String toString() {
+            return this.left() + " IS UNCHECKED CONVERTED TO " + this.right();
+        }
+
+        @Override
+        public String simpleName() {
+            return "unchecked(" + this.left().simpleName() + " -> " + this.right().simpleName() + ")";
+        }
+    }
+
     class Contradiction extends Constraint.Binary<Constraint, Constraint> {
 
         public Contradiction(Constraint left, Constraint right) {

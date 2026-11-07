@@ -7,6 +7,7 @@ import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.JFreshTypeVariables;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
@@ -77,11 +78,15 @@ public class JResolveBounds extends ConstraintMapper.All {
                     if (upper.isEmpty()) {
                         upper = Set.of(system.constants().object());
                     }
+                    if (!JTypeRelations.isWellFormedGlb(upper)) {
+                        candidates = null;
+                        break;
+                    }
                     candidates.put(mvt, system.operations().findGreatestLowerBound(upper));
                 }
             }
 
-            Optional<ConstraintBranch> result = incorporate(system, branch, candidates, List.of());
+            Optional<ConstraintBranch> result = candidates == null ? Optional.empty() : incorporate(system, branch, candidates, List.of());
             if (result.isPresent()) {
                 merge(branch, result.get(), candidates, List.of());
                 return;
@@ -105,6 +110,10 @@ public class JResolveBounds extends ConstraintMapper.All {
             }
             if (upper.isEmpty()) {
                 upper.add(system.constants().object());
+            }
+            if (!JTypeRelations.isWellFormedGlb(upper)) {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+                return;
             }
             JType glb = system.operations().findGreatestLowerBound(upper);
             Set<JType> lowerSet = lower.isEmpty() ? Set.of() : Set.of(system.operations().findLeastUpperBound(lower));

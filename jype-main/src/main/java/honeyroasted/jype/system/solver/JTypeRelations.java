@@ -455,6 +455,41 @@ public final class JTypeRelations {
         return null;
     }
 
+    public static List<JClassType> allSupertypeClasses(JType type) {
+        List<JClassType> result = new ArrayList<>();
+        collectSupertypeClasses(type, result, new HashSet<>());
+        return result;
+    }
+
+    private static void collectSupertypeClasses(JType type, List<JClassType> result, Set<JType> seen) {
+        if (!seen.add(type)) {
+            return;
+        }
+        if (type instanceof JClassType ct) {
+            if (result.stream().anyMatch(r -> r.typeEquals(ct))) {
+                return;
+            }
+            result.add(ct);
+            boolean raw = isRaw(ct);
+            JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(raw ? Map.of() : substitution(ct));
+            JClassReference ref = ct.classReference();
+            if (ref.superClass() != null) {
+                collectSupertypeClasses(raw ? ref.superClass().classReference() : (JClassType) resolver.visit(ref.superClass()), result, seen);
+            }
+            for (JClassType iface : ref.interfaces()) {
+                collectSupertypeClasses(raw ? iface.classReference() : (JClassType) resolver.visit(iface), result, seen);
+            }
+        } else if (type instanceof JVarType vt) {
+            for (JType b : upperBounds(vt)) {
+                collectSupertypeClasses(b, result, seen);
+            }
+        } else if (type instanceof JIntersectionType it) {
+            for (JType c : it.children()) {
+                collectSupertypeClasses(c, result, seen);
+            }
+        }
+    }
+
     public static JPrimitiveType unboxedType(JType s) {
         JTypeConstants c = s.typeSystem().constants();
         for (JPrimitiveType prim : c.allPrimitives()) {
@@ -492,6 +527,36 @@ public final class JTypeRelations {
 
     public static boolean isCastable(JType s, JType t) {
         return JCastability.isCastable(s, t);
+    }
+
+    public static boolean isWellFormedGlb(Set<JType> types) {
+        List<JType> flat = new ArrayList<>();
+        for (JType t : types) {
+            if (t instanceof JIntersectionType it) {
+                flat.addAll(it.children());
+            } else {
+                flat.add(t);
+            }
+        }
+        int classCount = 0;
+        for (int i = 0; i < flat.size(); i++) {
+            JType current = flat.get(i);
+            boolean minimal = true;
+            for (int j = 0; j < flat.size(); j++) {
+                if (i != j) {
+                    JType other = flat.get(j);
+                    if (isSameType(other, current) ? j < i : isSubtype(other, current)) {
+                        minimal = false;
+                        break;
+                    }
+                }
+            }
+            if (minimal && !(current instanceof JClassType ct && ct.classReference().hasModifier(AccessFlag.INTERFACE))) {
+                classCount++;
+            }
+        }
+        // JLS §5.1.10 glb with more than one class bound is not well-formed
+        return classCount <= 1;
     }
 
     public static boolean provablyDistinct(JType a, JType b) {

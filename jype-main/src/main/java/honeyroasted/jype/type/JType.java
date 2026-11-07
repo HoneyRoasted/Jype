@@ -1,5 +1,6 @@
 package honeyroasted.jype.type;
 
+import java.util.Objects;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.collect.copy.Copyable;
 import honeyroasted.collect.multi.Pair;
@@ -190,6 +191,25 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
             return true;
         }
         return false;
+    }
+
+    static int shallowHash(JType type) {
+        if (type instanceof JClassType ct) {
+            return Objects.hashCode(ct.namespace());
+        } else if (type instanceof JVarType vt) {
+            return Objects.hashCode(vt.location());
+        } else if (type instanceof JWildType.Upper) {
+            return 7;
+        } else if (type instanceof JWildType.Lower) {
+            return 11;
+        } else if (type instanceof JArrayType at) {
+            return shallowHash(at.component()) * 31 + 1;
+        } else if (type instanceof JPrimitiveType pt) {
+            return pt.name().hashCode();
+        } else if (type instanceof JMetaVarType mvt) {
+            return mvt.identity();
+        }
+        return 0;
     }
 
     static int hashCode(JType type, Set<JType> seen) {

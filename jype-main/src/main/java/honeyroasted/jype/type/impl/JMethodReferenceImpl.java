@@ -181,9 +181,7 @@ public final class JMethodReferenceImpl extends JAbstractPossiblyUnmodifiableTyp
         if (seen.contains(this)) return 0;
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(Objects.hashCode(location), modifiers, JType.hashCode(outerClass, seen),
-                JType.hashCode(returnType, seen), JType.hashCode(exceptionTypes, seen), JType.hashCode(parameters, seen),
-                JType.hashCode(typeParameters, seen));
+        return Objects.hashCode(location);
     }
 
 }

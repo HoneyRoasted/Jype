@@ -680,3 +680,40 @@ Baseline: 177 tests green.
   `privateMethodIsNotAccessibleFromAnotherClass` used two nested classes of the same top level (javac:
   accessible) — replaced by a top-level fixture `fixtures/privateaccess/PrivateOwner` plus a nestmate
   positive test. Lambda explicit parameter types are now `List<JType>` (primitive `int p` crashed).
+
+- **Items 8, 10, 11, 19, 23, 24 (partial), 29, 30, 31, 33, 36 (partial), 42 — inference core and invocation rewrite.**
+  Found via a hang (`float x = (2.5 ? new ArrayList<>() : M.v7)`): type-level reducers *dropped* what
+  they reduced, and incorporation kept re-deriving the same formula forever. Now:
+  - `JReduceSubtype/Equal/Contains/Compatible` rewritten straight from §18.2.2–§18.2.4; reduced
+    constraints are kept as TRUE, bounds become ASSUMED. Fixes: `S <= ?` was FALSE; §18.2.4
+    structural equality (class args, outer types, arrays, wildcard pairs, `α = primitive` FALSE)
+    was missing; array supertype search looped forever; type-var lower bound case; strict phase never
+    boxes (§18.5.1); `T primitive → ‹S = box(T)›`; unchecked rule (raw S → parameterized T) was
+    reversed — now records an `UncheckedConversion` marker.
+  - Incorporation (`JIncorporation*` + `JIncorporationSupport`) only combines *bounds* (a top-level
+    inference variable); derived non-bound formulas go back to reduction as UNKNOWN; subtyping instead
+    of `isAssignableTo` (boxing) for proper checks; full §18.3.1 substitution rules.
+  - Hash codes made shallow/consistent (class refs by namespace, methods by location, parameterized
+    types by class + shallow args); the old deep hashes with `seen`-set copying were a huge cost.
+  - §18.4 resolution checks glb well-formedness (two unrelated class bounds → fail), javac-verified:
+    `Character x = M.m3()` with `<A extends Number> A m3()` is rejected.
+  - New `JStandaloneTyping` (+ `JTypeContext.ExpressionType` metadata): standalone typing of operands
+    and receivers via a loose sub-solve that reads the expression's real type (e.g. a method's return
+    type), so primitive results survive (the old fresh-α trick boxed or failed). Operators/conditional
+    use it (`JReduceOperands`).
+  - Conditional (§15.25): boolean/numeric classification (method invocations by declared return type),
+    reference conditionals in assignment/invocation contexts are poly (§15.25.3); javac-verified
+    `Object o = c ? aBoolean : anInt` compiles (old test asserted rejection — fixed), `int x = ...` rejected.
+  - `JOperatorTypes`: primitive identity comparisons replaced with `typeEquals`; unboxing via supertypes.
+  - New `JMethodLookup` (§8.4.8/§9.4.1/§9.2/§10.7/§4.8: inherited members substituted through
+    `asSuper`, private/static-interface methods not inherited, overriding by subsignature, Object members
+    of interfaces, array `clone()`, raw erasure, `getClass()` → `Class<? extends |T|>` §4.3.2) and
+    `JInvocationSelection`: §15.12.2.1 potential applicability (arity, explicit type-arg count, lambda
+    arity), §15.12.2.2 pertinence, §18.5.1 phases decided by nested solves of *arguments only* (the
+    target no longer participates in applicability), §15.12.2.5 most specific with preferred-method
+    rules (concrete vs abstract/default, most specific return), then §18.5.2.1 invocation constraints
+    (unchecked → erased return §15.12.2.6, capture of wildcard return, `throws α` §18.1.3, explicit
+    type-arg bound check). `JReduceMethodInvocation` rewritten on these (static form must pick a static
+    method, `super.m` must not be abstract, `Interface.super.m` supported).
+  Expression fuzz seed 1 × 15 worlds: 600 probes, 2 mismatches left (void-SAM lambda body; ctor-ref).
+  Suite 180/180.

@@ -290,7 +290,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         if (seen.contains(this)) return 0;
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(Objects.hashCode(this.namespace), modifiers, JType.hashCode(outerClass, seen));
+        return Objects.hashCode(this.namespace);
     }
 
 }

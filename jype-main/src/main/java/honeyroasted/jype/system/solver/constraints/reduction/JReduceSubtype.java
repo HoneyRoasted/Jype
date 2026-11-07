@@ -4,20 +4,19 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArrayType;
-import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
+import honeyroasted.jype.type.JWildType;
 
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subtype> {
     @Override
@@ -27,109 +26,117 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Subtype constraint, Constraint.Status status) {
-        JType left = constraint.left();
-        JType right = constraint.right();
+        JType s = constraint.left();
+        JType t = constraint.right();
 
-        if (left.isProperType() && right.isProperType()) {
-            branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
-        } else if (left.isNullType()) {
+        if (s.isProperType() && t.isProperType()) {
+            branch.set(constraint, Constraint.Status.known(JTypeRelations.isSubtype(s, t)));
+        } else if (s.isNullType()) {
+            // JLS §18.2.3 S is the null type
             branch.set(constraint, Constraint.Status.TRUE);
-        } else if (right.isNullType()) {
+        } else if (t.isNullType()) {
+            // JLS §18.2.3 T is the null type
             branch.set(constraint, Constraint.Status.FALSE);
-        } else if (left instanceof JMetaVarType || right instanceof JMetaVarType) {
+        } else if (s instanceof JMetaVarType || t instanceof JMetaVarType) {
+            // JLS §18.2.3 S or T is an inference variable: the bound S <: T
             branch.set(constraint, Constraint.Status.ASSUMED);
-        } else if (right instanceof JVarType vt) {
-            if (left instanceof JIntersectionType it && it.typeContains(vt)) {
+        } else if (s instanceof JPrimitiveType || t instanceof JPrimitiveType) {
+            branch.set(constraint, Constraint.Status.FALSE);
+        } else if (t instanceof JIntersectionType it) {
+            // JLS §18.2.3 T is an intersection type
+            branch.set(constraint, Constraint.Status.TRUE);
+            it.children().forEach(c -> branch.add(new JTypeConstraints.Subtype(s, c)));
+        } else if (t instanceof JVarType tv) {
+            if (s instanceof JIntersectionType si && si.children().stream().anyMatch(c -> c.typeEquals(tv))) {
+                // JLS §18.2.3 S is an intersection with T as an element
                 branch.set(constraint, Constraint.Status.TRUE);
+            } else if (tv.hasLowerBound()) {
+                // JLS §18.2.3 T has a lower bound B
+                branch.set(constraint, Constraint.Status.TRUE);
+                branch.add(new JTypeConstraints.Subtype(s, tv.lowerBound()));
             } else {
                 branch.set(constraint, Constraint.Status.FALSE);
             }
-        } else if (right instanceof JIntersectionType it) {
-            branch.drop(constraint);
-            it.children().forEach(t -> branch.add(new JTypeConstraints.Subtype(left, t)));
-        } else if (right instanceof JClassType ct) {
-            if (ct.hasAnyTypeArguments()) {
-                Optional<JClassType> supertypeOpt = identifySuperclass(ct.classReference(), left);
-                if (supertypeOpt.isPresent()) {
-                    JClassType supertype = supertypeOpt.get();
-                    if (supertype.hasAnyTypeArguments() && supertype.typeArguments().size() == ct.typeArguments().size()) {
-                        branch.drop(constraint);
-                        for (int i = 0; i < ct.typeArguments().size(); i++) {
-                            JType ti = supertype.typeArguments().get(i);
-                            JType si = ct.typeArguments().get(i);
-
-                            branch.add(new JTypeConstraints.Contains(ti, si));
-                        }
-                    } else {
-                        branch.set(constraint, Constraint.Status.FALSE);
-                    }
-                } else {
-                    branch.set(constraint, Constraint.Status.FALSE);
-                }
+        } else if (t instanceof JArrayType ta) {
+            JArrayType sa = mostSpecificArraySupertype(s, new HashSet<>());
+            if (sa == null) {
+                branch.set(constraint, Constraint.Status.FALSE);
+            } else if (sa.component() instanceof JPrimitiveType || ta.component() instanceof JPrimitiveType) {
+                // JLS §18.2.3 primitive array components must be the same
+                branch.set(constraint, Constraint.Status.known(sa.component().typeEquals(ta.component())));
             } else {
-                branch.set(constraint, Constraint.Status.known(left.typeSystem().operations().isSubtype(left, right)));
+                // JLS §18.2.3 ‹S' <: T'›
+                branch.set(constraint, Constraint.Status.TRUE);
+                branch.add(new JTypeConstraints.Subtype(sa.component(), ta.component()));
             }
-        } else if (right instanceof JArrayType at) {
-            if (left instanceof JArrayType lat) {
-                if (at.component() instanceof JPrimitiveType && lat.component() instanceof JPrimitiveType) {
-                    branch.drop(constraint).add(JTypeConstraints.Equal.createBound(lat.component(), at.component()), Constraint.Status.ASSUMED);
-                } else {
-                    branch.drop(constraint).add(JTypeConstraints.Subtype.createBound(lat.component(), at.component()), Constraint.Status.ASSUMED);
-                }
+        } else if (t instanceof JClassType tc) {
+            JType source = s instanceof JClassType sc && JTypeRelations.hasWildcardArguments(sc) ? JTypeRelations.capture(sc) : s;
+            JClassType sup = JTypeRelations.asSuper(source, tc.classReference());
+            if (sup == null) {
+                branch.set(constraint, Constraint.Status.FALSE);
+            } else if (!tc.hasAnyTypeArguments() || JTypeRelations.isRaw(tc)) {
+                // JLS §18.2.3 T is a non-parameterized class or interface type
+                branch.set(constraint, Constraint.Status.TRUE);
+            } else if (JTypeRelations.isRaw(sup)) {
+                branch.set(constraint, Constraint.Status.FALSE);
             } else {
-                Set<JType> arr = findMostSpecificArrayTypes(left);
-                if (arr.isEmpty()) {
-                    branch.set(constraint, Constraint.Status.FALSE);
-                } else {
-                    branch.drop(constraint).diverge(arr.stream().map(st -> new JTypeConstraints.Subtype(st, at)).toList());
-                }
+                // JLS §18.2.3 T is a parameterized type: ‹Bi <= Ai›
+                branch.set(constraint, Constraint.Status.TRUE);
+                addContainment(branch, sup, tc);
+            }
+        } else if (t instanceof JWildType tw) {
+            if (tw instanceof JWildType.Lower tl) {
+                branch.set(constraint, Constraint.Status.TRUE);
+                branch.add(new JTypeConstraints.Subtype(s, tl.lowerBound()));
+            } else {
+                branch.set(constraint, Constraint.Status.FALSE);
             }
         } else {
             branch.set(constraint, Constraint.Status.FALSE);
         }
     }
 
-    private Optional<JClassType> identifySuperclass(JClassReference target, JType type) {
-        if (type instanceof JClassType ct) {
-            Optional<JClassType> found = ct.relativeSupertype(target);
-            return found;
-        } else {
-            for (JType supertype : type.knownDirectSupertypes()) {
-                if (supertype instanceof JClassType ct) {
-                    Optional<JClassType> found = ct.relativeSupertype(target);
-                    if (found.isPresent()) {
-                        return found;
-                    }
-                }
+    private static void addContainment(ConstraintBranch branch, JClassType sup, JClassType t) {
+        if (t.hasTypeArguments()) {
+            if (sup.typeArguments().size() != t.typeArguments().size()) {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+                return;
             }
-
-            for (JType supertype : type.knownDirectSupertypes()) {
-                Optional<JClassType> found = identifySuperclass(target.classReference(), supertype);
-                if (found.isPresent()) {
-                    return found;
-                }
+            for (int i = 0; i < t.typeArguments().size(); i++) {
+                branch.add(new JTypeConstraints.Contains(sup.typeArguments().get(i), t.typeArguments().get(i)));
             }
-            return Optional.empty();
+        }
+        if (t.hasRelevantOuterType() && t.outerType() != null && t.outerType().hasAnyTypeArguments()) {
+            if (sup.outerType() == null) {
+                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+            } else {
+                branch.add(new JTypeConstraints.Subtype(sup.outerType(), t.outerType()));
+            }
         }
     }
 
-    private Set<JType> findMostSpecificArrayTypes(JType type) {
-        if (type instanceof JArrayType) {
-            return Set.of(type);
+    private static JArrayType mostSpecificArraySupertype(JType s, Set<JType> seen) {
+        if (s instanceof JArrayType sa) {
+            return sa;
         }
-
-        Set<JType> current = new HashSet<>(type.knownDirectSupertypes());
-        while (!current.isEmpty() && current.stream().allMatch(t -> t instanceof JArrayType)) {
-            Set<JType> arrayTypes = current.stream().filter(t -> t instanceof JArrayType).collect(Collectors.toSet());
-            if (!arrayTypes.isEmpty()) {
-                current = arrayTypes;
-            } else {
-                Set<JType> next = new HashSet<>();
-                current.forEach(t -> next.addAll(t.knownDirectSupertypes()));
-                current = next;
+        if (!seen.add(s)) {
+            return null;
+        }
+        if (s instanceof JVarType sv) {
+            for (JType b : JTypeRelations.upperBounds(sv)) {
+                JArrayType r = mostSpecificArraySupertype(b, seen);
+                if (r != null) {
+                    return r;
+                }
+            }
+        } else if (s instanceof JIntersectionType si) {
+            for (JType c : si.children()) {
+                JArrayType r = mostSpecificArraySupertype(c, seen);
+                if (r != null) {
+                    return r;
+                }
             }
         }
-
-        return type.typeSystem().operations().findMostSpecificTypes(current);
+        return null;
     }
 }

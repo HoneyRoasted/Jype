@@ -1,5 +1,7 @@
 package honeyroasted.jype.type.impl;
 
+import honeyroasted.jype.type.JVarType;
+import java.util.Objects;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.cache.JTypeCache;
@@ -171,15 +173,23 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
-        seen = JType.concat(seen, this);
-
-        if (JType.structuralEquals(this, this.classReference)) {
-            return JType.hashCode(classReference, seen);
-        } else {
-            return JType.multiHash(JType.hashCode(classReference, seen), JType.hashCode(outerType, seen),
-                    JType.hashCode(typeArguments, seen));
+        int base = this.classReference == null ? 0 : Objects.hashCode(this.classReference.namespace());
+        if (this.typeArguments == null || this.typeArguments.isEmpty() || this.classReference == null) {
+            return base;
         }
+        List<JVarType> params = this.classReference.typeParameters();
+        boolean own = params.size() == this.typeArguments.size();
+        for (int i = 0; own && i < params.size(); i++) {
+            own = this.typeArguments.get(i) instanceof JVarType vt && Objects.equals(vt.location(), params.get(i).location());
+        }
+        if (own) {
+            return base;
+        }
+        int h = base;
+        for (JArgumentType arg : this.typeArguments) {
+            h = h * 31 + JType.shallowHash(arg);
+        }
+        return h;
     }
 
 }

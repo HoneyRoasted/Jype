@@ -119,7 +119,7 @@ public class JReduceConditionalExpressionTests {
     }
 
     @Test
-    public void mixingBooleanAndNumericBranchesIsRejected() {
+    public void mixingBooleanAndNumericBranchesIsAReferenceConditional() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
         JType booleanType = ts.constants().booleanType();
         JType intType = ts.constants().intType();
@@ -127,7 +127,8 @@ public class JReduceConditionalExpressionTests {
 
         JExpressionInformation.Conditional expr = cond(JExpressionInformation.of(booleanType), booleanType, intType);
 
-        assertFalse(solves(ts, expr, object), "expected (cond ? aBooleanValue : anIntValue) to be rejected - boolean and numeric can't merge");
+        assertTrue(solves(ts, expr, object), "javac: Object o = c ? aBoolean : anInt compiles (reference conditional, JLS 15.25.3)");
+        assertFalse(solves(ts, expr, intType), "javac: int x = c ? aBoolean : anInt is rejected");
     }
 
     @Test

@@ -904,7 +904,7 @@ public interface JExpressionInformation extends SimpleName {
                     return Optional.of(c.booleanType());
                 }
 
-                if ((l == c.byteType() && r == c.shortType()) || (l == c.shortType() && r == c.byteType())) {
+                if ((l.typeEquals(c.byteType()) && r.typeEquals(c.shortType())) || (l.typeEquals(c.shortType()) && r.typeEquals(c.byteType()))) {
                     return Optional.of(c.shortType());
                 }
 
@@ -924,16 +924,16 @@ public interface JExpressionInformation extends SimpleName {
 
         private static Optional<JType> narrowConstant(JExpressionInformation constCandidate, JPrimitiveType constCandidatePrim, JPrimitiveType otherPrim, JTypeSystem system) {
             var c = system.constants();
-            if (constCandidatePrim != c.intType() || !(constCandidate instanceof Constant constant) || !(constant.value() instanceof Integer i)) {
+            if (!constCandidatePrim.typeEquals(c.intType()) || !(constCandidate instanceof Constant constant) || !(constant.value() instanceof Integer i)) {
                 return Optional.empty();
             }
 
             long v = i;
-            if (otherPrim == c.byteType()) {
+            if (otherPrim.typeEquals(c.byteType())) {
                 return (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE) ? Optional.of(otherPrim) : Optional.empty();
-            } else if (otherPrim == c.shortType()) {
+            } else if (otherPrim.typeEquals(c.shortType())) {
                 return (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE) ? Optional.of(otherPrim) : Optional.empty();
-            } else if (otherPrim == c.charType()) {
+            } else if (otherPrim.typeEquals(c.charType())) {
                 return (v >= Character.MIN_VALUE && v <= Character.MAX_VALUE) ? Optional.of(otherPrim) : Optional.empty();
             }
             return Optional.empty();

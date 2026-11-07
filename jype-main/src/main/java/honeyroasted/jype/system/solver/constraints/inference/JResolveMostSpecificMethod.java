@@ -193,7 +193,7 @@ public class JResolveMostSpecificMethod {
      * {@link #pruneGroup} to determine the "strictly more specific" relation between a pair of
      * candidates.
      */
-    private static boolean isMoreSpecific(JTypeSystem system, JTypeContext.ChosenMethod m1, JTypeContext.ChosenMethod m2) {
+    public static boolean isMoreSpecific(JTypeSystem system, JTypeContext.ChosenMethod m1, JTypeContext.ChosenMethod m2) {
         List<JType> s = declaredParameters(m1);
         List<JType> t = declaredParameters(m2);
         List<JExpressionInformation> args = m1.expression().parameters();
@@ -574,7 +574,7 @@ public class JResolveMostSpecificMethod {
      * as "found via the ordinary member-lookup used elsewhere in this file" rather than the full
      * JLS accessibility procedure.
      */
-    private static boolean isExactMethodReference(JTypeSystem system, JExpressionInformation expr) {
+    public static boolean isExactMethodReference(JTypeSystem system, JExpressionInformation expr) {
         if (expr instanceof JExpressionInformation.InstantiationReference instRef && instRef.type() instanceof JArrayType) {
             return true;
         }
