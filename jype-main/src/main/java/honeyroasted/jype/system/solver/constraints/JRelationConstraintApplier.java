@@ -5,8 +5,8 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.almonds.applier.ConstraintMapperApplier;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,12 +57,12 @@ public class JRelationConstraintApplier implements ConstraintMapperApplier {
     public void accept(ConstraintBranch branch) {
         List<Constraint> asks = new ArrayList<>();
         for (Map.Entry<Constraint, Constraint.Status> entry : branch.constraints().entrySet()) {
-            if (entry.getValue().isUnknown() && JRelationTrees.isRelation(entry.getKey())) {
+            if (entry.getValue().isUnknown() && JTypeRelations.isRelationConstraint(entry.getKey())) {
                 asks.add(entry.getKey());
             }
         }
         for (Constraint ask : asks) {
-            JRelationTrees.ask(branch, ask, this.config);
+            JTypeRelations.ask(branch, ask, this.config);
         }
         for (ConstraintMapper mapper : this.mappers) {
             mapper.accept(branch);

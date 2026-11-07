@@ -4,8 +4,8 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 
 public class JProperContains extends ConstraintMapper.Unary<JTypeConstraints.Contains> {
@@ -26,6 +26,6 @@ public class JProperContains extends ConstraintMapper.Unary<JTypeConstraints.Con
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Contains constraint, Constraint.Status status) {
-        JRelationTrees.ask(branch, constraint, this.config);
+        JTypeRelations.ask(branch, constraint, this.config);
     }
 }

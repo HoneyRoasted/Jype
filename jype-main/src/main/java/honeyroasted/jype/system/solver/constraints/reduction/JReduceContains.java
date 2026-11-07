@@ -4,8 +4,8 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JWildType;
@@ -33,7 +33,7 @@ public class JReduceContains extends ConstraintMapper.Unary<JTypeConstraints.Con
         JType object = s.typeSystem().constants().object();
 
         if (s.isProperType() && t.isProperType()) {
-            JRelationTrees.ask(branch, constraint, this.config);
+            JTypeRelations.ask(branch, constraint, this.config);
         } else if (!(t instanceof JWildType)) {
             if (s instanceof JWildType) {
                 // JLS §18.2.3 T is a type and S is a wildcard

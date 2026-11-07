@@ -4,7 +4,6 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
@@ -42,7 +41,7 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
         JType t = constraint.right();
 
         if (s.isProperType() && t.isProperType()) {
-            JRelationTrees.ask(branch, constraint, this.config);
+            JTypeRelations.ask(branch, constraint, this.config);
         } else if (s.isNullType()) {
             // JLS §18.2.3 S is the null type
             branch.set(constraint, Constraint.Status.TRUE);

@@ -4,8 +4,8 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
@@ -38,7 +38,7 @@ public class JReduceEqual extends ConstraintMapper.Unary<JTypeConstraints.Equal>
         JType object = s.typeSystem().constants().object();
 
         if (s.isProperType() && t.isProperType()) {
-            JRelationTrees.ask(branch, constraint, this.config);
+            JTypeRelations.ask(branch, constraint, this.config);
         } else if (s.isNullType() || t.isNullType()) {
             // JLS §18.2.4 the null type is not equal to an improper type
             branch.set(constraint, Constraint.Status.FALSE);

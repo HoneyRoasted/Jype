@@ -4,7 +4,6 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
@@ -38,7 +37,7 @@ public class JReduceCompatible extends ConstraintMapper.Unary<JTypeConstraints.C
 
         if (s.isProperType() && t.isProperType()) {
             // JLS §18.2.2 S and T are proper types
-            boolean compatible = JRelationTrees.ask(branch, constraint, this.config);
+            boolean compatible = JTypeRelations.ask(branch, constraint, this.config);
             if (compatible && context != JTypeConstraints.Compatible.Context.EXPLICIT_CAST && !(s instanceof JPrimitiveType) && !(t instanceof JPrimitiveType)
                     && !JTypeRelations.isSubtype(s, t)) {
                 branch.add(new JTypeConstraints.UncheckedConversion(s, t), Constraint.Status.TRUE);

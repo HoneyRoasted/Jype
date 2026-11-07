@@ -4,8 +4,8 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.solver.JRelationTrees;
 import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JType;
 
@@ -34,6 +34,6 @@ public class JEqualType extends ConstraintMapper.Unary<JTypeConstraints.Equal> {
         JType left = constraint.left();
         JType right = constraint.right();
 
-        JRelationTrees.ask(branch, constraint, this.config);
+        JTypeRelations.ask(branch, constraint, this.config);
     }
 }
