@@ -1,7 +1,7 @@
 [Project Page](https://honeyroasted.github.io/jype/landing.html)
 
-Still heavily WIP. Inference rules are especially WIP, currently missing any lambda functionality,
-and there are likely bugs in other parts of the inference solver.
+Still WIP. Type inference follows JLS SE 24 chapter 18 (including lambdas, method references, switch and
+conditional expressions) and is checked against javac with a differential fuzz test, but bugs are still possible.
 
 # Jype
 Jype is a library providing a set of classes fully representing Java's type system, including its
