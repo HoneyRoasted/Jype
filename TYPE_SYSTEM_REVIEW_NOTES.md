@@ -914,3 +914,14 @@ Baseline: 177 tests green.
   `Comparable<Y>`; the derived `Y <: Runnable` then failed. The resolver now keeps type variables whose bounds
   mention no resolvable inference variable. Regression case added to `JResolveBoundsSecondAttemptTests`.
   Suite 213/213 (main + stub); fuzz seeds 22, 35, 36: 0 mismatches.
+
+### Session 6 wrap-up (2026-11-07)
+- Final state: unit + YAML suite 213/213 (`./gradlew :jype-main:test :jype-stub:test`); expression fuzz seeds
+  1–36 and relation fuzz seeds 1–14 run at 20 worlds each, every reported mismatch fixed and covered by a
+  regression test (last full pass: 0 mismatches).
+- Deliberate javac alignments (javac is the ground truth where it departs from the JLS text): unchecked
+  subtyping in incorporation/bound checks, javac `isCastable`, javac lub, preview-gated primitive patterns,
+  no switch case in functional most-specific, javac's §18.4 second resolution attempt.
+- Scratch javac repros and the temporary probe test were deleted; nothing was pushed or merged into main.
+- Remaining unmodeled areas: statement-level analysis (definite assignment, reachability, exception flow
+  outside lambdas) and switch case labels (selector validity and result expressions are modeled).
