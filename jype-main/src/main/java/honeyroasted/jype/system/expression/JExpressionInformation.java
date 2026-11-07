@@ -2,10 +2,10 @@ package honeyroasted.jype.system.expression;
 
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.JFieldLookup;
 import honeyroasted.jype.system.solver.JMemberLookup;
 import honeyroasted.jype.system.solver.JOperatorTypes;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
@@ -335,27 +335,22 @@ public interface JExpressionInformation extends SimpleName {
 
         @Override
         default boolean isSimplyTyped() {
-            return this.source() instanceof JClassReference || (this.source() instanceof JExpressionInformation expr && expr.isSimplyTyped());
+            JTypeSystem system = this.declaring() != null ? this.declaring().typeSystem() :
+                    this.source() instanceof JClassReference ref ? ref.typeSystem() : null;
+            return system != null && this.getSimpleType(system, Function.identity()).isPresent();
         }
 
         @Override
         default Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) {
             if (this.source() instanceof JClassReference jcr) {
-                return jcr.declaredFields().stream().filter(jfr -> jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(this.name()))
-                        .findFirst().map(mapper);
+                return JFieldLookup.staticAccess(jcr, this.name(), this.declaring()).map(JFieldLookup.Found::type).map(mapper);
             } else if (this.source() instanceof JExpressionInformation expr && expr.isSimplyTyped()) {
-                JType type = expr.getSimpleType(system, mapper).get();
-                JFieldReference field = JMemberLookup.findClassTypes(type).stream()
-                        .flatMap(ct -> JReduceGetField.getAllFields(ct.classReference(), jfr -> !jfr.hasModifier(AccessFlag.STATIC) && jfr.location().name().equals(name()) && jfr.outerClass().accessFrom(declaring()).canAccess(jfr.access())).stream())
-                        .findFirst().orElse(null);
-
-                if (field != null && type instanceof JParameterizedClassType pct) {
-                    field = (JFieldReference) pct.varTypeResolver().visit(field);
+                Optional<JType> receiver = expr.getSimpleType(system, mapper);
+                if (receiver.isEmpty()) {
+                    return Optional.empty();
                 }
-
-                return Optional.ofNullable(field);
+                return JFieldLookup.instanceAccess(receiver.get(), this.name(), this.declaring()).map(JFieldLookup.Found::type).map(mapper);
             }
-
             return Optional.empty();
         }
 
@@ -386,7 +381,7 @@ public interface JExpressionInformation extends SimpleName {
     }
 
     interface Lambda extends JExpressionInformation {
-        record Simple(JExpressionInformation body, List<JArgumentType> explicitParameterTypes, int parameterCount, boolean implicitReturn) implements Lambda {
+        record Simple(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) implements Lambda {
             @Override
             public String simpleName() {
                 return "(" + (this.explicitParameterTypes != null && this.explicitParameterTypes.size() == parameterCount ?
@@ -409,7 +404,7 @@ public interface JExpressionInformation extends SimpleName {
             @Override public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) { return Optional.of(mapper.apply(simpleType)); }
             @Override public String simpleName() { return delegate.simpleName(); }
             @Override public JExpressionInformation body() { return delegate.body(); }
-            @Override public List<JArgumentType> explicitParameterTypes() { return delegate.explicitParameterTypes(); }
+            @Override public List<JType> explicitParameterTypes() { return delegate.explicitParameterTypes(); }
             @Override public int parameterCount() { return delegate.parameterCount(); }
             @Override public boolean implicitReturn() { return delegate.implicitReturn(); }
         }
@@ -419,11 +414,11 @@ public interface JExpressionInformation extends SimpleName {
             return new Lambda.Typed(this, type);
         }
 
-        default Lambda createNew(JExpressionInformation body, List<JArgumentType> explicitParameterTypes, int parameterCount, boolean implicitReturn) { return new Lambda.Simple(body, explicitParameterTypes, parameterCount, implicitReturn); }
+        default Lambda createNew(JExpressionInformation body, List<JType> explicitParameterTypes, int parameterCount, boolean implicitReturn) { return new Lambda.Simple(body, explicitParameterTypes, parameterCount, implicitReturn); }
 
         JExpressionInformation body();
 
-        List<JArgumentType> explicitParameterTypes();
+        List<JType> explicitParameterTypes();
 
         int parameterCount();
 

@@ -298,7 +298,20 @@ public class FindApplicableMethodTests {
     }
 
     @Test
-    public void privateMethodIsNotAccessibleFromAnotherClass() {
+    public void privateMethodIsNotAccessibleFromAnotherTopLevelClass() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        JClassReference owner = ts.tryResolve(honeyroasted.jype.system.solver.fixtures.privateaccess.PrivateOwner.class);
+        JClassReference caller = ts.tryResolve(Caller.class);
+        JType stringType = ts.tryResolve(String.class);
+
+        JParameterizedMethodType result = ts.operations().findApplicableMethod(
+                invoke(caller, JExpressionInformation.of(owner), "privateMethod", arg(stringType)));
+
+        assertNull(result);
+    }
+
+    @Test
+    public void privateMethodIsAccessibleFromNestmate() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
         JClassReference owner = ts.tryResolve(Owner.class);
         JClassReference caller = ts.tryResolve(Caller.class);
@@ -307,7 +320,7 @@ public class FindApplicableMethodTests {
         JParameterizedMethodType result = ts.operations().findApplicableMethod(
                 invoke(caller, JExpressionInformation.of(owner), "privateMethod", arg(stringType)));
 
-        assertNull(result);
+        assertNotNull(result, "JLS 6.6.1: private members are accessible within the enclosing top level class");
     }
 
     @Test

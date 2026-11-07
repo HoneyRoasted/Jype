@@ -661,3 +661,22 @@ Baseline: 177 tests green.
   `class C2 extends C1<C1>`) — now simultaneous per JLS; deep structural mapping rebuilt a
   `JClassReference`'s declared supertypes during substitution — references are now atomic unless the
   visitor is structural. Seeds 1,6,7 x 40 worlds: 0 mismatches. Suite 179/179.
+
+- **Expression fuzz harness.** `ExpressionFuzzTest` + `ExpressionWorldGenerator` + `FuzzExpr` (sealed-ish family
+  of expression shapes rendering both Java source and `JExpressionInformation`): random static generic /
+  overloaded / varargs methods, static fields, literals, lambdas, method & constructor refs, `new`,
+  casts, conditionals, unary/binary operators; probes `static void probeN() { T x = <expr>; }`; javac
+  accept/reject per probe line vs Jype `ExpressionCompatible(expr, ASSIGNMENT, T)`.
+- **Items 34, 35 (access, field access) — done.** `JClassType.accessFrom` (§6.6): private access within the
+  same top-level class (nestmates), package access before protected (a same-package subclass got
+  PROTECTED, losing package-private access), protected via any enclosing subclass (§6.6.2.1).
+  New `JFieldLookup`: §8.3 hiding, §8.3.3 ambiguity (distinct inherited fields), private fields not
+  inherited, inherited field types substituted through `asSuper` (generic superclass fields), raw
+  receiver → erased field type (§4.8), `arr.length` (§10.7), static-only through a class name,
+  capture of the field type (§6.5.6.1). `GetField.getSimpleType` used to return the `JFieldReference`
+  itself and `isSimplyTyped` was true even when no field existed (NoSuchElementException risk); it and
+  `JReduceGetField` also both fired, so `Object x = M.v` was rejected. Now simply-typed iff the field
+  resolves; `JReduceGetField` only handles non-simply-typed receivers. Old test
+  `privateMethodIsNotAccessibleFromAnotherClass` used two nested classes of the same top level (javac:
+  accessible) — replaced by a top-level fixture `fixtures/privateaccess/PrivateOwner` plus a nestmate
+  positive test. Lambda explicit parameter types are now `List<JType>` (primitive `int p` crashed).

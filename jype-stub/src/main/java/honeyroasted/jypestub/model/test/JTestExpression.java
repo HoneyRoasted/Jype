@@ -6,6 +6,7 @@ import honeyroasted.collect.multi.Triple;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.type.JArgumentType;
+import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JGenericDeclaration;
@@ -122,7 +123,7 @@ public interface JTestExpression {
             JGenericDeclaration containing = JStubSerialization.declaring(system, this.declaring, this.declaringMethod).left();
 
             return new JExpressionInformation.Lambda.Simple(body.resolve(system),
-                    this.parameterTypes.stream().map(str -> JStubSerialization.<JArgumentType>readType(system, str, containing)).toList(),
+                    this.parameterTypes.stream().map(str -> JStubSerialization.<JType>readType(system, str, containing)).toList(),
                     this.parameterCount, this.implicitReturn);
         }
     }

@@ -97,27 +97,31 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
         return this.accessFrom(other, null);
     }
 
-    /**
-     * JLS §6.6.2: when a protected member is accessed through an explicit qualifying
-     * expression (rather than an unqualified/{@code this} reference), the access is permitted
-     * only if the type of that expression is the accessing class {@code other} or a subclass of
-     * it - being merely a subclass of the declaring class is not sufficient. {@code receiverType}
-     * should be the static type of that qualifying expression, or {@code null} when access is
-     * unqualified/static (in which case this refinement does not apply).
-     */
     default JAccess accessFrom(JClassType other, JClassType receiverType) {
-        if (this.classReference().equals(other.classReference())) {
+        if (outermost(this.classReference()).equals(outermost(other.classReference()))) {
+            // JLS §6.6.1 private access within the enclosing top level class
             return JAccess.PRIVATE;
-        } else if (other.hasSupertype(this.classReference())
-                && (receiverType == null || receiverType.hasSupertype(other.classReference()))) {
-            return JAccess.PROTECTED;
         } else if (this.namespace().location().getPackage().equals(other.namespace().location().getPackage())) {
+            // JLS §6.6.1 package access
             return JAccess.PACKAGE_PROTECTED;
-        } else if (other.hasOuterType()) {
-            return this.accessFrom(other.outerType(), receiverType);
-        } else {
-            return JAccess.PUBLIC;
         }
+        JClassType current = other;
+        while (current != null) {
+            if (current.hasSupertype(this.classReference()) && (receiverType == null || receiverType.hasSupertype(current.classReference()))) {
+                // JLS §6.6.2.1 protected access within the body of a subclass
+                return JAccess.PROTECTED;
+            }
+            current = current.hasOuterType() ? current.outerType() : null;
+        }
+        return JAccess.PUBLIC;
+    }
+
+    private static JClassReference outermost(JClassReference ref) {
+        JClassReference current = ref;
+        while (current.outerClass() != null) {
+            current = current.outerClass();
+        }
+        return current;
     }
 
     @Override
