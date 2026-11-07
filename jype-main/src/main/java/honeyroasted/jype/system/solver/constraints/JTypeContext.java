@@ -28,6 +28,13 @@ public interface JTypeContext {
         }
     }
 
+    record InvocationTypeArguments(JExpressionInformation expression, Map<JVarType, JType> theta) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Invocation Type Arguments: " + expression.simpleName() + " : " + theta;
+        }
+    }
+
     record ExpressionType(JExpressionInformation expression, JType type) implements SimpleName {
         @Override
         public String simpleName() {

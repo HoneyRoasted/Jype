@@ -511,6 +511,7 @@ public final class JInvocationSelection {
         PropertySet metadata = new PropertySet()
                 .attach(new JTypeContext.ThrownTypes(expr, thrown))
                 .attach(new JTypeContext.ChosenMethod(expr, candidate.method(), context(chosen.phase()), chosen.phase() == Phase.VARARG))
+                .attach(new JTypeContext.InvocationTypeArguments(expr, inst.theta()))
                 .attach(new JTypeContext.ExpressionType(expr, result));
         return new ConstraintBranch.Snapshot(metadata, constraints);
     }

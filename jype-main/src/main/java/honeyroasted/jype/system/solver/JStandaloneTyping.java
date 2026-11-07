@@ -84,7 +84,7 @@ public final class JStandaloneTyping {
         return null;
     }
 
-    private static Map<JMetaVarType, JType> instantiationsOf(ConstraintBranch branch) {
+    public static Map<JMetaVarType, JType> instantiationsOf(ConstraintBranch branch) {
         Map<JMetaVarType, JType> result = new LinkedHashMap<>();
         branch.constraints().forEach((con, status) -> {
             if (con instanceof JTypeConstraints.Instantiation inst && status.isTrue()) {

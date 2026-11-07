@@ -847,3 +847,10 @@ Baseline: 177 tests green.
   - Tests: `JRawMemberErasureTests` (7 javac-verified cases), `JProjectionTests` (`var` types of
     `List<? extends Number>`, `List<? super Integer>`, `Comparable<?>`, `Rec<?>` ≡ `Rec<? extends Rec<?>>`
     as checked with javac assignments both ways). Suite 191/191, fuzz seed 11: 0 mismatches.
+
+- **Item 30 / B25 (`JFindApplicableMethod`) — done.** The operation is now a thin view over the selection
+  engine: it solves `‹invocation → void›` in the STANDALONE context and reads the `ChosenMethod` plus the new
+  `JTypeContext.InvocationTypeArguments` (θ) metadata, resolving θ against the branch instantiations.
+  Different chosen methods across true branches means ambiguity (null). The old parallel overload resolver
+  (its own phases / most-specific / member lookup) and the now-dead parts of `JMemberLookup` (allMethods,
+  staticMethods, bridge search, throws helper, captureConvert) were deleted. `FindApplicableMethodTests` 22/22.
