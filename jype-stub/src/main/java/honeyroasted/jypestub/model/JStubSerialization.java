@@ -23,6 +23,7 @@ import honeyroasted.jype.metadata.location.JClassLocation;
 import honeyroasted.jype.metadata.signature.JSignature;
 import honeyroasted.jype.metadata.signature.JSignatureParser;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JGenericDeclaration;
@@ -68,6 +69,8 @@ public interface JStubSerialization {
 
         module.addDeserializer(JTestExpression.Constant.class, JTestExpression.Constant.DESERIALIZER)
                 .addSerializer(JTestExpression.Constant.SERIALIZER);
+        module.addDeserializer(JTestExpression.LambdaParam.class, JTestExpression.LambdaParam.DESERIALIZER)
+                .addSerializer(JTestExpression.LambdaParam.SERIALIZER);
 
         module.addDeserializer(JTestCondition.Status.class, JTestCondition.Status.DESERIALIZER)
                 .addSerializer(JTestCondition.Status.SERIALIZER);
@@ -110,6 +113,8 @@ public interface JStubSerialization {
     static SimpleName source(JTypeSystem system, JGenericDeclaration containing, String staticSource, JTestExpression.Wrapper source) {
         if (staticSource != null && !staticSource.isEmpty()) {
             return JStubSerialization.<JClassType>readType(system, staticSource, containing);
+        } else if (source == null || source.inner() == null) {
+            return new JExpressionInformation.ImplicitReceiver();
         } else {
             return source.resolve(system);
         }

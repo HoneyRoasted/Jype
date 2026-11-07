@@ -894,3 +894,15 @@ Baseline: 177 tests green.
   - Method invocation / method reference on a receiver of the null type is rejected (`(null).clone()`).
   - Fuzz harness: anonymous diamond probes passed the source type arguments to Jype as explicit arguments.
   - `JResolveBoundsSecondAttemptTests` (8 javac-verified cases). Suite 195/195; fuzz seeds 14–18: 0 mismatches.
+
+- **Items 46/47 (dead shapes, YAML DSL) + cleanup — done.**
+  - Removed the unused `Multi` expression shape (no reducer, no YAML use) and every `Typed` wrapper plus
+    `toSimple` (no callers).
+  - YAML DSL (`JTestExpression`) gained: `anonymous`, `lambda_param` (lambda bodies can reference their
+    parameters via `parameterNames`), block lambdas (`block`, `returns`, `voidReturn`,
+    `canCompleteNormally`), `cast`, `instance_of`, `conditional`, `unary`, `binary`, `array_access`,
+    `assignment`, `increment`, `switch`, `class_literal`, `this`, `local`; an invocation with neither
+    `staticSource` nor `source` is unqualified (`ImplicitReceiver`); `constant: null` is the null literal.
+  - New `stub_tests/expression_shapes.yml` (19 javac-verified cases). YAML suite 52/52.
+  - Branch-wide tidy: inline fully qualified names replaced by imports, unused imports removed, prose
+    comments added on this branch removed (only `// JLS` references remain), dead `JMemberLookup` helpers gone.
