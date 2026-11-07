@@ -165,8 +165,7 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Full(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments,
-                    boolean raw, List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
+        record Full(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments, boolean raw, List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
             @Override
             public String simpleName() {
                 return (this.outerInstance == null ? "" : this.outerInstance.simpleName() + ".") + "new " +
@@ -177,8 +176,7 @@ public interface JExpressionInformation extends SimpleName {
             }
         }
 
-        record Anonymous(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments,
-                         List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
+        record Anonymous(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments, List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
             @Override
             public boolean anonymous() {
                 return true;
@@ -730,8 +728,7 @@ public interface JExpressionInformation extends SimpleName {
     }
 
     interface Conditional extends JExpressionInformation {
-        record Simple(JExpressionInformation condition, JExpressionInformation whenTrue,
-                       JExpressionInformation whenFalse) implements Conditional {
+        record Simple(JExpressionInformation condition, JExpressionInformation whenTrue, JExpressionInformation whenFalse) implements Conditional {
             @Override
             public String simpleName() {
                 return this.condition.simpleName() + " ? " + this.whenTrue.simpleName() + " : " + this.whenFalse.simpleName();
@@ -815,8 +812,7 @@ public interface JExpressionInformation extends SimpleName {
     }
 
     interface ArrayCreation extends JExpressionInformation {
-        record Simple(JType componentType, List<JExpressionInformation> dimensions, int extraDimensions,
-                       JExpressionInformation initializer) implements ArrayCreation {
+        record Simple(JType componentType, List<JExpressionInformation> dimensions, int extraDimensions, JExpressionInformation initializer) implements ArrayCreation {
             @Override
             public String simpleName() {
                 StringBuilder sb = new StringBuilder("new ").append(this.componentType.simpleName());

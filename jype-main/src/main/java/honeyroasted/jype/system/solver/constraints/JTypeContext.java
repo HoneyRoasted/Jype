@@ -141,8 +141,12 @@ public interface JTypeContext {
 
         @Override
         public boolean equals(Object object) {
-            if (this == object) return true;
-            if (object == null || getClass() != object.getClass()) return false;
+            if (this == object) {
+                return true;
+            }
+            if (object == null || getClass() != object.getClass()) {
+                return false;
+            }
             TypeMetavarMap that = (TypeMetavarMap) object;
             return Objects.equals(instantiations, that.instantiations) && Objects.equals(metaVars, that.metaVars);
         }

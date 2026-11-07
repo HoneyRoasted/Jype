@@ -34,7 +34,9 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JParameterizedClassType copy = this.typeSystem().typeFactory().newParameterizedClassType();
         cache.put(this, copy);
@@ -149,8 +151,12 @@ public final class JParameterizedClassTypeImpl extends JAbstractPossiblyUnmodifi
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
-        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
+        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JClassType ct) {

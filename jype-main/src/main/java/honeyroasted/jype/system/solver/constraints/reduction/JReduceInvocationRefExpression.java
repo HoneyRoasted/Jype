@@ -136,8 +136,7 @@ public class JReduceInvocationRefExpression extends ConstraintMapper.Unary<JType
     private record Search(JInvocationSelection.Selection selection) {
     }
 
-    private static Search search(JTypeSystem system, JExpressionInformation.InvocationReference<?> ref, JType site, JClassType receiverType, List<JType> argTypes, List<JArgumentType> explicit,
-                                 JType ret, List<JType> samThrows, boolean staticForm, Map<Constraint, Constraint.Status> extra) {
+    private static Search search(JTypeSystem system, JExpressionInformation.InvocationReference<?> ref, JType site, JClassType receiverType, List<JType> argTypes, List<JArgumentType> explicit, JType ret, List<JType> samThrows, boolean staticForm, Map<Constraint, Constraint.Status> extra) {
         JClassReference declaring = ref.declaring();
         List<JInvocationCandidate> candidates = new ArrayList<>();
         for (JMethodLookup.Member member : JMethodLookup.members(site, ref.methodName())) {

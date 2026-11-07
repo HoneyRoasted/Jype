@@ -53,13 +53,11 @@ public final class JInvocationSelection {
     public record Selection(Optional<ConstraintBranch.Snapshot> snapshot, List<JMethodReference> applicable, JMethodReference chosen) {
     }
 
-    public static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args,
-                                                            List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+    public static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args, List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         return selectDetailed(system, expr, candidates, args, explicitTypeArguments, constraint, extra).snapshot();
     }
 
-    public static Selection selectDetailed(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args,
-                                           List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+    public static Selection selectDetailed(JTypeSystem system, JExpressionInformation.Invocation expr, List<JInvocationCandidate> candidates, List<JExpressionInformation> args, List<JArgumentType> explicitTypeArguments, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         List<Applicable> applicable = new ArrayList<>();
         for (Phase phase : Phase.values()) {
             for (JInvocationCandidate candidate : candidates) {
@@ -451,8 +449,7 @@ public final class JInvocationSelection {
         return false;
     }
 
-    private static ConstraintBranch.Snapshot invocationSnapshot(JTypeSystem system, JExpressionInformation.Invocation expr, Applicable chosen, List<JExpressionInformation> args,
-                                                                List<JArgumentType> explicit, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+    private static ConstraintBranch.Snapshot invocationSnapshot(JTypeSystem system, JExpressionInformation.Invocation expr, Applicable chosen, List<JExpressionInformation> args, List<JArgumentType> explicit, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         JInvocationCandidate candidate = chosen.candidate();
         Instantiated inst = instantiate(system, candidate, explicit, args.size(), chosen.phase());
         Map<Constraint, Constraint.Status> constraints = new LinkedHashMap<>(extra);

@@ -146,7 +146,9 @@ public class JResolveMostSpecificMethod {
     }
 
     private static int phaseRank(JTypeContext.ChosenMethod cm) {
-        if (cm.vararg()) return 2;
+        if (cm.vararg()) {
+            return 2;
+        }
         return cm.context() == JTypeConstraints.Compatible.Context.STRICT_INVOCATION ? 0 : 1;
     }
 
@@ -245,15 +247,23 @@ public class JResolveMostSpecificMethod {
         Optional<JMethodReference> mtsOpt = JReduceLambdaExpression.findFunctionalMethod(capturedS);
         Optional<JMethodReference> mtsPrimeOpt = JReduceLambdaExpression.findFunctionalMethod(s);
         Optional<JMethodReference> mttOpt = JReduceLambdaExpression.findFunctionalMethod(t);
-        if (mtsOpt.isEmpty() || mtsPrimeOpt.isEmpty() || mttOpt.isEmpty()) return false;
+        if (mtsOpt.isEmpty() || mtsPrimeOpt.isEmpty() || mttOpt.isEmpty()) {
+            return false;
+        }
 
         JMethodReference mts = mtsOpt.get();
         JMethodReference mtsPrime = mtsPrimeOpt.get();
         JMethodReference mtt = mttOpt.get();
 
-        if (mts.typeParameters().size() != mtt.typeParameters().size()) return false;
-        if (mts.parameters().size() != mtt.parameters().size()) return false;
-        if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) return false;
+        if (mts.typeParameters().size() != mtt.typeParameters().size()) {
+            return false;
+        }
+        if (mts.parameters().size() != mtt.parameters().size()) {
+            return false;
+        }
+        if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) {
+            return false;
+        }
 
         Map<JVarType, JType> thetaPrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
@@ -264,7 +274,9 @@ public class JResolveMostSpecificMethod {
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
             JType boundA = mts.typeParameters().get(j).upperBound();
             JType boundB = thetaPrimeResolver.apply(mtt.typeParameters().get(j).upperBound());
-            if (!boundA.typeEquals(boundB)) return false;
+            if (!boundA.typeEquals(boundB)) {
+                return false;
+            }
         }
 
         Map<JVarType, JType> thetaDoublePrime = new LinkedHashMap<>();
@@ -276,11 +288,15 @@ public class JResolveMostSpecificMethod {
         for (int j = 0; j < mts.parameters().size(); j++) {
             JType uj = mts.parameters().get(j);
             JType vj = thetaPrimeResolver.apply(mtt.parameters().get(j));
-            if (!system.operations().isSubtype(vj, uj)) return false;
+            if (!system.operations().isSubtype(vj, uj)) {
+                return false;
+            }
 
             JType ujPrime = mtsPrime.parameters().get(j);
             JType vjPrime = thetaDoublePrimeResolver.apply(mtt.parameters().get(j));
-            if (!vjPrime.typeEquals(ujPrime)) return false;
+            if (!vjPrime.typeEquals(ujPrime)) {
+                return false;
+            }
         }
 
         JType rs = mts.returnType();
@@ -342,12 +358,16 @@ public class JResolveMostSpecificMethod {
     }
 
     private static boolean isStandalonePrimitive(JTypeSystem system, JExpressionInformation expr) {
-        if (!expr.isSimplyTyped()) return false;
+        if (!expr.isSimplyTyped()) {
+            return false;
+        }
         return expr.getSimpleType(system, Function.identity()).map(t -> t instanceof JPrimitiveType).orElse(false);
     }
 
     private static boolean isStandaloneReferenceOrPoly(JTypeSystem system, JExpressionInformation expr) {
-        if (!expr.isSimplyTyped()) return true;
+        if (!expr.isSimplyTyped()) {
+            return true;
+        }
         return expr.getSimpleType(system, Function.identity()).map(t -> !(t instanceof JPrimitiveType)).orElse(false);
     }
 
@@ -356,15 +376,23 @@ public class JResolveMostSpecificMethod {
         Optional<JMethodReference> mtsOpt = JReduceLambdaExpression.findFunctionalMethod(capturedSi);
         Optional<JMethodReference> mtsPrimeOpt = JReduceLambdaExpression.findFunctionalMethod(si);
         Optional<JMethodReference> mttOpt = JReduceLambdaExpression.findFunctionalMethod(ti);
-        if (mtsOpt.isEmpty() || mtsPrimeOpt.isEmpty() || mttOpt.isEmpty()) return false;
+        if (mtsOpt.isEmpty() || mtsPrimeOpt.isEmpty() || mttOpt.isEmpty()) {
+            return false;
+        }
 
         JMethodReference mts = mtsOpt.get();
         JMethodReference mtsPrime = mtsPrimeOpt.get();
         JMethodReference mtt = mttOpt.get();
 
-        if (mts.typeParameters().size() != mtt.typeParameters().size()) return false;
-        if (mts.parameters().size() != mtt.parameters().size()) return false;
-        if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) return false;
+        if (mts.typeParameters().size() != mtt.typeParameters().size()) {
+            return false;
+        }
+        if (mts.parameters().size() != mtt.parameters().size()) {
+            return false;
+        }
+        if (mts.typeParameters().size() != mtsPrime.typeParameters().size()) {
+            return false;
+        }
 
         Map<JVarType, JType> thetaPrime = new LinkedHashMap<>();
         for (int j = 0; j < mtt.typeParameters().size(); j++) {
@@ -507,10 +535,16 @@ public class JResolveMostSpecificMethod {
                     .filter(m -> declaring == null ? !m.hasModifier(AccessFlag.PRIVATE) || site instanceof JClassType sct && m.outerClass().typeEquals(sct.classReference())
                             : m.outerClass().accessFrom(declaring, null).canAccess(m.access()))
                     .toList();
-            if (candidates.size() != 1) return Optional.empty();
+            if (candidates.size() != 1) {
+                return Optional.empty();
+            }
             JMethodReference m = candidates.get(0);
-            if (m.hasModifier(AccessFlag.VARARGS)) return Optional.empty();
-            if (!m.typeParameters().isEmpty() && isEmpty(methodRef.explicitTypeArguments())) return Optional.empty();
+            if (m.hasModifier(AccessFlag.VARARGS)) {
+                return Optional.empty();
+            }
+            if (!m.typeParameters().isEmpty() && isEmpty(methodRef.explicitTypeArguments())) {
+                return Optional.empty();
+            }
             return Optional.of(m);
         }
 
@@ -518,16 +552,24 @@ public class JResolveMostSpecificMethod {
             if (instRef.type() instanceof JArrayType) {
                 return Optional.empty();
             }
-            if (!(instRef.type() instanceof JClassReference classRef)) return Optional.empty();
+            if (!(instRef.type() instanceof JClassReference classRef)) {
+                return Optional.empty();
+            }
 
             List<JMethodReference> ctors = classRef.declaredMethods().stream()
                     .filter(m -> m.location().isConstructor() && !m.hasModifier(AccessFlag.PRIVATE))
                     .toList();
-            if (ctors.size() != 1) return Optional.empty();
+            if (ctors.size() != 1) {
+                return Optional.empty();
+            }
 
             JMethodReference ctor = ctors.get(0);
-            if (ctor.hasModifier(AccessFlag.VARARGS)) return Optional.empty();
-            if (!ctor.typeParameters().isEmpty() && isEmpty(instRef.explicitTypeArguments())) return Optional.empty();
+            if (ctor.hasModifier(AccessFlag.VARARGS)) {
+                return Optional.empty();
+            }
+            if (!ctor.typeParameters().isEmpty() && isEmpty(instRef.explicitTypeArguments())) {
+                return Optional.empty();
+            }
             return Optional.of(ctor);
         }
 

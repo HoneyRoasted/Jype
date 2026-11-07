@@ -23,7 +23,9 @@ public class JWildTypeLowerImpl extends JAbstractPossiblyUnmodifiableType implem
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JWildType.Lower copy = this.typeSystem().typeFactory().newLowerWildType();
         cache.put(this, copy);
@@ -78,8 +80,12 @@ public class JWildTypeLowerImpl extends JAbstractPossiblyUnmodifiableType implem
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
-        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
+        if (kind == Equality.EQUIVALENT && JType.baseCaseEquivalence(this, other, seen)) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JWildType.Lower wtl) {
@@ -91,7 +97,9 @@ public class JWildTypeLowerImpl extends JAbstractPossiblyUnmodifiableType implem
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
+        if (seen.contains(this)) {
+            return 0;
+        }
         seen = JType.concat(seen, this);
 
         return JType.multiHash(2, JType.hashCode(lowerBound, seen));

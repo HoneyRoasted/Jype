@@ -90,8 +90,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         }
     }
 
-    private static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.MethodInvocation<?> invocation, JType site, JClassType receiverType, boolean staticForm, boolean superForm,
-                                                             JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
+    private static Optional<ConstraintBranch.Snapshot> select(JTypeSystem system, JExpressionInformation.MethodInvocation<?> invocation, JType site, JClassType receiverType, boolean staticForm, boolean superForm, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         JClassReference declaring = invocation.declaring();
         List<JInvocationCandidate> candidates = new ArrayList<>();
         for (JMethodLookup.Member member : JMethodLookup.members(site, invocation.name())) {

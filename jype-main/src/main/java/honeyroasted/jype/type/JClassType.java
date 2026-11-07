@@ -178,7 +178,9 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
     }
 
     default boolean buildHierarchyPath(JClassReference supertype, List<JClassType> building) {
-        if (supertype == null) return false;
+        if (supertype == null) {
+            return false;
+        }
 
         if (this.classReference().equals(supertype)) {
             building.add(0, this);

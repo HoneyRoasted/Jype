@@ -57,7 +57,9 @@ public interface JVarType extends PossiblyUnmodifiable, JType, JArgumentType {
 
     @Override
     default boolean hasCyclicTypeVariables(Set<JVarType> seen) {
-        if (seen.contains(this)) return true;
+        if (seen.contains(this)) {
+            return true;
+        }
         seen.add(this);
         return this.upperBounds().stream().anyMatch(t -> t.hasCyclicTypeVariables(new HashSet<>(seen)));
     }

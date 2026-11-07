@@ -31,7 +31,9 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
     @Override
     public <T extends JType> T copy(JTypeCache<JType, JType> cache) {
         Optional<JType> cached = cache.get(this);
-        if (cached.isPresent()) return (T) cached.get();
+        if (cached.isPresent()) {
+            return (T) cached.get();
+        }
 
         JParameterizedMethodType copy = this.typeSystem().typeFactory().newParameterizedMethodType();
         cache.put(this, copy);
@@ -157,7 +159,9 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
 
     @Override
     public boolean equals(JType other, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (seen.contains(Pair.identity(this, other))) return true;
+        if (seen.contains(Pair.identity(this, other))) {
+            return true;
+        }
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JMethodType mt) {
@@ -180,7 +184,9 @@ public final class JParameterizedMethodTypeImpl extends JAbstractPossiblyUnmodif
 
     @Override
     public int hashCode(Set<JType> seen) {
-        if (seen.contains(this)) return 0;
+        if (seen.contains(this)) {
+            return 0;
+        }
         seen = JType.concat(seen, this);
 
         int base = this.methodReference == null ? 0 : Objects.hashCode(this.methodReference.location());

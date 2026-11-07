@@ -99,8 +99,12 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static boolean baseCaseEquivalence(JType left, JType other, Set<Pair<JType, JType>> seen) {
-        if (left == other) return true;
-        if (seen.contains(Pair.identity(left, other))) return true;
+        if (left == other) {
+            return true;
+        }
+        if (seen.contains(Pair.identity(left, other))) {
+            return true;
+        }
 
         if (left instanceof JMetaVarType mvt) {
             return other instanceof JMetaVarType omvt && mvt.identity() == omvt.identity();
@@ -138,8 +142,12 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static boolean typeEquals(JType left, JType right, Set<Pair<JType, JType>> seen) {
-        if (left == right) return true;
-        if (left == null || right == null) return false;
+        if (left == right) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
         return left.equals(right, Equality.EQUIVALENT, seen);
     }
 
@@ -148,21 +156,33 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static boolean structuralEquals(JType left, JType right, Set<Pair<JType, JType>> seen) {
-        if (left == right) return true;
-        if (left == null || right == null) return false;
+        if (left == right) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
         return left.equals(right, Equality.STRUCTURAL, seen);
     }
 
     static boolean equals(JType left, JType right, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (left == right) return true;
-        if (left == null || right == null) return false;
+        if (left == right) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
         return left.equals(right, kind, seen);
     }
 
 
     static boolean equals(List<? extends JType> left, List<? extends JType> right, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (left == right) return true;
-        if (left == null || right == null) return false;
+        if (left == right) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
 
         if (left.size() == right.size()) {
             for (int i = 0; i < left.size(); i++) {
@@ -176,8 +196,12 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static boolean equals(Set<? extends JType> left, Set<? extends JType> right, Equality kind, Set<Pair<JType, JType>> seen) {
-        if (left == right) return true;
-        if (left == null || right == null) return false;
+        if (left == right) {
+            return true;
+        }
+        if (left == null || right == null) {
+            return false;
+        }
 
         if (left.size() == right.size()) {
             for (JType lt : left) {
@@ -189,7 +213,9 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
                     }
                 }
 
-                if (!contains) return false;
+                if (!contains) {
+                    return false;
+                }
             }
 
             return true;
@@ -217,12 +243,16 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static int hashCode(JType type, Set<JType> seen) {
-        if (type == null) return 0;
+        if (type == null) {
+            return 0;
+        }
         return type.hashCode(seen);
     }
 
     static int hashCode(List<? extends JType> list, Set<JType> seen) {
-        if (list == null) return 0;
+        if (list == null) {
+            return 0;
+        }
 
         int hash = 1;
         for (JType t : list) {
@@ -232,7 +262,9 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
     }
 
     static int hashCode(Set<? extends JType> set, Set<JType> seen) {
-        if (set == null) return 0;
+        if (set == null) {
+            return 0;
+        }
 
         int hash = 1;
         for (JType t : set) {
