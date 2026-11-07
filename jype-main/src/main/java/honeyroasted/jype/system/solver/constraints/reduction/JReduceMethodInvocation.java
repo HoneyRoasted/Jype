@@ -31,7 +31,7 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
         return status.isUnknown() && constraint.left() instanceof JExpressionInformation.MethodInvocation<?> invoc &&
                 (invoc.source() instanceof JClassReference || invoc.source() instanceof JExpressionInformation ||
-                        invoc.source() instanceof JExpressionInformation.SuperReference);
+                        invoc.source() instanceof JExpressionInformation.SuperReference || invoc.source() instanceof JExpressionInformation.ImplicitReceiver);
     }
 
     @Override
@@ -44,6 +44,24 @@ public class JReduceMethodInvocation extends ConstraintMapper.Unary<JTypeConstra
         if (invocation.source() instanceof JClassReference ref) {
             // JLS §15.12.1 TypeName.m: the class to search is TypeName
             select(system, invocation, ref, null, true, false, constraint, Map.of()).ifPresent(newChildren::add);
+        } else if (invocation.source() instanceof JExpressionInformation.ImplicitReceiver) {
+            // JLS §15.12.1 an unqualified name searches the innermost enclosing class with a member of that name
+            JClassType current = declaring;
+            boolean staticContext = invocation.declaringMethod() != null && invocation.declaringMethod().hasModifier(AccessFlag.STATIC);
+            while (current != null) {
+                JClassType site = current.classReference().typeParameters().isEmpty() ? current.classReference() : current.classReference().parameterizedWithTypeVars();
+                if (!JMethodLookup.members(site, invocation.name()).isEmpty()) {
+                    Optional<ConstraintBranch.Snapshot> snapshot = select(system, invocation, site, site, false, false, constraint, Map.of());
+                    boolean finalStatic = staticContext;
+                    snapshot.filter(s -> !finalStatic || s.metadata().first(JTypeContext.ChosenMethod.class).map(cm -> cm.chosen().hasModifier(AccessFlag.STATIC)).orElse(true))
+                            .ifPresent(newChildren::add);
+                    break;
+                }
+                if (current.classReference().hasModifier(AccessFlag.STATIC)) {
+                    staticContext = true;
+                }
+                current = current.hasOuterType() ? current.outerType() : null;
+            }
         } else if (invocation.source() instanceof JExpressionInformation.SuperReference superRef) {
             JClassType site = superSite(superRef, declaring);
             if (site != null) {

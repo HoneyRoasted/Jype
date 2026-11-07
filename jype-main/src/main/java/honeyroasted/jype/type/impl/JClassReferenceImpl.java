@@ -35,6 +35,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     private List<JVarType> typeParameters = new ArrayList<>();
 
     private List<JClassReference> nestMembers = new ArrayList<>();
+    private List<JClassReference> permittedSubclasses = new ArrayList<>();
     private List<JMethodReference> declaredMethods = new ArrayList<>();
     private List<JFieldReference> declaredFields = new ArrayList<>();
 
@@ -61,6 +62,7 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
         copy.setDeclaredMethods(this.declaredMethods.stream().map(m -> (JMethodReference) m.copy(cache)).toList());
         copy.setDeclaredFields(this.declaredFields.stream().map(f -> (JFieldReference) f.copy(cache)).toList());
         copy.setNestMembers(this.nestMembers.stream().map(c -> (JClassReference) c.copy(cache)).toList());
+        copy.setPermittedSubclasses(this.permittedSubclasses.stream().map(c -> (JClassReference) c.copy(cache)).toList());
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -168,6 +170,17 @@ public final class JClassReferenceImpl extends JAbstractPossiblyUnmodifiableType
     public void setOuterMethod(JMethodReference outerMethod) {
         this.checkUnmodifiable();
         this.outerMethod = outerMethod;
+    }
+
+    @Override
+    public List<JClassReference> permittedSubclasses() {
+        return this.permittedSubclasses;
+    }
+
+    @Override
+    public void setPermittedSubclasses(List<JClassReference> permittedSubclasses) {
+        super.checkUnmodifiable();
+        this.permittedSubclasses = permittedSubclasses;
     }
 
     @Override

@@ -598,28 +598,25 @@ public class JResolveMostSpecificMethod {
 
     private static Optional<JMethodReference> exactMethodReferenceDeclaration(JTypeSystem system, JExpressionInformation expr) {
         if (expr instanceof JExpressionInformation.InvocationReference<?> methodRef) {
-            List<JMethodReference> candidates;
+            JType site;
             if (methodRef.source() instanceof JClassReference classRef) {
-                candidates = JMemberLookup.allMethods(classRef).stream()
-                        .filter(m -> m.location().name().equals(methodRef.methodName()))
-                        .toList();
-            } else if (methodRef.source() instanceof JExpressionInformation sourceExpr && sourceExpr.isSimplyTyped()) {
-                Optional<JType> sourceType = sourceExpr.getSimpleType(system, Function.identity());
-                if (sourceType.isEmpty()) return Optional.empty();
-
-                List<JMethodReference> found = new ArrayList<>();
-                for (JClassType ct : JMemberLookup.findClassTypes(sourceType.get())) {
-                    for (JMethodReference m : JMemberLookup.allMethods(ct.classReference())) {
-                        if (m.location().name().equals(methodRef.methodName()) && !m.hasModifier(AccessFlag.PRIVATE)) {
-                            found.add(m);
-                        }
-                    }
+                site = classRef;
+            } else if (methodRef.source() instanceof JExpressionInformation sourceExpr) {
+                List<honeyroasted.jype.system.solver.JStandaloneType> types = honeyroasted.jype.system.solver.JStandaloneTyping.resolve(sourceExpr, system);
+                if (types.size() != 1) {
+                    return Optional.empty();
                 }
-                candidates = found;
+                site = types.getFirst().type();
             } else {
                 return Optional.empty();
             }
-
+            JClassReference declaring = methodRef instanceof JExpressionInformation.InvocationReference.Full<?> full ? full.declaring() : null;
+            // JLS §15.13.1 the type to search has exactly one accessible member method with the name
+            List<JMethodReference> candidates = honeyroasted.jype.system.solver.JMethodLookup.members(site, methodRef.methodName()).stream()
+                    .map(honeyroasted.jype.system.solver.JMethodLookup.Member::method)
+                    .filter(m -> declaring == null ? !m.hasModifier(AccessFlag.PRIVATE) || site instanceof JClassType sct && m.outerClass().typeEquals(sct.classReference())
+                            : m.outerClass().accessFrom(declaring, null).canAccess(m.access()))
+                    .toList();
             if (candidates.size() != 1) return Optional.empty();
             JMethodReference m = candidates.get(0);
             if (m.hasModifier(AccessFlag.VARARGS)) return Optional.empty();

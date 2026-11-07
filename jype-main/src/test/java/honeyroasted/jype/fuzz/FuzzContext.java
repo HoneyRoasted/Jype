@@ -12,4 +12,6 @@ public interface FuzzContext {
     JType typeOf(String holderField);
 
     JClassReference classNamed(String name);
+
+    honeyroasted.jype.type.JMethodReference probeMethod();
 }

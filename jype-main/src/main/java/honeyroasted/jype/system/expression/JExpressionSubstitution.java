@@ -37,6 +37,12 @@ public final class JExpressionSubstitution {
             case JExpressionInformation.ArrayCreation.Simple a ->
                     new JExpressionInformation.ArrayCreation.Simple(a.componentType(), list(a.dimensions(), replacements), a.extraDimensions(), substitute(a.initializer(), replacements));
             case JExpressionInformation.ArrayInitializer.Simple a -> new JExpressionInformation.ArrayInitializer.Simple(list(a.elements(), replacements));
+            case JExpressionInformation.ArrayAccess a -> new JExpressionInformation.ArrayAccess(substitute(a.array(), replacements), substitute(a.index(), replacements));
+            case JExpressionInformation.Assignment a -> new JExpressionInformation.Assignment(substitute(a.variable(), replacements), a.operator(), substitute(a.value(), replacements));
+            case JExpressionInformation.IncrementDecrement i -> new JExpressionInformation.IncrementDecrement(substitute(i.variable(), replacements), i.increment(), i.prefix());
+            case JExpressionInformation.Switch sw -> new JExpressionInformation.Switch(substitute(sw.selector(), replacements), list(sw.results(), replacements), sw.patternLabels());
+            case JExpressionInformation.Instantiation.Anonymous i ->
+                    new JExpressionInformation.Instantiation.Anonymous(i.declaring(), i.declaringMethod(), i.type(), list(i.parameters(), replacements), i.explicitTypeArguments(), i.constructorTypeArguments(), substitute(i.outerInstance(), replacements));
             default -> expr;
         };
     }

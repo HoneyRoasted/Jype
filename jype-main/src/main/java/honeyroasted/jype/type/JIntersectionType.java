@@ -7,7 +7,7 @@ import honeyroasted.jype.system.visitor.JTypeVisitor;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public interface JIntersectionType extends JType, PossiblyUnmodifiable {
+public interface JIntersectionType extends JType, PossiblyUnmodifiable, JArgumentType {
 
     static JType of(Set<JType> types, JTypeSystem system) {
         if (types.isEmpty()) {

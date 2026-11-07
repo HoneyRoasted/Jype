@@ -49,7 +49,42 @@ public final class JCastability {
             }
             return JTypeRelations.isLooseInvocationCompatible(skipped, s) || (sp && !(skipped instanceof JNoneType) && JTypeRelations.isSubtype(((JPrimitiveType) s).box(), skipped));
         }
-        return visit(t, s);
+        boolean result = visit(t, s);
+        if (result && t instanceof JClassType tc && s instanceof JClassType sc && (tc.classReference().isSealed() || sc.classReference().isSealed())) {
+            // JLS §5.1.6.1 sealed hierarchies make some casts impossible
+            return !areDisjoint(tc.classReference(), sc.classReference(), new HashSet<>());
+        }
+        return result;
+    }
+
+    private static boolean areDisjoint(JClassReference ts, JClassReference ss, Set<Pair<JType, JType>> seen) {
+        if (!seen.add(Pair.identity(ts, ss))) {
+            return false;
+        }
+        boolean tInterface = ts.hasModifier(AccessFlag.INTERFACE);
+        boolean sInterface = ss.hasModifier(AccessFlag.INTERFACE);
+        if (tInterface != sInterface) {
+            JClassReference isym = tInterface ? ts : ss;
+            JClassReference csym = isym == ts ? ss : ts;
+            if (!JTypeRelations.isSubtype(csym, isym)) {
+                if (csym.hasModifier(AccessFlag.FINAL)) {
+                    return true;
+                } else if (csym.isSealed()) {
+                    return csym.permittedSubclasses().stream().allMatch(p -> areDisjoint(isym, p, seen));
+                } else if (isym.isSealed()) {
+                    return isym.permittedSubclasses().stream().allMatch(p -> areDisjoint(csym, p, seen));
+                }
+            }
+        } else if (!tInterface) {
+            return !JTypeRelations.isSubtype(ss, ts) && !JTypeRelations.isSubtype(ts, ss);
+        } else if (!JTypeRelations.isSubtype(ts, ss) && !JTypeRelations.isSubtype(ss, ts)) {
+            if (ts.isSealed()) {
+                return ts.permittedSubclasses().stream().allMatch(p -> areDisjoint(ss, p, seen));
+            } else if (ss.isSealed()) {
+                return ss.permittedSubclasses().stream().allMatch(p -> areDisjoint(ts, p, seen));
+            }
+        }
+        return false;
     }
 
     private static boolean visit(JType t, JType s) {

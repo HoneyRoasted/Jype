@@ -87,7 +87,12 @@ public interface JTypeConstraints {
             ASSIGNMENT("~<:"),
             STRICT_INVOCATION("<:"),
             LOOSE_INVOCATION("~<:"),
-            EXPLICIT_CAST("~:>");
+            EXPLICIT_CAST("~:>"),
+            STANDALONE("::");
+
+            public boolean isPoly() {
+                return this == ASSIGNMENT || this == STRICT_INVOCATION || this == LOOSE_INVOCATION;
+            }
 
             private final String symbol;
 
@@ -218,6 +223,22 @@ public interface JTypeConstraints {
         }
 
         public static final ResolutionScratch INSTANCE = new ResolutionScratch();
+    }
+
+    final class Denotable extends Constraint.Unary<JType> {
+        public Denotable(JType value) {
+            super(value);
+        }
+
+        @Override
+        public String toString() {
+            return this.value() + " MUST BE DENOTABLE";
+        }
+
+        @Override
+        public String simpleName() {
+            return "denotable(" + this.value().simpleName() + ")";
+        }
     }
 
     final class UncheckedConversion extends Constraint.Binary<JType, JType> {

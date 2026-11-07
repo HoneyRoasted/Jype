@@ -382,6 +382,12 @@ public interface JReflectionTypeResolution {
             }
         }
 
+        if (cls.isSealed()) {
+            for (Class<?> permitted : cls.getPermittedSubclasses()) {
+                reference.permittedSubclasses().add(new honeyroasted.jype.type.impl.delegate.JClassReferenceDelegate(system, s -> s.tryResolve(permitted)));
+            }
+        }
+
         if (cls.getSuperclass() != null) {
             JResolutionResult<Type, JType> superCls = system.resolvers().resolverFor(Type.class, JType.class)
                     .resolve(system, cls.getGenericSuperclass());

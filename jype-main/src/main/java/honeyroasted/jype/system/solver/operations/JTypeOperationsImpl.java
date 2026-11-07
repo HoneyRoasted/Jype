@@ -37,7 +37,10 @@ import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiationRefExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInvocationRefExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayAccess;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceAssignment;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceDeferred;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceSwitch;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaThrowsCheck;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
@@ -106,6 +109,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceInstantiationRefExpression(),
             new JReduceInvocationRefExpression(),
             new JReduceLambdaExpression(),
+            new JReduceArrayAccess(),
+            new JReduceAssignment(),
+            new JReduceSwitch(),
             new JReduceDeferred(),
             new JReduceLambdaThrowsCheck(),
 
@@ -150,6 +156,9 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JReduceInstantiationRefExpression(),
             new JReduceInvocationRefExpression(),
             new JReduceLambdaExpression(),
+            new JReduceArrayAccess(),
+            new JReduceAssignment(),
+            new JReduceSwitch(),
             new JReduceDeferred(),
             new JReduceLambdaThrowsCheck(),
 

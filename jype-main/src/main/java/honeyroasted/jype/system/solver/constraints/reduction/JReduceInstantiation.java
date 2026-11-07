@@ -42,8 +42,14 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         JTypeSystem system = constraint.right().typeSystem();
         JClassReference type = inst.type();
 
-        if (type.hasModifier(AccessFlag.ABSTRACT) || type.hasModifier(AccessFlag.INTERFACE)) {
+        if (!inst.anonymous() && (type.hasModifier(AccessFlag.ABSTRACT) || type.hasModifier(AccessFlag.INTERFACE))) {
             // JLS §15.9.1 a class instance creation may not instantiate an abstract class or interface
+            branch.set(constraint, Constraint.Status.FALSE);
+            return;
+        }
+        if (inst.anonymous() && (type.hasModifier(AccessFlag.FINAL) || type.hasModifier(AccessFlag.ENUM) || type.isSealed()
+                || (type.hasModifier(AccessFlag.INTERFACE) && !inst.parameters().isEmpty()))) {
+            // JLS §15.9.1 an anonymous class may not extend a final, enum or sealed class; an interface takes no arguments
             branch.set(constraint, Constraint.Status.FALSE);
             return;
         }
@@ -110,7 +116,14 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         Map<JVarType, JType> outerTheta = outer == null ? Map.of() : JTypeRelations.substitution(outer);
 
         List<JInvocationCandidate> candidates = new ArrayList<>();
-        for (JMethodReference ctor : type.declaredMethods()) {
+        if (inst.anonymous() && type.hasModifier(AccessFlag.INTERFACE)) {
+            // JLS §15.9.5.1 an anonymous class implementing an interface has an implicit no-argument constructor
+            JMethodReference objectCtor = system.constants().object().declaredMethods().stream().filter(m -> m.location().isConstructor()).findFirst().orElse(null);
+            if (objectCtor != null) {
+                candidates.add(new JInvocationCandidate(objectCtor, List.of(), new ArrayList<>(classParams), List.of(), classType, List.of(), false));
+            }
+        }
+        for (JMethodReference ctor : type.hasModifier(AccessFlag.INTERFACE) ? List.<JMethodReference>of() : type.declaredMethods()) {
             if (!ctor.location().isConstructor() || ctor.hasModifier(AccessFlag.SYNTHETIC)) {
                 continue;
             }

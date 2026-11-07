@@ -81,6 +81,16 @@ public class JClassReferenceDelegate extends JAbstractPossiblyUnmodifiableDelega
     }
 
     @Override
+    public List<JClassReference> permittedSubclasses() {
+        return delegate().permittedSubclasses();
+    }
+
+    @Override
+    public void setPermittedSubclasses(List<JClassReference> permittedSubclasses) {
+        this.delegate().setPermittedSubclasses(permittedSubclasses);
+    }
+
+    @Override
     public List<JClassReference> nestMembers() {
         return delegate().nestMembers();
     }

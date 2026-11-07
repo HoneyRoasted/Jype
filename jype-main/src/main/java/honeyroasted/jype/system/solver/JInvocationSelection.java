@@ -15,6 +15,7 @@ import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JArrayType;
+import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JMethodReference;
@@ -116,16 +117,100 @@ public final class JInvocationSelection {
                 return true;
             }
             Optional<JMethodReference> sam = JReduceLambdaExpression.findFunctionalMethod(formal);
-            return sam.isPresent() && sam.get().parameters().size() == lambda.parameterCount();
+            if (sam.isEmpty() || sam.get().parameters().size() != lambda.parameterCount()) {
+                return false;
+            }
+            boolean voidResult = sam.get().returnType().typeEquals(system.constants().voidType());
+            if (lambda.lambdaBody() instanceof JExpressionInformation.LambdaBody.Expression e) {
+                // JLS §15.12.2.1 a void function type needs a statement expression body
+                return !voidResult || JReduceLambdaExpression.isStatementExpression(e.expression());
+            } else if (lambda.lambdaBody() instanceof JExpressionInformation.LambdaBody.Block b) {
+                // JLS §15.12.2.1 a block body must be void-compatible or value-compatible to match the result
+                return voidResult ? b.isVoidCompatible() : b.isValueCompatible();
+            }
+            return true;
         } else if (arg instanceof JExpressionInformation.InvocationReference<?> || arg instanceof JExpressionInformation.InstantiationReference) {
             if (formal instanceof JVarType vt && candidate.typeParameters().contains(vt)) {
                 return true;
             }
-            return JReduceLambdaExpression.findFunctionalMethod(formal).isPresent();
+            Optional<JMethodReference> sam = JReduceLambdaExpression.findFunctionalMethod(formal);
+            return sam.isPresent() && potentiallyCompatibleReference(system, arg, sam.get().parameters().size());
         } else if (arg instanceof JExpressionInformation.Conditional c) {
             return potentiallyCompatible(system, c.whenTrue(), formal, candidate) && potentiallyCompatible(system, c.whenFalse(), formal, candidate);
+        } else if (arg instanceof JExpressionInformation.Switch sw) {
+            // JLS §15.12.2.1 a switch expression is potentially compatible if all its result expressions are
+            return sw.results().stream().allMatch(r -> potentiallyCompatible(system, r, formal, candidate));
         }
         return true;
+    }
+
+    private static boolean potentiallyCompatibleReference(JTypeSystem system, JExpressionInformation arg, int n) {
+        if (arg instanceof JExpressionInformation.InstantiationReference ref) {
+            if (ref.type() instanceof JArrayType) {
+                // JLS §15.13.1 an array constructor reference takes one argument
+                return n == 1;
+            }
+            if (!(ref.type() instanceof JClassType ct)) {
+                return true;
+            }
+            JClassReference declaring = ref instanceof JExpressionInformation.InstantiationReference.Full full ? full.declaring() : null;
+            List<JArgumentType> explicit = ref.explicitTypeArguments() == null ? List.of() : ref.explicitTypeArguments();
+            // JLS §15.12.2.1 some constructor is potentially applicable with arity n
+            return ct.classReference().declaredMethods().stream()
+                    .filter(m -> m.location().isConstructor() && accessible(m, declaring))
+                    .anyMatch(m -> supportsArity(m, n) && typeArgumentsMatch(m, explicit));
+        }
+        JExpressionInformation.InvocationReference<?> ref = (JExpressionInformation.InvocationReference<?>) arg;
+        JClassReference declaring = ref instanceof JExpressionInformation.InvocationReference.Full<?> full ? full.declaring() : null;
+        List<JArgumentType> explicit = ref.explicitTypeArguments() == null ? List.of() : ref.explicitTypeArguments();
+        List<JType> sites = new ArrayList<>();
+        boolean typeForm = false;
+        if (ref.source() instanceof JClassType ct) {
+            sites.add(ct);
+            typeForm = true;
+        } else if (ref.source() instanceof JExpressionInformation.SuperReference) {
+            return true;
+        } else if (ref.source() instanceof JExpressionInformation expr) {
+            JStandaloneTyping.resolve(expr, system).forEach(t -> sites.add(t.type()));
+            if (sites.isEmpty()) {
+                return true;
+            }
+        } else {
+            return true;
+        }
+        for (JType site : sites) {
+            for (JMethodLookup.Member member : JMethodLookup.members(site, ref.methodName())) {
+                JMethodReference m = member.method();
+                if (!accessible(m, declaring) || !typeArgumentsMatch(m, explicit)) {
+                    continue;
+                }
+                boolean isStatic = m.hasModifier(AccessFlag.STATIC);
+                if (typeForm) {
+                    // JLS §15.12.2.1 ReferenceType::m needs a static method of arity n or an instance method of arity n-1
+                    if (isStatic ? supportsArity(m, n) : n > 0 && supportsArity(m, n - 1)) {
+                        return true;
+                    }
+                } else if (!isStatic && supportsArity(m, n)) {
+                    // JLS §15.12.2.1 other forms need an instance method of arity n
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private static boolean accessible(JMethodReference m, JClassReference declaring) {
+        return declaring == null || m.outerClass().accessFrom(declaring, null).canAccess(m.access());
+    }
+
+    private static boolean supportsArity(JMethodReference m, int n) {
+        int count = m.parameters().size();
+        return m.hasModifier(AccessFlag.VARARGS) ? n >= count - 1 : n == count;
+    }
+
+    private static boolean typeArgumentsMatch(JMethodReference m, List<JArgumentType> explicit) {
+        // JLS §15.12.2.1 explicit type arguments must match the number of type parameters of a generic method
+        return explicit.isEmpty() || m.typeParameters().isEmpty() || m.typeParameters().size() == explicit.size();
     }
 
     private static List<JType> expandedFormals(List<JType> formals, int k, Phase phase) {
@@ -414,6 +499,10 @@ public final class JInvocationSelection {
             constraints.put(new JTypeConstraints.Compatible(result, constraint.middle(), constraint.right()), Constraint.Status.UNKNOWN);
         }
 
+        if (expr instanceof JExpressionInformation.Instantiation instantiation && instantiation.anonymous() && !instantiation.type().typeParameters().isEmpty() && instantiation.explicitTypeArguments().isEmpty()) {
+            // JLS §15.9.3 an anonymous class created with <> must have denotable inferred type arguments
+            constraints.put(new JTypeConstraints.Denotable(result), Constraint.Status.ASSUMED);
+        }
         List<JType> thrown = new ArrayList<>();
         JVarTypeResolveVisitor thrownResolver = new JVarTypeResolveVisitor(inst.theta());
         for (JType t : candidate.thrown()) {

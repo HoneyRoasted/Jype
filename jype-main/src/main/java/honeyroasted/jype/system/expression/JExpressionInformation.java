@@ -258,8 +258,26 @@ public interface JExpressionInformation extends SimpleName {
             @Override public List<JArgumentType> explicitTypeArguments() { return delegate.explicitTypeArguments(); }
             @Override public JClassReference type() { return delegate.type(); }
             @Override public boolean raw() { return delegate.raw(); }
+            @Override public boolean anonymous() { return delegate.anonymous(); }
             @Override public List<JArgumentType> constructorTypeArguments() { return delegate.constructorTypeArguments(); }
             @Override public JExpressionInformation outerInstance() { return delegate.outerInstance(); }
+        }
+
+        record Anonymous(JClassReference declaring, JMethodReference declaringMethod, JClassReference type, List<JExpressionInformation> parameters, List<JArgumentType> explicitTypeArguments,
+                         List<JArgumentType> constructorTypeArguments, JExpressionInformation outerInstance) implements Instantiation {
+            @Override
+            public boolean anonymous() {
+                return true;
+            }
+
+            @Override
+            public String simpleName() {
+                return "new " + this.type.simpleName() + "(" + this.parameters.stream().map(JExpressionInformation::simpleName).collect(Collectors.joining(", ")) + ") { ... }";
+            }
+        }
+
+        default boolean anonymous() {
+            return false;
         }
 
         default boolean raw() {
@@ -1176,4 +1194,135 @@ public interface JExpressionInformation extends SimpleName {
         }
     }
 
+
+    record ImplicitReceiver() implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "";
+        }
+    }
+
+    record ClassLiteral(JType type) implements SimplyTyped {
+        @Override
+        public JType type(JTypeSystem system) {
+            JType erased = honeyroasted.jype.system.solver.JTypeRelations.erasure(this.type);
+            JType arg = erased instanceof JPrimitiveType p ? p.box() : erased.typeEquals(system.constants().voidType()) ? system.constants().voidBox() : erased;
+            return system.tryResolve(Class.class) instanceof JClassReference cls ? cls.parameterized(List.of((JArgumentType) arg)) : null;
+        }
+
+        @Override
+        public boolean isSimplyTyped() {
+            return !(this.type instanceof JClassType ct && ct.hasTypeArguments() && !ct.typeArguments().isEmpty());
+        }
+
+        @Override
+        public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) {
+            return this.isSimplyTyped() ? Optional.of(mapper.apply(this.type(system))) : Optional.empty();
+        }
+
+        @Override
+        public String simpleName() {
+            return this.type.simpleName() + ".class";
+        }
+    }
+
+    record This(JClassReference declaring, JMethodReference declaringMethod, JClassReference qualifier) implements SimplyTyped {
+        @Override
+        public JType type(JTypeSystem system) {
+            JClassReference target = this.qualifier == null ? this.declaring : this.qualifier;
+            return target.typeParameters().isEmpty() ? target : target.parameterizedWithTypeVars();
+        }
+
+        @Override
+        public boolean isSimplyTyped() {
+            if (this.declaring == null || (this.declaringMethod != null && this.declaringMethod.hasModifier(AccessFlag.STATIC))) {
+                return false;
+            }
+            if (this.qualifier == null) {
+                return true;
+            }
+            JClassType current = this.declaring;
+            while (current != null) {
+                if (current.classReference().typeEquals(this.qualifier)) {
+                    return true;
+                }
+                if (current.classReference().hasModifier(AccessFlag.STATIC) || !current.hasRelevantOuterType()) {
+                    return false;
+                }
+                current = current.outerType();
+            }
+            return false;
+        }
+
+        @Override
+        public Optional<JType> getSimpleType(JTypeSystem system, Function<JType, JType> mapper) {
+            return this.isSimplyTyped() ? Optional.of(mapper.apply(this.type(system))) : Optional.empty();
+        }
+
+        @Override
+        public String simpleName() {
+            return (this.qualifier == null ? "" : this.qualifier.simpleName() + ".") + "this";
+        }
+    }
+
+    record LocalVariable(String name, JType type, boolean isFinal) implements SimplyTyped {
+        @Override
+        public JType type(JTypeSystem system) {
+            return this.type;
+        }
+
+        @Override
+        public String simpleName() {
+            return this.name;
+        }
+    }
+
+    record ArrayAccess(JExpressionInformation array, JExpressionInformation index) implements JExpressionInformation {
+        @Override
+        public JExpressionInformation toSimple(JType type) {
+            return new SimplyTyped.Simple(type);
+        }
+
+        @Override
+        public String simpleName() {
+            return this.array.simpleName() + "[" + this.index.simpleName() + "]";
+        }
+    }
+
+    record Assignment(JExpressionInformation variable, BinaryOperator.Kind operator, JExpressionInformation value) implements JExpressionInformation {
+        @Override
+        public JExpressionInformation toSimple(JType type) {
+            return new SimplyTyped.Simple(type);
+        }
+
+        @Override
+        public String simpleName() {
+            return this.variable.simpleName() + " " + (this.operator == null ? "" : BinaryOperator.symbol(this.operator)) + "= " + this.value.simpleName();
+        }
+    }
+
+    record IncrementDecrement(JExpressionInformation variable, boolean increment, boolean prefix) implements JExpressionInformation {
+        @Override
+        public JExpressionInformation toSimple(JType type) {
+            return new SimplyTyped.Simple(type);
+        }
+
+        @Override
+        public String simpleName() {
+            String op = this.increment ? "++" : "--";
+            return this.prefix ? op + this.variable.simpleName() : this.variable.simpleName() + op;
+        }
+    }
+
+    record Switch(JExpressionInformation selector, List<JExpressionInformation> results, boolean patternLabels) implements JExpressionInformation {
+        @Override
+        public JExpressionInformation toSimple(JType type) {
+            return new SimplyTyped.Simple(type);
+        }
+
+        @Override
+        public String simpleName() {
+            return "switch (" + this.selector.simpleName() + ") { " + this.results.stream().map(r -> "-> " + r.simpleName() + "; ").collect(Collectors.joining()) + "}";
+        }
+    }
 }

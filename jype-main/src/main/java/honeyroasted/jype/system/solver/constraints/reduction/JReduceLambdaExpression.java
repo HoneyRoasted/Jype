@@ -162,7 +162,9 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
     }
 
     public static boolean isStatementExpression(JExpressionInformation expr) {
-        return expr instanceof JExpressionInformation.MethodInvocation<?> || expr instanceof JExpressionInformation.Instantiation;
+        // JLS §14.8 statement expressions
+        return expr instanceof JExpressionInformation.MethodInvocation<?> || expr instanceof JExpressionInformation.Instantiation
+                || expr instanceof JExpressionInformation.Assignment || expr instanceof JExpressionInformation.IncrementDecrement;
     }
 
     private static List<JExpressionInformation> invocations(List<JExpressionInformation> roots) {
@@ -203,6 +205,17 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
             collectInvocations(a.initializer(), result);
         } else if (expr instanceof JExpressionInformation.ArrayInitializer a) {
             a.elements().forEach(e -> collectInvocations(e, result));
+        } else if (expr instanceof JExpressionInformation.ArrayAccess a) {
+            collectInvocations(a.array(), result);
+            collectInvocations(a.index(), result);
+        } else if (expr instanceof JExpressionInformation.Assignment a) {
+            collectInvocations(a.variable(), result);
+            collectInvocations(a.value(), result);
+        } else if (expr instanceof JExpressionInformation.IncrementDecrement i) {
+            collectInvocations(i.variable(), result);
+        } else if (expr instanceof JExpressionInformation.Switch sw) {
+            collectInvocations(sw.selector(), result);
+            sw.results().forEach(r -> collectInvocations(r, result));
         }
     }
 

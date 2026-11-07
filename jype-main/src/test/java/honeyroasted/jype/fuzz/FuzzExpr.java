@@ -227,4 +227,129 @@ public interface FuzzExpr {
             return new JExpressionInformation.UnaryOperator.Simple(this.kind, this.operand.toJype(ctx));
         }
     }
+
+    record Local(String name, TypeRef type) implements FuzzExpr {
+        @Override
+        public String source() {
+            return this.name;
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.LocalVariable(this.name, this.type.resolve(ctx), false);
+        }
+    }
+
+    record ClassLit(TypeRef type) implements FuzzExpr {
+        @Override
+        public String source() {
+            return this.type.source() + ".class";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.ClassLiteral(this.type.resolve(ctx));
+        }
+    }
+
+    record This() implements FuzzExpr {
+        @Override
+        public String source() {
+            return "this";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.This(ctx.host(), null, null);
+        }
+    }
+
+    record Assign(FuzzExpr variable, JExpressionInformation.BinaryOperator.Kind kind, String symbol, FuzzExpr value) implements FuzzExpr {
+        @Override
+        public String source() {
+            return "(" + this.variable.source() + " " + (this.symbol == null ? "" : this.symbol) + "= " + this.value.source() + ")";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.Assignment(this.variable.toJype(ctx), this.kind, this.value.toJype(ctx));
+        }
+    }
+
+    record IncDec(FuzzExpr variable, boolean increment, boolean prefix) implements FuzzExpr {
+        @Override
+        public String source() {
+            String op = this.increment ? "++" : "--";
+            return "(" + (this.prefix ? op + this.variable.source() : this.variable.source() + op) + ")";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.IncrementDecrement(this.variable.toJype(ctx), this.increment, this.prefix);
+        }
+    }
+
+    record Index(FuzzExpr array, FuzzExpr index) implements FuzzExpr {
+        @Override
+        public String source() {
+            return this.array.source() + "[" + this.index.source() + "]";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.ArrayAccess(this.array.toJype(ctx), this.index.toJype(ctx));
+        }
+    }
+
+    record SwitchExpr(FuzzExpr selector, List<FuzzExpr> results, boolean pattern) implements FuzzExpr {
+        @Override
+        public String source() {
+            StringBuilder sb = new StringBuilder("switch (").append(this.selector.source()).append(") { ");
+            if (this.pattern) {
+                for (int i = 0; i < this.results.size(); i++) {
+                    sb.append("case Object o").append(i).append(i < this.results.size() - 1 ? " when M.flag" : "").append(" -> ").append(this.results.get(i).source()).append("; ");
+                }
+            } else if (this.results.size() == 1) {
+                sb.append("default -> ").append(this.results.getFirst().source()).append("; ");
+            } else {
+                sb.append("default -> { ");
+                for (int i = 0; i < this.results.size() - 1; i++) {
+                    sb.append("if (M.flag) yield ").append(this.results.get(i).source()).append("; ");
+                }
+                sb.append("yield ").append(this.results.getLast().source()).append("; } ");
+            }
+            return sb.append("}").toString();
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.Switch(this.selector.toJype(ctx), this.results.stream().map(r -> r.toJype(ctx)).toList(), this.pattern);
+        }
+    }
+
+    record Anon(String className, List<TypeRef> typeArguments, boolean diamond, List<FuzzExpr> arguments, String body) implements FuzzExpr {
+        @Override
+        public String source() {
+            return "new " + this.className + (this.diamond ? "<>" : typeArgs(this.typeArguments)) + "(" + this.arguments.stream().map(FuzzExpr::source).collect(Collectors.joining(", ")) + ") { " + this.body + " }";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.Instantiation.Anonymous(ctx.host(), null, ctx.classNamed(this.className),
+                    this.arguments.stream().map(a -> a.toJype(ctx)).toList(), args(ctx, this.typeArguments), List.of(), null);
+        }
+    }
+
+    record Unqualified(String name, List<FuzzExpr> arguments) implements FuzzExpr {
+        @Override
+        public String source() {
+            return this.name + "(" + this.arguments.stream().map(FuzzExpr::source).collect(Collectors.joining(", ")) + ")";
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            return new JExpressionInformation.MethodInvocation.Simple<>(ctx.host(), ctx.probeMethod(), new JExpressionInformation.ImplicitReceiver(), this.name,
+                    this.arguments.stream().map(a -> a.toJype(ctx)).toList(), Collections.emptyList());
+        }
+    }
 }

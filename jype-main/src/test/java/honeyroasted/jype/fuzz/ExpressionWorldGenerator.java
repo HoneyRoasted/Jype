@@ -68,6 +68,8 @@ public class ExpressionWorldGenerator {
     private final List<String> methodArity = new ArrayList<>();
     private final List<List<String>> scopes = new ArrayList<>();
     private int lambdaCounter;
+    private boolean instanceProbe;
+    private static final String[][] LOCALS = {{"String", "l0"}, {"int", "l1"}, {"java.util.List<String>", "l2"}, {"Object", "l3"}, {"int[]", "l4"}, {"Integer", "l5"}};
 
     public ExpressionWorldGenerator(long seed) {
         this.random = new Random(seed);
@@ -94,6 +96,7 @@ public class ExpressionWorldGenerator {
             decls.add("    static " + type + " " + name + ";");
         }
         decls.add("    static boolean flag;");
+        decls.add("    static void staticContext() { }");
 
         for (String[] lib : LIBRARY) {
             decls.add("    " + lib[1] + " { throw new RuntimeException(); }");
@@ -130,10 +133,11 @@ public class ExpressionWorldGenerator {
         for (int i = 0; i < probeCount; i++) {
             if (this.random.nextBoolean()) {
                 String[] directed = this.directedTarget();
-                probes.add(new Probe(i, this.holder(directed[0]), directed[0], this.directed(Integer.parseInt(directed[1]))));
+                probes.add(new Probe(i, this.holder(directed[0]), directed[0], this.directed(Integer.parseInt(directed[1])), false));
             } else {
                 String target = this.target();
-                probes.add(new Probe(i, this.holder(target), target, this.expr(0)));
+                this.instanceProbe = this.random.nextInt(4) == 0;
+                probes.add(new Probe(i, this.holder(target), target, this.expr(0), this.instanceProbe));
             }
         }
         this.holders.forEach((type, field) -> decls.add("    static " + type + " " + field + ";"));
@@ -226,7 +230,65 @@ public class ExpressionWorldGenerator {
         return new FuzzExpr.Field(this.valueFields.get(this.random.nextInt(this.valueFields.size())));
     }
 
+    private FuzzExpr local() {
+        String[] l = LOCALS[this.random.nextInt(LOCALS.length)];
+        return new FuzzExpr.Local(l[1], this.typeRef(l[0]));
+    }
+
+    private FuzzExpr variable() {
+        return switch (this.random.nextInt(4)) {
+            case 0 -> this.local();
+            case 1 -> new FuzzExpr.Index(new FuzzExpr.Field(this.random.nextBoolean() ? "sa" : "ia"), new FuzzExpr.Literal("0", 0));
+            default -> new FuzzExpr.Field(this.valueFields.get(this.random.nextInt(this.valueFields.size())));
+        };
+    }
+
+    private FuzzExpr extra(int depth) {
+        int k = this.random.nextInt(9);
+        return switch (k) {
+            case 0 -> this.local();
+            case 1 -> new FuzzExpr.ClassLit(this.typeRef(this.random.nextBoolean() ? PLAIN[this.random.nextInt(PLAIN.length)].replace("<String>", "") : PRIMITIVES[this.random.nextInt(PRIMITIVES.length)] + (this.random.nextBoolean() ? "[]" : "")));
+            case 2 -> this.instanceProbe ? new FuzzExpr.This() : new FuzzExpr.ClassLit(this.typeRef("java.util.List"));
+            case 3 -> {
+                String[] ops = {null, "+", "-", "*", "&", "<<"};
+                JExpressionInformation.BinaryOperator.Kind[] kinds = {null, JExpressionInformation.BinaryOperator.Kind.ADD, JExpressionInformation.BinaryOperator.Kind.SUB, JExpressionInformation.BinaryOperator.Kind.MUL, JExpressionInformation.BinaryOperator.Kind.AND, JExpressionInformation.BinaryOperator.Kind.SHL};
+                int o = this.random.nextInt(ops.length);
+                yield new FuzzExpr.Assign(this.variable(), kinds[o], ops[o], this.expr(depth + 1));
+            }
+            case 4 -> new FuzzExpr.IncDec(this.variable(), this.random.nextBoolean(), this.random.nextBoolean());
+            case 5 -> new FuzzExpr.Index(this.random.nextBoolean() ? new FuzzExpr.Field(this.random.nextBoolean() ? "sa" : "ia") : this.local(), this.expr(depth + 1));
+            case 6 -> {
+                List<FuzzExpr> results = new ArrayList<>();
+                int n = 1 + this.random.nextInt(3);
+                for (int i = 0; i < n; i++) {
+                    results.add(this.expr(depth + 1));
+                }
+                yield new FuzzExpr.SwitchExpr(this.random.nextBoolean() ? this.leaf() : this.local(), results, this.random.nextInt(3) == 0);
+            }
+            case 7 -> {
+                String[][] anons = {{"Object", "", "0"}, {"java.util.ArrayList", "", "1"}, {"Runnable", "public void run() { }", "0"}, {"Comparable", "public int compareTo(String o) { return 0; }", "2"}, {"java.util.ArrayList", "", "3"}};
+                String[] a = anons[this.random.nextInt(anons.length)];
+                List<FuzzExpr.TypeRef> targs = a[2].equals("1") || a[2].equals("2") ? List.of(this.typeRef("String")) : List.of();
+                List<FuzzExpr> args = a[2].equals("3") ? List.of(this.expr(depth + 1)) : List.of();
+                yield new FuzzExpr.Anon(a[0], targs, a[2].equals("3") || (a[2].equals("1") && this.random.nextBoolean()), args, a[1]);
+            }
+            default -> {
+                int idx = this.random.nextInt(this.methodNames.size());
+                String ar = this.methodArity.get(idx);
+                int arity = ar.equals("v") ? this.random.nextInt(3) : Integer.parseInt(ar);
+                List<FuzzExpr> args = new ArrayList<>();
+                for (int i = 0; i < arity; i++) {
+                    args.add(this.expr(depth + 1));
+                }
+                yield new FuzzExpr.Unqualified(this.methodNames.get(idx), args);
+            }
+        };
+    }
+
     private FuzzExpr expr(int depth) {
+        if (depth <= 2 && this.random.nextInt(6) == 0) {
+            return this.extra(depth);
+        }
         int k = depth > 2 ? this.random.nextInt(40) : this.random.nextInt(100);
         if (k < 35) {
             return this.leaf();

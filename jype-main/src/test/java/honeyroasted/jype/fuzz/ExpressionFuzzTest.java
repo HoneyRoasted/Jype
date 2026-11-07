@@ -40,7 +40,9 @@ public class ExpressionFuzzTest {
             "Integer", "java.lang.Integer",
             "Object", "java.lang.Object",
             "StringBuilder", "java.lang.StringBuilder",
-            "java.util.ArrayList", "java.util.ArrayList"
+            "java.util.ArrayList", "java.util.ArrayList",
+            "Runnable", "java.lang.Runnable",
+            "Comparable", "java.lang.Comparable"
     );
 
     private record Compiled(String source, Path dir, Set<Integer> rejected, List<Probe> probes, Map<Integer, String> messages) {
@@ -76,6 +78,7 @@ public class ExpressionFuzzTest {
                     continue;
                 }
                 Map<String, JType> holderCache = new HashMap<>();
+                honeyroasted.jype.type.JMethodReference[] currentProbe = new honeyroasted.jype.type.JMethodReference[1];
                 FuzzContext ctx = new FuzzContext() {
                     @Override
                     public JTypeSystem system() {
@@ -99,6 +102,11 @@ public class ExpressionFuzzTest {
                     }
 
                     @Override
+                    public honeyroasted.jype.type.JMethodReference probeMethod() {
+                        return currentProbe[0];
+                    }
+
+                    @Override
                     public JClassReference classNamed(String name) {
                         if (name.equals("M")) {
                             return hostRef.value();
@@ -114,6 +122,7 @@ public class ExpressionFuzzTest {
                 for (Probe probe : compiled.probes()) {
                     boolean expected = !compiled.rejected().contains(probe.index());
                     Outcome<Boolean> actual = runner.run(() -> {
+                        currentProbe[0] = probe.instance() ? null : system.tryResolve(host.getDeclaredMethod("staticContext"));
                         JType target = ctx.typeOf(probe.targetHolder());
                         JExpressionInformation expr = probe.expression().toJype(ctx);
                         ConstraintTree tree = system.operations().inferenceSolver()
@@ -192,6 +201,9 @@ public class ExpressionFuzzTest {
                 continue;
             }
             int line = (int) d.getLineNumber();
+            if (d.getCode() != null && d.getCode().contains("preview") && probes.size() > 1) {
+                crashed = true;
+            }
             if (line >= firstProbe && line < firstProbe + probes.size()) {
                 int idx = probes.get(line - firstProbe).index();
                 rejected.add(idx);

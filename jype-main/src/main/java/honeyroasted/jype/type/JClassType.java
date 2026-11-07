@@ -58,6 +58,14 @@ public interface JClassType extends JGenericDeclaration, JInstantiableType, JRef
 
     void setNestMembers(List<JClassReference> nestMembers);
 
+    List<JClassReference> permittedSubclasses();
+
+    void setPermittedSubclasses(List<JClassReference> permittedSubclasses);
+
+    default boolean isSealed() {
+        return !this.permittedSubclasses().isEmpty();
+    }
+
     List<JMethodReference> declaredMethods();
 
     void setDeclaredMethods(List<JMethodReference> methods);

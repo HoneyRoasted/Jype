@@ -51,7 +51,7 @@ public final class JTypeRelations {
     public static boolean isCompatible(JType s, JTypeConstraints.Compatible.Context context, JType t) {
         return switch (context) {
             case STRICT_INVOCATION -> isStrictInvocationCompatible(s, t);
-            case LOOSE_INVOCATION, ASSIGNMENT -> isLooseInvocationCompatible(s, t);
+            case LOOSE_INVOCATION, ASSIGNMENT, STANDALONE -> isLooseInvocationCompatible(s, t);
             case EXPLICIT_CAST -> isCastable(s, t);
         };
     }

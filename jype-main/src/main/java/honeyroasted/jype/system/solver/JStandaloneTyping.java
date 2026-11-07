@@ -34,13 +34,13 @@ public final class JStandaloneTyping {
             if (type.isEmpty()) {
                 return List.of();
             }
-            Constraint extra = new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, type.get());
+            Constraint extra = new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, JTypeRelations.erasure(type.get()));
             return List.of(new JStandaloneType(null, extra, type.get()));
         }
 
         JMetaVarType target = system.typeFactory().newMetaVarType("STANDALONE");
         ConstraintTree solved = system.operations().inferenceSolver()
-                .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, target))
+                .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STANDALONE, target))
                 .solve();
 
         List<JStandaloneType> result = new ArrayList<>();

@@ -30,7 +30,7 @@ public class JReduceConditionalExpression extends ConstraintMapper.Unary<JTypeCo
         JTypeSystem system = constraint.right().typeSystem();
         JExpressionInformation whenTrue = cond.whenTrue();
         JExpressionInformation whenFalse = cond.whenFalse();
-        boolean polyContext = constraint.middle() != JTypeConstraints.Compatible.Context.EXPLICIT_CAST;
+        boolean polyContext = constraint.middle().isPoly();
 
         // JLS §15.25 the first operand must be boolean or Boolean
         Constraint conditionCheck = new JTypeConstraints.ExpressionCompatible(cond.condition(), JTypeConstraints.Compatible.Context.LOOSE_INVOCATION, system.constants().booleanType());

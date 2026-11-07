@@ -803,3 +803,33 @@ Baseline: 177 tests green.
   conditional constant narrowing uses the evaluator. `JFieldReferenceImpl.copy` also dropped modifiers (fixed).
   javac-verified matrix in `JConstantExpressionTests` (16 cases: `byte b = 1 + 2` ok, `127 + 1` rejected,
   `byte b = CONST` ok vs non-final rejected, `flag ? 1 : 2` rejected, `true ? 1 : 2` ok, `1 << 7` rejected, ...).
+
+- **Items 38/41/44 (anonymous classes, switch expressions, new expression shapes) + sealed types — done.**
+  - Sealed model: `JClassType.permittedSubclasses()` / `isSealed()` (reflection: `getPermittedSubclasses`,
+    binary: `PermittedSubclasses` attribute, lazy delegates). `JCastability` ports javac's sealed
+    `areDisjoint` (§5.1.6.1): `(Sealed) new Open()` and `(Sealed) (Iface) null` rejected, `(Iface) new Open()` ok.
+  - Anonymous classes (§15.9.5): `Instantiation.Anonymous`; rejected for final / enum / sealed supertypes and
+    for interface supertypes with arguments; diamond requires denotable inferred arguments (§15.9.3) — the
+    `Denotable` check is attached in `JInvocationSelection` to the θ-substituted result (it was first put on
+    the declared `ArrayList<E>`, fuzz found `max(new ArrayList<>(charExpr) {})` accepted).
+  - New reducers: `JReduceArrayAccess` (§15.10.3: array type, promoted int index, captured component),
+    `JReduceAssignment` (§15.26 simple/compound incl. implicit narrowing cast, final/array-length rejection,
+    declared uncaptured variable types; §15.14/15.15 ++/--), `JReduceSwitch` (§15.28: poly in assignment /
+    invocation contexts, standalone typing like §15.25 incl. §5.6 numeric choice with constants, selector
+    rule §14.11.1: primitive selectors only char/byte/short/int without patterns, any reference type).
+    `Compatible.Context.STANDALONE` added so conditionals/switches know they are not poly (standalone sub-solve).
+  - Unqualified invocation (§15.12.1) via `ImplicitReceiver`: innermost enclosing class with a member of that
+    name; static-context check. `LocalVariable`, `ClassLiteral` (Class<|T|>, boxed primitives), `This` shapes.
+  - §15.12.2.1 potential compatibility now checks lambda body shape (void SAM needs statement expression or
+    void-compatible block: `consume(p -> 300)` picks the Function overload) and method-reference arity /
+    static-vs-instance rules; switch expressions recurse into results.
+  - Perf: exact-method-reference detection used the old `JMemberLookup.allMethods` (quadratic bridge search,
+    9.3 s for `consume(String::length)`); now `JMethodLookup.members` (24 ms).
+  - Standalone simply-typed receivers re-captured on every `getSimpleType`, so the validity side-constraint
+    compared `List<CAP#5>` to `List<CAP#3>` (`lnum.get(0)` rejected); the side-constraint now targets the erasure.
+  - `JIntersectionType` is a `JArgumentType` (inferred `List<Number & Comparable<...>>` crashed hashCode).
+  - Fuzz harness: probe methods take locals (`l0..l5`), 1/4 are instance methods, new FuzzExpr shapes (Local,
+    ClassLit, This, Assign, IncDec, Index, SwitchExpr, Anon, Unqualified); javac reports a disabled preview
+    feature once per file, so a preview diagnostic forces batch bisection.
+  - javac-verified matrix in `JExpressionShapeTests` (40 cases). Fuzz: expressions seeds 1–10 × 20 worlds: 0
+    mismatches; relations seeds 1–2: 0. Suite 188/188.
