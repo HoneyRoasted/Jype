@@ -35,7 +35,8 @@ public final class JIncorporationSupport {
             return;
         }
         if (left.isProperType() && right.isProperType()) {
-            if (JTypeRelations.isSubtype(left, right)) {
+            // JLS §18.3.1 derived bound; javac checks it as unchecked subtyping (Infer IS_SUBTYPE)
+            if (JTypeRelations.isSubtypeUnchecked(left, right)) {
                 branch.add(new JTypeConstraints.Subtype(left, right), Constraint.Status.TRUE);
             } else {
                 branch.add(new JTypeConstraints.Subtype(left, right), Constraint.Status.FALSE);

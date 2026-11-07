@@ -36,7 +36,7 @@ public class JVerifyBounds implements ConstraintMapper {
             } else if (con instanceof JTypeConstraints.Subtype st) {
                 JType l = theta.visit(st.left());
                 JType r = theta.visit(st.right());
-                branch.set(con, l.isProperType() && r.isProperType() ? Constraint.Status.known(JTypeRelations.isSubtype(l, r)) : Constraint.Status.TRUE);
+                branch.set(con, l.isProperType() && r.isProperType() ? Constraint.Status.known(JTypeRelations.isSubtypeUnchecked(l, r)) : Constraint.Status.TRUE);
             } else if (con instanceof JTypeConstraints.Equal eq) {
                 JType l = theta.visit(eq.left());
                 JType r = theta.visit(eq.right());

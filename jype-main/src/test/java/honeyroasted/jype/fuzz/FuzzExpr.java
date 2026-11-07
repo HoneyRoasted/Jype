@@ -91,25 +91,67 @@ public interface FuzzExpr {
         }
     }
 
-    record Lambda(List<TypeRef> explicitTypes, int parameterCount, FuzzExpr body) implements FuzzExpr {
+    ThreadLocal<java.util.Deque<java.util.Map<String, JExpressionInformation.LambdaParameter>>> SCOPES = ThreadLocal.withInitial(java.util.ArrayDeque::new);
+
+    record LambdaParam(String name) implements FuzzExpr {
+        @Override
+        public String source() {
+            return this.name;
+        }
+
+        @Override
+        public JExpressionInformation toJype(FuzzContext ctx) {
+            for (java.util.Map<String, JExpressionInformation.LambdaParameter> scope : SCOPES.get()) {
+                if (scope.containsKey(this.name)) {
+                    return scope.get(this.name);
+                }
+            }
+            throw new IllegalStateException("unbound lambda parameter " + this.name);
+        }
+    }
+
+    record Lambda(List<String> names, List<TypeRef> explicitTypes, FuzzExpr body, int form) implements FuzzExpr {
         @Override
         public String source() {
             StringBuilder sb = new StringBuilder("(");
-            for (int i = 0; i < this.parameterCount; i++) {
+            for (int i = 0; i < this.names.size(); i++) {
                 if (i > 0) {
                     sb.append(", ");
                 }
                 if (this.explicitTypes != null) {
                     sb.append(this.explicitTypes.get(i).source()).append(" ");
                 }
-                sb.append("p").append(i);
+                sb.append(this.names.get(i));
             }
-            return sb.append(") -> ").append(this.body.source()).toString();
+            sb.append(") -> ");
+            return switch (this.form) {
+                case 1 -> sb.append("{ return ").append(this.body.source()).append("; }").toString();
+                case 2 -> sb.append("{ ").append(this.body.source()).append("; }").toString();
+                default -> sb.append(this.body.source()).toString();
+            };
         }
 
         @Override
         public JExpressionInformation toJype(FuzzContext ctx) {
-            return new JExpressionInformation.Lambda.Simple(this.body.toJype(ctx), this.explicitTypes == null ? null : this.explicitTypes.stream().map(t -> t.resolve(ctx)).toList(), this.parameterCount, true);
+            List<JExpressionInformation.LambdaParameter> params = new ArrayList<>();
+            java.util.Map<String, JExpressionInformation.LambdaParameter> scope = new java.util.HashMap<>();
+            for (String n : this.names) {
+                JExpressionInformation.LambdaParameter p = JExpressionInformation.LambdaParameter.fresh(n);
+                params.add(p);
+                scope.put(n, p);
+            }
+            SCOPES.get().push(scope);
+            try {
+                JExpressionInformation b = this.body.toJype(ctx);
+                JExpressionInformation.LambdaBody body = switch (this.form) {
+                    case 1 -> new JExpressionInformation.LambdaBody.Block(List.of(), List.of(b), false, false);
+                    case 2 -> new JExpressionInformation.LambdaBody.Block(List.of(b), List.of(), false, true);
+                    default -> new JExpressionInformation.LambdaBody.Expression(b);
+                };
+                return new JExpressionInformation.Lambda.Simple(params, this.explicitTypes == null ? null : this.explicitTypes.stream().map(t -> t.resolve(ctx)).toList(), body);
+            } finally {
+                SCOPES.get().pop();
+            }
         }
     }
 

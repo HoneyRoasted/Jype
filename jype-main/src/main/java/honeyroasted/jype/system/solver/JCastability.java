@@ -308,7 +308,7 @@ public final class JCastability {
     }
 
     private static boolean isCaptured(JType t) {
-        return t instanceof JVarType vt && vt.location() != null && vt.location().isVirtual() && vt.location().name().startsWith("CAP#");
+        return t instanceof JVarType vt && vt.metadata().has(JCapturedWildcard.class);
     }
 
     private static JType cvarUpperBound(JType t) {
@@ -535,6 +535,16 @@ public final class JCastability {
         }
 
         private JType visitVar(JVarType t) {
+            if (isCaptured(t)) {
+                JWildType w = t.metadata().first(JCapturedWildcard.class).get().wildcard();
+                boolean extendsKind = w instanceof JWildType.Upper;
+                if (w instanceof JWildType.Upper wu && wu.hasDefaultBounds()) {
+                    return unboundedWildcard(t.typeSystem());
+                }
+                JType wBound = extendsKind ? ((JWildType.Upper) w).upperBound() : ((JWildType.Lower) w).lowerBound();
+                JType bound = mentions(wBound, t) ? JTypeRelations.erasure(wBound) : this.visit(wBound);
+                return this.rewriteAsWildcard(this.visit(bound), extendsKind);
+            }
             if (this.seen.add(t)) {
                 if (this.rewriteTypeVars) {
                     JType upper = t.upperBound();

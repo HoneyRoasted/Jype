@@ -767,3 +767,29 @@ Baseline: 177 tests green.
   declaring class for access checks. Engine gained `selectDetailed` (applicable set + chosen).
   Test fix: `exactMethodReferenceWithPrimitiveReturnPicksPrimitiveMaker` read the first `ChosenMethod` in
   branch metadata, which is now the nested reference's synthetic invocation; it now selects `pick`'s.
+
+- **Fuzz-driven fixes (expression generator v2).** Generator now has a fixed library of realistic generic /
+  overloaded / functional methods (`id`, `listOf(T...)`, `apply`, `max`, `over(...)` overloads, `run(Runnable)` vs
+  `run(Callable<T>)`, `risky(F3<E>) throws E`, `compose`, ...), lambda parameter references, block lambdas,
+  instance calls, and type-directed probes; acceptance rose from ~10% to ~45% of probes. Oracle hardened:
+  declarations compiled alone; probes compiled in batches with an always-failing sentinel — javac silently
+  abandons attribution after some probes (seen with `Consumer<String> x = () -> () -> M.run(M.s0)`), so a
+  missing sentinel error triggers bisection to isolate the probe. Fixes found:
+  - §18.5.2.1 early-resolution bullets (α resolved in B2 for raw-only supertypes of the target's class,
+    wildcard-parameterized / conflicting bounds, primitive targets with wrapper bounds) — javac:
+    `Collection<?> x = id(rawList)` compiles. Strict context + primitive target for a poly invocation fails.
+  - javac's incorporation checks derived proper bounds with unchecked subtyping (`Infer` IS_SUBTYPE →
+    `isSubtypeUnchecked`); Jype now does the same in incorporation and bound verification. **Deliberate
+    javac-alignment deviation** from a literal JLS §18.3.1 reading (‹S <: T› reduces by subtyping).
+  - Casts (§15.16): only lambdas/method references take the cast type as target; other operands are typed
+    standalone then checked by §5.5 (`(Supplier<Double>) new ArrayList<>()` compiles). `instanceof`
+    (§15.20.2) rewritten: standalone reference operand, castability, non-reifiable target only for a checked
+    cast (§4.7 reifiability). `JReduceSimplyTypedExpression`/`JExpressionSimplyTyped` no longer fire on
+    Cast/InstanceOf/ArrayCreation (their `drop` erased the dedicated reducer's FALSE — the B6 pattern).
+  - Standalone typing rejects lambdas / method references / conditionals containing them (no target).
+  - Constant narrowing (§5.2) now applies inside inference (`byte x = 'c'`, `short x = 1`, lambda returns).
+  - Type variables: equality by declaration location only (fresh `Y#n` compared unequal to deep-visitor
+    copies of itself, breaking `<A extends Comparable<A>> A m()`); deep copies keep metadata.
+  - Casting captured types: capture variables remember their wildcard (`JCapturedWildcard`) and
+    `rewriteQuantifiers` handles them like javac's `visitCapturedType` (`(ArrayList<String>) id(List<? super Integer>)` rejected).
+  Fuzz: expressions seeds 1–5 × 20 worlds × 80 probes: 0 mismatches; relations seed 8: 0. Suite 180/180.

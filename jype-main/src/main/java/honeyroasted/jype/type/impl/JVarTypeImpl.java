@@ -91,9 +91,7 @@ public final class JVarTypeImpl extends JAbstractPossiblyUnmodifiableType implem
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JVarType vt) {
-            return Objects.equals(location, vt.location()) &&
-                    JType.equals(upperBounds, vt.upperBounds(), kind, seen) &&
-                    JType.equals(lowerBounds, vt.lowerBounds(), kind, seen);
+            return Objects.equals(location, vt.location());
         } else {
             return false;
         }

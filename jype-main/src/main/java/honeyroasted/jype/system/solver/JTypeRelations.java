@@ -298,6 +298,7 @@ public final class JTypeRelations {
             JArgumentType arg = args.get(i);
             if (arg instanceof JWildType) {
                 JVarType z = JFreshTypeVariables.create(system, "CAP");
+                z.metadata().attach(new JCapturedWildcard((JWildType) arg));
                 fresh.add(z);
                 captured.add(z);
                 theta.put(params.get(i), z);

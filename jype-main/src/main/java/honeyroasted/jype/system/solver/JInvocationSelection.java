@@ -38,7 +38,10 @@ public final class JInvocationSelection {
         STRICT, LOOSE, VARARG
     }
 
-    private record Applicable(JInvocationCandidate candidate, Phase phase, boolean unchecked) {
+    private record Applicable(JInvocationCandidate candidate, Phase phase, boolean unchecked, ConstraintBranch b2, Map<JVarType, JType> theta) {
+    }
+
+    private record Tested(boolean unchecked, ConstraintBranch b2, Map<JVarType, JType> theta) {
     }
 
     private record Instantiated(Map<JVarType, JType> theta, List<Constraint> constraints, List<JType> formals) {
@@ -58,7 +61,7 @@ public final class JInvocationSelection {
         for (Phase phase : Phase.values()) {
             for (JInvocationCandidate candidate : candidates) {
                 if (potentiallyApplicable(system, candidate, args, explicitTypeArguments, phase)) {
-                    testApplicable(system, candidate, args, explicitTypeArguments, phase).ifPresent(unchecked -> applicable.add(new Applicable(candidate, phase, unchecked)));
+                    testApplicable(system, candidate, args, explicitTypeArguments, phase).ifPresent(t -> applicable.add(new Applicable(candidate, phase, t.unchecked(), t.b2(), t.theta())));
                 }
             }
             if (!applicable.isEmpty()) {
@@ -174,7 +177,7 @@ public final class JInvocationSelection {
         return new Instantiated(theta, constraints, formals);
     }
 
-    private static Optional<Boolean> testApplicable(JTypeSystem system, JInvocationCandidate candidate, List<JExpressionInformation> args, List<JArgumentType> explicit, Phase phase) {
+    private static Optional<Tested> testApplicable(JTypeSystem system, JInvocationCandidate candidate, List<JExpressionInformation> args, List<JArgumentType> explicit, Phase phase) {
         Instantiated inst = instantiate(system, candidate, explicit, args.size(), phase);
         List<Constraint> bind = new ArrayList<>(inst.constraints());
         for (int i = 0; i < args.size(); i++) {
@@ -184,7 +187,7 @@ public final class JInvocationSelection {
             }
         }
         if (bind.isEmpty()) {
-            return Optional.of(false);
+            return Optional.of(new Tested(false, null, inst.theta()));
         }
         ConstraintTree tree = system.operations().inferenceSolver().bind(bind.toArray(Constraint[]::new)).solve();
         Optional<ConstraintBranch> ok = tree.branches().stream().filter(b -> b.status().isTrue()).findFirst();
@@ -193,7 +196,7 @@ public final class JInvocationSelection {
         }
         boolean unchecked = ok.get().constraints().entrySet().stream().anyMatch(e -> e.getValue().isTrue() && e.getKey() instanceof JTypeConstraints.UncheckedConversion uc
                 && inst.formals().stream().anyMatch(f -> f.typeEquals(uc.right()) || (f instanceof JArrayType fa && fa.deepComponent().typeEquals(uc.right()))));
-        return Optional.of(unchecked);
+        return Optional.of(new Tested(unchecked, ok.get(), inst.theta()));
     }
 
     public static boolean isPertinent(JTypeSystem system, JExpressionInformation arg, JType formal, JInvocationCandidate candidate, List<JArgumentType> explicit) {
@@ -289,6 +292,78 @@ public final class JInvocationSelection {
         return null;
     }
 
+    private static JType earlyResolution(JTypeSystem system, Applicable chosen, JType declaredResult, JType target) {
+        if (!(declaredResult instanceof JVarType p) || chosen.b2() == null || !(chosen.theta().get(p) instanceof JMetaVarType alpha)) {
+            return null;
+        }
+        ConstraintBranch b2 = chosen.b2();
+        List<JType> equal = new ArrayList<>();
+        List<JType> lower = new ArrayList<>();
+        b2.constraints().forEach((con, status) -> {
+            if (!status.isTrue()) {
+                return;
+            }
+            if (con instanceof JTypeConstraints.Equal eq) {
+                if (eq.left().typeEquals(alpha) && !(eq.right() instanceof JMetaVarType)) {
+                    equal.add(eq.right());
+                } else if (eq.right().typeEquals(alpha) && !(eq.left() instanceof JMetaVarType)) {
+                    equal.add(eq.left());
+                }
+            } else if (con instanceof JTypeConstraints.Subtype st && st.right().typeEquals(alpha) && !(st.left() instanceof JMetaVarType)) {
+                lower.add(st.left());
+            }
+        });
+        List<JType> sources = new ArrayList<>(equal);
+        sources.addAll(lower);
+        boolean trigger = false;
+        if (target instanceof honeyroasted.jype.type.JPrimitiveType) {
+            // JLS §18.5.2.1 a primitive target and a wrapper class bound
+            JType inst = honeyroasted.jype.system.solver.constraints.inference.JResolveBounds.findInstantiation(alpha, b2);
+            List<JType> all = new ArrayList<>(sources);
+            if (inst != null) {
+                all.add(inst);
+            }
+            trigger = all.stream().anyMatch(t -> JTypeRelations.unboxedType(t) != null && t instanceof JClassType);
+        } else if (target instanceof JClassType tc && tc.hasTypeArguments() && !JTypeRelations.isRaw(tc)) {
+            // JLS §18.5.2.1 a bound that only reaches the target's class as a raw type
+            trigger = sources.stream().anyMatch(s -> {
+                JClassType sup = JTypeRelations.asSuper(s, tc.classReference());
+                return sup != null && JTypeRelations.isRaw(sup);
+            });
+            if (!trigger && !JTypeRelations.hasWildcardArguments(tc)) {
+                trigger = wildcardOrConflicting(sources, lower);
+            }
+        } else if (!(target instanceof JMetaVarType) && target instanceof JClassType) {
+            trigger = wildcardOrConflicting(sources, lower);
+        }
+        if (!trigger) {
+            return null;
+        }
+        return honeyroasted.jype.system.solver.constraints.inference.JResolveBounds.findInstantiation(alpha, b2);
+    }
+
+    private static boolean wildcardOrConflicting(List<JType> sources, List<JType> lower) {
+        // JLS §18.5.2.1 (i) a wildcard-parameterized bound
+        if (sources.stream().anyMatch(s -> s instanceof JClassType sc && JTypeRelations.hasWildcardArguments(sc))) {
+            return true;
+        }
+        // JLS §18.5.2.1 (ii) two lower bounds with different parameterizations of one generic type
+        for (int i = 0; i < lower.size(); i++) {
+            for (int j = i + 1; j < lower.size(); j++) {
+                for (JClassType a : JTypeRelations.allSupertypeClasses(lower.get(i))) {
+                    if (!a.hasTypeArguments()) {
+                        continue;
+                    }
+                    JClassType b = JTypeRelations.asSuper(lower.get(j), a.classReference());
+                    if (b != null && b.hasTypeArguments() && !b.typeEquals(a)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private static ConstraintBranch.Snapshot invocationSnapshot(JTypeSystem system, JExpressionInformation.Invocation expr, Applicable chosen, List<JExpressionInformation> args,
                                                                 List<JArgumentType> explicit, JTypeConstraints.ExpressionCompatible constraint, Map<Constraint, Constraint.Status> extra) {
         JInvocationCandidate candidate = chosen.candidate();
@@ -307,6 +382,12 @@ public final class JInvocationSelection {
             result = JTypeRelations.erasure(candidate.result());
         } else {
             result = new JVarTypeResolveVisitor(inst.theta()).visit(candidate.result());
+            JType early = earlyResolution(system, chosen, candidate.result(), constraint.right());
+            if (early != null && result instanceof JMetaVarType alpha) {
+                // JLS §18.5.2.1 α is resolved in B2 before checking compatibility
+                constraints.put(new JTypeConstraints.Equal(alpha, early), Constraint.Status.UNKNOWN);
+                result = early instanceof JClassType ect && early.isProperType() ? JTypeRelations.capture(ect) : early;
+            }
             if (result instanceof JParameterizedClassType pct && JTypeRelations.hasWildcardArguments(pct)) {
                 if (result.isProperType()) {
                     // JLS §18.5.2.1 the return type is captured
@@ -322,6 +403,11 @@ public final class JInvocationSelection {
                     result = captured;
                 }
             }
+        }
+        if (constraint.middle() == JTypeConstraints.Compatible.Context.STRICT_INVOCATION && constraint.right() instanceof honeyroasted.jype.type.JPrimitiveType && expr instanceof JExpressionInformation.MethodInvocation<?>
+                && (candidate.result() instanceof JVarType || !(candidate.result() instanceof honeyroasted.jype.type.JPrimitiveType))) {
+            // JLS §18.5.2.1 a poly invocation in a strict context is not compatible with a primitive target
+            constraints.put(Constraint.FALSE, Constraint.Status.FALSE);
         }
         if (!constraint.right().typeEquals(system.constants().voidType())) {
             // JLS §18.5.2.1 ‹R θ → T›

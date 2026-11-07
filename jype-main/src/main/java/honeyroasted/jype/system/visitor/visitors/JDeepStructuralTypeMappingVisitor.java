@@ -295,6 +295,7 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
 
         JVarType newType = type.typeSystem().typeFactory().newVarType();
         context.put(type, newType);
+        newType.metadata().inheritFrom(type.metadata());
         newType.setLocation(type.location());
         newType.setUpperBounds(this.visit(type.upperBounds(), context));
         newType.setLowerBounds(this.visit(type.lowerBounds(), context));

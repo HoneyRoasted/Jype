@@ -25,6 +25,10 @@ public final class JStandaloneTyping {
     }
 
     public static List<JStandaloneType> resolve(JExpressionInformation expr, JTypeSystem system) {
+        if (needsTarget(expr)) {
+            // JLS §15.27, §15.13 lambdas and method references are only typed against a target
+            return List.of();
+        }
         if (expr.isSimplyTyped()) {
             Optional<JType> type = expr.getSimpleType(system, Function.identity());
             if (type.isEmpty()) {
@@ -57,6 +61,16 @@ public final class JStandaloneTyping {
             }
         });
         return result;
+    }
+
+    private static boolean needsTarget(JExpressionInformation expr) {
+        if (expr instanceof JExpressionInformation.Lambda || expr instanceof JExpressionInformation.InvocationReference<?> || expr instanceof JExpressionInformation.InstantiationReference) {
+            return true;
+        }
+        if (expr instanceof JExpressionInformation.Conditional c) {
+            return needsTarget(c.whenTrue()) || needsTarget(c.whenFalse());
+        }
+        return false;
     }
 
     private static JType typeOf(JExpressionInformation expr, ConstraintBranch branch) {

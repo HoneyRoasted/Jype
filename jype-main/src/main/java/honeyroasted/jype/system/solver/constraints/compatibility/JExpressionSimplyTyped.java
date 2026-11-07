@@ -14,7 +14,8 @@ import static honeyroasted.jype.system.solver.constraints.JTypeConstraints.Compa
 public class JExpressionSimplyTyped extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof JExpressionInformation.Constant);
+        return status.isUnknown() && constraint.left().isSimplyTyped() && !(constraint.middle() == ASSIGNMENT && constraint.left() instanceof JExpressionInformation.Constant)
+                && !honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression.hasDedicatedReducer(constraint.left());
     }
 
     @Override

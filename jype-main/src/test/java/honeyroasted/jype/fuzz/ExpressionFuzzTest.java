@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag("fuzz")
 public class ExpressionFuzzTest {
+    private static final String NL = String.valueOf((char) 10);
     private static final Map<String, String> CLASS_NAMES = Map.of(
             "String", "java.lang.String",
             "Integer", "java.lang.Integer",
@@ -60,7 +61,7 @@ public class ExpressionFuzzTest {
         for (int w = 0; w < count; w++) {
             long worldSeed = seed * 1_000_003L + w;
             String pkg = "fe" + Long.toHexString(worldSeed).replace('-', 'n');
-            ExpressionWorld world = new ExpressionWorldGenerator(worldSeed).generate(pkg, 40);
+            ExpressionWorld world = new ExpressionWorldGenerator(worldSeed).generate(pkg, 80);
             Compiled compiled = compile(world, work.resolve("w" + w));
             if (compiled == null) {
                 continue;
@@ -127,7 +128,7 @@ public class ExpressionFuzzTest {
                     if (actual.value() == null || actual.value() != expected) {
                         String category = actual.value() == null ? (actual.timedOut() ? "timeout" : "error") : (expected ? "javac-accepts" : "javac-rejects");
                         String javacMsg = expected ? "accepts" : "rejects: " + compiled.messages().getOrDefault(probe.index(), "");
-                        record(mismatches, tally, new FuzzMismatch(category, probe.targetSource() + " x = " + probe.expression().source(), javacMsg, actual.render(), "  world " + worldSeed));
+                        record(mismatches, tally, new FuzzMismatch(category, probe.targetSource() + " x = " + probe.expression().source(), javacMsg, actual.render(), "  world " + worldSeed + "\n" + declarations(compiled.source())));
                     }
                 }
             }
@@ -144,90 +145,139 @@ public class ExpressionFuzzTest {
         assertTrue(mismatches.isEmpty(), mismatches.size() + " mismatches, see " + file);
     }
 
+    private record Attempt(boolean crashed, Set<Integer> badDecls, Set<Integer> rejected, Map<Integer, String> messages, boolean headerError, boolean ok) {
+    }
+
+    private static Attempt attempt(ExpressionWorld world, List<String> decls, List<Probe> probes, Path out) throws Exception {
+        StringBuilder sb = new StringBuilder(world.header()).append("abstract class M {").append(NL);
+        int firstDecl = (int) sb.chars().filter(c -> c == '\n').count() + 1;
+        decls.forEach(d -> sb.append(d).append(NL));
+        int firstProbe = firstDecl + decls.size();
+        probes.forEach(p -> sb.append(p.declaration()).append(NL));
+        int sentinelLine = firstProbe + probes.size();
+        if (!probes.isEmpty()) {
+            sb.append("    static void sentinel() { int x = \"sentinel\"; }").append(NL);
+        }
+        sb.append("}").append(NL);
+        String source = sb.toString();
+        Files.createDirectories(out);
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        JavaFileObject file = new SimpleJavaFileObject(URI.create("string:///" + world.packageName() + "/M.java"), JavaFileObject.Kind.SOURCE) {
+            @Override
+            public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+                return source;
+            }
+        };
+        java.io.StringWriter log = new java.io.StringWriter();
+        boolean ok;
+        boolean crashed = false;
+        try {
+            ok = Boolean.TRUE.equals(compiler.getTask(log, compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8), diagnostics,
+                    List.of("-d", out.toString(), "-proc:none", "-Xlint:none", "-nowarn", "-Xmaxerrs", "100000"), null, List.of(file)).call());
+        } catch (RuntimeException e) {
+            ok = false;
+            crashed = true;
+        }
+        if (log.toString().contains("exception has occurred in the compiler")) {
+            crashed = true;
+        }
+        Set<Integer> badDecls = new LinkedHashSet<>();
+        Set<Integer> rejected = new LinkedHashSet<>();
+        Map<Integer, String> messages = new HashMap<>();
+        boolean headerError = false;
+        boolean sentinelSeen = false;
+        for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
+            if (d.getKind() != Diagnostic.Kind.ERROR) {
+                continue;
+            }
+            int line = (int) d.getLineNumber();
+            if (line >= firstProbe && line < firstProbe + probes.size()) {
+                int idx = probes.get(line - firstProbe).index();
+                rejected.add(idx);
+                messages.putIfAbsent(idx, d.getMessage(null).lines().findFirst().orElse(""));
+            } else if (line >= firstDecl && line < firstProbe) {
+                badDecls.add(line - firstDecl);
+            } else if (line == sentinelLine && !probes.isEmpty()) {
+                sentinelSeen = true;
+            } else {
+                headerError = true;
+            }
+        }
+        if (!probes.isEmpty() && !sentinelSeen) {
+            crashed = true;
+        }
+        return new Attempt(crashed, badDecls, rejected, messages, headerError, ok);
+    }
+
     private static Compiled compile(ExpressionWorld world, Path dir) throws Exception {
         List<String> decls = new ArrayList<>(world.declarations());
         List<Probe> probes = new ArrayList<>(world.probes());
-        for (int attempt = 0; attempt < 8; attempt++) {
-            StringBuilder sb = new StringBuilder(world.header()).append("abstract class M {\n");
-            int firstDecl = (int) sb.chars().filter(c -> c == '\n').count() + 1;
-            decls.forEach(d -> sb.append(d).append("\n"));
-            int firstProbe = firstDecl + decls.size();
-            probes.forEach(p -> sb.append(p.declaration()).append("\n"));
-            sb.append("}\n");
-            String source = sb.toString();
-
-            Path attemptDir = Files.createDirectories(dir.resolve("a" + attempt));
-            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-            JavaFileObject file = new SimpleJavaFileObject(URI.create("string:///" + world.packageName() + "/M.java"), JavaFileObject.Kind.SOURCE) {
-                @Override
-                public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-                    return source;
-                }
-            };
-            Boolean ok = compiler.getTask(null, compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8), diagnostics,
-                    List.of("-d", attemptDir.toString(), "-proc:none", "-Xlint:none", "-nowarn", "-Xmaxerrs", "100000"), null, List.of(file)).call();
-
-            Set<Integer> badDecls = new LinkedHashSet<>();
-            Set<Integer> rejected = new LinkedHashSet<>();
-            Map<Integer, String> messages = new HashMap<>();
-            boolean headerError = false;
-            for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
-                if (d.getKind() != Diagnostic.Kind.ERROR) {
-                    continue;
-                }
-                int line = (int) d.getLineNumber();
-                if (line >= firstProbe && line < firstProbe + probes.size()) {
-                    int idx = probes.get(line - firstProbe).index();
-                    rejected.add(idx);
-                    messages.putIfAbsent(idx, d.getMessage(null).lines().findFirst().orElse(""));
-                } else if (line >= firstDecl && line < firstProbe) {
-                    badDecls.add(line - firstDecl);
-                } else {
-                    headerError = true;
-                }
-            }
-            if (headerError) {
+        Path declDir = dir.resolve("decls");
+        for (int i = 0; i < 8; i++) {
+            Attempt a = attempt(world, decls, List.of(), declDir.resolve("a" + i));
+            if (a.headerError() || a.crashed()) {
                 return null;
             }
-            if (!badDecls.isEmpty()) {
-                List<String> removedHolders = new ArrayList<>();
-                List<String> next = new ArrayList<>();
-                for (int i = 0; i < decls.size(); i++) {
-                    if (badDecls.contains(i)) {
-                        String d = decls.get(i).trim();
-                        String last = d.substring(d.lastIndexOf(' ') + 1).replace(";", "");
-                        removedHolders.add(last);
-                    } else {
-                        next.add(decls.get(i));
-                    }
-                }
-                decls = next;
-                probes.removeIf(p -> removedHolders.contains(p.targetHolder()) || removedHolders.stream().anyMatch(h -> p.expression().toString().contains("holderField=" + h + "]")));
-                continue;
+            if (a.badDecls().isEmpty()) {
+                declDir = declDir.resolve("a" + i);
+                break;
             }
-            if (!rejected.isEmpty() && !Boolean.TRUE.equals(ok)) {
-                Path okDir = Files.createDirectories(dir.resolve("ok"));
-                StringBuilder ksb = new StringBuilder(world.header()).append("abstract class M {\n");
-                decls.forEach(d -> ksb.append(d).append("\n"));
-                ksb.append("}\n");
-                String ksrc = ksb.toString();
-                JavaFileObject kfile = new SimpleJavaFileObject(URI.create("string:///" + world.packageName() + "/M.java"), JavaFileObject.Kind.SOURCE) {
-                    @Override
-                    public CharSequence getCharContent(boolean ignoreEncodingErrors) {
-                        return ksrc;
-                    }
-                };
-                Boolean kok = compiler.getTask(null, compiler.getStandardFileManager(null, null, StandardCharsets.UTF_8), null,
-                        List.of("-d", okDir.toString(), "-proc:none", "-Xlint:none", "-nowarn"), null, List.of(kfile)).call();
-                if (!Boolean.TRUE.equals(kok)) {
-                    return null;
+            List<String> removedHolders = new ArrayList<>();
+            List<String> next = new ArrayList<>();
+            for (int j = 0; j < decls.size(); j++) {
+                if (a.badDecls().contains(j)) {
+                    String d = decls.get(j).trim();
+                    removedHolders.add(d.substring(d.lastIndexOf(' ') + 1).replace(";", ""));
+                } else {
+                    next.add(decls.get(j));
                 }
-                return new Compiled(source, okDir, rejected, probes, messages);
             }
-            return new Compiled(source, attemptDir, rejected, probes, messages);
+            decls = next;
+            probes.removeIf(p -> removedHolders.contains(p.targetHolder()) || removedHolders.stream().anyMatch(h -> p.expression().toString().contains("holderField=" + h + "]")));
+            if (i == 7) {
+                return null;
+            }
         }
-        return null;
+        Set<Integer> rejected = new LinkedHashSet<>();
+        Map<Integer, String> messages = new HashMap<>();
+        List<Probe> kept = new ArrayList<>();
+        probeBatch(world, decls, probes, dir.resolve("p"), rejected, messages, kept);
+        StringBuilder sb = new StringBuilder(world.header()).append("abstract class M {").append(NL);
+        decls.forEach(d -> sb.append(d).append(NL));
+        return new Compiled(sb.toString(), declDir, rejected, kept, messages);
+    }
+
+    private static void probeBatch(ExpressionWorld world, List<String> decls, List<Probe> probes, Path out, Set<Integer> rejected, Map<Integer, String> messages, List<Probe> kept) throws Exception {
+        if (probes.isEmpty()) {
+            return;
+        }
+        Attempt a = attempt(world, decls, probes, out);
+        if (a.crashed()) {
+            if (probes.size() == 1) {
+                return;
+            }
+            int half = probes.size() / 2;
+            probeBatch(world, decls, probes.subList(0, half), out.resolve("l"), rejected, messages, kept);
+            probeBatch(world, decls, probes.subList(half, probes.size()), out.resolve("r"), rejected, messages, kept);
+            return;
+        }
+        rejected.addAll(a.rejected());
+        messages.putAll(a.messages());
+        kept.addAll(probes);
+    }
+
+    private static String declarations(String source) {
+        StringBuilder sb = new StringBuilder();
+        for (String line : source.split("\n")) {
+            if (line.contains("static void probe")) {
+                break;
+            }
+            if (line.contains("(") || line.contains("interface")) {
+                sb.append("    ").append(line.trim()).append("\n");
+            }
+        }
+        return sb.toString();
     }
 
     private static void record(List<FuzzMismatch> mismatches, Map<String, Integer> tally, FuzzMismatch mismatch) {
