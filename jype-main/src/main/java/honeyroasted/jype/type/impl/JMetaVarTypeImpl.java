@@ -8,8 +8,11 @@ import honeyroasted.jype.type.JType;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JMetaVarTypeImpl extends JAbstractType implements JMetaVarType {
+    private static final AtomicInteger NEXT_IDENTITY = new AtomicInteger(1);
+
     private int identity;
     private String name;
 
@@ -26,7 +29,7 @@ public class JMetaVarTypeImpl extends JAbstractType implements JMetaVarType {
     public JMetaVarTypeImpl(JTypeSystem typeSystem, String name) {
         super(typeSystem);
         this.name = name;
-        this.identity = System.identityHashCode(this);
+        this.identity = NEXT_IDENTITY.getAndIncrement();
     }
 
     @Override

@@ -6,6 +6,7 @@ import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JParameterizedClassType;
+import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JWildType;
 import org.junit.jupiter.api.Test;
@@ -76,7 +77,7 @@ public class JReduceMethodInvocationCaptureTests {
 
     @Test
     @Timeout(value = 15, unit = TimeUnit.SECONDS)
-    public void setWithResultOfGetOnExtendsWildcardTypeChecks() {
+    public void setWithResultOfGetOnExtendsWildcardIsRejected() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
         JParameterizedClassType boxType = boxOfExtendsNumber(ts);
         JClassReference declaring = ts.tryResolve(Box.class);
@@ -90,8 +91,7 @@ public class JReduceMethodInvocationCaptureTests {
         ConstraintTree tree = ts.operations().inferenceSolver().bind(constraint).solve();
         boolean solved = tree.branches().stream().anyMatch(b -> b.status().isTrue());
 
-        assertTrue(solved, "expected box.set(box.get()) to type-check - passing a captured wildcard's own producer output back as the consumer argument is always sound. "
-                + "(Formerly hung the solver indefinitely - see TYPE_SYSTEM_REVIEW_NOTES.md 'Session 3'/'Session 4' - hence the @Timeout as a tripwire, not because a timeout is an acceptable outcome.)");
+        assertFalse(solved, "javac: box.set(box.get()) on Box<? extends Number> is rejected, each receiver occurrence is captured separately");
     }
 
     @Test
@@ -128,8 +128,9 @@ public class JReduceMethodInvocationCaptureTests {
         boolean sawCapture = tree.branches().stream()
                 .filter(b -> b.status().isTrue())
                 .flatMap(b -> b.constraints().keySet().stream())
-                .anyMatch(c -> c instanceof JTypeConstraints.Capture);
+                .anyMatch(c -> c instanceof JTypeConstraints.Instantiation inst && inst.right() instanceof JVarType vt
+                        && vt.upperBounds().stream().anyMatch(u -> u.typeEquals(number)));
 
-        assertTrue(sawCapture, "expected member access through a wildcard-parameterized receiver to trigger capture conversion (JLS §5.1.10)");
+        assertTrue(sawCapture, "expected member access through a wildcard-parameterized receiver to resolve the captured variable to a fresh type variable bounded by Number");
     }
 }

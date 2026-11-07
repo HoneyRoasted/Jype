@@ -140,7 +140,7 @@ public class JReduceInstantiationRefExpression extends ConstraintMapper.Unary<JT
                 ? classRef
                 : (explicitTypeArgs != null && !explicitTypeArgs.isEmpty()
                 ? classRef.parameterized(explicitTypeArgs)
-                : classRef.parameterizedWithMetaVars());
+                : classRef.parameterized(classRef.typeParameters().stream().map(vt -> (JArgumentType) resolution.get(vt)).toList()));
 
         return new TypeParamSetup(typeParamConstraints, resolver, constructedType);
     }

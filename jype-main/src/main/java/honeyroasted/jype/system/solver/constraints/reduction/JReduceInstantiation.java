@@ -8,6 +8,7 @@ import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
+import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
@@ -19,6 +20,7 @@ import honeyroasted.jype.type.JVarType;
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,22 +56,24 @@ public class JReduceInstantiation extends ConstraintMapper.Unary<JTypeConstraint
         parameters.addAll(inst.parameters());
 
         Set<JTypeConstraints.Infer> typeParams = new LinkedHashSet<>();
-        Map<JVarType, JMetaVarType> metaVars = new HashMap<>();
+        Map<JVarType, JMetaVarType> fresh = new LinkedHashMap<>();
         if (inst.explicitTypeArguments().isEmpty() || inst.explicitTypeArguments().size() != target.typeParameters().size()) {
             for (int i = 0; i < target.typeParameters().size(); i++) {
                 JVarType vt = target.typeParameters().get(i);
                 JMetaVarType mvt = vt.createMetaVar();
                 typeParams.add(new JTypeConstraints.Infer(mvt, vt));
-                metaVars.put(vt, mvt);
+                fresh.put(vt, mvt);
             }
         }
 
+        Map<JVarType, JMetaVarType> metaVars = new HashMap<>();
         branchContext.first(JTypeContext.TypeMetavarMap.class).ifPresent(mp -> metaVars.putAll(mp.metaVars()));
+        metaVars.putAll(fresh);
         Map<JMetaVarType, JType> instantiations = branchContext.firstOr(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.empty()).instantiations();
 
         List<ConstraintBranch.Snapshot> newChildren = new ArrayList<>();
         JClassType result = typeParams.isEmpty() ? target.parameterized(inst.explicitTypeArguments()) :
-                target.parameterizedWithMetaVars();
+                target.parameterized(target.typeParameters().stream().map(vt -> (JArgumentType) fresh.get(vt)).toList());
 
         inst.type().declaredMethods().stream().filter(m -> m.location().isConstructor()).forEach(ref -> {
             if (!ref.hasModifier(AccessFlag.STATIC) && ref.outerClass().accessFrom(declaring).canAccess(ref.access())) {

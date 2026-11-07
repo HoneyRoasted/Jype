@@ -57,7 +57,7 @@ public class JVarMetavarVisitor implements JDeepStructuralTypeMappingVisitor {
             return type;
         }
 
-        JMetaVarType mvt = type.typeSystem().typeFactory().newMetaVarType(System.identityHashCode(type), type.simpleName());
+        JMetaVarType mvt = type.typeSystem().typeFactory().newMetaVarType(type.simpleName());
         cache.put(type, mvt);
         type.upperBounds().forEach(bound -> mvt.upperBounds().add(this.visitType(bound, cache)));
 

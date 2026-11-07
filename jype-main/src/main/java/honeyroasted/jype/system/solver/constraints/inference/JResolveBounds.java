@@ -4,9 +4,9 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
-import honeyroasted.collect.multi.Pair;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.JFreshTypeVariables;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.visitor.JTypeVisitor;
@@ -14,15 +14,18 @@ import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
 import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JVarType;
 
-import java.util.Collections;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JResolveBounds extends ConstraintMapper.All {
     @Override
@@ -32,258 +35,250 @@ public class JResolveBounds extends ConstraintMapper.All {
 
     @Override
     protected void accept(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch) {
-        PropertySet instanceContext = branch.parent().metadata();
+        JTypeSystem system = branch.parent().metadata().firstOr(JTypeSystem.class, JTypeSystem.RUNTIME_REFLECTION);
 
-        JTypeSystem system = instanceContext.firstOr(JTypeSystem.class, JTypeSystem.RUNTIME_REFLECTION);
+        Set<JMetaVarType> variables = mentionedVariables(branch);
+        Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
+        for (JMetaVarType mvt : variables) {
+            JType inst = findInstantiation(mvt, branch);
+            if (inst != null) {
+                instantiations.put(mvt, inst);
+            }
+        }
 
-        Map<JMetaVarType, Set<JMetaVarType>> dependencies = this.discoverDependencies(branchContext, branch);
-
-        Set<JMetaVarType> varsAndDeps = new LinkedHashSet<>();
-        dependencies.forEach((mvt, deps) -> {
-            varsAndDeps.add(mvt);
-            varsAndDeps.addAll(deps);
-        });
-
-        Map<JMetaVarType, JType> instantiations = findAllInstantiations(varsAndDeps, branch);
-        boolean foundAllInstantiations = instantiations.size() == varsAndDeps.size();
-
-        if (foundAllInstantiations) {
-            instantiations.forEach((mvt, t) -> {
-                branch.add(new JTypeConstraints.Instantiation(mvt, t), Constraint.Status.TRUE);
-
-                branch.metadata().firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
-                        .instantiations().put(mvt, t);
-            });
-
+        if (instantiations.size() == variables.size()) {
+            // JLS §18.4 every variable in V has an instantiation
+            instantiations.forEach((mvt, t) -> recordInstantiation(branch, mvt, t));
             return;
         }
 
-        Set<JMetaVarType> subset = findSubset(varsAndDeps, dependencies, instantiations);
-        if (!subset.isEmpty()) {
-            Map<Constraint, Constraint.Status> generatedBounds = new HashMap<>();
+        Map<JMetaVarType, Set<JMetaVarType>> dependencies = discoverDependencies(branch, variables);
+        List<JMetaVarType> subset = findSubset(variables, dependencies, instantiations);
+        if (subset.isEmpty()) {
+            branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+            return;
+        }
 
-            //Bound set does not contain any classBound of the form G<..., a_i, ...> = capture(G<...>)
-            boolean hasCapture = branch.constraints().entrySet().stream().anyMatch(node -> node.getValue().isTrue() && node.getKey() instanceof JTypeConstraints.Capture cpt &&
-                    cpt.left().typeArguments().stream().anyMatch(subset::contains));
+        boolean hasCapture = subset.stream().anyMatch(mvt -> captureBounds(branch).stream().anyMatch(cpt -> cpt.left().typeArguments().contains(mvt)));
 
-            // JLS §18.4's "bound set contains a capture" fallback below only ever *verifies
-            // consistency* for a captured variable that has no proper bound to resolve to (e.g.
-            // Box<? extends Number> box; box.set(box.get()) - the two captured variables are only
-            // ever related to each other, never to a concrete type). Without this marker, this
-            // whole method - a ConstraintMapper.All whose filter is just "branch is true", so it
-            // never stops firing on its own - would re-verify the exact same subset from scratch on
-            // every single pass forever, each time minting a brand-new never-reused set of fresh
-            // "shadow" variables. Once a given subset has been verified consistent once, there is
-            // nothing more to derive for it, so later passes can skip straight past.
-            Constraint captureConsistencyMarker = hasCapture ? Constraint.identity(new LinkedHashSet<Object>(subset)) : null;
-            if (captureConsistencyMarker != null && branch.status(captureConsistencyMarker).isTrue()) {
+        if (!hasCapture) {
+            Map<JMetaVarType, JType> candidates = new LinkedHashMap<>();
+            for (JMetaVarType mvt : subset) {
+                Set<JType> lower = properLowerBounds(branch, mvt);
+                Set<JType> upper = properUpperBounds(branch, mvt);
+                if (!lower.isEmpty()) {
+                    // JLS §18.4 Ti = lub(L1...Lk)
+                    candidates.put(mvt, system.operations().findLeastUpperBound(lower));
+                } else if (hasThrowsBound(branch, mvt) && upper.stream().allMatch(u -> system.operations().isSubtype(system.constants().runtimeException(), u))) {
+                    // JLS §18.4 throws αi with every proper upper bound a supertype of RuntimeException
+                    candidates.put(mvt, system.constants().runtimeException());
+                } else {
+                    // JLS §18.4 Ti = glb(U1...Uk)
+                    if (upper.isEmpty()) {
+                        upper = Set.of(system.constants().object());
+                    }
+                    candidates.put(mvt, system.operations().findGreatestLowerBound(upper));
+                }
+            }
+
+            Optional<ConstraintBranch> result = incorporate(system, branch, candidates, List.of());
+            if (result.isPresent()) {
+                merge(branch, result.get(), candidates, List.of());
                 return;
             }
+        }
 
-            if (!hasCapture) {
-                Map<JMetaVarType, Pair<JType, Constraint>> candidates = new LinkedHashMap<>();
-                boolean foundAllCandidates = true;
-                for (JMetaVarType mvt : subset) {
-                    if (!instantiations.containsKey(mvt)) {
-                        Pair<Map<JType, Constraint>, Map<JType, Constraint>> properBounds = this.findProperBounds(branchContext, branch, mvt, branch.constraints());
-                        Map<JType, Constraint> properUpper = properBounds.left();
-                        Map<JType, Constraint> properLower = properBounds.right();
+        // JLS §18.4 fresh type variables Y1...Yn
+        Map<JMetaVarType, JVarType> fresh = new LinkedHashMap<>();
+        for (JMetaVarType mvt : subset) {
+            fresh.put(mvt, JFreshTypeVariables.create(system, "Y"));
+        }
+        Map<JMetaVarType, JType> theta = new HashMap<>(instantiations);
+        theta.putAll(fresh);
+        JMetaVarTypeResolveVisitor thetaVisitor = new JMetaVarTypeResolveVisitor(theta);
 
-                        if (!properLower.isEmpty()) {
-                            JType lub = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                            candidates.put(mvt, Pair.of(lub, new JTypeConstraints.Equal(mvt, lub)));
-                        } else if (branch.constraints().entrySet().stream().anyMatch(cn -> cn.getValue().isTrue() && cn.getKey() instanceof JTypeConstraints.Throws thr && thr.value().equals(mvt)) &&
-                                properUpper.keySet().stream().allMatch(t -> system.operations().isSubtype(t, mvt.typeSystem().constants().runtimeException()))) {
-                            JType cand = mvt.typeSystem().constants().runtimeException();
-                            candidates.put(mvt, Pair.of(cand, new JTypeConstraints.Equal(mvt, cand)));
-                        } else if (!properUpper.isEmpty()) {
-                            JType glb = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet());
-                            candidates.put(mvt, Pair.of(glb, new JTypeConstraints.Equal(mvt, glb)));
-                        } else {
-                            foundAllCandidates = false;
-                        }
-                    }
-                }
+        for (JMetaVarType mvt : subset) {
+            Set<JType> lower = properLowerBounds(branch, mvt);
+            Set<JType> upper = new LinkedHashSet<>();
+            for (JType u : allUpperBounds(branch, mvt)) {
+                upper.add(thetaVisitor.visit(u));
+            }
+            if (upper.isEmpty()) {
+                upper.add(system.constants().object());
+            }
+            JType glb = system.operations().findGreatestLowerBound(upper);
+            Set<JType> lowerSet = lower.isEmpty() ? Set.of() : Set.of(system.operations().findLeastUpperBound(lower));
+            JFreshTypeVariables.finish(fresh.get(mvt), Set.of(glb), lowerSet);
 
-                if (foundAllCandidates) {
-                    ConstraintTree temp = new ConstraintTree();
-                    ConstraintBranch snap = branch.copy(temp);
-                    temp.addBranch(snap);
-
-                    candidates.forEach((k, v) -> {
-                        snap.add(v.right(), Constraint.Status.TRUE);
-                        instantiations.put(k, v.left());
-                    });
-
-                    system.operations().incorporationApplier().accept(temp);
-                    system.operations().reductionApplier().accept(temp);
-                    generatedBounds.putAll(snap.constraints());
+            // JLS §18.4 Yi must have well-formed bounds
+            for (JType l : lowerSet) {
+                if (!system.operations().isSubtype(l, glb)) {
+                    branch.add(Constraint.FALSE, Constraint.Status.FALSE);
+                    return;
                 }
             }
+        }
 
-            Map<JMetaVarType, JType> capturedResolutions = new LinkedHashMap<>();
-
-            if (hasCapture || generatedBounds.isEmpty() || generatedBounds.entrySet().stream().anyMatch(e -> e.getKey() instanceof False || e.getValue() == Constraint.Status.FALSE)) {
-                Map<JMetaVarType, JMetaVarType> freshVars = new LinkedHashMap<>();
-                varsAndDeps.forEach(mv -> freshVars.put(mv, mv.typeSystem().typeFactory().newMetaVarType(mv.name() + "_y")));
-                JMetaVarTypeResolveVisitor theta = new JMetaVarTypeResolveVisitor(freshVars);
-
-                Map<Constraint, Constraint.Status> newBounds = new HashMap<>();
-                branch.constraints().forEach((con, stat) -> {
-                    if (stat.isTrue()) {
-                        newBounds.put(con, stat);
-                    }
-                });
-
-                for (JMetaVarType mvt : varsAndDeps) {
-                    JMetaVarType y = freshVars.get(mvt);
-
-                    Pair<Map<JType, Constraint>, Map<JType, Constraint>> properBounds = this.findProperBounds(branchContext, branch, mvt, branch.constraints());
-                    Map<JType, Constraint> properUpper = properBounds.left();
-                    Map<JType, Constraint> properLower = properBounds.right();
-
-                    if (!properLower.isEmpty()) {
-                        JType lower = mvt.typeSystem().operations().findLeastUpperBound(properLower.keySet());
-                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, lower), Constraint.Status.ASSUMED);
-                        y.lowerBounds().add(lower);
-                        capturedResolutions.put(mvt, lower);
-                    }
-
-                    if (!properUpper.isEmpty()) {
-                        JType upper = mvt.typeSystem().operations().findGreatestLowerBound(properUpper.keySet().stream().map(theta).collect(Collectors.toCollection(LinkedHashSet::new)));
-                        newBounds.put(JTypeConstraints.Equal.createBound(mvt, upper), Constraint.Status.ASSUMED);
-                        y.upperBounds().add(upper);
-                        capturedResolutions.putIfAbsent(mvt, upper);
-                    }
-                }
-
-                newBounds.entrySet().removeIf(entry -> entry.getKey() instanceof JTypeConstraints.Capture cpt && cpt.left().typeArguments().stream().anyMatch(subset::contains));
-
-                freshVars.forEach((mv, fresh) -> newBounds.put(JTypeConstraints.Equal.createBound(mv, fresh), Constraint.Status.ASSUMED));
-
-                generatedBounds.clear();
-                generatedBounds.putAll(newBounds);
-            }
-
-            ConstraintTree temp = new ConstraintTree();
-            ConstraintBranch snap = new ConstraintBranch(temp);
-            temp.addBranch(snap);
-            generatedBounds.forEach(snap::add);
-
-            system.operations().incorporationApplier().accept(temp);
-            system.operations().reductionApplier().accept(temp);
-
-            if (temp.numBranches() == 1 && snap.status().isTrue()) {
-                //Diverging means it failed, I think
-                branch.metadata().inheritFrom(snap.metadata());
-
-                if (captureConsistencyMarker != null) {
-                    // Only the resolved instantiations (if any - possibly none, if the captured
-                    // variable(s) are never related to a proper type) and the consistency marker
-                    // need to survive. The nested temp-tree's own derived bounds - including the
-                    // throwaway fresh "shadow" variables - are internal scaffolding for this one
-                    // consistency check; merging them into the main branch would feed them back into
-                    // discoverDependencies() on the next pass (they're metavar-involving Equal
-                    // bounds too) and trigger another round of fresh-variable generation for the
-                    // shadow variables themselves, and so on indefinitely.
-                    capturedResolutions.forEach((mvt, type) -> {
-                        branch.add(new JTypeConstraints.Instantiation(mvt, type), Constraint.Status.TRUE);
-                        branch.metadata().firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
-                                .instantiations().put(mvt, type);
-                    });
-                    branch.add(captureConsistencyMarker, Constraint.Status.TRUE);
-                } else {
-                    snap.constraints().forEach(branch::add);
-                }
-            } else {
-                branch.add(Constraint.FALSE, Constraint.Status.FALSE);
-            }
+        List<JTypeConstraints.Capture> removed = captureBounds(branch).stream()
+                .filter(cpt -> cpt.left().typeArguments().stream().anyMatch(subset::contains)).toList();
+        Map<JMetaVarType, JType> freshCandidates = new LinkedHashMap<>(fresh);
+        Optional<ConstraintBranch> result = incorporate(system, branch, freshCandidates, removed);
+        if (result.isPresent()) {
+            merge(branch, result.get(), freshCandidates, removed);
         } else {
             branch.add(Constraint.FALSE, Constraint.Status.FALSE);
         }
     }
 
-    private Pair<Map<JType, Constraint>, Map<JType, Constraint>> findProperBounds(PropertySet branchContext, ConstraintBranch branch, JMetaVarType mvt, Map<Constraint, Constraint.Status> bounds) {
-        Map<JType, Constraint> upperBounds = new LinkedHashMap<>();
-        Map<JType, Constraint> lowerBounds = new LinkedHashMap<>();
+    private static Optional<ConstraintBranch> incorporate(JTypeSystem system, ConstraintBranch branch, Map<JMetaVarType, JType> candidates, List<JTypeConstraints.Capture> removed) {
+        ConstraintTree temp = new ConstraintTree();
+        temp.metadata().inheritFrom(branch.parent().metadata());
+        ConstraintBranch snap = branch.copy(temp);
+        snap.executeChanges();
+        temp.addBranch(snap);
+        removed.forEach(snap::drop);
+        candidates.forEach((mvt, t) -> snap.add(new JTypeConstraints.Equal(mvt, t), Constraint.Status.TRUE));
+        snap.executeChanges();
 
-        bounds.forEach((bound, status) -> {
-            if (status.isTrue()) {
-                if (bound instanceof JTypeConstraints.Subtype st) {
-                    JType left = st.left();
-                    JType right = st.right();
+        system.operations().incorporationApplier().accept(temp);
+        system.operations().reductionApplier().accept(temp);
 
-                    if (left.equals(mvt) && right.isProperType()) {
-                        upperBounds.put(right, bound);
+        return temp.branches().stream().filter(b -> b.status().isTrue()).findFirst();
+    }
+
+    private static void merge(ConstraintBranch branch, ConstraintBranch result, Map<JMetaVarType, JType> candidates, List<JTypeConstraints.Capture> removed) {
+        removed.forEach(branch::drop);
+        Set<Constraint> removedSet = new LinkedHashSet<>(removed);
+        result.constraints().forEach((con, status) -> {
+            if (!removedSet.contains(con)) {
+                if (branch.constraints().containsKey(con)) {
+                    if (branch.status(con) != status) {
+                        branch.set(con, status);
                     }
-
-                    if (right.equals(mvt) && left.isProperType()) {
-                        lowerBounds.put(left, bound);
-                    }
+                } else {
+                    branch.add(con, status);
                 }
             }
         });
-
-        return Pair.of(upperBounds, lowerBounds);
+        candidates.forEach((mvt, t) -> recordInstantiation(branch, mvt, t));
+        branch.metadata().inheritFrom(result.metadata());
     }
 
-    private Set<JMetaVarType> findSubset(Set<JMetaVarType> currentMetaVars, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations) {
-        for (JMetaVarType mvt : currentMetaVars) {
-            if (!instantiations.containsKey(mvt)) {
-                Set<JMetaVarType> subset = trySubsetWithBase(mvt, dependencies, instantiations, Collections.emptySet());
-                if (!subset.isEmpty()) {
-                    return subset;
+    private static void recordInstantiation(ConstraintBranch branch, JMetaVarType mvt, JType t) {
+        branch.add(new JTypeConstraints.Instantiation(mvt, t), Constraint.Status.TRUE);
+        branch.metadata().firstOrAttach(JTypeContext.TypeMetavarMap.class, JTypeContext.TypeMetavarMap.createEmpty())
+                .instantiations().put(mvt, t);
+    }
+
+    private static boolean hasThrowsBound(ConstraintBranch branch, JMetaVarType mvt) {
+        return branch.constraints().entrySet().stream().anyMatch(e -> e.getValue().isTrue() && e.getKey() instanceof JTypeConstraints.Throws thr && thr.value().typeEquals(mvt));
+    }
+
+    private static List<JTypeConstraints.Capture> captureBounds(ConstraintBranch branch) {
+        List<JTypeConstraints.Capture> result = new ArrayList<>();
+        branch.constraints().forEach((con, status) -> {
+            if (status.isTrue() && con instanceof JTypeConstraints.Capture cpt) {
+                result.add(cpt);
+            }
+        });
+        return result;
+    }
+
+    private static Set<JType> properLowerBounds(ConstraintBranch branch, JMetaVarType mvt) {
+        Set<JType> result = new LinkedHashSet<>();
+        branch.constraints().forEach((con, status) -> {
+            if (status.isTrue() && con instanceof JTypeConstraints.Subtype st && st.right().typeEquals(mvt) && st.left().isProperType() && !st.left().isNullType()) {
+                result.add(st.left());
+            }
+        });
+        return result;
+    }
+
+    private static Set<JType> properUpperBounds(ConstraintBranch branch, JMetaVarType mvt) {
+        Set<JType> result = new LinkedHashSet<>();
+        for (JType t : allUpperBounds(branch, mvt)) {
+            if (t.isProperType()) {
+                result.add(t);
+            }
+        }
+        return result;
+    }
+
+    private static Set<JType> allUpperBounds(ConstraintBranch branch, JMetaVarType mvt) {
+        Set<JType> result = new LinkedHashSet<>();
+        branch.constraints().forEach((con, status) -> {
+            if (status.isTrue() && con instanceof JTypeConstraints.Subtype st && st.left().typeEquals(mvt) && !st.right().typeEquals(mvt)) {
+                result.add(st.right());
+            }
+        });
+        return result;
+    }
+
+    private static List<JMetaVarType> findSubset(Set<JMetaVarType> variables, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations) {
+        List<Set<JMetaVarType>> components = stronglyConnected(variables, dependencies, instantiations);
+        for (Set<JMetaVarType> component : components) {
+            boolean ready = true;
+            for (JMetaVarType mvt : component) {
+                for (JMetaVarType dep : dependencies.getOrDefault(mvt, Set.of())) {
+                    if (!component.contains(dep) && !instantiations.containsKey(dep)) {
+                        ready = false;
+                        break;
+                    }
+                }
+                if (!ready) {
+                    break;
                 }
             }
-        }
-
-        return Collections.emptySet();
-    }
-
-    private Set<JMetaVarType> trySubsetWithBase(JMetaVarType base, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations, Set<JMetaVarType> building) {
-        if (building.contains(base)) return building;
-
-        Set<JMetaVarType> res = new HashSet<>(building);
-        res.add(base);
-
-        for (JMetaVarType dep : dependencies.get(base)) {
-            if (base != dep) {
-                if (instantiations.containsKey(dep)) {
-                    res.add(dep);
-                } else {
-                    boolean foundEquiv = true;
-                    for (JType eq : dep.equalities()) {
-                        if (eq instanceof JMetaVarType equiv) {
-                            Set<JMetaVarType> discover = trySubsetWithBase(equiv, dependencies, instantiations, res);
-                            if (!discover.isEmpty()) {
-                                res.addAll(discover);
-                                break;
-                            } else {
-                                foundEquiv = false;
-                            }
-                        }
-                    }
-
-                    if (!foundEquiv) {
-                        return Collections.emptySet();
-                    }
-                }
+            if (ready) {
+                return new ArrayList<>(component);
             }
         }
-
-        return res;
+        return List.of();
     }
 
-    private Map<JMetaVarType, JType> findAllInstantiations(Set<JMetaVarType> mvts, ConstraintBranch bounds) {
-        Map<JMetaVarType, JType> instantiations = new LinkedHashMap<>();
-        for (JMetaVarType mvt : mvts) {
-            JType instantiation = instantiations.getOrDefault(mvt, findInstantiation(mvt, bounds));
-            if (instantiation != null) {
-                instantiations.put(mvt, instantiation);
+    private static List<Set<JMetaVarType>> stronglyConnected(Set<JMetaVarType> variables, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, JType> instantiations) {
+        List<JMetaVarType> nodes = variables.stream().filter(v -> !instantiations.containsKey(v)).toList();
+        Map<JMetaVarType, Integer> index = new HashMap<>();
+        Map<JMetaVarType, Integer> low = new HashMap<>();
+        Deque<JMetaVarType> stack = new ArrayDeque<>();
+        Set<JMetaVarType> onStack = new LinkedHashSet<>();
+        List<Set<JMetaVarType>> result = new ArrayList<>();
+        int[] counter = {0};
+        for (JMetaVarType node : nodes) {
+            if (!index.containsKey(node)) {
+                strongConnect(node, nodes, dependencies, index, low, stack, onStack, result, counter);
             }
         }
+        return result;
+    }
 
-        return instantiations;
+    private static void strongConnect(JMetaVarType v, List<JMetaVarType> nodes, Map<JMetaVarType, Set<JMetaVarType>> dependencies, Map<JMetaVarType, Integer> index, Map<JMetaVarType, Integer> low, Deque<JMetaVarType> stack, Set<JMetaVarType> onStack, List<Set<JMetaVarType>> result, int[] counter) {
+        index.put(v, counter[0]);
+        low.put(v, counter[0]);
+        counter[0]++;
+        stack.push(v);
+        onStack.add(v);
+        for (JMetaVarType w : dependencies.getOrDefault(v, Set.of())) {
+            if (!nodes.contains(w)) {
+                continue;
+            }
+            if (!index.containsKey(w)) {
+                strongConnect(w, nodes, dependencies, index, low, stack, onStack, result, counter);
+                low.put(v, Math.min(low.get(v), low.get(w)));
+            } else if (onStack.contains(w)) {
+                low.put(v, Math.min(low.get(v), index.get(w)));
+            }
+        }
+        if (low.get(v).equals(index.get(v))) {
+            Set<JMetaVarType> component = new LinkedHashSet<>();
+            JMetaVarType w;
+            do {
+                w = stack.pop();
+                onStack.remove(w);
+                component.add(w);
+            } while (!w.equals(v));
+            result.add(component);
+        }
     }
 
     public static JType findInstantiation(JMetaVarType mvt, ConstraintBranch bounds) {
@@ -306,103 +301,97 @@ public class JResolveBounds extends ConstraintMapper.All {
         return types.isEmpty() ? null : mvt.typeSystem().operations().findMostSpecificType(types);
     }
 
-    public Map<JMetaVarType, Set<JMetaVarType>> discoverDependencies(PropertySet branchContext, ConstraintBranch bounds) {
-        Map<JMetaVarType, Set<JMetaVarType>> dependencies = new LinkedHashMap<>();
-        bounds.constraints().forEach((bound, status) -> {
-            if (bound instanceof Constraint.Trinary<?, ?, ?> tri) {
-                if (tri.left() instanceof JType lt) {
-                    initDependencies(lt, dependencies);
-                }
-
-                if (tri.middle() instanceof JType mt) {
-                    initDependencies(mt, dependencies);
-                }
-
-                if (tri.right() instanceof JType rt) {
-                    initDependencies(rt, dependencies);
-                }
-            } else if (bound instanceof Constraint.Binary<?, ?> bin) {
+    private static Set<JMetaVarType> mentionedVariables(ConstraintBranch branch) {
+        Set<JMetaVarType> result = new LinkedHashSet<>();
+        branch.constraints().forEach((con, status) -> {
+            if (status.isTrue() && isBound(con)) {
+                Constraint.Binary<?, ?> bin = (Constraint.Binary<?, ?>) con;
                 if (bin.left() instanceof JType lt) {
-                    initDependencies(lt, dependencies);
+                    result.addAll(discoverMetaVars(lt));
                 }
-
                 if (bin.right() instanceof JType rt) {
-                    initDependencies(rt, dependencies);
+                    result.addAll(discoverMetaVars(rt));
                 }
-            } else if (bound instanceof Constraint.Unary<?> un && un.value() instanceof JType t) {
-                initDependencies(t, dependencies);
+            } else if (status.isTrue() && con instanceof JTypeConstraints.Throws thr) {
+                result.add(thr.value());
+            } else if (con instanceof JTypeConstraints.Infer inf) {
+                result.add(inf.left());
+            }
+        });
+        return result;
+    }
+
+    private static boolean isBound(Constraint con) {
+        return con instanceof JTypeConstraints.Equal || con instanceof JTypeConstraints.Subtype || con instanceof JTypeConstraints.Capture;
+    }
+
+    private static Map<JMetaVarType, Set<JMetaVarType>> discoverDependencies(ConstraintBranch branch, Set<JMetaVarType> variables) {
+        Map<JMetaVarType, Set<JMetaVarType>> dependencies = new LinkedHashMap<>();
+        variables.forEach(v -> dependencies.computeIfAbsent(v, k -> new LinkedHashSet<>()).add(v));
+
+        Set<JMetaVarType> captured = new LinkedHashSet<>();
+        List<JTypeConstraints.Capture> captures = captureBounds(branch);
+        for (JTypeConstraints.Capture cpt : captures) {
+            for (JType arg : cpt.left().typeArguments()) {
+                if (arg instanceof JMetaVarType mvt) {
+                    captured.add(mvt);
+                }
+            }
+        }
+
+        for (JTypeConstraints.Capture cpt : captures) {
+            Set<JMetaVarType> mentioned = discoverMetaVars(cpt.left());
+            mentioned.addAll(discoverMetaVars(cpt.right()));
+            for (JType arg : cpt.left().typeArguments()) {
+                if (arg instanceof JMetaVarType alpha) {
+                    // JLS §18.4 α on the left of a capture bound depends on every variable in it
+                    dependencies.computeIfAbsent(alpha, k -> new LinkedHashSet<>()).addAll(mentioned);
+                }
+            }
+        }
+
+        branch.constraints().forEach((con, status) -> {
+            if (status.isTrue() && (con instanceof JTypeConstraints.Equal || con instanceof JTypeConstraints.Subtype)) {
+                Constraint.Binary<JType, JType> bin = (Constraint.Binary<JType, JType>) con;
+                addDependency(dependencies, captured, bin.left(), bin.right());
+                addDependency(dependencies, captured, bin.right(), bin.left());
             }
         });
 
-        bounds.constraints().forEach((bound, status) -> {
-            if (status.isTrue()) {
-                if (bound instanceof JTypeConstraints.Equal || bound instanceof JTypeConstraints.Subtype) {
-                    Constraint.Binary<JType, JType> bin = (Constraint.Binary<JType, JType>) bound;
-                    if (bin.left() instanceof JMetaVarType || bin.right() instanceof JMetaVarType) {
-                        JMetaVarType mvt = (JMetaVarType) (bin.left() instanceof JMetaVarType ? bin.left() : bin.right());
-                        JType otherType = bin.left() instanceof JMetaVarType ? bin.right() : bin.left();
-
-                        boolean foundInCapture = false;
-                        for (Map.Entry<Constraint, Constraint.Status> entry : bounds.constraints().entrySet()) {
-                            Constraint other = entry.getKey();
-                            Constraint.Status otherStatus = entry.getValue();
-                            if (otherStatus.isTrue() && other != bound) {
-                                if (other instanceof JTypeConstraints.Capture capture) {
-                                    if (discoverMetaVars(capture.left()).contains(mvt)) {
-                                        foundInCapture = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        JMetaVarType alpha = mvt;
-                        if (foundInCapture) {
-                            discoverMetaVars(otherType).forEach(beta -> dependencies.get(beta).add(alpha));
-                        } else {
-                            discoverMetaVars(otherType).forEach(beta -> dependencies.get(alpha).add(beta));
-                        }
-                    }
-                } else if (bound instanceof JTypeConstraints.Capture capture) {
-                    Set<JMetaVarType> mvts = discoverMetaVars(capture.left());
-                    mvts.addAll(discoverMetaVars(capture.right()));
-                    mvts.forEach(mvt -> dependencies.get(mvt).addAll(mvts));
-                }
-            }
-        });
-
-        Map<JMetaVarType, Set<JMetaVarType>> previous = dependencies;
-        Map<JMetaVarType, Set<JMetaVarType>> current;
+        boolean changed;
         do {
-            current = new LinkedHashMap<>();
-
-            Map<JMetaVarType, Set<JMetaVarType>> finalCurrent = current;
-            Map<JMetaVarType, Set<JMetaVarType>> finalPrevious = previous;
-            previous.forEach((mvt, deps) -> {
-                Set<JMetaVarType> newDeps = new LinkedHashSet<>(deps);
-                deps.forEach(dep -> {
-                    if (dep != mvt) {
-                        newDeps.addAll(finalPrevious.get(dep));
-                    }
-                });
-                finalCurrent.put(mvt, newDeps);
-            });
-            previous = current;
-        } while (!current.equals(previous));
+            changed = false;
+            for (Map.Entry<JMetaVarType, Set<JMetaVarType>> entry : dependencies.entrySet()) {
+                Set<JMetaVarType> closure = new LinkedHashSet<>(entry.getValue());
+                for (JMetaVarType dep : entry.getValue()) {
+                    closure.addAll(dependencies.getOrDefault(dep, Set.of()));
+                }
+                if (closure.size() != entry.getValue().size()) {
+                    entry.setValue(closure);
+                    changed = true;
+                }
+            }
+        } while (changed);
 
         return dependencies;
     }
 
-    private static void initDependencies(JType visit, Map<JMetaVarType, Set<JMetaVarType>> dependencies) {
-        discoverMetaVars(visit).forEach(mv -> dependencies.computeIfAbsent(mv, k -> {
-            Set<JMetaVarType> deps = new LinkedHashSet<>();
-            deps.add(k);
-            return deps;
-        }));
+    private static void addDependency(Map<JMetaVarType, Set<JMetaVarType>> dependencies, Set<JMetaVarType> captured, JType side, JType other) {
+        if (side instanceof JMetaVarType alpha) {
+            for (JMetaVarType beta : discoverMetaVars(other)) {
+                if (captured.contains(alpha)) {
+                    // JLS §18.4 α captured: β depends on α
+                    dependencies.computeIfAbsent(beta, k -> new LinkedHashSet<>()).add(alpha);
+                } else {
+                    // JLS §18.4 α depends on β
+                    dependencies.computeIfAbsent(alpha, k -> new LinkedHashSet<>()).add(beta);
+                }
+            }
+        }
     }
 
     private static Set<JMetaVarType> discoverMetaVars(JType visit) {
-        return new HashSet<>(new JRecursiveTypeVisitor<JMetaVarType, Void>((JTypeVisitor.Default) (type, context) -> type instanceof JMetaVarType mvt ? mvt : null,
+        return new LinkedHashSet<>(new JRecursiveTypeVisitor<JMetaVarType, Void>((JTypeVisitor.Default) (type, context) -> type instanceof JMetaVarType mvt ? mvt : null,
                 null, false).visit(visit, new HashMap<>()));
     }
 }

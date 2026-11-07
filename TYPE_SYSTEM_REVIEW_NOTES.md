@@ -590,3 +590,24 @@ Setup: Jackson 3 jype-stub migration committed on `main` (129db16), merged into 
 Baseline: 177 tests green.
 
 ### Progress log
+
+- **Item 1 (unique inference variables) + item 6 (§18.4 resolution rewrite) — done.**
+  `JVarType.createMetaVar()`/`JVarMetavarVisitor` keyed new metavars on `identityHashCode(typeParam)`,
+  so every α minted from the same type parameter was *equal* (nested `id(id(x))`, two captures of the
+  same receiver, ...). Now a global counter in `JMetaVarTypeImpl`. `JReduceInstantiation` /
+  `JReduceInstantiationRefExpression` built the result type via a second `parameterizedWithMetaVars()`
+  call (worked only by the collision) — now use the same α map; `JReduceInstantiation` also merged the
+  outer branch's var map *after* its fresh vars (outer could override) — fixed order.
+  Unique α exposed `JResolveBounds` bugs (NPE in `trySubsetWithBase`, un-closed dependency map,
+  capture fallback using fresh *inference* vars instead of fresh *type* vars, reversed throws check).
+  Rewrote `JResolveBounds` straight from §18.4: dependency rules incl. capture direction + transitive
+  closure; minimal subset = first sink SCC (Tarjan) over uninstantiated vars; candidates
+  lub / RuntimeException (throws, RuntimeException <: every proper upper bound) / glb; on failure or
+  capture: fresh type variables Y (new `JFreshTypeVariables`, virtual location `Y#n`) with
+  lower = lub(proper lowers), upper = glb(Ui θ), well-formedness check, capture bounds removed,
+  αi = Yi incorporated. `JVarType` gained `lowerBounds()` (impl, delegate, copy, equals, deep mapper).
+  javac check: `Box<? extends Number> box; box.set(box.get())` is **rejected** by javac
+  ("Number cannot be converted to CAP#1") — the old Session-3 test asserted it type-checks (it only
+  passed because both captures shared one α). Test flipped to
+  `setWithResultOfGetOnExtendsWildcardIsRejected`; `wildcardMemberAccessRecordsACaptureConstraint` now
+  asserts the captured α resolves to a fresh type variable bounded by Number. Suite 177/177.

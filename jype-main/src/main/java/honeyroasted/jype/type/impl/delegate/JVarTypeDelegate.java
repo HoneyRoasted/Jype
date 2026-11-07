@@ -33,4 +33,14 @@ public class JVarTypeDelegate extends JAbstractPossiblyUnmodifiableDelegateType<
     public void setUpperBounds(Set<JType> upperBounds) {
         delegate().setUpperBounds(upperBounds);
     }
+
+    @Override
+    public Set<JType> lowerBounds() {
+        return delegate().lowerBounds();
+    }
+
+    @Override
+    public void setLowerBounds(Set<JType> lowerBounds) {
+        delegate().setLowerBounds(lowerBounds);
+    }
 }
