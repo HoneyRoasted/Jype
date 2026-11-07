@@ -1,7 +1,7 @@
 package honeyroasted.jypestub.model.test;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.core.type.TypeReference;
+import tools.jackson.core.type.TypeReference;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JTypeSystem;
