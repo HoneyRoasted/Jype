@@ -8,13 +8,15 @@ import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.constraints.JRelationConstraintApplier;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.compatibility.JEqualType;
+import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
+import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionSimplyTyped;
 import honeyroasted.jype.system.solver.constraints.compatibility.JProperCompatible;
 import honeyroasted.jype.system.solver.constraints.compatibility.JProperContains;
 import honeyroasted.jype.system.solver.constraints.compatibility.JProperSubtype;
-import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
-import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionSimplyTyped;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationCapture;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualEqual;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualSubtype;
@@ -23,28 +25,28 @@ import honeyroasted.jype.system.solver.constraints.inference.JBuildInitialBounds
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveMostSpecificMethod;
 import honeyroasted.jype.system.solver.constraints.inference.JVerifyBounds;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayAccess;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayCreation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayInitializer;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceAssignment;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceBinaryOperator;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceCast;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceCompatible;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceConditionalExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceContains;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceDeferred;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceEqual;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceGetField;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstanceOf;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInstantiationRefExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceInvocationRefExpression;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceArrayAccess;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceAssignment;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceDeferred;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceSwitch;
-import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaThrowsCheck;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaThrowsCheck;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceMethodInvocation;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSimplyTypedExpression;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceSubtype;
+import honeyroasted.jype.system.solver.constraints.reduction.JReduceSwitch;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceUnaryOperator;
 import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
@@ -54,6 +56,7 @@ import honeyroasted.jype.type.JParameterizedMethodType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,18 +64,22 @@ import java.util.Optional;
 import java.util.Set;
 
 public class JTypeOperationsImpl implements JTypeOperations {
-    public static final List<ConstraintMapper> COMPATIBILITY_MAPPERS = List.of(
-            new ConstraintMapper.True(),
-            new ConstraintMapper.False(),
+    public static final List<ConstraintMapper> COMPATIBILITY_MAPPERS = compatibilityMappers(JSolverConfig.FAST);
 
-            new JEqualType(),
-            new JProperSubtype(),
-            new JProperCompatible(),
-            new JProperContains(),
+    public static List<ConstraintMapper> compatibilityMappers(JSolverConfig config) {
+        return List.of(
+                new ConstraintMapper.True(),
+                new ConstraintMapper.False(),
 
-            new JExpressionAssignmentConstant(),
-            new JExpressionSimplyTyped()
-    );
+                new JEqualType(config),
+                new JProperSubtype(config),
+                new JProperCompatible(config),
+                new JProperContains(config),
+
+                new JExpressionAssignmentConstant(),
+                new JExpressionSimplyTyped()
+        );
+    }
 
     public static final List<ConstraintMapper> INCORPORATION_MAPPERS = List.of(
             new ConstraintMapper.True(),
@@ -84,88 +91,96 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new JIncorporationCapture()
     );
 
-    public static final List<ConstraintMapper> REDUCTION_MAPPERS = List.of(
-            new ConstraintMapper.True(),
-            new ConstraintMapper.False(),
+    public static final List<ConstraintMapper> REDUCTION_MAPPERS = reductionMappers(JSolverConfig.FAST);
 
-            new JReduceSubtype(),
-            new JReduceCompatible(),
-            new JReduceContains(),
-            new JReduceEqual(),
+    public static List<ConstraintMapper> reductionMappers(JSolverConfig config) {
+        return List.of(
+                new ConstraintMapper.True(),
+                new ConstraintMapper.False(),
 
-            new JReduceCast(),
-            new JReduceInstanceOf(),
-            new JReduceUnaryOperator(),
-            new JReduceBinaryOperator(),
-            new JReduceConditionalExpression(),
-            new JReduceArrayCreation(),
-            new JReduceArrayInitializer(),
-            new JExpressionAssignmentConstant(),
-            new JReduceSimplyTypedExpression(),
-            new JReduceInstantiation(),
-            new JReduceMethodInvocation(),
-            new JReduceGetField(),
-            new JReduceInstantiationRefExpression(),
-            new JReduceInvocationRefExpression(),
-            new JReduceLambdaExpression(),
-            new JReduceArrayAccess(),
-            new JReduceAssignment(),
-            new JReduceSwitch(),
-            new JReduceDeferred(),
-            new JReduceLambdaThrowsCheck(),
+                new JReduceSubtype(config),
+                new JReduceCompatible(config),
+                new JReduceContains(config),
+                new JReduceEqual(config),
 
-            new JIncorporationEqualEqual(),
-            new JIncorporationEqualSubtype(),
-            new JIncorporationSubtypeSubtype(),
-            new JIncorporationCapture()
-    );
+                new JReduceCast(),
+                new JReduceInstanceOf(),
+                new JReduceUnaryOperator(),
+                new JReduceBinaryOperator(),
+                new JReduceConditionalExpression(),
+                new JReduceArrayCreation(),
+                new JReduceArrayInitializer(),
+                new JExpressionAssignmentConstant(),
+                new JReduceSimplyTypedExpression(),
+                new JReduceInstantiation(),
+                new JReduceMethodInvocation(),
+                new JReduceGetField(),
+                new JReduceInstantiationRefExpression(),
+                new JReduceInvocationRefExpression(),
+                new JReduceLambdaExpression(),
+                new JReduceArrayAccess(),
+                new JReduceAssignment(),
+                new JReduceSwitch(),
+                new JReduceDeferred(),
+                new JReduceLambdaThrowsCheck(),
+
+                new JIncorporationEqualEqual(),
+                new JIncorporationEqualSubtype(),
+                new JIncorporationSubtypeSubtype(),
+                new JIncorporationCapture()
+        );
+    }
 
     public static final List<ConstraintMapper> BUILD_INITIAL_BOUNDS_MAPPERS = List.of(
             new JBuildInitialBounds()
     );
 
-    public static final List<ConstraintMapper> INFERENCE_MAPPERS = List.of(
-            new ConstraintMapper.True(),
-            new ConstraintMapper.False(),
+    public static final List<ConstraintMapper> INFERENCE_MAPPERS = inferenceMappers(JSolverConfig.FAST);
 
-            new JBuildInitialBounds(),
+    public static List<ConstraintMapper> inferenceMappers(JSolverConfig config) {
+        return List.of(
+                new ConstraintMapper.True(),
+                new ConstraintMapper.False(),
 
-            new JIncorporationEqualEqual(),
-            new JIncorporationEqualSubtype(),
-            new JIncorporationSubtypeSubtype(),
-            new JIncorporationCapture(),
+                new JBuildInitialBounds(),
 
-            new JReduceSubtype(),
-            new JReduceCompatible(),
-            new JReduceContains(),
-            new JReduceEqual(),
+                new JIncorporationEqualEqual(),
+                new JIncorporationEqualSubtype(),
+                new JIncorporationSubtypeSubtype(),
+                new JIncorporationCapture(),
 
-            new JReduceCast(),
-            new JReduceInstanceOf(),
-            new JReduceUnaryOperator(),
-            new JReduceBinaryOperator(),
-            new JReduceConditionalExpression(),
-            new JReduceArrayCreation(),
-            new JReduceArrayInitializer(),
-            new JExpressionAssignmentConstant(),
-            new JReduceSimplyTypedExpression(),
-            new JReduceInstantiation(),
-            new JReduceMethodInvocation(),
-            new JReduceGetField(),
-            new JReduceInstantiationRefExpression(),
-            new JReduceInvocationRefExpression(),
-            new JReduceLambdaExpression(),
-            new JReduceArrayAccess(),
-            new JReduceAssignment(),
-            new JReduceSwitch(),
-            new JReduceDeferred(),
-            new JReduceLambdaThrowsCheck(),
+                new JReduceSubtype(config),
+                new JReduceCompatible(config),
+                new JReduceContains(config),
+                new JReduceEqual(config),
 
-            new JIncorporationEqualEqual(),
-            new JIncorporationEqualSubtype(),
-            new JIncorporationSubtypeSubtype(),
-            new JIncorporationCapture()
-    );
+                new JReduceCast(),
+                new JReduceInstanceOf(),
+                new JReduceUnaryOperator(),
+                new JReduceBinaryOperator(),
+                new JReduceConditionalExpression(),
+                new JReduceArrayCreation(),
+                new JReduceArrayInitializer(),
+                new JExpressionAssignmentConstant(),
+                new JReduceSimplyTypedExpression(),
+                new JReduceInstantiation(),
+                new JReduceMethodInvocation(),
+                new JReduceGetField(),
+                new JReduceInstantiationRefExpression(),
+                new JReduceInvocationRefExpression(),
+                new JReduceLambdaExpression(),
+                new JReduceArrayAccess(),
+                new JReduceAssignment(),
+                new JReduceSwitch(),
+                new JReduceDeferred(),
+                new JReduceLambdaThrowsCheck(),
+
+                new JIncorporationEqualEqual(),
+                new JIncorporationEqualSubtype(),
+                new JIncorporationSubtypeSubtype(),
+                new JIncorporationCapture()
+        );
+    }
 
     public static final List<ConstraintMapper> RESOLVE_MAPPERS = List.of(
             new JResolveBounds()
@@ -224,15 +239,23 @@ public class JTypeOperationsImpl implements JTypeOperations {
         return ConstraintMapperApplier.of(BUILD_INITIAL_BOUNDS_MAPPERS, type);
     }
 
+    public static final List<ConstraintMapper> COMPATIBILITY_FALLBACK_MAPPERS = List.of(
+            new ConstraintMapper.True(),
+            new ConstraintMapper.False(),
+
+            new JExpressionAssignmentConstant(),
+            new JExpressionSimplyTyped()
+    );
+
     @Override
-    public ConstraintSolver compatibilitySolver() {
-        return new ConstraintSolver(List.of(this.compatibilityApplier(ConstraintMapperApplier.Type.ORDERED)));
+    public ConstraintSolver compatibilitySolver(JSolverConfig config) {
+        return new ConstraintSolver(List.of(new JRelationConstraintApplier(COMPATIBILITY_FALLBACK_MAPPERS, config)));
     }
 
     @Override
-    public ConstraintSolver inferenceSolver() {
+    public ConstraintSolver inferenceSolver(JSolverConfig config) {
         JTypeSystem system = this.typeSystem;
-        List<ConstraintMapper> loop = new java.util.ArrayList<>(INFERENCE_MAPPERS);
+        List<ConstraintMapper> loop = new ArrayList<>(config.relationTrees() ? inferenceMappers(config) : INFERENCE_MAPPERS);
         loop.addAll(RESOLVE_MAPPERS);
         ConstraintSolver solver = new ConstraintSolver(List.of(
                 ConstraintMapperApplier.of(loop, ConstraintMapperApplier.Type.UNTRIMMED),
@@ -270,7 +293,7 @@ public class JTypeOperationsImpl implements JTypeOperations {
 
     @Override
     public Constraint.Status checkStatus(Constraint constraint, PropertySet context) {
-        return this.compatibilitySolver()
+        return this.compatibilitySolver(JSolverConfig.FAST)
                 .bind(constraint)
                 .solve(context)
                 .status();

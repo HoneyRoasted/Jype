@@ -1,6 +1,5 @@
 package honeyroasted.jype.system.solver.operations;
 
-import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintSolver;
@@ -8,6 +7,8 @@ import honeyroasted.almonds.applier.ConstraintMapperApplier;
 import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.JSolverConfig;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.type.JClassReference;
@@ -67,16 +68,28 @@ public interface JTypeOperations {
 
     ConstraintMapperApplier initialBoundsApplier(ConstraintMapperApplier.Type type);
 
-    ConstraintSolver compatibilitySolver();
+    default ConstraintSolver compatibilitySolver() {
+        return this.compatibilitySolver(JSolverConfig.EXPLAINED);
+    }
 
-    ConstraintSolver inferenceSolver();
+    ConstraintSolver compatibilitySolver(JSolverConfig config);
+
+    default ConstraintSolver inferenceSolver() {
+        return this.inferenceSolver(JSolverConfig.PROOFS);
+    }
+
+    ConstraintSolver inferenceSolver(JSolverConfig config);
 
     Map<JVarType, JMetaVarType> varTypeMap(ConstraintBranch branch);
 
     Map<JMetaVarType, JType> metaVarTypeMap(ConstraintBranch branch);
 
     default ConstraintSolver inferenceSolver(Map<JVarType, JMetaVarType> correspondence) {
-        ConstraintSolver solver = this.inferenceSolver();
+        return this.inferenceSolver(correspondence, JSolverConfig.PROOFS);
+    }
+
+    default ConstraintSolver inferenceSolver(Map<JVarType, JMetaVarType> correspondence, JSolverConfig config) {
+        ConstraintSolver solver = this.inferenceSolver(config);
         JTypeContext.TypeMetavarMap metavarMap = new JTypeContext.TypeMetavarMap(new HashMap<>(), new HashMap<>(correspondence));
         correspondence.forEach((vt, mvt) -> solver.bind(new JTypeConstraints.Infer(mvt, vt)));
         return solver.withContext(new PropertySet().attach(metavarMap));

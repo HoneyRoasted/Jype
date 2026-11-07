@@ -4,6 +4,7 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArrayType;
@@ -19,6 +20,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subtype> {
+    private final JSolverConfig config;
+
+    public JReduceSubtype() {
+        this(JSolverConfig.FAST);
+    }
+
+    public JReduceSubtype(JSolverConfig config) {
+        this.config = config;
+    }
+
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Subtype constraint, Constraint.Status status) {
         return status.isUnknown();
@@ -30,7 +41,7 @@ public class JReduceSubtype extends ConstraintMapper.Unary<JTypeConstraints.Subt
         JType t = constraint.right();
 
         if (s.isProperType() && t.isProperType()) {
-            branch.set(constraint, Constraint.Status.known(JTypeRelations.isSubtype(s, t)));
+            JTypeRelations.ask(branch, constraint, this.config);
         } else if (s.isNullType()) {
             // JLS §18.2.3 S is the null type
             branch.set(constraint, Constraint.Status.TRUE);

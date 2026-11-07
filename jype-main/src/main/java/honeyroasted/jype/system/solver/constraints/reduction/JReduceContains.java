@@ -4,12 +4,23 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JWildType;
 
 public class JReduceContains extends ConstraintMapper.Unary<JTypeConstraints.Contains> {
+    private final JSolverConfig config;
+
+    public JReduceContains() {
+        this(JSolverConfig.FAST);
+    }
+
+    public JReduceContains(JSolverConfig config) {
+        this.config = config;
+    }
+
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Contains constraint, Constraint.Status status) {
         return status.isUnknown();
@@ -22,7 +33,7 @@ public class JReduceContains extends ConstraintMapper.Unary<JTypeConstraints.Con
         JType object = s.typeSystem().constants().object();
 
         if (s.isProperType() && t.isProperType()) {
-            branch.set(constraint, Constraint.Status.known(JTypeRelations.contains(s, t)));
+            JTypeRelations.ask(branch, constraint, this.config);
         } else if (!(t instanceof JWildType)) {
             if (s instanceof JWildType) {
                 // JLS §18.2.3 T is a type and S is a wildcard

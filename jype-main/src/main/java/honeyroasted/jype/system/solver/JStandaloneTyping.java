@@ -39,7 +39,7 @@ public final class JStandaloneTyping {
         }
 
         JMetaVarType target = system.typeFactory().newMetaVarType("STANDALONE");
-        ConstraintTree solved = system.operations().inferenceSolver()
+        ConstraintTree solved = system.operations().inferenceSolver(JSolverConfig.FAST)
                 .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STANDALONE, target))
                 .solve();
 

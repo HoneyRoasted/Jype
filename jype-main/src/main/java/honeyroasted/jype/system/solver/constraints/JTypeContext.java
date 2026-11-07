@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.constraints;
 
+import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.SimpleName;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.visitor.visitors.JMetaVarTypeResolveVisitor;
@@ -32,6 +33,20 @@ public interface JTypeContext {
         @Override
         public String simpleName() {
             return "Invocation Type Arguments: " + expression.simpleName() + " : " + theta;
+        }
+    }
+
+    record RelationRule(String rule) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Rule: " + rule;
+        }
+    }
+
+    record PremiseOf(Constraint judgment) implements SimpleName {
+        @Override
+        public String simpleName() {
+            return "Premise of: " + judgment.simpleName();
         }
     }
 

@@ -4,6 +4,7 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArrayType;
@@ -13,6 +14,16 @@ import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 
 public class JReduceCompatible extends ConstraintMapper.Unary<JTypeConstraints.Compatible> {
+    private final JSolverConfig config;
+
+    public JReduceCompatible() {
+        this(JSolverConfig.FAST);
+    }
+
+    public JReduceCompatible(JSolverConfig config) {
+        this.config = config;
+    }
+
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Compatible constraint, Constraint.Status status) {
         return status.isUnknown();
@@ -26,8 +37,7 @@ public class JReduceCompatible extends ConstraintMapper.Unary<JTypeConstraints.C
 
         if (s.isProperType() && t.isProperType()) {
             // JLS §18.2.2 S and T are proper types
-            boolean compatible = JTypeRelations.isCompatible(s, context, t);
-            branch.set(constraint, Constraint.Status.known(compatible));
+            boolean compatible = JTypeRelations.ask(branch, constraint, this.config);
             if (compatible && context != JTypeConstraints.Compatible.Context.EXPLICIT_CAST && !(s instanceof JPrimitiveType) && !(t instanceof JPrimitiveType)
                     && !JTypeRelations.isSubtype(s, t)) {
                 branch.add(new JTypeConstraints.UncheckedConversion(s, t), Constraint.Status.TRUE);

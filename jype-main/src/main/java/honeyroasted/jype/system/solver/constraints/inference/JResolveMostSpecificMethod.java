@@ -6,6 +6,7 @@ import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JMethodLookup;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JStandaloneType;
 import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.JTypeRelations;
@@ -218,7 +219,7 @@ public class JResolveMostSpecificMethod {
             }
         }
 
-        ConstraintTree solved = system.operations().inferenceSolver()
+        ConstraintTree solved = system.operations().inferenceSolver(JSolverConfig.FAST)
                 .bind(constraints.toArray(new Constraint[0]))
                 .solve();
         return solved.branches().stream().anyMatch(b -> b.status().isTrue());

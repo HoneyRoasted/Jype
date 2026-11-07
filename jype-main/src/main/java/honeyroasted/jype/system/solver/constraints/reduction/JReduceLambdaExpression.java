@@ -9,6 +9,7 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.expression.JExpressionSubstitution;
 import honeyroasted.jype.system.solver.JFunctionalInterfaces;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -245,7 +246,7 @@ public class JReduceLambdaExpression extends ConstraintMapper.Unary<JTypeConstra
         for (int i = 0; i < lambda.parameterCount(); i++) {
             constraints.add(new JTypeConstraints.Equal(lambda.explicitParameterTypes().get(i), sam.get().parameters().get(i)));
         }
-        ConstraintTree tree = system.operations().inferenceSolver().bind(constraints.toArray(Constraint[]::new)).solve();
+        ConstraintTree tree = system.operations().inferenceSolver(JSolverConfig.FAST).bind(constraints.toArray(Constraint[]::new)).solve();
         Optional<ConstraintBranch> solved = tree.branches().stream().filter(b -> b.status().isTrue()).findFirst();
         if (solved.isEmpty()) {
             return Optional.empty();

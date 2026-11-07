@@ -3,6 +3,9 @@ package honeyroasted.jype.system.solver;
 import honeyroasted.collect.multi.Pair;
 import honeyroasted.jype.system.JTypeConstants;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
+import honeyroasted.jype.system.visitor.JTypeVisitor;
+import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
 import honeyroasted.jype.system.visitor.visitors.JVarTypeResolveVisitor;
 import honeyroasted.jype.type.JArgumentType;
 import honeyroasted.jype.type.JArrayType;
@@ -15,8 +18,6 @@ import honeyroasted.jype.type.JPrimitiveType;
 import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
-import honeyroasted.jype.system.visitor.visitors.JRecursiveTypeVisitor;
-import honeyroasted.jype.system.visitor.JTypeVisitor;
 
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
@@ -32,10 +33,57 @@ public final class JCastability {
     private static final ThreadLocal<Set<Pair<JType, JType>>> DISJOINT_CACHE = ThreadLocal.withInitial(HashSet::new);
     private static final ThreadLocal<Set<Pair<JType, JType>>> CAST_CACHE = ThreadLocal.withInitial(HashSet::new);
 
-    private JCastability() {
+    private final JRelationTracker tracker;
+
+    private JCastability(JRelationTracker tracker) {
+        this.tracker = tracker;
     }
 
     public static boolean isCastable(JType t, JType s) {
+        return isCastable(t, s, null);
+    }
+
+    public static boolean isCastable(JType t, JType s, JRelationTracker tracker) {
+        return new JCastability(tracker).castable(t, s);
+    }
+
+    public static JClassType asSub(JClassType t, JClassReference sym) {
+        return new JCastability(null).asSubtype(t, sym);
+    }
+
+    private boolean castable(JType t, JType s) {
+        if (this.tracker == null) {
+            return this.castableImpl(t, s);
+        }
+        this.tracker.enter(new JTypeConstraints.Compatible(t, JTypeConstraints.Compatible.Context.EXPLICIT_CAST, s));
+        boolean result = false;
+        try {
+            result = this.castableImpl(t, s);
+            return result;
+        } finally {
+            this.tracker.exit(result);
+        }
+    }
+
+    private boolean sub(JType s, JType t) {
+        return JTypeRelations.isSubtype(s, t, this.tracker);
+    }
+
+    private boolean subUnchecked(JType s, JType t) {
+        return JTypeRelations.isSubtypeUnchecked(s, t, this.tracker);
+    }
+
+    private boolean loose(JType s, JType t) {
+        return JTypeRelations.isLooseInvocationCompatible(s, t, this.tracker);
+    }
+
+    private void rule(String rule) {
+        if (this.tracker != null) {
+            this.tracker.rule(rule);
+        }
+    }
+
+    private boolean castableImpl(JType t, JType s) {
         if (t == s || JTypeRelations.isSameType(t, s)) {
             return true;
         }
@@ -47,7 +95,7 @@ public final class JCastability {
             if (skipped instanceof JNoneType && !skipped.isNullType()) {
                 return false;
             }
-            return JTypeRelations.isLooseInvocationCompatible(skipped, s) || (sp && !(skipped instanceof JNoneType) && JTypeRelations.isSubtype(((JPrimitiveType) s).box(), skipped));
+            return this.loose(skipped, s) || (sp && !(skipped instanceof JNoneType) && this.sub(((JPrimitiveType) s).box(), skipped));
         }
         boolean result = visit(t, s);
         if (result && t instanceof JClassType tc && s instanceof JClassType sc && (tc.classReference().isSealed() || sc.classReference().isSealed())) {
@@ -57,7 +105,7 @@ public final class JCastability {
         return result;
     }
 
-    private static boolean areDisjoint(JClassReference ts, JClassReference ss, Set<Pair<JType, JType>> seen) {
+    private boolean areDisjoint(JClassReference ts, JClassReference ss, Set<Pair<JType, JType>> seen) {
         if (!seen.add(Pair.identity(ts, ss))) {
             return false;
         }
@@ -66,7 +114,7 @@ public final class JCastability {
         if (tInterface != sInterface) {
             JClassReference isym = tInterface ? ts : ss;
             JClassReference csym = isym == ts ? ss : ts;
-            if (!JTypeRelations.isSubtype(csym, isym)) {
+            if (!this.sub(csym, isym)) {
                 if (csym.hasModifier(AccessFlag.FINAL)) {
                     return true;
                 } else if (csym.isSealed()) {
@@ -76,8 +124,8 @@ public final class JCastability {
                 }
             }
         } else if (!tInterface) {
-            return !JTypeRelations.isSubtype(ss, ts) && !JTypeRelations.isSubtype(ts, ss);
-        } else if (!JTypeRelations.isSubtype(ts, ss) && !JTypeRelations.isSubtype(ss, ts)) {
+            return !this.sub(ss, ts) && !this.sub(ts, ss);
+        } else if (!this.sub(ts, ss) && !this.sub(ss, ts)) {
             if (ts.isSealed()) {
                 return ts.permittedSubclasses().stream().allMatch(p -> areDisjoint(ss, p, seen));
             } else if (ss.isSealed()) {
@@ -87,7 +135,7 @@ public final class JCastability {
         return false;
     }
 
-    private static boolean visit(JType t, JType s) {
+    private boolean visit(JType t, JType s) {
         JTypeConstants c = t.typeSystem().constants();
         if (t instanceof JPrimitiveType) {
             // JLS §5.5 table 5.5-A
@@ -96,42 +144,42 @@ public final class JCastability {
             return tb == sb;
         }
         if (t instanceof JNoneType tn) {
-            return tn.isNullType() && JTypeRelations.isSubtype(t, s);
+            return tn.isNullType() && this.sub(t, s);
         }
         if (s instanceof JNoneType sn) {
             return sn.isNullType();
         }
         if (t instanceof JWildType) {
-            return isCastable(wildUpperBound(t), s);
+            return this.castable(wildUpperBound(t), s);
         }
         if (t instanceof JClassType || t instanceof JIntersectionType) {
             return visitClass(t, s);
         }
         if (t instanceof JArrayType ta) {
             if (s instanceof JVarType) {
-                return isCastable(s, t);
+                return this.castable(s, t);
             } else if (s instanceof JClassType || s instanceof JIntersectionType) {
-                return JTypeRelations.isSubtype(t, s);
+                return this.sub(t, s);
             } else if (s instanceof JArrayType sa) {
                 if (ta.component() instanceof JPrimitiveType || sa.component() instanceof JPrimitiveType) {
                     return ta.component().typeEquals(sa.component());
                 }
-                return isCastable(ta.component(), sa.component());
+                return this.castable(ta.component(), sa.component());
             }
             return false;
         }
         if (t instanceof JVarType tv) {
             if (s instanceof JVarType) {
-                return JTypeRelations.isSubtype(t, s) || isCastable(tv.upperBound(), s);
+                return this.sub(t, s) || this.castable(tv.upperBound(), s);
             }
-            return isCastable(tv.upperBound(), s);
+            return this.castable(tv.upperBound(), s);
         }
         return false;
     }
 
-    private static boolean visitClass(JType t, JType s) {
+    private boolean visitClass(JType t, JType s) {
         if (s instanceof JVarType sv) {
-            return isCastable(t, sv.upperBound());
+            return this.castable(t, sv.upperBound());
         }
         if (t instanceof JIntersectionType || s instanceof JIntersectionType) {
             return !(t instanceof JIntersectionType) ? visitCompound((JIntersectionType) s, t, true) : visitCompound((JIntersectionType) t, s, false);
@@ -140,8 +188,8 @@ public final class JCastability {
         if (s instanceof JClassType || s instanceof JArrayType) {
             JType et = JTypeRelations.erasure(t);
             JType es = JTypeRelations.erasure(s);
-            boolean upcast = JTypeRelations.isSubtype(et, es);
-            if (upcast || JTypeRelations.isSubtype(es, et)) {
+            boolean upcast = this.sub(et, es);
+            if (upcast || this.sub(es, et)) {
                 if (!upcast && s instanceof JArrayType) {
                     return true;
                 } else if (s instanceof JClassType sc && JTypeRelations.isRaw(sc)) {
@@ -158,7 +206,7 @@ public final class JCastability {
                 if (quantified != null && quantified) {
                     return true;
                 }
-                return JTypeRelations.isSubtypeUnchecked(a, b);
+                return this.subUnchecked(a, b);
             }
             if (s instanceof JClassType sc) {
                 boolean sInterface = sc.classReference().hasModifier(AccessFlag.INTERFACE);
@@ -174,13 +222,13 @@ public final class JCastability {
         return false;
     }
 
-    private static Boolean castByQuantifiers(JClassType a, JClassType b, boolean rewriteTypeVars) {
+    private Boolean castByQuantifiers(JClassType a, JClassType b, boolean rewriteTypeVars) {
         JClassType aHigh = (JClassType) rewriteQuantifiers(a, true, rewriteTypeVars);
         JClassType aLow = (JClassType) rewriteQuantifiers(a, false, rewriteTypeVars);
         JClassType bHigh = (JClassType) rewriteQuantifiers(b, true, rewriteTypeVars);
         JClassType bLow = (JClassType) rewriteQuantifiers(b, false, rewriteTypeVars);
-        JClassType lowSub = asSub(bLow, aLow.classReference());
-        JClassType highSub = lowSub == null ? null : asSub(bHigh, aHigh.classReference());
+        JClassType lowSub = this.asSubtype(bLow, aLow.classReference());
+        JClassType highSub = lowSub == null ? null : this.asSubtype(bHigh, aHigh.classReference());
         if (highSub == null) {
             return null;
         }
@@ -190,16 +238,16 @@ public final class JCastability {
                 && !disjointTypes(allParams(aLow), allParams(lowSub));
     }
 
-    private static boolean visitCompound(JIntersectionType ct, JType s, boolean reverse) {
+    private boolean visitCompound(JIntersectionType ct, JType s, boolean reverse) {
         for (JType c : ct.children()) {
-            if (reverse ? !isCastable(s, c) : !isCastable(c, s)) {
+            if (reverse ? !this.castable(s, c) : !this.castable(c, s)) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean sideCast(JClassType from, JClassType to) {
+    private boolean sideCast(JClassType from, JClassType to) {
         if (!to.classReference().hasModifier(AccessFlag.INTERFACE)) {
             JClassType tmp = to;
             to = from;
@@ -215,7 +263,7 @@ public final class JCastability {
         return true;
     }
 
-    private static boolean sideCastFinal(JClassType from, JClassType to) {
+    private boolean sideCastFinal(JClassType from, JClassType to) {
         if (!to.classReference().hasModifier(AccessFlag.INTERFACE)) {
             JClassType tmp = to;
             to = from;
@@ -228,10 +276,10 @@ public final class JCastability {
         return !disjointTypes(t1.typeArguments(), to.typeArguments());
     }
 
-    private static List<JClassType> superClosure(JClassType t, JType s) {
+    private List<JClassType> superClosure(JClassType t, JType s) {
         List<JClassType> result = new ArrayList<>();
         for (JClassType iface : interfaces(t)) {
-            if (JTypeRelations.isSubtype(s, JTypeRelations.erasure(iface))) {
+            if (this.sub(s, JTypeRelations.erasure(iface))) {
                 if (result.stream().noneMatch(r -> r.typeEquals(iface))) {
                     result.add(iface);
                 }
@@ -256,7 +304,7 @@ public final class JCastability {
         return result;
     }
 
-    public static boolean disjointTypes(List<? extends JType> ts, List<? extends JType> ss) {
+    private boolean disjointTypes(List<? extends JType> ts, List<? extends JType> ss) {
         for (int i = 0; i < ts.size() && i < ss.size(); i++) {
             if (disjointType(ts.get(i), ss.get(i))) {
                 return true;
@@ -265,7 +313,7 @@ public final class JCastability {
         return false;
     }
 
-    public static boolean disjointType(JType t, JType s) {
+    private boolean disjointType(JType t, JType s) {
         if (s instanceof JWildType) {
             return disjointWildcard((JWildType) s, t);
         } else if (t instanceof JWildType tw) {
@@ -274,7 +322,7 @@ public final class JCastability {
         return notSoftSubtypeRecursive(t, s) || notSoftSubtypeRecursive(s, t);
     }
 
-    private static boolean disjointWildcard(JWildType t, JType s) {
+    private boolean disjointWildcard(JWildType t, JType s) {
         if (isUnbound(t)) {
             return false;
         }
@@ -299,20 +347,20 @@ public final class JCastability {
         return false;
     }
 
-    private static boolean isCastableRecursive(JType t, JType s) {
+    private boolean isCastableRecursive(JType t, JType s) {
         Pair<JType, JType> key = Pair.identity(t, s);
         Set<Pair<JType, JType>> cache = CAST_CACHE.get();
         if (!cache.add(key)) {
             return true;
         }
         try {
-            return isCastable(t, s);
+            return this.castable(t, s);
         } finally {
             cache.remove(key);
         }
     }
 
-    private static boolean notSoftSubtypeRecursive(JType t, JType s) {
+    private boolean notSoftSubtypeRecursive(JType t, JType s) {
         Pair<JType, JType> key = Pair.identity(t, s);
         Set<Pair<JType, JType>> cache = DISJOINT_CACHE.get();
         if (!cache.add(key)) {
@@ -325,17 +373,17 @@ public final class JCastability {
         }
     }
 
-    public static boolean notSoftSubtype(JType t, JType s) {
+    private boolean notSoftSubtype(JType t, JType s) {
         if (t == s) {
             return false;
         }
         if (t instanceof JVarType tv) {
-            return !isCastable(tv.upperBound(), relaxBound(s));
+            return !this.castable(tv.upperBound(), relaxBound(s));
         }
         if (!(s instanceof JWildType)) {
             s = cvarUpperBound(s);
         }
-        return !JTypeRelations.isSubtype(t, relaxBound(s));
+        return !this.sub(t, relaxBound(s));
     }
 
     private static JType relaxBound(JType t) {
@@ -399,7 +447,7 @@ public final class JCastability {
         return ref.parameterizedWithTypeVars();
     }
 
-    public static JClassType asSub(JClassType t, JClassReference sym) {
+    private JClassType asSubtype(JClassType t, JClassReference sym) {
         if (t.classReference().typeEquals(sym)) {
             return t;
         }
@@ -415,7 +463,7 @@ public final class JCastability {
             return null;
         }
         JClassType res = (JClassType) new JVarTypeResolveVisitor(mapping).visit(symType);
-        if (!JTypeRelations.isSubtype(res, t)) {
+        if (!this.sub(res, t)) {
             return null;
         }
         List<JVarType> openVars = new ArrayList<>();
@@ -448,7 +496,7 @@ public final class JCastability {
         }
     }
 
-    private static void adapt(JType source, JType target, Map<JVarType, JType> mapping, Set<Pair<JType, JType>> cache) {
+    private void adapt(JType source, JType target, Map<JVarType, JType> mapping, Set<Pair<JType, JType>> cache) {
         if (!cache.add(Pair.identity(source, target))) {
             return;
         }
@@ -477,9 +525,9 @@ public final class JCastability {
                 JType val = mapping.get(sv);
                 if (val != null) {
                     if (isSuperBound(val) && isSuperBound(target)) {
-                        val = JTypeRelations.isSubtype(wildLowerBound(val), wildLowerBound(target)) ? target : val;
+                        val = this.sub(wildLowerBound(val), wildLowerBound(target)) ? target : val;
                     } else if (isExtendsBound(val) && isExtendsBound(target)) {
-                        val = JTypeRelations.isSubtype(wildUpperBound(val), wildUpperBound(target)) ? val : target;
+                        val = this.sub(wildUpperBound(val), wildUpperBound(target)) ? val : target;
                     } else if (!JTypeRelations.isSameType(val, target)) {
                         throw new AdaptFailure();
                     }

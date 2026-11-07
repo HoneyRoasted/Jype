@@ -274,7 +274,7 @@ public final class JInvocationSelection {
         if (bind.isEmpty()) {
             return Optional.of(new Tested(false, null, inst.theta()));
         }
-        ConstraintTree tree = system.operations().inferenceSolver().bind(bind.toArray(Constraint[]::new)).solve();
+        ConstraintTree tree = system.operations().inferenceSolver(JSolverConfig.FAST).bind(bind.toArray(Constraint[]::new)).solve();
         Optional<ConstraintBranch> ok = tree.branches().stream().filter(b -> b.status().isTrue()).findFirst();
         if (ok.isEmpty()) {
             return Optional.empty();
