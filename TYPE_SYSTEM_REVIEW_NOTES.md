@@ -854,3 +854,15 @@ Baseline: 177 tests green.
   Different chosen methods across true branches means ambiguity (null). The old parallel overload resolver
   (its own phases / most-specific / member lookup) and the now-dead parts of `JMemberLookup` (allMethods,
   staticMethods, bridge search, throws helper, captureConvert) were deleted. `FindApplicableMethodTests` 22/22.
+
+- **Item 33 (§8.4.2 signatures, §8.4.8.3 override validity) — done.**
+  - `JMethodLookup.isSubsignature` accepted erasure-equal parameters in both directions and ignored type
+    parameters; now: same signature after §8.4.4 adaptation (equal type-parameter bounds after renaming), or m1
+    non-generic with the signature of |m2|. New `sameSignature` / `adaptation` helpers.
+  - `JCheckOverrideValidity` rewritten: NAME_CLASH (same erasure, neither a subsignature), NOT_INHERITED
+    (package access across packages), STATIC_HIDES_INSTANCE / INSTANCE_OVERRIDES_STATIC (both are errors in
+    javac; the old HIDDEN_NOT_OVERRIDDEN reason is gone), final applies to hiding too, return-type-substitutable
+    per §8.4.5 (adapted R1, unchecked conversion, R1 = |R2| for erased overrides), throws adapted / erased.
+  - 13 javac-verified cases added to `JCheckOverrideValidityTests` (e.g. `m(List<Integer>)` vs
+    `m(List<String>)` clash, `m(List)` overrides `m(List<String>)` but not vice versa, `p(Object)` overrides
+    `<T> p(T)` but not vice versa, `static int v()` cannot hide `static void v()`). Suite 192/192; fuzz 12–13: 0.

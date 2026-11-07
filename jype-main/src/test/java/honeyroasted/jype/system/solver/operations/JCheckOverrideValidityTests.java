@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,6 +93,128 @@ public class JCheckOverrideValidityTests {
         }
     }
 
+    static class ListString {
+        void m(List<String> l) {
+        }
+    }
+
+    static class ListInteger {
+        void m(List<Integer> l) {
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    static class ListRaw {
+        void m(List l) {
+        }
+    }
+
+    static class GenericId {
+        <T> T id(T t) {
+            return t;
+        }
+
+        <T extends Number> void g(T t) {
+        }
+
+        <T> void p(T t) {
+        }
+
+        <T> List<T> r() {
+            return null;
+        }
+
+        List<String> s() {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    static class GenericIdOverride {
+        <U> U id(U u) {
+            return u;
+        }
+
+        <T extends Integer> void g(T t) {
+        }
+
+        void p(Object t) {
+        }
+
+        List r() {
+            return null;
+        }
+
+        List s() {
+            return null;
+        }
+    }
+
+    static class ObjectParam {
+        void p(Object t) {
+        }
+    }
+
+    static class GenericParam {
+        <T> void p(T t) {
+        }
+    }
+
+    static class StaticObject {
+        static Object m() {
+            return null;
+        }
+
+        static void v() {
+        }
+
+        static final void f() {
+        }
+    }
+
+    static class StaticString {
+        static String m() {
+            return null;
+        }
+
+        static int v() {
+            return 0;
+        }
+
+        static void f() {
+        }
+    }
+
+    static class SamePackageName {
+        int pp() {
+            return 0;
+        }
+    }
+
+    private static JCheckOverrideValidity.Reason check(JTypeSystem ts, Class<?> override, Class<?> overridden, String name) {
+        return ts.operations().checkOverrideValidity(method(ts, override, name), method(ts, overridden, name)).reason();
+    }
+
+    @Test
+    public void overridingRulesMatchJavac() {
+        JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
+        assertEquals(JCheckOverrideValidity.Reason.NAME_CLASH, check(ts, ListInteger.class, ListString.class, "m"), "m(List<Integer>) vs m(List<String>)");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, ListRaw.class, ListString.class, "m"), "m(List) overrides m(List<String>)");
+        assertEquals(JCheckOverrideValidity.Reason.NAME_CLASH, check(ts, ListString.class, ListRaw.class, "m"), "m(List<String>) vs m(List)");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, GenericIdOverride.class, GenericId.class, "id"), "<U> U id(U) overrides <T> T id(T)");
+        assertEquals(JCheckOverrideValidity.Reason.NOT_OVERRIDE_EQUIVALENT, check(ts, GenericIdOverride.class, GenericId.class, "g"), "<T extends Integer> g vs <T extends Number> g");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, GenericIdOverride.class, GenericId.class, "p"), "p(Object) overrides <T> p(T)");
+        assertEquals(JCheckOverrideValidity.Reason.NAME_CLASH, check(ts, GenericParam.class, ObjectParam.class, "p"), "<T> p(T) vs p(Object)");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, GenericIdOverride.class, GenericId.class, "r"), "List r() overrides <T> List<T> r()");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, GenericIdOverride.class, GenericId.class, "s"), "List s() overrides List<String> s()");
+        assertEquals(JCheckOverrideValidity.Reason.STATIC_HIDES_INSTANCE, check(ts, StaticHost.class, InstanceHost.class, "m"), "static m() vs m()");
+        assertEquals(JCheckOverrideValidity.Reason.VALID, check(ts, StaticString.class, StaticObject.class, "m"), "static String m() hides static Object m()");
+        assertEquals(JCheckOverrideValidity.Reason.RETURN_TYPE_NOT_SUBSTITUTABLE, check(ts, StaticString.class, StaticObject.class, "v"), "static int v() vs static void v()");
+        assertEquals(JCheckOverrideValidity.Reason.CANNOT_OVERRIDE_FINAL, check(ts, StaticString.class, StaticObject.class, "f"), "static f() vs static final f()");
+        assertEquals(JCheckOverrideValidity.Reason.NOT_INHERITED, ts.operations().checkOverrideValidity(method(ts, SamePackageName.class, "pp"),
+                method(ts, honeyroasted.jype.system.solver.fixtures.packageaccess.PackageHost.class, "pp")).reason(), "int pp() vs package-private pp() in another package");
+    }
+
     private static JMethodReference method(JTypeSystem ts, Class<?> cls, String name) {
         JClassReference ref = ts.tryResolve(cls);
         return ref.declaredMethods().stream()
@@ -122,14 +245,14 @@ public class JCheckOverrideValidityTests {
     }
 
     @Test
-    public void staticInstanceMismatchIsHidingNotOverriding() {
+    public void instanceMethodCannotOverrideStaticMethod() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
         JMethodReference override = method(ts, InstanceHost.class, "m");
         JMethodReference overridden = method(ts, StaticHost.class, "m");
 
         JCheckOverrideValidity.Result result = ts.operations().checkOverrideValidity(override, overridden);
         assertFalse(result.valid());
-        assertEquals(JCheckOverrideValidity.Reason.HIDDEN_NOT_OVERRIDDEN, result.reason());
+        assertEquals(JCheckOverrideValidity.Reason.INSTANCE_OVERRIDES_STATIC, result.reason());
     }
 
     @Test

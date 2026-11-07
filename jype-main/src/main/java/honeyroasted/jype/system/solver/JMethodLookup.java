@@ -9,12 +9,16 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JMethodReference;
 import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
 
 import java.lang.reflect.AccessFlag;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public final class JMethodLookup {
@@ -106,19 +110,47 @@ public final class JMethodLookup {
     }
 
     public static boolean isSubsignature(JMethodReference m1, JMethodReference m2) {
-        if (sameParameters(m1.parameters(), m2.parameters())) {
+        if (sameSignature(m1, m2)) {
             return true;
         }
+        // JLS §8.4.2 m1 has the same signature as the erasure of m2
         JMethodReference e2 = (JMethodReference) JTypeVisitors.ERASURE.visit(m2);
-        return m1.typeParameters().isEmpty() && sameParameters(m1.parameters(), e2.parameters());
+        return m1.typeParameters().isEmpty() && sameTypes(m1.parameters(), e2.parameters(), Map.of());
     }
 
-    private static boolean sameParameters(List<JType> a, List<JType> b) {
+    public static boolean sameSignature(JMethodReference m1, JMethodReference m2) {
+        Optional<Map<JVarType, JType>> adaptation = adaptation(m1, m2);
+        // JLS §8.4.2 same type parameters (§8.4.4) and same formal parameter types after adaptation
+        return adaptation.isPresent() && sameTypes(m1.parameters(), m2.parameters(), adaptation.get());
+    }
+
+    public static Optional<Map<JVarType, JType>> adaptation(JMethodReference m1, JMethodReference m2) {
+        List<JVarType> p1 = m1.typeParameters();
+        List<JVarType> p2 = m2.typeParameters();
+        if (p1.size() != p2.size()) {
+            return Optional.empty();
+        }
+        Map<JVarType, JType> theta = new LinkedHashMap<>();
+        for (int i = 0; i < p1.size(); i++) {
+            theta.put(p2.get(i), p1.get(i));
+        }
+        JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(theta);
+        for (int i = 0; i < p1.size(); i++) {
+            // JLS §8.4.4 the bounds of corresponding type parameters are the same after renaming
+            if (!JTypeRelations.isSameType(p1.get(i).upperBound(), resolver.visit(p2.get(i).upperBound()))) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(theta);
+    }
+
+    private static boolean sameTypes(List<JType> a, List<JType> b, Map<JVarType, JType> theta) {
         if (a.size() != b.size()) {
             return false;
         }
+        JVarTypeResolveVisitor resolver = new JVarTypeResolveVisitor(theta);
         for (int i = 0; i < a.size(); i++) {
-            if (!JTypeRelations.isSameType(a.get(i), b.get(i)) && !JTypeRelations.isSameType(JTypeRelations.erasure(a.get(i)), JTypeRelations.erasure(b.get(i)))) {
+            if (!JTypeRelations.isSameType(a.get(i), theta.isEmpty() ? b.get(i) : resolver.visit(b.get(i)))) {
                 return false;
             }
         }
