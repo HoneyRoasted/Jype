@@ -83,7 +83,10 @@ public class JWildTypeUpperImpl extends JAbstractPossiblyUnmodifiableType implem
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JWildType.Upper wtu) {
-            return identity == wtu.identity() && JType.equals(upperBound, wtu.upperBounds(), kind, seen);
+            if (this.hasDefaultBounds() && wtu.hasDefaultBounds()) {
+                return true;
+            }
+            return JType.equals(upperBound, wtu.upperBounds(), kind, seen);
         } else {
             return false;
         }
@@ -94,7 +97,10 @@ public class JWildTypeUpperImpl extends JAbstractPossiblyUnmodifiableType implem
         if (seen.contains(this)) return 0;
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(identity, JType.hashCode(upperBound, seen));
+        if (this.hasDefaultBounds()) {
+            return 1;
+        }
+        return JType.multiHash(1, JType.hashCode(upperBound, seen));
     }
 
 }

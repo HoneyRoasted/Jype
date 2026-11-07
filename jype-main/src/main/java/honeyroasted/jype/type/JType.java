@@ -98,21 +98,16 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
         if (seen.contains(Pair.identity(left, other))) return true;
 
         if (left instanceof JMetaVarType mvt) {
-            Set<Pair<JType, JType>> finalSeen = concat(seen, Pair.identity(other, left));
-            return other.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.equals(left, Equality.EQUIVALENT, finalSeen));
-        } else if (left instanceof JIntersectionType it) {
-            seen = concat(seen, Pair.identity(other, left));
-            return other.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && other.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
+            return other instanceof JMetaVarType omvt && mvt.identity() == omvt.identity();
+        } else if (left instanceof JIntersectionType it && it.children().size() == 1) {
+            return other.equals(it.children().iterator().next(), Equality.EQUIVALENT, concat(seen, Pair.identity(left, other)));
         }
 
         if (other instanceof JMetaVarType mvt) {
-            Set<Pair<JType, JType>> finalSeen = concat(seen, Pair.identity(left, other));
-            return left.equals(mvt) || mvt.equalities().stream().anyMatch(t -> t.equals(other, Equality.EQUIVALENT, finalSeen));
-        } else if (other instanceof JIntersectionType it) {
-            seen = concat(seen, Pair.identity(left, other));
-            return left.equals(it, Equality.STRUCTURAL, seen) || (it.children().size() == 1 && left.equals(it.children().iterator().next(), Equality.EQUIVALENT, seen));
+            return left instanceof JMetaVarType lmvt && mvt.identity() == lmvt.identity();
+        } else if (other instanceof JIntersectionType it && it.children().size() == 1) {
+            return left.equals(it.children().iterator().next(), Equality.EQUIVALENT, concat(seen, Pair.identity(left, other)));
         }
-
 
         return false;
     }

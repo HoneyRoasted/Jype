@@ -107,16 +107,11 @@ public class JMemberLookup {
         return true;
     }
 
-    /**
-     * JLS §5.1.10: applies capture conversion to a member-access receiver type before it is used
-     * for member lookup or generic substitution. If {@code type} is a parameterized class type
-     * with at least one wildcard type argument, this creates a fresh metavariable per type
-     * parameter position and records a {@code Capture} bound (consumed by
-     * {@link honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationCapture})
-     * describing how each fresh variable relates back to the original argument. Types with no
-     * wildcard arguments are returned unchanged.
-     */
     public static JType captureConvert(ConstraintBranch branch, JType type) {
+        if (type instanceof JParameterizedClassType pct && type.isProperType()) {
+            // JLS §5.1.10 capture of a proper type yields fresh type variables
+            return JTypeRelations.capture(pct);
+        }
         if (type instanceof JParameterizedClassType pct && pct.hasAnyTypeArguments()
                 && pct.typeArguments().stream().anyMatch(t -> t instanceof JWildType)) {
             List<JArgumentType> fresh = pct.classReference().typeParameters().stream()

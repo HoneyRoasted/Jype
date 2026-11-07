@@ -83,7 +83,7 @@ public class JWildTypeLowerImpl extends JAbstractPossiblyUnmodifiableType implem
         seen = JType.concat(seen, Pair.identity(this, other));
 
         if (other instanceof JWildType.Lower wtl) {
-            return identity == wtl.identity() && JType.equals(lowerBound, wtl.lowerBounds(), kind, seen);
+            return JType.equals(lowerBound, wtl.lowerBounds(), kind, seen);
         } else {
             return false;
         }
@@ -94,7 +94,7 @@ public class JWildTypeLowerImpl extends JAbstractPossiblyUnmodifiableType implem
         if (seen.contains(this)) return 0;
         seen = JType.concat(seen, this);
 
-        return JType.multiHash(identity, JType.hashCode(lowerBound, seen));
+        return JType.multiHash(2, JType.hashCode(lowerBound, seen));
     }
 
 }

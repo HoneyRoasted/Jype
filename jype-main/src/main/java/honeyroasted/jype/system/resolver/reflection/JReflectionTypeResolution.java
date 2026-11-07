@@ -105,7 +105,7 @@ public interface JReflectionTypeResolution {
                 depth++;
             }
 
-            Class<?> target = Class.forName(current.toRuntimeName());
+            Class<?> target = loadClass(current.toRuntimeName());
 
             if (depth != 0) {
                 target = Array.newInstance(target, new int[depth]).getClass();
@@ -115,6 +115,17 @@ public interface JReflectionTypeResolution {
         } catch (ClassNotFoundException ex) {
             throw new JReflectionLookupException("Failed to resolve class (runtime lookup failed): " + location, ex);
         }
+    }
+
+    private static Class<?> loadClass(String name) throws ClassNotFoundException {
+        ClassLoader context = Thread.currentThread().getContextClassLoader();
+        if (context != null) {
+            try {
+                return Class.forName(name, false, context);
+            } catch (ClassNotFoundException ignored) {
+            }
+        }
+        return Class.forName(name);
     }
 
     static Field fieldFromLocation(JFieldLocation location) throws JResolutionFailedException {

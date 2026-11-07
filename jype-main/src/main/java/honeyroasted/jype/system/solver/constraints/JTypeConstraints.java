@@ -14,13 +14,6 @@ public interface JTypeConstraints {
         }
 
         public static Equal createBound(JType left, JType right) {
-            if (left instanceof JMetaVarType mvt) {
-                mvt.equalities().add(right);
-            }
-
-            if (right instanceof JMetaVarType mvt) {
-                mvt.equalities().add(left);
-            }
             return new Equal(left, right);
         }
 
@@ -41,14 +34,6 @@ public interface JTypeConstraints {
         }
 
         public static Subtype createBound(JType left, JType right) {
-            if (left instanceof JMetaVarType mvt) {
-                mvt.upperBounds().add(right);
-            }
-
-            if (right instanceof JMetaVarType mvt) {
-                mvt.lowerBounds().add(left);
-            }
-
             return new Subtype(left, right);
         }
 

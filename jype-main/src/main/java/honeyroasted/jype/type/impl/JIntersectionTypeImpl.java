@@ -7,6 +7,8 @@ import honeyroasted.jype.type.JIntersectionType;
 import honeyroasted.jype.type.JType;
 
 import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -34,13 +36,29 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
         return this.children;
     }
 
+    private boolean isRedundant(List<JType> list, int i) {
+        JType current = list.get(i);
+        for (int j = 0; j < list.size(); j++) {
+            if (i != j) {
+                JType other = list.get(j);
+                if (other.typeEquals(current)) {
+                    if (j < i) {
+                        return true;
+                    }
+                } else if (this.typeSystem().operations().isSubtype(other, current)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public boolean isSimplified() {
-        for (JType current : this.children()) {
-            for (JType other : this.children()) {
-                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
-                    return false;
-                }
+        List<JType> list = new ArrayList<>(this.children());
+        for (int i = 0; i < list.size(); i++) {
+            if (isRedundant(list, i)) {
+                return false;
             }
         }
 
@@ -51,18 +69,11 @@ public class JIntersectionTypeImpl extends JAbstractPossiblyUnmodifiableType imp
     public JType simplify() {
         Set<JType> newChildren = new LinkedHashSet<>();
         Set<JType> currChildren = JIntersectionType.flatten(this.children);
+        List<JType> list = new ArrayList<>(currChildren);
 
-        for (JType current : currChildren) {
-            boolean foundSubtype = false;
-            for (JType other : currChildren) {
-                if (current != other && this.typeSystem().operations().isSubtype(other, current)) {
-                    foundSubtype = true;
-                    break;
-                }
-            }
-
-            if (!foundSubtype) {
-                newChildren.add(current);
+        for (int i = 0; i < list.size(); i++) {
+            if (!isRedundant(list, i)) {
+                newChildren.add(list.get(i));
             }
         }
 

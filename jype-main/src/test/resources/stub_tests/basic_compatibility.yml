@@ -45,9 +45,26 @@ tests:
       - subtype:
           - Ljava/util/List<-Ljava/lang/Object;>;
           - Ljava/util/List;
+
+  raw_not_subtype_of_parameterized_test:
+    expect:
+      - status: false
+    solver: COMPATIBILITY
+    constraints:
       - subtype:
           - Ljava/util/List;
           - Ljava/util/List<-Ljava/lang/Object;>;
+
+  raw_assignable_to_parameterized_test:
+    expect:
+      - status: true
+    solver: COMPATIBILITY
+    constraints:
+      - compatible:
+          context: ASSIGNMENT
+          children:
+            - Ljava/util/List;
+            - Ljava/util/List<-Ljava/lang/Object;>;
 
   loose_invocation_unboxing_then_widening_test:
     expect:

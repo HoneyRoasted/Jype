@@ -6,6 +6,7 @@ import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JMemberLookup;
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.reduction.JReduceLambdaExpression;
@@ -553,67 +554,12 @@ public class JResolveMostSpecificMethod {
         return true;
     }
 
-    /**
-     * JLS §5.1.10 capture conversion, applied directly at the type level: each wildcard type
-     * argument of a parameterized class type is replaced with a fresh type variable bounded per
-     * the wildcard's own bound and the class's declared type-parameter bound, exactly as the
-     * spec defines it - independent of any constraint-branch/solver machinery.
-     *
-     * This is deliberately *not* {@link JMemberLookup#captureConvert}: that helper mints
-     * unbounded fresh metavariables and relies on {@code JIncorporationCapture} to derive their
-     * bounds reactively from *other* constraints already present in an active branch - there is no
-     * such branch here (this runs inside a one-shot, non-solver comparison), and more importantly
-     * no such "other constraint" would exist to react to. The bounds needed here are inherent to
-     * the capture conversion itself, so they're computed directly, synchronously, by mutating the
-     * fresh {@link JMetaVarType}'s own (plain, mutable) bound sets - and, since the nested solve in
-     * {@link #isMoreSpecificGeneric} only resolves variables through actual bound
-     * constraints (mirroring {@code JBuildInitialBounds}'s treatment of ordinary inference
-     * variables), each fresh variable's bound is also emitted into {@code constraints} as a real
-     * {@link JTypeConstraints.Subtype} bound, not left as inert data on the type alone.
-     */
     static JType captureConvert(JTypeSystem system, JType type, List<Constraint> constraints) {
-        if (!(type instanceof JParameterizedClassType pct) || !pct.hasAnyTypeArguments()) {
-            return type;
+        if (type instanceof JClassType ct && type.isProperType()) {
+            // JLS §5.1.10
+            return JTypeRelations.capture(ct);
         }
-
-        List<JArgumentType> args = pct.typeArguments();
-        if (args.stream().noneMatch(a -> a instanceof JWildType)) {
-            return type;
-        }
-
-        List<JVarType> declared = pct.typeParameters();
-        List<JArgumentType> fresh = new ArrayList<>();
-        for (int i = 0; i < declared.size(); i++) {
-            JArgumentType arg = i < args.size() ? args.get(i) : null;
-            fresh.add(arg instanceof JWildType ? declared.get(i).createMetaVar() : arg);
-        }
-
-        Map<JVarType, JType> substitution = new LinkedHashMap<>();
-        for (int i = 0; i < declared.size(); i++) {
-            substitution.put(declared.get(i), (JType) fresh.get(i));
-        }
-        JVarTypeResolveVisitor theta = new JVarTypeResolveVisitor(substitution);
-
-        for (int i = 0; i < declared.size() && i < args.size(); i++) {
-            if (!(fresh.get(i) instanceof JMetaVarType xi)) continue;
-
-            JType substitutedDeclaredBound = theta.apply(declared.get(i).upperBound());
-            JArgumentType ai = args.get(i);
-            if (ai instanceof JWildType.Lower wtl) {
-                // ? super Bi: upper bound is Ui[theta], lower bound is Bi.
-                constraints.add(JTypeConstraints.Subtype.createBound(xi, substitutedDeclaredBound));
-                wtl.lowerBounds().forEach(lb -> constraints.add(JTypeConstraints.Subtype.createBound(lb, xi)));
-            } else if (ai instanceof JWildType.Upper wtu) {
-                // ? extends Bi (or unbounded ?, Bi = Object): upper bound is glb(Bi, Ui[theta]),
-                // lower bound is the null type (left as the default empty lowerBounds()).
-                constraints.add(JTypeConstraints.Subtype.createBound(xi, substitutedDeclaredBound));
-                if (!wtu.hasDefaultBounds()) {
-                    wtu.upperBounds().forEach(ub -> constraints.add(JTypeConstraints.Subtype.createBound(xi, ub)));
-                }
-            }
-        }
-
-        return pct.classReference().parameterized(fresh);
+        return type;
     }
 
     /**

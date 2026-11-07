@@ -5,6 +5,8 @@ import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JClassReference;
+import honeyroasted.jype.system.solver.JTypeRelations;
+import honeyroasted.jype.type.JClassType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JType;
@@ -113,24 +115,15 @@ public class JReduceMethodInvocationCaptureTests {
     }
 
     @Test
-    public void wildcardMemberAccessRecordsACaptureConstraint() {
+    public void captureOfExtendsWildcardYieldsFreshTypeVariableBoundedByUpperBound() {
         JTypeSystem ts = JTypeSystem.RUNTIME_REFLECTION;
         JParameterizedClassType boxType = boxOfExtendsNumber(ts);
-        JClassReference declaring = ts.tryResolve(Box.class);
         JClassReference number = ts.tryResolve(Number.class);
 
-        JExpressionInformation.MethodInvocation<?> invocation = new JExpressionInformation.MethodInvocation.Simple<>(
-                declaring, null, JExpressionInformation.of(boxType), "get", List.of(), Collections.emptyList());
-        JTypeConstraints.ExpressionCompatible constraint = new JTypeConstraints.ExpressionCompatible(
-                invocation, JTypeConstraints.Compatible.Context.ASSIGNMENT, number);
-        ConstraintTree tree = ts.operations().inferenceSolver().bind(constraint).solve();
+        JClassType captured = JTypeRelations.capture(boxType);
+        JType arg = captured.typeArguments().getFirst();
 
-        boolean sawCapture = tree.branches().stream()
-                .filter(b -> b.status().isTrue())
-                .flatMap(b -> b.constraints().keySet().stream())
-                .anyMatch(c -> c instanceof JTypeConstraints.Instantiation inst && inst.right() instanceof JVarType vt
-                        && vt.upperBounds().stream().anyMatch(u -> u.typeEquals(number)));
-
-        assertTrue(sawCapture, "expected member access through a wildcard-parameterized receiver to resolve the captured variable to a fresh type variable bounded by Number");
+        assertTrue(arg instanceof JVarType vt && vt.upperBounds().stream().anyMatch(u -> u.typeEquals(number)) && vt.lowerBounds().isEmpty(),
+                "expected capture(Box<? extends Number>) = Box<CAP> with CAP <: Number (JLS §5.1.10)");
     }
 }

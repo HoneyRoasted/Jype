@@ -10,22 +10,12 @@ import honeyroasted.collect.property.PropertySet;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleExplicitCast;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleLooseInvocation;
-import honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleStrictInvocation;
 import honeyroasted.jype.system.solver.constraints.compatibility.JEqualType;
+import honeyroasted.jype.system.solver.constraints.compatibility.JProperCompatible;
+import honeyroasted.jype.system.solver.constraints.compatibility.JProperContains;
+import honeyroasted.jype.system.solver.constraints.compatibility.JProperSubtype;
 import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant;
 import honeyroasted.jype.system.solver.constraints.compatibility.JExpressionSimplyTyped;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeArray;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeEquality;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeGenericClass;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeIntersection;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeNone;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypePrimitive;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeRawClass;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeUnchecked;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeVar;
-import honeyroasted.jype.system.solver.constraints.compatibility.JSubtypeWild;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationCapture;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualEqual;
 import honeyroasted.jype.system.solver.constraints.incorporation.JIncorporationEqualSubtype;
@@ -72,24 +62,12 @@ public class JTypeOperationsImpl implements JTypeOperations {
             new ConstraintMapper.False(),
 
             new JEqualType(),
-
-            new JCompatibleExplicitCast(),
-            new JCompatibleLooseInvocation(),
-            new JCompatibleStrictInvocation(),
+            new JProperSubtype(),
+            new JProperCompatible(),
+            new JProperContains(),
 
             new JExpressionAssignmentConstant(),
-            new JExpressionSimplyTyped(),
-
-            new JSubtypeNone(),
-            new JSubtypePrimitive(),
-            new JSubtypeEquality(),
-            new JSubtypeUnchecked(),
-            new JSubtypeRawClass(),
-            new JSubtypeGenericClass(),
-            new JSubtypeArray(),
-            new JSubtypeVar(),
-            new JSubtypeWild(),
-            new JSubtypeIntersection()
+            new JExpressionSimplyTyped()
     );
 
     public static final List<ConstraintMapper> INCORPORATION_MAPPERS = List.of(

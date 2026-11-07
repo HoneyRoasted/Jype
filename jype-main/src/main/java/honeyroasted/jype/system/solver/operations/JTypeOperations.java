@@ -1,5 +1,6 @@
 package honeyroasted.jype.system.solver.operations;
 
+import honeyroasted.jype.system.solver.JTypeRelations;
 import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintSolver;
@@ -84,10 +85,16 @@ public interface JTypeOperations {
     Constraint.Status checkStatus(Constraint constraint, PropertySet context);
 
     default boolean isCompatible(JType subtype, JType supertype, JTypeConstraints.Compatible.Context ctx) {
+        if (subtype.isProperType() && supertype.isProperType()) {
+            return JTypeRelations.isCompatible(subtype, ctx, supertype);
+        }
         return checkStatus(new JTypeConstraints.Compatible(subtype, ctx, supertype), new PropertySet().attach(system())).isTrue();
     }
 
     default boolean isSubtype(JType subtype, JType supertype) {
+        if (subtype.isProperType() && supertype.isProperType()) {
+            return JTypeRelations.isSubtype(subtype, supertype);
+        }
         return checkStatus(new JTypeConstraints.Subtype(subtype, supertype), new PropertySet().attach(system())).isTrue();
     }
 

@@ -8,15 +8,6 @@ import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JType;
 
-/**
- * Reduces an explicit cast expression {@code (T) operand} (JLS §5.5/§15.16) into two
- * independent checks: that casting the operand's type to T is legal ({@code EXPLICIT_CAST}
- * compatibility, handled for proper types by {@link honeyroasted.jype.system.solver.constraints.compatibility.JCompatibleExplicitCast}),
- * and that the cast's resulting type T satisfies whatever context this whole expression is
- * itself embedded in. Casting a lambda or method/constructor reference to a functional
- * interface type is handled naturally here too, since the operand's own
- * {@code ExpressionCompatible} reducers ignore the compatibility context entirely.
- */
 public class JReduceCast extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {

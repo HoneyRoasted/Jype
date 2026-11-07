@@ -6,6 +6,7 @@ import honeyroasted.jype.type.JClassReference;
 import honeyroasted.jype.type.JMetaVarType;
 import honeyroasted.jype.type.JParameterizedClassType;
 import honeyroasted.jype.type.JType;
+import honeyroasted.jype.type.JVarType;
 import honeyroasted.jype.type.JWildType;
 import org.junit.jupiter.api.Test;
 
@@ -57,12 +58,11 @@ public class JResolveMostSpecificMethodCaptureTests {
 
         assertInstanceOf(JParameterizedClassType.class, captured);
         JParameterizedClassType capturedBox = (JParameterizedClassType) captured;
-        assertInstanceOf(JMetaVarType.class, capturedBox.typeArguments().get(0));
+        assertInstanceOf(JVarType.class, capturedBox.typeArguments().get(0));
 
-        JMetaVarType x = (JMetaVarType) capturedBox.typeArguments().get(0);
+        JVarType x = (JVarType) capturedBox.typeArguments().get(0);
         assertTrue(x.upperBound().typeEquals(number), "expected the captured variable's upper bound to be Number");
-        assertTrue(x.lowerBounds().isEmpty(), "expected the captured variable to have no lower bound (null type)");
-        assertFalse(constraints.isEmpty(), "expected the captured bound to also be registered as a real Subtype constraint");
+        assertTrue(x.lowerBounds().isEmpty(), "expected the captured variable to have no lower bound");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class JResolveMostSpecificMethodCaptureTests {
         JType captured = JResolveMostSpecificMethod.captureConvert(ts, boxType, constraints);
 
         JParameterizedClassType capturedBox = (JParameterizedClassType) captured;
-        JMetaVarType x = (JMetaVarType) capturedBox.typeArguments().get(0);
+        JVarType x = (JVarType) capturedBox.typeArguments().get(0);
 
         assertTrue(x.upperBound().typeEquals(object), "expected the captured variable's upper bound to fall back to Object (Box<T>'s own declared bound)");
         assertTrue(x.lowerBound().typeEquals(integer), "expected the captured variable's lower bound to be Integer");

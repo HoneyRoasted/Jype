@@ -611,3 +611,37 @@ Baseline: 177 tests green.
   passed because both captures shared one α). Test flipped to
   `setWithResultOfGetOnExtendsWildcardIsRejected`; `wildcardMemberAccessRecordsACaptureConstraint` now
   asserts the captured α resolves to a fresh type variable bounded by Number. Suite 177/177.
+
+- **Relation fuzz harness (Phase 7 started early as verification tool).** `jype-main/src/test/java/honeyroasted/jype/fuzz/`:
+  `TypeWorldGenerator` (seeded random class/interface hierarchies, generic params incl. F-bounds,
+  holder `H<T extends Number, U extends T, V extends Comparable<V>, W, S extends CharSequence & Comparable<String>>`
+  with random field types: primitives, arrays, wildcards, nested generics), `JavacOracle` (in-process
+  javac via `JavacTask`, drops ill-formed fields and recompiles, keeps javac's internal `Types`),
+  `RelationFuzzTest` (`@Tag("fuzz")`) comparing javac `isSubtype/isSameType/isAssignable/isCastable`
+  vs Jype `isSubtype/typeEquals/isCompatible(ASSIGNMENT)/isCompatible(EXPLICIT_CAST)` on random field
+  pairs, per-check timeout (`TimedRunner`). Run: `./gradlew :jype-main:fuzzTest -Pfuzz.seed=N -Pfuzz.count=M`
+  (report in `jype-main/build/fuzz-failures/relations-N.txt`); default `test` excludes tag `fuzz`.
+  Reflection resolution now also tries the thread context class loader (`JReflectionTypeResolution.loadClass`).
+  First run: 2400 checks, **156 mismatches**.
+- **Items 2, 3, 9, 12, 13 (relations core) — done via a rewrite rather than patching mappers.**
+  The 13 compatibility mappers (`JSubtype*`, `JCompatible*`) all fired on the same constraint and were
+  ANDed by Almonds, giving `T <: T` false, `U <: T` false (U extends T), etc. Replaced with a direct
+  decision procedure `JTypeRelations` (§4.10 subtyping incl. type-var lower bounds, intersections, arrays,
+  null; §4.10.2 capture-then-containment; §4.5.1 containment; §5.1.10 capture to fresh type variables
+  `CAP#n`; §5.1.9 unchecked conversion only in compatibility, mirroring javac `isSubtypeUnchecked`;
+  §5.3 strict/loose incl. unboxing via supertypes like javac `unboxedType`; raw supertypes erased §4.8)
+  and `JCastability` (faithful port of javac `Types.isCastable`: rewriteQuantifiers, asSub/adapt,
+  disjointType/notSoftSubtype, sideCast/sideCastFinal; sealed DisjointChecker still TODO — no
+  permitted-subclass model yet). Compatibility list is now `JEqualType`, `JProperSubtype`,
+  `JProperCompatible`, `JProperContains` + the two expression mappers. `JTypeOperations.isSubtype/isCompatible`
+  short-circuit to `JTypeRelations` for proper types.
+  Other bugs found by the fuzzer and fixed: `JType.baseCaseEquivalence` pre-inserted the pair it then
+  queried (so `CharSequence & Comparable<String>` "equalled" any class); metavar equivalence used a
+  global mutable equality set (item 2: `createBound` no longer mutates metavars); `JVarType.upperBound()`
+  returned the null type for an unbounded var; wildcard equality compared a per-instance `identity`
+  (copies of `?` were unequal) — now structural, `?` == `? extends Object`; intersection `simplify`
+  dropped both of two equal-but-distinct children (B15). Member-access capture (`JMemberLookup.captureConvert`)
+  and §15.12.2.5 capture (`JResolveMostSpecificMethod.captureConvert`) now use real capture for proper types.
+  YAML `unchecked_wildcard_test` asserted raw `List <: List<? super Object>` (javac: false; it is unchecked
+  *conversion*); split into subtype=false + assignment=true cases.
+  After: seeds 1-5, ~67k checks, **0 mismatches**. Suite 179/179.

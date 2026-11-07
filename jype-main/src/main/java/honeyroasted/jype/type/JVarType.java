@@ -36,6 +36,9 @@ public interface JVarType extends PossiblyUnmodifiable, JType, JArgumentType {
     }
 
     default JType upperBound() {
+        if (this.upperBounds().isEmpty()) {
+            return this.typeSystem().constants().object();
+        }
         return JIntersectionType.of(upperBounds(), typeSystem());
     }
 
