@@ -5,9 +5,10 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.collect.property.PropertySet;
-import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.JTypeSystem;
+import honeyroasted.jype.system.expression.JExpressionInformation;
 import honeyroasted.jype.system.solver.JFieldLookup;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
 import honeyroasted.jype.system.solver.constraints.inference.JResolveBounds;
@@ -38,7 +39,7 @@ public class JReduceGetField extends ConstraintMapper.Unary<JTypeConstraints.Exp
         }
 
         JMetaVarType callTarget = system.typeFactory().newMetaVarType("CALL_TARGET");
-        ConstraintTree solved = system.operations().inferenceSolver()
+        ConstraintTree solved = system.operations().inferenceSolver(JSolverConfig.FAST)
                 .bind(new JTypeConstraints.ExpressionCompatible(expr, JTypeConstraints.Compatible.Context.STRICT_INVOCATION, callTarget))
                 .solve();
 

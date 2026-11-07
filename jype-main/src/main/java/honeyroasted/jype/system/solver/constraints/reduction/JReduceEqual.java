@@ -4,6 +4,8 @@ import honeyroasted.almonds.Constraint;
 import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintMapper;
 import honeyroasted.collect.property.PropertySet;
+import honeyroasted.jype.system.solver.JRelationTrees;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.type.JArrayType;
 import honeyroasted.jype.type.JClassType;
@@ -14,6 +16,16 @@ import honeyroasted.jype.type.JType;
 import honeyroasted.jype.type.JWildType;
 
 public class JReduceEqual extends ConstraintMapper.Unary<JTypeConstraints.Equal> {
+    private final JSolverConfig config;
+
+    public JReduceEqual() {
+        this(JSolverConfig.FAST);
+    }
+
+    public JReduceEqual(JSolverConfig config) {
+        this.config = config;
+    }
+
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.Equal constraint, Constraint.Status status) {
         return status.isUnknown();
@@ -26,7 +38,7 @@ public class JReduceEqual extends ConstraintMapper.Unary<JTypeConstraints.Equal>
         JType object = s.typeSystem().constants().object();
 
         if (s.isProperType() && t.isProperType()) {
-            branch.set(constraint, Constraint.Status.known(s.typeEquals(t)));
+            JRelationTrees.ask(branch, constraint, this.config);
         } else if (s.isNullType() || t.isNullType()) {
             // JLS §18.2.4 the null type is not equal to an improper type
             branch.set(constraint, Constraint.Status.FALSE);

@@ -4,6 +4,7 @@ import honeyroasted.almonds.ConstraintBranch;
 import honeyroasted.almonds.ConstraintTree;
 import honeyroasted.jype.system.JTypeSystem;
 import honeyroasted.jype.system.expression.JExpressionInformation;
+import honeyroasted.jype.system.solver.JSolverConfig;
 import honeyroasted.jype.system.solver.JStandaloneTyping;
 import honeyroasted.jype.system.solver.constraints.JTypeConstraints;
 import honeyroasted.jype.system.solver.constraints.JTypeContext;
@@ -25,7 +26,7 @@ public class JFindApplicableMethod implements JTypeOperation<JExpressionInformat
     @Override
     public JParameterizedMethodType apply(JTypeSystem system, JExpressionInformation.MethodInvocation<?> invocation) {
         // JLS §15.12.2 compile-time declaration selection without a target type
-        ConstraintTree tree = system.operations().inferenceSolver()
+        ConstraintTree tree = system.operations().inferenceSolver(JSolverConfig.FAST)
                 .bind(new JTypeConstraints.ExpressionCompatible(invocation, JTypeConstraints.Compatible.Context.STANDALONE, system.constants().voidType()))
                 .solve();
 

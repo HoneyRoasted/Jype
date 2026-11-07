@@ -62,10 +62,15 @@ The version is in `buildSrc/shared.gradle`. The toolchain is Java 24 (a local JD
   - `inference/` holds resolution (`JResolveBounds`, §18.4), verification (`JVerifyBounds`) and the most-specific-method logic (`JResolveMostSpecificMethod`, §15.12.2.5 and §18.5.4).
   - `compatibility/` holds the proper-type relation constraints.
 - **Overload selection** for invocations, instantiations and method references runs through `JInvocationSelection`: phases, pertinence to applicability, most-specific, and the invocation type with §18.5.2.1 early resolution. `JMethodLookup`/`JFieldLookup` handle members, `JFunctionalInterfaces` handles §9.9 function types, `JStandaloneTyping` types standalone sub-expressions, and `JConstantEvaluator` handles §15.29.
-- **Wiring.** Mapper lists are in `operations/JTypeOperationsImpl`. A new reducer must be added to both the reduction list and the inference list.
+- **Wiring.** Mapper lists are in `operations/JTypeOperationsImpl` (`compatibilityMappers(config)`, `reductionMappers(config)`, `inferenceMappers(config)`; the `*_MAPPERS` constants are the `FAST` versions). A new reducer must be added to both the reduction list and the inference list.
+- **Relation trees.** Every `JTypeRelations` relation method takes an optional `JRelationTracker`; `null` is the fast path with no tracking.
+  - `JConstraintTreeTracker` turns the calls into an Almonds tree. Premises become constraints in the branch, with `JTypeContext.PremiseOf` and `JTypeContext.RelationRule` metadata. Attempts that failed inside a successful judgment become invalid sibling branches.
+  - `JRelationTrees.ask` evaluates one relation constraint whose types are fully known. The `JProper*`/`JEqualType` mappers, the `JReduceSubtype/Compatible/Contains/Equal` proper-type paths, and `JRelationConstraintApplier` (the compatibility solver's applier) all use it.
+  - Solver factories take a `JSolverConfig`: `compatibilitySolver()` defaults to `EXPLAINED` (proofs and failed attempts), `inferenceSolver()` to `PROOFS`, and `FAST` builds no tree. The config also carries `maxRelationDepth` (default 64).
+  - Internal sub-solves and type operations that never show a tree to the user call `JTypeRelations` with a `null` tracker or use `JSolverConfig.FAST`.
 - **Cyclic and expansive subtyping.** `JTypeRelations.isSubtype` treats both kinds of check as false. There are two ways to hit this:
   - A pair that is already being checked further up the stack. This is inductive: javac rejects `N<? super C> x = new C()` for `class C implements N<N<? super C>>`.
-  - Recursion deeper than `MAX_SUBTYPE_DEPTH` (64). These are expansive hierarchies such as `class C<X> implements N<N<? super C<C<X>>>>`, where javac itself throws `StackOverflowError`.
+  - Recursion deeper than the tracker's `maxDepth()` (default `JRelationTracker.DEFAULT_MAX_DEPTH` = 64). These are expansive hierarchies such as `class C<X> implements N<N<? super C<C<X>>>>`, where javac itself throws `StackOverflowError`.
 
   This matters if relations are ever moved into the constraint solver. Almonds' `add` uses `putIfAbsent`, so a repeated constraint is silently shared and effectively treated as true (coinductive). That would accept the javac-rejected case above. See `JTypeRelationsCycleTests`.
 
