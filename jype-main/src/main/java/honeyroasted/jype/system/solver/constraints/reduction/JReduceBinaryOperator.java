@@ -20,7 +20,7 @@ import java.util.Map;
 public class JReduceBinaryOperator extends ConstraintMapper.Unary<JTypeConstraints.ExpressionCompatible> {
     @Override
     protected boolean filter(PropertySet allContext, PropertySet branchContext, ConstraintBranch branch, JTypeConstraints.ExpressionCompatible constraint, Constraint.Status status) {
-        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.BinaryOperator;
+        return status.isUnknown() && constraint.left() instanceof JExpressionInformation.BinaryOperator && !honeyroasted.jype.system.solver.constraints.compatibility.JExpressionAssignmentConstant.applies(constraint);
     }
 
     @Override

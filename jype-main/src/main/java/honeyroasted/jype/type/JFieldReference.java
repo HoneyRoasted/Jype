@@ -20,6 +20,10 @@ public interface JFieldReference extends JType, PossiblyUnmodifiable {
 
     JType type();
 
+    java.util.Optional<Object> constantValue();
+
+    void setConstantValue(Object value);
+
     void setType(JType type);
 
     int modifiers();

@@ -34,6 +34,16 @@ public class JFieldReferenceDelegate extends JAbstractPossiblyUnmodifiableDelega
     }
 
     @Override
+    public java.util.Optional<Object> constantValue() {
+        return delegate().constantValue();
+    }
+
+    @Override
+    public void setConstantValue(Object value) {
+        delegate().setConstantValue(value);
+    }
+
+    @Override
     public JType type() {
         return delegate().type();
     }

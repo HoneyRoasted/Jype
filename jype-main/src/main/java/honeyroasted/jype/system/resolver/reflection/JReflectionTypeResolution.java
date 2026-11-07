@@ -229,6 +229,7 @@ public interface JReflectionTypeResolution {
         fRef.metadata().attach(new JReflectionType.Field(field));
         fRef.setLocation(location);
         fRef.setModifiers(field.getModifiers());
+        JReflectionConstantValues.constantValue(field).ifPresent(fRef::setConstantValue);
 
         system.storage().cacheFor(JFieldLocation.class).put(location, fRef);
 

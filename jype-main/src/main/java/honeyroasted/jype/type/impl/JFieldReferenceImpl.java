@@ -16,6 +16,7 @@ public class JFieldReferenceImpl extends JAbstractPossiblyUnmodifiableType imple
     private JClassReference outerClass;
     private JType type;
     private int modifiers;
+    private Object constantValue;
 
     public JFieldReferenceImpl(JTypeSystem typeSystem) {
         super(typeSystem);
@@ -33,6 +34,8 @@ public class JFieldReferenceImpl extends JAbstractPossiblyUnmodifiableType imple
         copy.setLocation(this.location);
         copy.setOuterClass(this.outerClass.copy(cache));
         copy.setType(this.type.copy(cache));
+        copy.setModifiers(this.modifiers);
+        copy.setConstantValue(this.constantValue);
         copy.setUnmodifiable(true);
         return (T) copy;
     }
@@ -57,6 +60,17 @@ public class JFieldReferenceImpl extends JAbstractPossiblyUnmodifiableType imple
     public void setOuterClass(JClassReference outerClass) {
         this.checkUnmodifiable();
         this.outerClass = outerClass;
+    }
+
+    @Override
+    public java.util.Optional<Object> constantValue() {
+        return java.util.Optional.ofNullable(this.constantValue);
+    }
+
+    @Override
+    public void setConstantValue(Object value) {
+        super.checkUnmodifiable();
+        this.constantValue = value;
     }
 
     @Override

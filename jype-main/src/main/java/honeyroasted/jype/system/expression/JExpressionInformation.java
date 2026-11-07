@@ -1034,7 +1034,11 @@ public interface JExpressionInformation extends SimpleName {
 
         private static Optional<JType> narrowConstant(JExpressionInformation constCandidate, JPrimitiveType constCandidatePrim, JPrimitiveType otherPrim, JTypeSystem system) {
             var c = system.constants();
-            if (!constCandidatePrim.typeEquals(c.intType()) || !(constCandidate instanceof Constant constant) || !(constant.value() instanceof Integer i)) {
+            if (!constCandidatePrim.typeEquals(c.intType())) {
+                return Optional.empty();
+            }
+            Optional<honeyroasted.jype.system.solver.JConstantEvaluator.Value> constant = honeyroasted.jype.system.solver.JConstantEvaluator.evaluate(constCandidate, system);
+            if (constant.isEmpty() || !(constant.get().value() instanceof Integer i)) {
                 return Optional.empty();
             }
 

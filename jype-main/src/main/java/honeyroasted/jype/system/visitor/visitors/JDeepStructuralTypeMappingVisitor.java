@@ -227,6 +227,7 @@ public interface JDeepStructuralTypeMappingVisitor extends JTypeMappingVisitor<J
         JFieldReference newRef = type.typeSystem().typeFactory().newFieldReference();
         newRef.setModifiers(type.modifiers());
         newRef.setLocation(type.location());
+        type.constantValue().ifPresent(newRef::setConstantValue);
 
         if (this.visitStructural()) {
             JType newOuter = this.visit(type.outerClass(), context);

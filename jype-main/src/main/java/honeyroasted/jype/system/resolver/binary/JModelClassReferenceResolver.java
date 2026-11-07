@@ -200,6 +200,7 @@ public class JModelClassReferenceResolver implements JTypeResolver<ClassModel, J
             fRef.setLocation(floc);
             fRef.setModifiers(model.flags().flagsMask());
             fRef.setOuterClass(ref);
+            model.findAttribute(Attributes.constantValue()).ifPresent(cv -> fRef.setConstantValue(cv.constant().constantValue()));
 
             Optional<SignatureAttribute> fieldSigAttr = model.findAttribute(Attributes.signature());
             boolean fieldFallback = true;

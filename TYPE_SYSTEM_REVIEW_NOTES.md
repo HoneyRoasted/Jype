@@ -793,3 +793,13 @@ Baseline: 177 tests green.
   - Casting captured types: capture variables remember their wildcard (`JCapturedWildcard`) and
     `rewriteQuantifiers` handles them like javac's `visitCapturedType` (`(ArrayList<String>) id(List<? super Integer>)` rejected).
   Fuzz: expressions seeds 1–5 × 20 worlds × 80 probes: 0 mismatches; relations seed 8: 0. Suite 180/180.
+
+- **Item 43 (constant expressions §15.29) — done.** `JFieldReference` now carries `constantValue()` (ConstantValue
+  attribute: binary resolver reads it directly; reflection resolver reads the declaring class file via
+  `java.lang.classfile` in `JReflectionConstantValues` — no class initialization). `JConstantEvaluator`
+  folds literals, constant variables, casts to primitive/String, unary/binary/conditional operators with
+  Java conversion semantics. `JExpressionAssignmentConstant` applies §5.2 narrowing to any constant
+  expression of type byte/short/char/int targeting byte/short/char (or boxes) and other reducers defer to it;
+  conditional constant narrowing uses the evaluator. `JFieldReferenceImpl.copy` also dropped modifiers (fixed).
+  javac-verified matrix in `JConstantExpressionTests` (16 cases: `byte b = 1 + 2` ok, `127 + 1` rejected,
+  `byte b = CONST` ok vs non-final rejected, `flag ? 1 : 2` rejected, `true ? 1 : 2` ok, `1 << 7` rejected, ...).
