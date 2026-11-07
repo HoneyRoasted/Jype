@@ -93,6 +93,7 @@ public interface JStructuralTypeMappingVisitor<P> extends JTypeMappingVisitor<P>
             if (!newParams.equals(rType.parameters()) || !newRet.equals(type.returnType()) || !newExcept.equals(type.exceptionTypes()) || !newOuter.equals(type.outerClass())) {
                 JMethodReference newType = type.typeSystem().typeFactory().newMethodReference();
                 newType.setLocation(type.location());
+                newType.setModifiers(type.modifiers());
                 newType.setOuterClass(newOuter instanceof JClassReference cr ? cr : rType.outerClass());
                 newType.setExceptionTypes(newExcept);
                 newType.setTypeParameters(type.typeParameters());

@@ -833,3 +833,17 @@ Baseline: 177 tests green.
     feature once per file, so a preview diagnostic forces batch bisection.
   - javac-verified matrix in `JExpressionShapeTests` (40 cases). Fuzz: expressions seeds 1–10 × 20 worlds: 0
     mismatches; relations seeds 1–2: 0. Suite 188/188.
+
+- **Item 18 (erasure §4.6, projections §4.10.5 / B28) — done.**
+  - `JStructuralTypeMappingVisitor.visitMethodType` rebuilt method references without their modifiers, so
+    members of raw types (erased) lost `public`/`varargs`/`static`: `raw.va(1, 2, 3)` was rejected.
+  - `JErasureTypeVisitor`: `?`/`? super` erase to Object (crashed on empty bounds), intersections erase to
+    the leftmost component, erased generic methods drop their type parameters (`String s = raw.gen("x")`
+    rejected, `raw.<String>gen("x")` accepted, matching javac).
+  - Projections rewritten to javac's `TypeProjection` / JLS §4.10.5: the old visitors never set the class
+    reference of the projected type, dropped outer types, wrapped wildcard arguments in another wildcard,
+    and used `accept(Predicate)` (an all-match visitor) as "mentions". New `JType.mentions` (any-match).
+    Cycles through F-bounds project to Object (upward) / undefined (downward).
+  - Tests: `JRawMemberErasureTests` (7 javac-verified cases), `JProjectionTests` (`var` types of
+    `List<? extends Number>`, `List<? super Integer>`, `Comparable<?>`, `Rec<?>` ≡ `Rec<? extends Rec<?>>`
+    as checked with javac assignments both ways). Suite 191/191, fuzz seed 11: 0 mismatches.

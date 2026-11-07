@@ -50,6 +50,11 @@ public interface JTypeVisitors {
                 .mapResult(ls -> ls.stream().allMatch(b -> b != null && b)).withContext(HashMap::new);
     }
 
+    static JTypeVisitor<Boolean, Void> typeMentions(Predicate<JType> test) {
+        return new JRecursiveTypeVisitor<Boolean, Void>((JTypeVisitor.Default) (type, context) -> test.test(type), null, false)
+                .mapResult(ls -> ls.stream().anyMatch(b -> b != null && b)).withContext(HashMap::new);
+    }
+
     //String representations
     JTypeVisitor<JSignature, JToSignatureVisitor.Mode> TO_SIGNATURE = new JToSignatureVisitor();
     JTypeVisitor<JDescriptor, Void> TO_DESCRIPTOR = ERASURE.andThen(new JToDescriptorVisitor(), true);

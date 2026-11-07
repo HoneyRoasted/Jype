@@ -78,6 +78,10 @@ public interface JType extends SimpleName, Copyable<JType, JTypeCache<JType, JTy
         return accept(JTypeVisitors.typePredicate(visitor));
     }
 
+    default boolean mentions(Predicate<JType> test) {
+        return accept(JTypeVisitors.typeMentions(test));
+    }
+
     default boolean isCompatibleTo(JType other, JTypeConstraints.Compatible.Context context) {
         return this.typeSystem().operations().isCompatible(this, other, context);
     }
